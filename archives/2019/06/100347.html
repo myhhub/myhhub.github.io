@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="每个人都希望自已的HBASE管理员能够让集群运行流畅,存储大量的数据,并且能同时,迅速和可靠地处理几百万的并发请求.对于管理员来说,让HBASE中海量数据一直保持可存取,易管理和便于查询是一项至...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 四十二.HBASE使用管理工具 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+		<script type="text/javascript">
+			var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan class='cnzz_stat_icon_1277660023 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1277660023%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 四十二.HBASE使用管理工具">
+            
+	            大数据hadoop之 四十二.HBASE使用管理工具
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/30</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>365</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>每个人都希望自已的HBASE管理员能够让集群运行流畅,存储大量的数据,并且能同时,迅速和可靠地处理几百万的并发请求.对于管理员来说,让HBASE中海量数据一直保持可存取,易管理和便于查询是一项至关重要的任务.</p>
+<p>除了对于你运行的集群要有扎实的了解之外,你所使用的工具也同样重要.HBASE自带了一些管理工具,它可以使管理员的工作变得轻松一些.HBASE带有一个基于WEB的管理页面.在此页面中可以查看集群的状态.</p>
+<h2 id="一-HBASE主WEB界面"><a href="#一-HBASE主WEB界面" class="headerlink" title="一. HBASE主WEB界面"></a>一. HBASE主WEB界面</h2><p>HBASE主WEB界面是一个简单而又有用的工具,它可以为我们提供集群当前的状态的概况.从该页面中可以获取所运行HBASE版本/HBASE的配置(包括HDFS根路径和ZOOKeeper仲裁地址)/集群的平均负载以及表/区域/区域服务器的列表.</p>
+<p>HBASE主界面的默认端口是60010,请确保你的网络防火墙已经对你的客户端打开了该端口.</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">http:</span><span class="comment">//192.168.1.80:16010/master-status</span></span><br></pre></td></tr></table></figure>
+<p>HBASE主WEB界面如下</p>
+<p><img src="/img/hadoop/12/Master- Master.gif" alt></p>
+<p>正如你所看到的那样,在”Attributes区中显示的信息有”:HBASE和Hadoop的版本/HBASE在HDFS上的根目录/集群的平均负载以及Zookeeper仲裁地址.HBASE根目录和Zookeeper服务器地址是HBASE配置文件hbase-site.xml中设置的值.平均负载是每个区域服务器所负责区域的平均值.一个区域服务器的负载显示在Region Server区中.</p>
+<p>在Catalog Table(目录表)区中你可以看到两张表:-ROOT和.META.这是两张HBASE的系统表,-ROOT表里保存的是部署有.META表所有区域服务器的引用,而.META表中保存的是所有用户表区域的引用.</p>
+<h2 id="二-使用HBASE-SHELL管理表"><a href="#二-使用HBASE-SHELL管理表" class="headerlink" title="二. 使用HBASE SHELL管理表"></a>二. 使用HBASE SHELL管理表</h2><p>我们现在通过下列步骤来展示如何使用DDL命令来管理HBASE表.</p>
+<ol>
+<li><p>在客户机节点上执行以下命仅启动HBASE SHELL</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#hbase</span> shell</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在HBASE SHELL中使用create命令创建一张带有一个列族(f1)的表(t1)</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">001</span>:<span class="number">0</span>&gt; create <span class="string">'t1'</span>,<span class="string">'f1'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用list命令列出所有表的列表</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">008</span>:<span class="number">0</span>&gt; list</span><br><span class="line">TABLE                                                                                                                              </span><br><span class="line">MIANTIAO_USERNAME                                                                                                                  </span><br><span class="line">PERFORMANCE_10000                                                                                                                  </span><br><span class="line">SYSTEM<span class="selector-class">.CATALOG</span>                                                                                                                     </span><br><span class="line">SYSTEM<span class="selector-class">.FUNCTION</span>                                                                                                                    </span><br><span class="line">SYSTEM<span class="selector-class">.SEQUENCE</span>                                                                                                                    </span><br><span class="line">SYSTEM<span class="selector-class">.STATS</span>                                                                                                                       </span><br><span class="line">US_POPULATION                                                                                                                      </span><br><span class="line">US_POPULATION2                                                                                                                     </span><br><span class="line">UUU                                                                                                                                </span><br><span class="line">UUU33                                                                                                                              </span><br><span class="line">hly_temp                                                                                                                           </span><br><span class="line">lxw1234                                                                                                                            </span><br><span class="line">question                                                                                                                           </span><br><span class="line">ssss                                                                                                                               </span><br><span class="line">t1                                                                                                                                 </span><br><span class="line">t2                                                                                                                                 </span><br><span class="line">t3                                                                                                                                 </span><br><span class="line">t4                                                                                                                                 </span><br><span class="line"><span class="number">18</span> row(s) <span class="keyword">in</span> <span class="number">0.0370</span> seconds</span><br><span class="line"></span><br><span class="line">=&gt; [<span class="string">"MIANTIAO_USERNAME"</span>, <span class="string">"PERFORMANCE_10000"</span>, <span class="string">"SYSTEM.CATALOG"</span>, <span class="string">"SYSTEM.FUNCTION"</span>, <span class="string">"SYSTEM.SEQUENCE"</span>, <span class="string">"SYSTEM.STATS"</span>, <span class="string">"US_POPULATION"</span>, <span class="string">"US_POPULATION2"</span>, <span class="string">"UUU"</span>, <span class="string">"UUU33"</span>, <span class="string">"hly_temp"</span>, <span class="string">"lxw1234"</span>, <span class="string">"question"</span>, <span class="string">"ssss"</span>, <span class="string">"t1"</span>, <span class="string">"t2"</span>, <span class="string">"t3"</span>, <span class="string">"t4"</span>]</span><br><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">009</span>:<span class="number">0</span>&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用describe命令来显示该表的属性</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):009:0&gt; describe <span class="string">'t1'</span></span><br><span class="line">Table t1 is ENABLED                                                                                                                </span><br><span class="line">t1                                                                                                                                 </span><br><span class="line">COLUMN FAMILIES DESCRIPTION                                                                                                        </span><br><span class="line">&#123;NAME =&gt; <span class="string">'f1'</span>, BLOOMFILTER =&gt; <span class="string">'ROW'</span>, VERSIONS =&gt; <span class="string">'5'</span>, IN_MEMORY =&gt; <span class="string">'false'</span>, KEEP_DELETED_CELLS =&gt; <span class="string">'FALSE'</span>, DATA_BLOCK_ENCODING =&gt; <span class="string">'</span></span><br><span class="line"><span class="string">NONE'</span>, TTL =&gt; <span class="string">'FOREVER'</span>, COMPRESSION =&gt; <span class="string">'NONE'</span>, MIN_VERSIONS =&gt; <span class="string">'0'</span>, BLOCKCACHE =&gt; <span class="string">'true'</span>, BLOCKSIZE =&gt; <span class="string">'65536'</span>, REPLICATION_SCOPE </span><br><span class="line">=&gt; <span class="string">'0'</span>&#125;                                                                                                                            </span><br><span class="line">1 row(s) in 0.1840 seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用disable 命令来禁用该表</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">013</span>:<span class="number">0</span>&gt; disable <span class="string">'t1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0170</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">014</span>:<span class="number">0</span>&gt; is_enabled <span class="string">'t1'</span></span><br><span class="line">false                                                                                                                              </span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0160</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用alter命令来修改表的属性.下面这段代码会先将f1修改为只有一个版本,然后再添加了一个新列族的f2</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">015</span>:<span class="number">0</span>&gt; alter <span class="string">'t1'</span>,&#123;<span class="function"><span class="params">NAME</span>=&gt;</span><span class="string">'f1'</span>,<span class="function"><span class="params">VERSIONS</span>=&gt;</span><span class="string">'1'</span>&#125;,&#123;<span class="function"><span class="params">NAME</span>=&gt;</span><span class="string">'f2'</span>&#125;</span><br><span class="line">Updating all regions <span class="keyword">with</span> the <span class="keyword">new</span> schema...</span><br><span class="line"><span class="number">1</span>/<span class="number">1</span> regions updated.</span><br><span class="line">Done.</span><br><span class="line">Updating all regions <span class="keyword">with</span> the <span class="keyword">new</span> schema...</span><br><span class="line"><span class="number">1</span>/<span class="number">1</span> regions updated.</span><br><span class="line">Done.</span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">3.8100</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用enable命令来启用该表</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">016</span>:<span class="number">0</span>&gt; enable <span class="string">'t1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">1.4190</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">017</span>:<span class="number">0</span>&gt; is_enabled <span class="string">'t1'</span></span><br><span class="line">true                                                                                                                               </span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0090</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输入以下命令来再次禁用该表.然后将期删除</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">018</span>:<span class="number">0</span>&gt; disable <span class="string">'t1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">2.2440</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">019</span>:<span class="number">0</span>&gt; drop <span class="string">'t1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">1.2650</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用put命令将下列数据插入到该表中</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">021</span>:<span class="number">0</span>&gt; put <span class="string">'t1'</span>,<span class="string">'row1'</span>,<span class="string">'f1:c1'</span>,<span class="string">'value1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.1030</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">022</span>:<span class="number">0</span>&gt; put <span class="string">'t1'</span>,<span class="string">'row1'</span>,<span class="string">'f1:c2'</span>,<span class="string">'value2'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0130</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">023</span>:<span class="number">0</span>&gt; put <span class="string">'t1'</span>,<span class="string">'row2'</span>,<span class="string">'f1:c1'</span>,<span class="string">'value3'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0230</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>put命令使用表名(t1)/行键(row1)/列族和限定符(f1:c1)以及要赋予的值(value1)为参数,别外它还有一个可选的时间戳参数.在f1:c1中.冒号(:)是列族(f1)与限定符(c1)之前的间隔符.在HBASE SHELL中,如果想要把一个值当成字符串,你就用单引号包括起来就行.</p>
+<ol start="10">
+<li>执行count命令来获取该表的行数<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase(main)<span class="symbol">:024</span><span class="symbol">:0</span>&gt; <span class="built_in">count</span> '<span class="symbol">t1</span>'</span><br><span class="line"><span class="number">2</span> <span class="built_in">row</span>(s) in <span class="number">0.0930</span> seconds</span><br><span class="line"></span><br><span class="line">=&gt; <span class="number">2</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>count命令可以统计一张表中记录数,它会以”行键”为基础进行统计,所以为2.</p>
+<ol start="11">
+<li><p>使用scan命令来扫描数据.在对记录很多的表进行scan时,不要忘记指定LIMIT属性</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">029</span>:<span class="number">0</span>&gt; scan 't1',&#123;<span class="attr">LIMIT=&gt;10&#125;</span></span><br><span class="line">ROW                               COLUMN+CELL                                                                                      </span><br><span class="line"> row1                             <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644326819,</span> <span class="attr">value=value1</span>                                              </span><br><span class="line"> row1                             <span class="attr">column=f1:c2,</span> <span class="attr">timestamp=1460644335627,</span> <span class="attr">value=value2</span>                                              </span><br><span class="line"> row2                             <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644754895,</span> <span class="attr">value=value7</span>                                              </span><br><span class="line"> row3                             <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644762929,</span> <span class="attr">value=value7</span>                                              </span><br><span class="line"><span class="number">3</span> row(s) <span class="keyword">in</span> <span class="number">0.0600</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用get命令来读取某一行</p>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">030</span>:<span class="number">0</span>&gt; get <span class="string">'t1'</span>,<span class="string">'row1'</span></span><br><span class="line">COLUMN                            CELL                                                                                             </span><br><span class="line"> f<span class="number">1</span>:c<span class="number">1</span>                            timestamp=<span class="number">1460644326819</span>, <span class="keyword">value</span>=<span class="keyword">value</span><span class="number">1</span>                                                            </span><br><span class="line"> f<span class="number">1</span>:c<span class="number">2</span>                            timestamp=<span class="number">1460644335627</span>, <span class="keyword">value</span>=<span class="keyword">value</span><span class="number">2</span>                                                            </span><br><span class="line"><span class="number">2</span> row(s) <span class="keyword">in</span> <span class="number">0.0</span><span class="number">200</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用delete命令来删除某一指定单元格</p>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">032</span>:<span class="number">0</span>&gt; delete <span class="string">'t1'</span>,<span class="string">'row1'</span>,<span class="string">'f1:c1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0</span><span class="number">250</span> seconds</span><br><span class="line"></span><br><span class="line">hbase(main):<span class="number">033</span>:<span class="number">0</span>&gt; scan <span class="string">'t1'</span>,&#123;LIMIT=&gt;<span class="number">10</span>&#125;</span><br><span class="line">ROW                               COLUMN+CELL                                                                                      </span><br><span class="line"> row<span class="number">1</span>                             column=f<span class="number">1</span>:c<span class="number">2</span>, timestamp=<span class="number">1460644335627</span>, <span class="keyword">value</span>=<span class="keyword">value</span><span class="number">2</span>                                              </span><br><span class="line"> row<span class="number">2</span>                             column=f<span class="number">1</span>:c<span class="number">1</span>, timestamp=<span class="number">1460644754895</span>, <span class="keyword">value</span>=<span class="keyword">value</span><span class="number">7</span>                                              </span><br><span class="line"> row<span class="number">3</span>                             column=f<span class="number">1</span>:c<span class="number">1</span>, timestamp=<span class="number">1460644762929</span>, <span class="keyword">value</span>=<span class="keyword">value</span><span class="number">7</span>                                              </span><br><span class="line"><span class="number">3</span> row(s) <span class="keyword">in</span> <span class="number">0.0</span><span class="number">240</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用deleteall命令删除某一指定行的所有单元格</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">002</span>:<span class="number">0</span>&gt; delete <span class="string">'t1'</span>,<span class="string">'row1'</span>,<span class="string">'f1:c1'</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0610</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次执行get命令;你会发现整个row1行都已被从表中删除了.</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">001</span>:<span class="number">0</span>&gt; <span class="built_in">get</span> <span class="string">'t1'</span>,<span class="string">'row1'</span></span><br><span class="line">COLUMN                               CELL                                                                                                    </span><br><span class="line"> f1:c2                               timestamp=<span class="number">1460644335627</span>, <span class="built_in">value</span>=value2                                                                   </span><br><span class="line"><span class="number">1</span> row(s) <span class="keyword">in</span> <span class="number">0.3090</span> <span class="built_in">seconds</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用incr命令让计数器(row1:f1:c1)的值加1</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">003</span>:<span class="number">0</span>&gt; scan 't1'</span><br><span class="line">ROW                                  COLUMN+CELL                                                                                             </span><br><span class="line"> row1                                <span class="attr">column=f1:c2,</span> <span class="attr">timestamp=1460644335627,</span> <span class="attr">value=value2</span>                                                     </span><br><span class="line"> row2                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644754895,</span> <span class="attr">value=value7</span>                                                     </span><br><span class="line"> row3                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644762929,</span> <span class="attr">value=value7</span>                                                     </span><br><span class="line"><span class="number">3</span> row(s) <span class="keyword">in</span> <span class="number">0.1120</span> seconds</span><br><span class="line"></span><br><span class="line">hbase(main):<span class="number">004</span>:<span class="number">0</span>&gt; incr 't1','row1','f1:c1',<span class="number">1</span></span><br><span class="line">COUNTER <span class="attr">VALUE</span> = <span class="number">1</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0280</span> seconds</span><br><span class="line"></span><br><span class="line">hbase(main):<span class="number">005</span>:<span class="number">0</span>&gt; scan 't1'</span><br><span class="line">ROW                                  COLUMN+CELL                                                                                             </span><br><span class="line"> row1                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460801878627,</span> <span class="attr">value=\x00\x00\x00\x00\x00\x00\x00\x01</span>                           </span><br><span class="line"> row1                                <span class="attr">column=f1:c2,</span> <span class="attr">timestamp=1460644335627,</span> <span class="attr">value=value2</span>                                                     </span><br><span class="line"> row2                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644754895,</span> <span class="attr">value=value7</span>                                                     </span><br><span class="line"> row3                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644762929,</span> <span class="attr">value=value7</span>                                                     </span><br><span class="line"><span class="number">3</span> row(s) <span class="keyword">in</span> <span class="number">0.0310</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再使该计数器加10</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">006</span>:<span class="number">0</span>&gt; incr 't1','row1','f1:c1',<span class="number">10</span></span><br><span class="line">COUNTER <span class="attr">VALUE</span> = <span class="number">11</span></span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">0.0160</span> seconds</span><br><span class="line"></span><br><span class="line">hbase(main):<span class="number">007</span>:<span class="number">0</span>&gt; scan 't1'</span><br><span class="line">ROW                                  COLUMN+CELL                                                                                             </span><br><span class="line"> row1                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460802073632,</span> <span class="attr">value=\x00\x00\x00\x00\x00\x00\x00\x0B</span>                           </span><br><span class="line"> row1                                <span class="attr">column=f1:c2,</span> <span class="attr">timestamp=1460644335627,</span> <span class="attr">value=value2</span>                                                     </span><br><span class="line"> row2                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644754895,</span> <span class="attr">value=value7</span>                                                     </span><br><span class="line"> row3                                <span class="attr">column=f1:c1,</span> <span class="attr">timestamp=1460644762929,</span> <span class="attr">value=value7</span>                                                     </span><br><span class="line"><span class="number">3</span> row(s) <span class="keyword">in</span> <span class="number">0.0300</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用get_counter命令来读取该计数器的新值</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">008</span>:<span class="number">0</span>&gt; get_counter <span class="string">'t1'</span>,<span class="string">'row1'</span>,<span class="string">'f1:c1'</span></span><br><span class="line">COUNTER VALUE = <span class="number">11</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行truncate命令来截断该表<br>truncate命令会进行一系列的操作,对表进行禁用/删除/然后再重建</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">hbase</span><span class="params">(main)</span></span>:<span class="number">009</span>:<span class="number">0</span>&gt; truncate <span class="string">'t1'</span></span><br><span class="line">Truncating <span class="string">'t1'</span> <span class="selector-tag">table</span> (it may take <span class="selector-tag">a</span> while):</span><br><span class="line"> - Disabling <span class="selector-tag">table</span>...</span><br><span class="line"> - Truncating <span class="selector-tag">table</span>...</span><br><span class="line"><span class="number">0</span> row(s) <span class="keyword">in</span> <span class="number">3.4570</span> seconds</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="三-使用HBASE-SHELL管理集群"><a href="#三-使用HBASE-SHELL管理集群" class="headerlink" title="三. 使用HBASE SHELL管理集群"></a>三. 使用HBASE SHELL管理集群</h2><h2 id="四-在HBASE-SHELL中执行JAVA方法"><a href="#四-在HBASE-SHELL中执行JAVA方法" class="headerlink" title="四. 在HBASE SHELL中执行JAVA方法"></a>四. 在HBASE SHELL中执行JAVA方法</h2><h2 id="五-WAL工具-手动分割和转储WAL"><a href="#五-WAL工具-手动分割和转储WAL" class="headerlink" title="五. WAL工具 手动分割和转储WAL"></a>五. WAL工具 手动分割和转储WAL</h2><h2 id="六-HFile工具-以文本方式查看HFile的内容"><a href="#六-HFile工具-以文本方式查看HFile的内容" class="headerlink" title="六. HFile工具 以文本方式查看HFile的内容"></a>六. HFile工具 以文本方式查看HFile的内容</h2><h2 id="七-HBASE-hbck检查HBASE集群的一致性"><a href="#七-HBASE-hbck检查HBASE集群的一致性" class="headerlink" title="七. HBASE hbck检查HBASE集群的一致性"></a>七. HBASE hbck检查HBASE集群的一致性</h2><figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">查看hbasemeta情况</span><br><span class="line">hbase hbck</span><br><span class="line"><span class="number">1</span>.重新修复hbase meta表（根据hdfs上的regioninfo文件，生成meta表）</span><br><span class="line">hbase hbck -fixMeta</span><br><span class="line"><span class="number">2</span>.重新将hbase meta表分给regionserver（根据meta表，将meta表上的<span class="built_in">region</span>分给regionservere）</span><br><span class="line">hbase hbck -fixAssignments</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">新版本的 hbck </span><br><span class="line"><span class="number">1</span>）缺失hbase.version文件 </span><br><span class="line">加上选项 -fixVersionFile 解决 </span><br><span class="line"><span class="number">2</span>）如果一个<span class="built_in">region</span>即不在META表中，又不在hdfs上面，但是在regionserver的online <span class="built_in">region</span>集合中 </span><br><span class="line">加上选项 -fixAssignments 解决 </span><br><span class="line"><span class="number">3</span>）如果一个<span class="built_in">region</span>在META表中，并且在regionserver的online <span class="built_in">region</span>集合中，但是在hdfs上面没有 </span><br><span class="line">加上选项 -fixAssignments -fixMeta 解决，（ -fixAssignments告诉regionserver <span class="built_in">close</span> <span class="built_in">region</span>），（ -fixMeta删除META表中<span class="built_in">region</span>的记录） </span><br><span class="line"><span class="number">4</span>）如果一个<span class="built_in">region</span>在META表中没有记录，没有被regionserver服务，但是在hdfs上面有 </span><br><span class="line">加上选项 -fixMeta -fixAssignments 解决，（ -fixAssignments 用于assign <span class="built_in">region</span>），（ -fixMeta用于在META表中添加<span class="built_in">region</span>的记录） </span><br><span class="line"><span class="number">5</span>）如果一个<span class="built_in">region</span>在META表中没有记录，在hdfs上面有，被regionserver服务了 </span><br><span class="line">加上选项 -fixMeta 解决，在META表中添加这个<span class="built_in">region</span>的记录，先undeploy <span class="built_in">region</span>，后assign </span><br><span class="line"><span class="number">6</span>）如果一个<span class="built_in">region</span>在META表中有记录，但是在hdfs上面没有，并且没有被regionserver服务 </span><br><span class="line">加上选项 -fixMeta 解决，删除META表中的记录 </span><br><span class="line"><span class="number">7</span>）如果一个<span class="built_in">region</span>在META表中有记录，在hdfs上面也有，table不是disabled的，但是这个<span class="built_in">region</span>没有被服务 </span><br><span class="line">加上选项 -fixAssignments 解决，assign这个<span class="built_in">region</span> </span><br><span class="line"><span class="number">8</span>）如果一个<span class="built_in">region</span>在META表中有记录，在hdfs上面也有，table是disabled的，但是这个<span class="built_in">region</span>被某个regionserver服务了加上选项 -fixAssignments 解决，undeploy这个<span class="built_in">region</span> </span><br><span class="line"><span class="number">9</span>）如果一个<span class="built_in">region</span>在META表中有记录，在hdfs上面也有，table不是disabled的，但是这个<span class="built_in">region</span>被多个regionserver服务了 加上选项 -fixAssignments 解决，通知所有regionserver <span class="built_in">close</span> <span class="built_in">region</span>，然后assign <span class="built_in">region</span> </span><br><span class="line"><span class="number">10</span>）如果一个<span class="built_in">region</span>在META表中，在hdfs上面也有，也应该被服务，但是META表中记录的regionserver和实际所在的regionserver不相符 加上选项 -fixAssignments 解决 </span><br><span class="line"><span class="number">11</span>）<span class="built_in">region</span> holes </span><br><span class="line">需要加上 -fixHdfsHoles ，创建一个新的空<span class="built_in">region</span>，填补空洞，但是不assign 这个 <span class="built_in">region</span>，也不在META表中添加这个<span class="built_in">region</span>的相关信息 </span><br><span class="line"><span class="number">12</span>）<span class="built_in">region</span>在hdfs上面没有.regioninfo文件 </span><br><span class="line">-fixHdfsOrphans 解决 </span><br><span class="line"><span class="number">13</span>）<span class="built_in">region</span> overlaps </span><br><span class="line">需要加上 -fixHdfsOverlaps </span><br><span class="line"> </span><br><span class="line">说明： </span><br><span class="line">（<span class="number">1</span>）修复<span class="built_in">region</span> holes时，-fixHdfsHoles 选项只是创建了一个新的空<span class="built_in">region</span>，填补上了这个区间，还需要加上-fixAssignments -fixMeta 来解决问题，（ -fixAssignments 用于assign <span class="built_in">region</span>），（ -fixMeta用于在META表中添加<span class="built_in">region</span>的记录），所以有了组合拳 -repairHoles 修复<span class="built_in">region</span> holes，相当于-fixAssignments -fixMeta -fixHdfsHoles -fixHdfsOrphans </span><br><span class="line">（<span class="number">2</span>） -fixAssignments，用于修复<span class="built_in">region</span>没有assign、不应该assign、assign了多次的问题 </span><br><span class="line">（<span class="number">3</span>）-fixMeta，如果hdfs上面没有，那么从META表中删除相应的记录，如果hdfs上面有，在META表中添加上相应的记录信息 </span><br><span class="line">（<span class="number">4</span>）-repair 打开所有的修复选项，相当于-fixAssignments -fixMeta -fixHdfsHoles -fixHdfsOrphans -fixHdfsOverlaps -fixVersionFile -sidelineBigOverlaps </span><br><span class="line"> </span><br><span class="line">新版本的hbck从（<span class="number">1</span>）hdfs目录（<span class="number">2</span>）META（<span class="number">3</span>）RegionServer这三处获得<span class="built_in">region</span>的Table和Region的相关信息，根据这些信息判断并repair</span><br></pre></td></tr></table></figure>
+<h2 id="八-HBASE-HIVE使用类SQL语言查询HBASE的数据"><a href="#八-HBASE-HIVE使用类SQL语言查询HBASE的数据" class="headerlink" title="八. HBASE HIVE使用类SQL语言查询HBASE的数据"></a>八. HBASE HIVE使用类SQL语言查询HBASE的数据</h2>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100348.html" class="pre-post btn btn-default" title='大数据hadoop之 四十三.Hbase数据备份及恢复'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十三.Hbase数据备份及恢复</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100346.html" class="next-post btn btn-default" title='大数据hadoop之 四十一.HBASE基于Bulk load的数据迁移'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十一.HBASE基于Bulk load的数据迁移</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: 'gzPB4WyXxf7oCNOOeQCJJ8rE-gzGzoHsz',
+            appKey: '156QvIKyJPvnwUH0BfkDht2b',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-HBASE主WEB界面"><span class="toc-text">一. HBASE主WEB界面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-使用HBASE-SHELL管理表"><span class="toc-text">二. 使用HBASE SHELL管理表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-使用HBASE-SHELL管理集群"><span class="toc-text">三. 使用HBASE SHELL管理集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-在HBASE-SHELL中执行JAVA方法"><span class="toc-text">四. 在HBASE SHELL中执行JAVA方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-WAL工具-手动分割和转储WAL"><span class="toc-text">五. WAL工具 手动分割和转储WAL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-HFile工具-以文本方式查看HFile的内容"><span class="toc-text">六. HFile工具 以文本方式查看HFile的内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七-HBASE-hbck检查HBASE集群的一致性"><span class="toc-text">七. HBASE hbck检查HBASE集群的一致性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#八-HBASE-HIVE使用类SQL语言查询HBASE的数据"><span class="toc-text">八. HBASE HIVE使用类SQL语言查询HBASE的数据</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
