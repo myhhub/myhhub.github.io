@@ -399,7 +399,7 @@
 <p>4、同步：sendEvent、Qt::DirectConnection；异步：postEvent、Qt::QueuedConnection</p>
 <p>这里的同步是指：发送事件之后，订阅了这个主题的数据便会处理数据【handleEvent、slot】，处理的过程是在发送者的线程完成的。可以理解为在发送了某个事件之后，会立即执行所有订阅此事件的回调函数。</p>
 <p>异步：发送事件之后，发送者便会返回不管，订阅了此事件的所有插件会根据自己的消息循环，轮到了处理事件后才会去处理。不过如果长时间没处理，CTK也有自己的超时机制。如果事件处理程序花费的时间比配置的超时时间长，那么就会被列入黑名单。一旦处理程序被列入黑名单，它就不会再被发送任何事件。</p>
-<h2 id="插件依赖"><a href="#插件依赖" class="headerlink" title="插件依赖"></a>插件依赖</h2><p>插件加载时一般根据首字母大小自动加载，所以在插件启用时，某个插件还没有被调用，所以发送的”event/registAction”事件没有接收方，这样就要考虑到插件依赖关系，在MANIFEST.MF中添加依赖：</p>
+<h2 id="插件依赖"><a href="#插件依赖" class="headerlink" title="插件依赖"></a>插件依赖</h2><p>插件加载时一般根据首字母大小自动加载，所以在插件启用时，某个插件还没有被调用，所以发送事件没有接收方，这样就要考虑到插件依赖关系，在MANIFEST.MF中添加依赖：</p>
 <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Plugin</span>-SymbolicName:<span class="keyword">Plugin</span>-xxx-1</span><br><span class="line"><span class="keyword">Plugin</span>-<span class="keyword">Version</span>:1.0.0</span><br><span class="line">Require-<span class="keyword">Plugin</span>:<span class="keyword">Plugin</span>-xxx-2; <span class="keyword">plugin</span>-<span class="keyword">version</span>=<span class="string">"[1.0,2.0)"</span>; resolution:=<span class="string">"mandatory"</span></span><br></pre></td></tr></table></figure>
 <p>Plugin-xxx-2：为需要依赖的插件名【就是另一个插件在MANIFEST.MF里的Plugin-SymbolicName】；</p>
 <p>[1.0,2.0)：为Plugin-xxx-2的版本，这里是左闭右开区间，默认是1.0,；</p>
