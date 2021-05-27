@@ -1,0 +1,638 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="c++,c">
+
+
+    <meta name="description" content="一、简介只要在Unix环境中写程序，必定会邂逅神秘的Lex&amp;YACC，就如GNU/Linux用户所熟知的Flex&amp;Bison，这里的Flex就是由Vern Paxon实现的一个L...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Lex&amp;YACC (Flex&amp;Bison) 使用教程 (C/C++ 高效强大解析器) | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+		<script type="text/javascript">
+			var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan class='cnzz_stat_icon_1277660023 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1277660023%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Lex&amp;YACC (Flex&amp;Bison) 使用教程 (C/C++ 高效强大解析器)">
+            
+	            Lex&amp;YACC (Flex&amp;Bison) 使用教程 (C/C++ 高效强大解析器)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c</a> <a class="tag-link" href="/tags/c/">c++</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/05/27</span>
+        </span>
+        
+    
+</div>
+            
+            
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h1><p>只要在Unix环境中写程序，必定会邂逅神秘的Lex&amp;YACC，就如GNU/Linux用户所熟知的Flex&amp;Bison，这里的Flex就是由Vern Paxon实现的一个Lex，Bison则是GNU版本的YACC。在此我们将统一称呼这些程序为Lex和YACC。新版本的程序是向上兼容的(译注：即兼容老版本)，所以你可以用Flex和Bison来尝试下我们的实例。</p>
+<p>这些程序实用性极广，但如同你的C编译器一样，在其主页上并没有描述它们，也没有关于怎样使用的信息。当和Lex结合使用时，YACC实在是棒极了，但是Bison的主页上并没有描述Bison如何跟Lex结合使用以生成代码的相应说明。</p>
+<h1 id="二、Lex-amp-YACC能为你做什么？"><a href="#二、Lex-amp-YACC能为你做什么？" class="headerlink" title="二、Lex &amp; YACC能为你做什么？"></a>二、Lex &amp; YACC能为你做什么？</h1><p>如果使用得当，这些程序(指LEX&amp;YACC)可以让你轻易的解析复杂的语言，当你需要读取一个配置文件时，或者你需要编写一个你自己使用的语言的编译器时，这对于你来说是莫大的裨益。<br>本文档能提供给你一些帮助，你将发现你再也不用手工写解析器了，Lex &amp; YACC就是为你量身打造的利器。</p>
+<h1 id="三、Lex"><a href="#三、Lex" class="headerlink" title="三、Lex"></a>三、Lex</h1><p>Lex会生成一个叫做『词法分析器』的程序。这是一个函数，它带有一个字符流传入参数，词法分析器函数看到一组字符就会去匹配一个关键字(key)，采取相应措施。一个非常简单的例子(example1)如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line">%&#125;</span><br><span class="line">%%</span><br><span class="line"><span class="function">stop <span class="title">printf</span><span class="params">(<span class="string">"Stop command received\n"</span>)</span></span>;</span><br><span class="line"><span class="function">start <span class="title">printf</span><span class="params">(<span class="string">"Start command received\n"</span>)</span></span>;</span><br><span class="line">%%</span><br></pre></td></tr></table></figure>
+<p>第一部分，位于%{和%}对之间直接包含了输出程序(stdio.h)。我们需要这个程序，因为使用了printf函数，它在stdio.h中定义。</p>
+<p>第二部分用’%%’分割开来，所以第二行起始于’stop’，一旦在输入参数中遇到了’stop’，接下来的那一行(printf()调用)将被执行。</p>
+<p>除此之外，还有’start’，其跟stop的行为差不多。</p>
+<p>我们再次用’%%’结束代码段。</p>
+<p>为了编译上面的例子，只需要执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lex example1.l</span><br><span class="line">cc lex.yy –o example –ll</span><br></pre></td></tr></table></figure>
+<p>注意：如果你用flex，则就将lex命令用flex代替，还需要将’-ll’选项改成’-lfl’。在RedHat 6.x以及SuSe中需要这样做。</p>
+<p>这样，Lex将生成’example1’这个文件。运行该文件，它将等待你输入一些数据。每次你输入一些不匹配的命令(非’stop’和’start’)，它会将你输入的字符再次输出。你若输入’stop’，它将输出’Stop command received’。</p>
+<p>用一个EOF(^D)来结束程序。</p>
+<p>也许你想知道，它是怎么运行的，因为我们并没有定义main()函数。这个函数(指main())已经在lib1(liblex)中定义好了，在此我们选用了编译选项’-ll’</p>
+<h2 id="3-1-Lex的常规表达式"><a href="#3-1-Lex的常规表达式" class="headerlink" title="3.1 Lex的常规表达式"></a>3.1 Lex的常规表达式</h2><p>常规表达式是一种使用元语言的模式描述。表达式由符号组成。符号一般是字符和数字，还有一些具有特殊含义的其他标记，如下表：</p>
+<h3 id="用-Lex-定义常规表达式"><a href="#用-Lex-定义常规表达式" class="headerlink" title="用 Lex 定义常规表达式"></a>用 Lex 定义常规表达式</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">字符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">A-Z, 0-9, a-z</td>
+<td>构成了部分模式的字符和数字。</td>
+</tr>
+<tr>
+<td style="text-align:left">.</td>
+<td>匹配任意字符，除了 \n。</td>
+</tr>
+<tr>
+<td style="text-align:left">-</td>
+<td>用来指定范围。例如：A-Z 指从 A 到 Z 之间的所有字符。</td>
+</tr>
+<tr>
+<td style="text-align:left">[ ]</td>
+<td>一个字符集合。匹配括号内的 任意 字符。如果第一个字符是 ^ 那么它表示否定模式。例如: [abC] 匹配 a, b, 和 C中的任何一个。</td>
+</tr>
+<tr>
+<td style="text-align:left">*</td>
+<td>匹配 0个或者多个上述的模式。</td>
+</tr>
+<tr>
+<td style="text-align:left">+</td>
+<td>匹配 1个或者多个上述模式。</td>
+</tr>
+<tr>
+<td style="text-align:left">?</td>
+<td>匹配 0个或1个上述模式。</td>
+</tr>
+<tr>
+<td style="text-align:left">$</td>
+<td>作为模式的最后一个字符匹配一行的结尾。</td>
+</tr>
+<tr>
+<td style="text-align:left">{ }</td>
+<td>指出一个模式可能出现的次数。 例如: A{1,3} 表示 A 可能出现1次或3次。</td>
+</tr>
+<tr>
+<td style="text-align:left">\</td>
+<td>用来转义元字符。同样用来覆盖字符在此表中定义的特殊意义，只取字符的本意。</td>
+</tr>
+<tr>
+<td style="text-align:left">^</td>
+<td>否定。</td>
+</tr>
+<tr>
+<td style="text-align:left">\</td>
+<td></td>
+<td>表达式间的逻辑或。</td>
+</tr>
+<tr>
+<td style="text-align:left">“&lt;一些符号&gt;”</td>
+<td>字符的字面含义。元字符具有。</td>
+</tr>
+<tr>
+<td style="text-align:left">/</td>
+<td>向前匹配。如果在匹配的模版中的“/”后跟有后续表达式，只匹配模版中“/”前 面的部分。如：如果输入 A01，那么在模版 A0/1 中的 A0 是匹配的。</td>
+</tr>
+<tr>
+<td style="text-align:left">( )</td>
+<td>将一系列常规表达式分组。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="常规表达式举例"><a href="#常规表达式举例" class="headerlink" title="常规表达式举例"></a>常规表达式举例</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">常规表达式</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">joke[rs]</td>
+<td style="text-align:left">匹配 jokes 或 joker。</td>
+</tr>
+<tr>
+<td style="text-align:left">A{1,2}shis+</td>
+<td style="text-align:left">匹配 AAshis, Ashis, AAshi, Ashi。</td>
+</tr>
+<tr>
+<td style="text-align:left">(A[b-e])+</td>
+<td style="text-align:left">匹配在 A 出现位置后跟随的从 b 到 e 的所有字符中的 0 个或 1个。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="标记声明举例"><a href="#标记声明举例" class="headerlink" title="标记声明举例"></a>标记声明举例</h3><table>
+<thead>
+<tr>
+<th>标记</th>
+<th>相关表达式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数字(number)</td>
+<td>([0-9])+</td>
+<td>1个或多个数字</td>
+</tr>
+<tr>
+<td>字符(chars)</td>
+<td>[A-Za-z]</td>
+<td>任意字符</td>
+</tr>
+<tr>
+<td>空格(blank)</td>
+<td>“ “</td>
+<td>一个空格</td>
+</tr>
+<tr>
+<td>字(word)</td>
+<td>(chars)+</td>
+<td>1个或多个 <em>chars</em></td>
+</tr>
+<tr>
+<td>变量(variable)</td>
+<td>(字符)+(数字)<em>(字符)</em>(数字)*</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-2-匹配中的正则表达式示例"><a href="#3-2-匹配中的正则表达式示例" class="headerlink" title="3.2 匹配中的正则表达式示例"></a>3.2 匹配中的正则表达式示例</h2><p>这个实例(example2)本身并没什么用处，下一个实例也不会提及正则表达式。但这里它展示了如何在Lex中使用正则表达式，这在后面将非常有用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">[<span class="number">0123456789</span>]+ <span class="built_in">printf</span>(<span class="string">"NUMBER\n"</span>);</span><br><span class="line">[a-zA-Z][a-zA-Z0<span class="number">-9</span>]* <span class="built_in">printf</span>(<span class="string">"WORD\n"</span>);</span><br></pre></td></tr></table></figure>
+<p>该Lex文件描述了两种token匹配：WORDs和NUMBERs。正则表达式非常恐怖，但是只需要稍花力气便可以加以理解。</p>
+<p>其中NUMBER匹配“[0123456789]+”可以写成“[0-9]+”。</p>
+<p>WORD匹配就有点复杂：[a-zA-Z][a-zA-Z0-9]*</p>
+<p>第一部分仅仅匹配一个’a’到’z’或’A’到’Z’之间的字符，也即一个字母。接着该字母后面需要连上0个或多个字符，这些字符可以是字母，也可以是数字。这里为何用’<em>’? ’+’表示至少1次的匹配。一个WORD只有一个字符也可以很好的匹配，在第一部分我们已经匹配到了一个字符，所以第二部分可以是0个匹配，所以用’</em>’。</p>
+<p>用这种方式，我们就模仿了很多编程语言中对于一个变量名的要求，即要求变量名『必须』以字母开头，但是可以在后续字符中用数字。也就是说’temperature1’是一个正确的命名，但是’1temperature’就不是。</p>
+<p>像example1一样编译example2，并输入一些文本，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ ./example2</span><br><span class="line">foo</span><br><span class="line">WORD</span><br><span class="line"></span><br><span class="line">bar</span><br><span class="line">WORD</span><br><span class="line"></span><br><span class="line">123</span><br><span class="line">NUMBER</span><br><span class="line"></span><br><span class="line">bar123</span><br><span class="line">WORD</span><br><span class="line"></span><br><span class="line">123bar</span><br><span class="line">NUMBER</span><br><span class="line">WORD</span><br></pre></td></tr></table></figure>
+<p>你也许会疑惑，所有的输出中的空格是从哪来的？理由很简单：从输入而来，我们不在空格上匹配任何内容，所以它们又输出来了。</p>
+<p>Flex主页上有正则表达式的详细文档。很多人觉得perl正则表达式主页的说明非常有用，但是Flex并不实现perl所实现的所有东西。</p>
+<p>你只需要确保不写一些形如’[0-9]*’的空匹配即可，你的词法分析器(由Flex生成)将不明就里的开始不断的匹配空字符。</p>
+<h2 id="3-3-复杂一点的类C语法示例"><a href="#3-3-复杂一点的类C语法示例" class="headerlink" title="3.3 复杂一点的类C语法示例"></a>3.3 复杂一点的类C语法示例</h2><p>假定我们需要解析一个形如下面的文件：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">logging&#123;</span><br><span class="line">category lame-servers &#123; null; &#125;;</span><br><span class="line">category cname &#123; null; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="attribute">zone</span> <span class="string">"."</span> &#123;</span><br><span class="line"><span class="attribute">type</span> hint;</span><br><span class="line"><span class="attribute">file</span> <span class="string">"/etc/bind/db.root"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们在此见到了很多token：</p>
+<ul>
+<li>WORD: 如’zone’和’type’</li>
+<li>FILENAME：如“/etc/bind/db.root”</li>
+<li>QUOTE: 如包含文件名的引号</li>
+<li>OBRACE：{</li>
+<li>EBRACE: }</li>
+<li>SEMICOLON: ;</li>
+</ul>
+<p>example3相应的Lex文件如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">[a-zA-Z][a-zA-Z0<span class="number">-9</span>]* <span class="built_in">printf</span>(<span class="string">"WORD "</span>);</span><br><span class="line">[a-zA-Z0<span class="number">-9</span>\/.-]+ <span class="built_in">printf</span>(<span class="string">"FILENAME "</span>);</span><br><span class="line">\<span class="string">" printf("</span>QUOTE <span class="string">");</span></span><br><span class="line"><span class="string">\&#123; printf("</span>OBRACE <span class="string">");</span></span><br><span class="line"><span class="string">\&#125; printf("</span>EBRACE <span class="string">");</span></span><br><span class="line"><span class="string">; printf("</span>SEMICOLON <span class="string">");</span></span><br><span class="line"><span class="string">\n printf("</span>\n<span class="string">");</span></span><br><span class="line"><span class="string">[ \t]+ /* ignore whitespace */;</span></span><br><span class="line"><span class="string">%%</span></span><br></pre></td></tr></table></figure>
+<p>当输入我们的文件到Lex生成的example3中，我们得到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">WORD OBRACE</span><br><span class="line">WORD FILENAME OBRACE WORD SEMICOLON EBRACE SEMICOLON</span><br><span class="line">WORD WORD OBRACE WORD SEMICOLON EBRACE SEMICOLON</span><br><span class="line">EBRACE SEMICOLON</span><br><span class="line">WORD QUOTE FILENAME QUOTE OBRACE</span><br><span class="line">WORD WORD SEMICOLON</span><br><span class="line">WORD QUOTE FILENAME QUOTE SEMICOLON</span><br><span class="line">EBRACE SEMICOLON</span><br></pre></td></tr></table></figure>
+<h1 id="四、YACC"><a href="#四、YACC" class="headerlink" title="四、YACC"></a>四、YACC</h1><p>YACC可以解析输入流中的标识符(token)，这就清楚的描述了YACC和LEX的关系，YACC并不知道『输入流』为何物，它需要事先就将输入流预加工成标识符，虽然你可以自己手工写一个Tokenizer，但我们将这些工作留给LEX来做。</p>
+<p>YACC用来为编译器解析输入数据，即程序代码。这些用编程语言写成的程序代码一点也不模棱两可——它们只有一个意思。正因为如此，YACC才不会去对付那些有歧义的语法，并且会抱怨shift/reduce或者reduce/reduce冲突。更多的关于模糊性和YACC『问题』可以在『冲突』一章中找到。</p>
+<h2 id="4-1-一个简单的温度控制器"><a href="#4-1-一个简单的温度控制器" class="headerlink" title="4.1 一个简单的温度控制器"></a>4.1 一个简单的温度控制器</h2><p>假定我们有一个温度计，我们要用一种简单的语言来控制它。关于此的一个会话、如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">heat on</span><br><span class="line">Heater on!</span><br><span class="line">heat off</span><br><span class="line">Header off!</span><br><span class="line">target temperature set!</span><br></pre></td></tr></table></figure>
+<p>我们需要识别的标识符为heat, on/off(STATE), target, temperature, NUMBER。</p>
+<p>LEX的tokenizer(example4)为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"y.tab.h"</span></span></span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">[<span class="number">0</span><span class="number">-9</span>]+ <span class="keyword">return</span> NUMBER;</span><br><span class="line">heat <span class="keyword">return</span> TOKHEAT;</span><br><span class="line">on|off <span class="keyword">return</span> STATE;</span><br><span class="line">target <span class="keyword">return</span> TOKTARGET;</span><br><span class="line">temperature <span class="keyword">return</span> TOKTEMPERATURE;</span><br><span class="line">\n <span class="comment">/* ignore end of line */</span>;</span><br><span class="line">[ \t]+ <span class="comment">/* ignore whitespace */</span></span><br><span class="line">%%</span><br></pre></td></tr></table></figure>
+<p>有两个重点需要注意：<br>第一，我们包含了『y.tab.h』；<br>第二，我们不再打印输出了，我们返回标识符的名字。之所这样做是因为我们将这些返回传送给了YACC，而它对于我们屏幕上的输出并不感冒。 『y.tab.h』中定义了这些标识符。</p>
+<p>但是y.tab.h从哪里来？它由YACC从我们编写的语法文件中生成，语法文件非常简单，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">commands: <span class="comment">/* empty */</span></span><br><span class="line">| commands command</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">command: heat_switch | target_set ;</span><br><span class="line"></span><br><span class="line">heat_switch:</span><br><span class="line">TOKHEAT STATE</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\tHeat turned on or off\n"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">target_set:</span><br><span class="line">TOKTARGET TOKTEMPERATURE NUMBER</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\tTemperature set\n"</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>第一部分，我们称之为根(root)。它告诉我们有一个『commands』，并且这些『commands』由单个的『command』组成。正如你所见到的那样，这是一个标准的递归结构，因为它又再次包含了『commands』。这意味着该程序可以一个个的递减一系列的命令。参见『LEX和YACC内部工作原理』一章，阅读更多的递归细节。</p>
+<p>第二个规则定义了『command』的内容。我们只假定两种命令。</p>
+<p>一个heat_switch由HEAT标识符组成，它后面跟着一个状态，该状态在LEX中定义，为『on』或『off』。</p>
+<p>target_set稍微有点复杂，它由TARGET标识符、TEMPERATURE以及一个数字组成。</p>
+<p>前面的那个例子只有YACC文件的语法部分，起始在YACC文件中还有其它内容，完整的YACC文件如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//在lex.yy.c里定义，会被yyparse()调用。在此声明消除编译和链接错误。</span></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">yylex</span><span class="params">(<span class="keyword">void</span>)</span></span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 在此声明，消除yacc生成代码时的告警</span></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">yyparse</span><span class="params">(<span class="keyword">void</span>)</span></span>; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">yywrap</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 该函数在y.tab.c里会被调用，需要在此定义</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">yyerror</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"[error] %s\n"</span>, s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	yyparse();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%token NUMBER TOKHEAT STATE TOKTARGET TOKTEMPERATURE</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">commands: <span class="comment">/* empty */</span></span><br><span class="line">| commands command</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">command: heat_switch | target_set ;</span><br><span class="line"></span><br><span class="line">heat_switch:</span><br><span class="line">TOKHEAT STATE</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\tHeat turned on or off\n"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">target_set:</span><br><span class="line">TOKTARGET TOKTEMPERATURE NUMBER</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"\tTemperature set\n"</span>);</span><br><span class="line">&#125;;</span><br><span class="line">%%</span><br></pre></td></tr></table></figure>
+<p>函数yyerror()在YACC发现一个错误的时候被调用，我们只是简单的输出错误信息，但其实还可以做一些更漂亮的事情，参见文档尾的『进阶阅读』部分。</p>
+<p>yywrap()函数用于不断的从一个文件中读取数据，当遇到EOF时，你可以再输入一个文件，然后返回0，你也可以使得其返回1，暗示着输入结束。更多细节，参见『YACC和LEX内部如何工作的？』一章。</p>
+<p>接着，这里有一个main()函数，它基本什么也不做，只是调用一些函数。</p>
+<p>最后一行简单的定义了我将使用的标识符，如果调用YACC时，使用『-d』选项，那么它们会输出到y.tab.h中。</p>
+<p>编译并运行恒温控制器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lex example4.l</span><br><span class="line">yacc –d example4.y</span><br><span class="line">cc lex.yy.c y.tab.c –o example4</span><br></pre></td></tr></table></figure>
+<p>在此，情况有所改变，我们现在调用YACC来编译我们的程序，它创建了y.tab.c和y.tab.h. 我接着再调用LEX。 编译时，我们去除了『-ll』编译选项，因为此时我们有了自己的main()函数，并不需要libl来提供。</p>
+<p>注意：如果在编译过程中报错说找不到『yylval』，那么在example4.l的#include &lt;y.tab.h&gt;下面加上：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> YYSTYPE yylval；</span><br></pre></td></tr></table></figure>
+<p>具体细节在『LEX和YACC内部工作原理』中解说。</p>
+<p>一个简单的会话：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ./example4</span><br><span class="line">heat on</span><br><span class="line">Heat turned on or off</span><br><span class="line">heat off</span><br><span class="line">Heat turned on or off</span><br><span class="line">target temperature 10</span><br><span class="line">Temperature set</span><br><span class="line">target humidity 20</span><br><span class="line">error: parse error</span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+<h2 id="4-2-扩展恒温器，使得其可以接受参数"><a href="#4-2-扩展恒温器，使得其可以接受参数" class="headerlink" title="4.2 扩展恒温器，使得其可以接受参数"></a>4.2 扩展恒温器，使得其可以接受参数</h2><p>我们已经可以正确的解析温度计命令了，并且能对一些错误做标记。但也许一些狡猾的人会猜疑说，该解析器并不知道你应该做什么，也没有处理一些你输入的数值。</p>
+<p>让我们来添加能读取新的温度参数的功能。为达到此目的，我们得知道LEX中的NUMBER匹配要转化成一个数值，然后才能为YACC所接收.</p>
+<p>每当LEX匹配到了一个目标字串，它就将该匹配文本赋值给『yytext』，YACC则依次在『yylval』中来查找一个值，在example5中，我们可以得到一个明晰的方案：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"y.tab.h"</span></span></span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">[<span class="number">0</span><span class="number">-9</span>]+ yylval = atoi(yytext); <span class="keyword">return</span> NUMBER;</span><br><span class="line">heat <span class="keyword">return</span> TOKHEAT;</span><br><span class="line">on|off yylval = !<span class="built_in">strcmp</span>(yytext, <span class="string">"on"</span>); <span class="keyword">return</span> STATE;</span><br><span class="line">target <span class="keyword">return</span> TOKTARGET;</span><br><span class="line">temperature <span class="keyword">return</span> TOKTEMPERATURE;</span><br><span class="line">\n <span class="comment">/* ignore end of line */</span></span><br><span class="line">[ \t]+ <span class="comment">/* ignore whitespace */</span></span><br><span class="line">%%</span><br></pre></td></tr></table></figure>
+<p>如你所见，我们在yytext中用了atoi()，并将结果存储在yylval中，使得YACC可以『看见』它。 同理，我们再处理STATE匹配，将其与『on』比较，若想等，则将yylval设置为1。</p>
+<p>接下来，我们就得考察YACC如何来应对。我们来看看新的temperature target规则设置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target_set:</span><br><span class="line">TOKTARGET TOKTEMPERATURE NUMBER</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\tTemperature set to %d\n"</span>, $<span class="number">3</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>为得到规则中第三部分的值(NUMBER)，我们用『$3』来表示，每次yylex()返回时，yylval的值便依附到了终结符上，其值可以通过『$-常数』来获取。</p>
+<p>为更进一步加深理解，我们来看『heat_switch』规则：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">heat_switch:</span><br><span class="line">TOKHEAT STATE</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> ($<span class="number">2</span>)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"\tHeat turned on\n"</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"\tHeat turned off\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果现在运行example5，它将输出你所输入的数据。</p>
+<h2 id="4-3-解析一个配置文件"><a href="#4-3-解析一个配置文件" class="headerlink" title="4.3 解析一个配置文件"></a>4.3 解析一个配置文件</h2><p>让我们再次回顾先前提到的那个配置文件：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">zone</span> <span class="string">"./www"</span> &#123;</span><br><span class="line">	<span class="attribute">type</span> hint;</span><br><span class="line">	<span class="attribute">name</span> foo;</span><br><span class="line">	<span class="attribute">hello</span> <span class="string">"/hello/world"</span>;</span><br><span class="line">	<span class="attribute">file</span> <span class="string">"/etc/bind/db.root"</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>之前我们已经将LEX文件写好了，接下来只需要编写YACC语法文件，并且对词法分析器做一些修改，使得其可以返回一些值给YACC。<br>example6中的词法分析器如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> YYSTYPE char *</span></span><br><span class="line"><span class="keyword">extern</span> YYSTYPE yylval; <span class="comment">// 必须放在#include "y.tab.h"前面</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"y.tab.h"</span></span></span><br><span class="line">%&#125;</span><br><span class="line">%%</span><br><span class="line">zone <span class="keyword">return</span> ZONETOK;</span><br><span class="line">file <span class="keyword">return</span> FILETOK;</span><br><span class="line">[a-zA-Z][a-zA-Z0<span class="number">-9</span>]* yylval = strdup(yytext); <span class="keyword">return</span> WORD;</span><br><span class="line">[a-zA-Z0<span class="number">-9</span>\/.-]+ yylval = strdup(yytext); <span class="keyword">return</span> FILENAME;</span><br><span class="line">\<span class="string">" return QUOTE;</span></span><br><span class="line"><span class="string">\&#123; return OBRACE;</span></span><br><span class="line"><span class="string">\&#125; return EBRACE;</span></span><br><span class="line"><span class="string">; return SEMICOLON;</span></span><br><span class="line"><span class="string">[ \t]+ /* ignore whitespace */;</span></span><br><span class="line"><span class="string">\n /* ignore EOL */;</span></span><br><span class="line"><span class="string">%%</span></span><br></pre></td></tr></table></figure>
+<p>细心的话，你会发现yylval已经改变了！我们不再认为它是一个整数，而是假定为一个char*类型数据。为保持简单性，我们调用strdup并因此耗费了很多内存。但这并不影响你解析这个文件。</p>
+<p>我们需要保存字符串的值，在此我们处理的都是一些命名，文件名以及区域命。在下一章，我们将解说如何对付一些复杂类型的数据。</p>
+<p>为通知YACC关于yylval的新类型，我们在YACC的语法文件中添加一行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> YYSTYPE char *</span></span><br></pre></td></tr></table></figure>
+<p>下面是完整的YACC文件，语法比较复杂，建议结合代码画AST树来帮助理解（原文这里的代码有不少问题，下面是修正后的代码，对语法也简化了一点点）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> YYSTYPE char *</span></span><br><span class="line"><span class="keyword">extern</span> YYSTYPE yylval;</span><br><span class="line"><span class="comment">//int yydebug = 1; // debug</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">yylex</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">yyparse</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">yywrap</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">yyerror</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"[error] %s\n"</span>, s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	yyparse();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%token SEMICOLON ZONETOK OBRACE EBRACE QUOTE FILENAME WORD FILETOK</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line">commands:</span><br><span class="line">| commands command SEMICOLON</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">command:</span><br><span class="line">zone_set</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">zone_set:</span><br><span class="line">ZONETOK quotedname zonecontent</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Complete zone for '%s' found\n"</span>, $<span class="number">2</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zonecontent:</span><br><span class="line">OBRACE zonestatements EBRACE</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">quotedname:</span><br><span class="line">QUOTE FILENAME QUOTE</span><br><span class="line">&#123;</span><br><span class="line">	$$ = $<span class="number">2</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zonestatements:</span><br><span class="line">| zonestatements zonestatement SEMICOLON</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">zonestatement:</span><br><span class="line">statements | FILETOK quotedname</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"A zonefile name '%s' was encountered\n"</span>, $<span class="number">2</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">statements:</span><br><span class="line">| WORD statement</span><br><span class="line">&#123;</span><br><span class="line">	$$ = $<span class="number">2</span>; <span class="comment">// seems unnecessary</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"statements, key: %s, value: %s\n"</span>, $<span class="number">1</span>, $<span class="number">2</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">statement:</span><br><span class="line">WORD | quotedname</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line">%%</span><br></pre></td></tr></table></figure>
+<p>我们执行example6的输出文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将配置文件的内容保存到sample.conf文件中，方便测试</span></span><br><span class="line">$ cat sample.conf | ./example6</span><br></pre></td></tr></table></figure>
+<p>输出为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   statements, key: type, value: hint</span><br><span class="line">statements, key: name, value: foo</span><br><span class="line">statements, key: hello, value: /hello/world</span><br><span class="line"> A zonefile name &apos;/etc/bind/db.root&apos; was encountered</span><br><span class="line">Complete zone for &apos;./www&apos; found</span><br></pre></td></tr></table></figure>
+<h1 id="五、生成C-代码的解析器"><a href="#五、生成C-代码的解析器" class="headerlink" title="五、生成C++代码的解析器"></a>五、生成C++代码的解析器</h1><p>虽然LEX和YACC的历史要早于C++，但是还是可以用它们来生成一个C++解析器。但我们用LEX来生成C++的词法分析器，YACC并不知道如何直接来处理这些，所以我们不打算这么做。</p>
+<p>我认为比较好的做法是，要做一个C++解析器，就需要LEX生成一个C文件，并且让YACC来生成C++代码。但当你这么做的时候，在这个过程中你将会遇到问题，因为C++代码默认情况下并不能找到C的函数，除非你将那些函数定义为extern “C”。</p>
+<p>为达此目的，我们在YACC代码中编写一个C开头：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> “C”</span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">yyparse</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">yylex</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">yywrap</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果你想声明并改变yydebug函数，你得这样做：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> yydebug;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    yydebug = <span class="number">1</span>;</span><br><span class="line">    yyparse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是因为C++中的一个关于定义的规则，即不允许yydebug的多处定义。</p>
+<p>你还可能发现，你需要在你的LEX文件中重复#define YYSTYPE，这是由于C++中严格的类型检查(机制)造成的。</p>
+<p>按照如下方式来编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Makefile</span><br><span class="line">example_cpp:</span><br><span class="line">	lex -o $@.yy.c $@.lex</span><br><span class="line">	cc -c $@.yy.c -o $@.yy.o</span><br><span class="line">	yacc -dtv $@.yy -o $@.cpp</span><br><span class="line">	g++ $@.yy.o $@.cpp -o $@.out</span><br></pre></td></tr></table></figure>
+<p>由于-o选项的存在，y.tab.h现在变成example_cpp.hpp，记住这点。</p>
+<p>总结： 不要自寻烦恼的在C++中编译你的词法分析器，让它呆在C的领地里。在C++中编写解析器时，(也得)确保向编译器解释清楚，即你的C函数都有一个extern “C”声明。</p>
+<h1 id="六、Lex和YACC内部工作原理"><a href="#六、Lex和YACC内部工作原理" class="headerlink" title="六、Lex和YACC内部工作原理"></a>六、Lex和YACC内部工作原理</h1><p>在YACC文件中，你定义了你自己的main()函数，它在某个点上调用了yyparse()。YACC会创建你的yyparse()函数，并在y.tab.c中结束该函数。</p>
+<p>yyparse()函数读取一个『标识符/值对』(token/value pairs)流，这些流需要事先就提供，这些流可以是你自己手写的代码提供的，也可以是LEX生成的。在我们的示例中，我们把这个工作丢给了LEX。</p>
+<p>LEX生成的yylex()函数从文件参数FILE *file中读取字符(文件名为yyin)。如果不设置成yyin，则默认为标准输入，它会输出到yyout中，如果不加设置，就是stdout。你可以在yywrap()函数中修改位于文件尾的yyin.yywrap()函数。这些修改使得你可以打开另一些文件，并继续解析。</p>
+<p>如果是这种情况，那么就让yywrap()返回0，如果你想在该文件上结束解析，就让它返回1。</p>
+<p>每次yylex()调用都会返回一个整数值，该值代表了一个标识符类型(token type)。它告诉YACC，已经读取了这种标识符。该标识符可以有一个值，它应该存放在yylval变量中。</p>
+<p>yylval的默认类型为int，但是你可以修改其类型，通过在YACC文件中#define YYSTYPE。</p>
+<p>词法分析器需要能够访问yylval，为达到此效果，(yylval)必须在词法分析器(lexer)中被声明为一个外部变量(extern variable)。原来的YACC忽略了这点，并没有为你干这项工作，所以，你必须添加以下代码到你的词法分析器中，就在#include &lt;y.tab.h&gt;下面：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> YYSTYPE yylval;</span><br></pre></td></tr></table></figure>
+<p>当今多数人使用的Bison已经为你把这事自动做好了。</p>
+<h2 id="6-1-标识符的值-token-values"><a href="#6-1-标识符的值-token-values" class="headerlink" title="6.1 标识符的值(token values)"></a>6.1 标识符的值(token values)</h2><p>在前面我已经说过，yylex()需要返回它遇到了一个什么标识符类型，并将其值存储在yylval中。当这些标识符在%token命令中定义时，它们就被赋予了一些数字ID，从256开始。</p>
+<p>由于这个事实，(我们)可以将所有的ascii字符当作标识符。假定你要写一个计算器，到现在为止，我们可能已经这样写了其词法分析器：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">0</span><span class="number">-9</span>]+ yylval = atoi(yytext); <span class="keyword">return</span> NUMBER;</span><br><span class="line">[ \n]+ <span class="comment">/* eat whitespace */</span></span><br><span class="line">- <span class="keyword">return</span> MINUS;</span><br><span class="line">\* <span class="keyword">return</span> MULT;</span><br><span class="line">\+ <span class="keyword">return</span> PLUS;</span><br><span class="line">…</span><br></pre></td></tr></table></figure>
+<p>YACC文件可能是这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exp</span> : NUMBER</span><br><span class="line">| <span class="built_in">exp</span> PLUS <span class="built_in">exp</span></span><br><span class="line">| <span class="built_in">exp</span> MINUS <span class="built_in">exp</span></span><br><span class="line">| <span class="built_in">exp</span> MULT <span class="built_in">exp</span></span><br><span class="line">…</span><br></pre></td></tr></table></figure>
+<p>没有必要弄这么复杂。用字符作为速记法来作为标识符的数字ID，我们可以这样来重写我们的词法分析器：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">0</span><span class="number">-9</span>]+ yylval = atoi(yytext); <span class="keyword">return</span> NUMBER;</span><br><span class="line">[ \n]+ <span class="comment">/* eat whitespace */</span></span><br><span class="line">. <span class="keyword">return</span> (<span class="keyword">int</span>) yytext[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+<p>最后一行匹配任何的单个字符，否则就是不匹配字符。</p>
+<p>而YACC的语法文件则是这样:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exp</span> : NUMBER</span><br><span class="line">| <span class="built_in">exp</span> <span class="string">'+'</span> <span class="built_in">exp</span></span><br><span class="line">| <span class="built_in">exp</span> <span class="string">'-'</span> <span class="built_in">exp</span></span><br><span class="line">| <span class="built_in">exp</span> <span class="string">'*'</span> <span class="built_in">exp</span></span><br></pre></td></tr></table></figure>
+<p>这样更加简短而直观，你就不必在文件头用%token来定义那些ascii字符了。<br>另一方面，这样构造还有一些好处，它可以匹配所有丢给它的东西，而避免了将那些不匹配的输入输出到标准输出的默认行为。如果用户在当前计算器上输入一个’^’字符，将会导致一个解析错误，而不是将其输出到标准输出中。</p>
+<h2 id="6-2-递归：’right-is-wrong’"><a href="#6-2-递归：’right-is-wrong’" class="headerlink" title="6.2 递归：’right is wrong’"></a>6.2 递归：’right is wrong’</h2><p>递归是YACC一个极其重要的特性。没有递归的话，你就确定一个文件是由一系列独立的命令组成还是由语句组成。由于YACC自身的特性，它只对第一个规则或那个你将其设计为『起始规则』的规则感兴趣。起始规则用’%start’符号标记。</p>
+<p>YACC中的递归以两种形式出现，左递归和右递归。左递归是你应该经常使用的，它们看起来如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commands ： /* empty */</span><br><span class="line">| commands command</span><br></pre></td></tr></table></figure>
+<p>这是在说，一个command要么为空，要么它包含了更多的commands，后面再跟一个command。YACC的这种工作方式意味着它现在可以轻易的剔除单个的command群并一步步简化(处理)。<br>拿上面的例子和下面的右递归做比较：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commands : /* empty */</span><br><span class="line">| command commands</span><br></pre></td></tr></table></figure>
+<p>但是这样做开销有点大，如果(commands)是%start规则(即起始规则)，那么YACC会将所有的commands保存在你的栈数据中(file on the stack)，这将耗费大量内存。所以，在解析长的语句时，务必使用左递归，例如整个文件。但有时难以避免右递归，不过，如果你的语句并不太长，你就没有必要越轨使用左递归。</p>
+<p>如果你有一些东西来终结(因此而分割)你的commands，右递归就非常适合了，但开销还是有点大:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commands : /* empty */</span><br><span class="line">| command SEMICOLON commands</span><br></pre></td></tr></table></figure>
+<p>正确的做法是使用左递归(这也不是我发明的)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commands : /* empty */</span><br><span class="line">| commands command SEMICOLON</span><br></pre></td></tr></table></figure>
+<p>本文档的早期版本错误的使用了右递归。Markus Triska友好的提示我们这点(错误)。</p>
+<h2 id="6-3-高级yylval-union"><a href="#6-3-高级yylval-union" class="headerlink" title="6.3 高级yylval: %union"></a>6.3 高级yylval: %union</h2><p>现在，我们需要定义yylval的类型。但是这并不一直恰如其当。我们可能会多次这样做，因为需要处理多种数据类型。回到我们假定的那个恒温器，可能你想选择控制一个加热器，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">heater mainbuilding</span><br><span class="line">Selected ‘mainbuilding’ heater</span><br><span class="line">Target temperature 23</span><br><span class="line">‘mainbuilding’ heater target temperature now 23</span><br></pre></td></tr></table></figure>
+<p>这样的话，就要求yylval是一个union，它可以存储字符串，也可以存储整数，但并不是同时存储。<br>回忆之前我们讲过，我们提前通知YACC哪种yylval类型会要处理是通过定义YYSTYPE来实现。同样，我们可以定义YYSTYPE为一个union，YACC中有一种简便的方法来实现，即%union语句。</p>
+<p>在example4基础上，我编写example7的YACC语法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">%token TOKHEATER TOKHEAT TOKTARGET TOKTEMERATURE</span><br><span class="line">%<span class="keyword">union</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">int</span> number;</span><br><span class="line"><span class="keyword">char</span> *<span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line">%token &lt;number&gt; STATE</span><br><span class="line">%token &lt;number&gt; NUMBER</span><br><span class="line">%token &lt;<span class="built_in">string</span>&gt; WORD</span><br></pre></td></tr></table></figure>
+<p>我们定义了union，它只包含一个整数和一个字符串。接着使用了一个扩展的%token语法，我们向YACC解释了应该获取union哪个部分的标识符。<br>在本例中，我们让STATE标识符用一个整数(来表示)，这跟之前一样。NUMBER同理，我们之前用来读取温度。<br>但是WORD有所改变，它声明为需要一个字符串。<br>词法解析器文件有所改变：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">%&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"y.tab.h"</span></span></span><br><span class="line">%&#125;</span><br><span class="line"></span><br><span class="line">%%</span><br><span class="line"></span><br><span class="line">[<span class="number">0</span><span class="number">-9</span>]+ yylval.number=atoi(yytext); <span class="keyword">return</span> NUMBER;</span><br><span class="line">heater <span class="keyword">return</span> TOKHEATER;</span><br><span class="line">heat <span class="keyword">return</span> TOKHEAT;</span><br><span class="line">on|off yylval.number =! <span class="built_in">strcmp</span>(yytext,<span class="string">"on"</span>); returnSTATE;</span><br><span class="line">target <span class="keyword">return</span> TOKTARGET;</span><br><span class="line">temperature <span class="keyword">return</span> TOKTEMPERATURE;</span><br><span class="line">[a-z0<span class="number">-9</span>]+ yylval.<span class="built_in">string</span> = strdup(yytext); <span class="keyword">return</span> WORD;</span><br><span class="line">\n <span class="comment">/* ignore end of line */</span></span><br><span class="line">[ \t]+ <span class="comment">/* ignore whitespace */</span></span><br><span class="line"></span><br><span class="line">%%</span><br></pre></td></tr></table></figure>
+<p>正如你所见，我们不再直接访问yylval，我们添加了一个后缀来说明我们要访问那个部分。我们不再需要在YACC语法文件中来干这个工作，YACC在这里耍了下魔法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">heater_select:</span><br><span class="line">TOKHEATER WORD</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\tSelected heater '%s'\n"</span>, $<span class="number">2</span>);</span><br><span class="line">    heater = $<span class="number">2</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>由于上面的%token声明，YACC自动选择了union中的’string’成员。注意这里$2中存储的一份拷贝，在后面它会告诉用户发送命令到哪个heater（需要在C文件头定义char *heater）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">target_set:</span><br><span class="line">TOKTARGET TOKTEMPERATURE NUMBER</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\tHeater '%s' temperature set to %d\n"</span>, </span><br><span class="line">            heater, $<span class="number">3</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="6-4-自定义YY-INPUT指向字符串而非标准输入"><a href="#6-4-自定义YY-INPUT指向字符串而非标准输入" class="headerlink" title="6.4 自定义YY_INPUT指向字符串而非标准输入"></a>6.4 自定义YY_INPUT指向字符串而非标准输入</h2><p>很多情况下，我们不希望从标准输入解析，而希望解析给定的字符串。实现方法是自定义实现YY_INPUT，具体做法如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* LEX 文件 */</span></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">lex_custom_input</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">unsigned</span> <span class="keyword">long</span> *num_read,<span class="keyword">int</span> max_read)</span></span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">undef</span> YY_INPUT</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> YY_INPUT(b,r,s) lex_custom_input(b,&amp;r,s)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* C 文件 */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> g_read_offset;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_TEXT_LEN 1024</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">char</span> s_text_buf[MAX_TEXT_LEN];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lex_custom_input</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">unsigned</span> <span class="keyword">long</span> *num_read,<span class="keyword">int</span> max_read)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> num_to_read = max_read;</span><br><span class="line">    <span class="keyword">int</span> remain = <span class="built_in">strlen</span>(s_text_buf) - g_read_offset;</span><br><span class="line"></span><br><span class="line">    num_to_read = num_to_read&gt;remain ? reamin:num_to_read;</span><br><span class="line">    <span class="built_in">memcpy</span>(buf, s_text_buf + g_read_offset, num_to_read);</span><br><span class="line"></span><br><span class="line">    *num_read = num_to_read;</span><br><span class="line">    g_read_offset += num_to_read;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="七、调试"><a href="#七、调试" class="headerlink" title="七、调试"></a>七、调试</h1><p>YACC中有许多调试反馈信息。这些调试信息的代价有点高，所以你需要提供一些开关来打开它。</p>
+<p>当调试你的语法时，在YACC命令行中添加—debug和—verbose选项，在你的C文件头中添加以下语句：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> yydebug = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>这将生成一个y.output文件，其中说明了所创建的那个状态机。<br>当你运行那个生成的二进制文件，它将输出很多运行时信息。里面包含当前所运行的状态机以及读取到的一些标识符。</p>
+<p>Peter Jinks写了一篇关于调试的文章，他在其中讲述了一些常见得错误以及如何修正这些错误。</p>
+<h2 id="7-1-状态机"><a href="#7-1-状态机" class="headerlink" title="7.1 状态机"></a>7.1 状态机</h2><p>YACC解析器在内部运行的是一个『状态机』，该状态机可以有多种转台。接着有多个规则来管制状态间的相互转化。任何内容都是从『root』规则开始。</p>
+<p>在example7的y.output文件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">state 0</span><br><span class="line">ZPONETOK , and go to state 1</span><br><span class="line">$default reduce using rule 1 (commands)</span><br><span class="line">commands go to state 29</span><br><span class="line">command go to state 2</span><br><span class="line">zone_set go to satte 3</span><br></pre></td></tr></table></figure>
+<p>默认情形下，这个状态机从『commands』规则开始递减演化，这也是我们之前的那个递归规则，它定义了『commands』并从单个的『command』进行构造，后面跟着一个分号，然后可能再跟着更多的『commands』。</p>
+<p>这个状态机不断递减演化，直到它遇到某些它能理解的东西，在本例中，为一个ZONETOK，也即单词『zone』。然后转化到状态1，在此，进一步处理一个zone command:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">state 1</span><br><span class="line">zone_set -&gt; ZONETOK .quotedname zonecontent (rule 4)</span><br><span class="line">QUOTE , and go to state 4</span><br><span class="line">Quotedname go to state 5</span><br></pre></td></tr></table></figure>
+<p>第一行中有一个『.』，它用来说明我们所处的位置：即刚刚识别到了一个ZONETOK，目前正在寻找一个『quotedname』。显然，一个『quotedname』会以QUOTE开始，它将我们转化到状态4。<br>为进一步跟踪，用在『调试』章节中提到的标志来编译example7。</p>
+<h2 id="7-2-冲突：『shift-reduce』以及『reduce-reduce』"><a href="#7-2-冲突：『shift-reduce』以及『reduce-reduce』" class="headerlink" title="7.2 冲突：『shift/reduce』以及『reduce/reduce』"></a>7.2 冲突：『shift/reduce』以及『reduce/reduce』</h2><p>一旦YACC警告你出现了冲突，那么你的麻烦来了。要解决这些问题显得是一种技巧形式，它会教会很多关于你的语言的东西。比你想知道的要多的多的内容。</p>
+<p>问题萦绕于如何来翻译一系列标识符。假定我们定义了一种语言，它需要接受一下两种命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">delete heater all</span><br><span class="line">delete heater number1</span><br></pre></td></tr></table></figure>
+<p>为达到此目的，我们的语法为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">delete_heaters :</span><br><span class="line">TOKDELETE TOKHEATER mode</span><br><span class="line">&#123;</span><br><span class="line">    Deleteheaters($<span class="number">3</span>);</span><br><span class="line">&#125;</span><br><span class="line">mode : WORD</span><br><span class="line">delete_a_heater:</span><br><span class="line">TOKDELETE TOKHEATER WORD</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">delete</span>($<span class="number">3</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也许你已经嗅到了麻烦的味道。状态机从读取单词『word』开始，接着它根据下一个标识符觉得转换到何种状态。接下来的标识符可以是『mode』，它指定了如何来删除heater，或者是将要删除的heater。<br>然而这里的麻烦是，对于这两个命令，下一个标识符都将是一个WORD。YACC因此也无法决定下一步该干嘛。这回导致一个『reduce/reduce』警告，而下一个警告就是『delete_a_heater』节点在状态转化图中永远也不能达到。<br>这种情况的冲突容易解决(例如，重命名第一个命令为『delete all heater』，或者将『all』作为一个分开的标识符)，但有时，(要解决冲突)却非常困难。 通过『–verbose』参数生成的y.output文件可以提供给你极大的帮助。</p>
+<h1 id="八、参考资料"><a href="#八、参考资料" class="headerlink" title="八、参考资料"></a>八、参考资料</h1><p>GNU YACC(Bison)有一个非常棒的.info文件，在其中很好的记录了YACC的语法。其中只提到了一次LEX，然而它还是很棒的。你可以用Emacs中那个非常好的『pinfo』工具阅读.info文件。同时，在Bison的主页上可以获得它：<a href="http://www.gnu.org/software/bison/manual/bison.html" target="_blank" rel="noopener">Bison手册</a>。<br>FLEX有一个不错的主页。如果你粗略了解了FLEX所作所为，那将是非常有益的。<a href="http://www.gnu.org/manual/flex/" target="_blank" rel="noopener">FLEX的手册</a>也可以联机获取。<br>在这些关于YACC和LEX的介绍之后，你可能觉得你想需要更多的信息。下面的书籍也相当不错：</p>
+<ul>
+<li>《Bison—The Yacc-Compitible Parser Generator》——Charles Donnelly &amp;&amp; Richard Stallman.</li>
+<li>《Lex &amp; Yacc》——John R. Levine, Tony Mason ,Doug Brown.</li>
+<li>《Compilers: Principles, Techniques, and Tools》——By Alfred V.Aho,Ravi</li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+    
+        <a href="/archives/2021/05/100670.html" class="next-post btn btn-default" title='C/C++ 开源算法库'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">C/C++ 开源算法库</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、简介"><span class="toc-text">一、简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、Lex-amp-YACC能为你做什么？"><span class="toc-text">二、Lex &amp; YACC能为你做什么？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三、Lex"><span class="toc-text">三、Lex</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-Lex的常规表达式"><span class="toc-text">3.1 Lex的常规表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用-Lex-定义常规表达式"><span class="toc-text">用 Lex 定义常规表达式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常规表达式举例"><span class="toc-text">常规表达式举例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#标记声明举例"><span class="toc-text">标记声明举例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-匹配中的正则表达式示例"><span class="toc-text">3.2 匹配中的正则表达式示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-复杂一点的类C语法示例"><span class="toc-text">3.3 复杂一点的类C语法示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四、YACC"><span class="toc-text">四、YACC</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-一个简单的温度控制器"><span class="toc-text">4.1 一个简单的温度控制器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-扩展恒温器，使得其可以接受参数"><span class="toc-text">4.2 扩展恒温器，使得其可以接受参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-解析一个配置文件"><span class="toc-text">4.3 解析一个配置文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#五、生成C-代码的解析器"><span class="toc-text">五、生成C++代码的解析器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#六、Lex和YACC内部工作原理"><span class="toc-text">六、Lex和YACC内部工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-标识符的值-token-values"><span class="toc-text">6.1 标识符的值(token values)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-递归：’right-is-wrong’"><span class="toc-text">6.2 递归：’right is wrong’</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3-高级yylval-union"><span class="toc-text">6.3 高级yylval: %union</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4-自定义YY-INPUT指向字符串而非标准输入"><span class="toc-text">6.4 自定义YY_INPUT指向字符串而非标准输入</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#七、调试"><span class="toc-text">七、调试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#7-1-状态机"><span class="toc-text">7.1 状态机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-2-冲突：『shift-reduce』以及『reduce-reduce』"><span class="toc-text">7.2 冲突：『shift/reduce』以及『reduce/reduce』</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#八、参考资料"><span class="toc-text">八、参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
