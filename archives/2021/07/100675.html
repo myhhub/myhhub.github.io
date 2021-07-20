@@ -1,0 +1,360 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="qt,c++">
+
+
+    <meta name="description" content="在对Qt应用程序的打包发布的时候，经过多方查阅资料和自身实践，本文将总结Qt程序在不同操作系统下的打包发布问题
+Windows通过windeployqt打包Windows 部署工具windepl...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Qt应用windows和Linux打包发布 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+		<script type="text/javascript">
+			var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan class='cnzz_stat_icon_1277660023 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1277660023%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Qt应用windows和Linux打包发布">
+            
+	            Qt应用windows和Linux打包发布
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c++</a> <a class="tag-link" href="/tags/qt/">qt</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/07/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+    </div>
+    
+    <div class="post-body post-content">
+        <p>在对Qt应用程序的打包发布的时候，经过多方查阅资料和自身实践，本文将总结Qt程序在不同操作系统下的打包发布问题</p>
+<h1 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h1><h2 id="通过windeployqt打包"><a href="#通过windeployqt打包" class="headerlink" title="通过windeployqt打包"></a>通过windeployqt打包</h2><p>Windows 部署工具<code>windeployqt</code>旨在自动化创建可部署文件夹的过程，该文件夹包含从该文件夹运行应用程序所需的<a href="https://doc.qt.io/qt-5/qmake-variable-reference.html#qt" target="_blank" rel="noopener">Qt</a>相关依赖项（库、QML 导入、插件和翻译）。</p>
+<p>该工具可以在<code>QTDIR/bin/windeployqt</code>. 它需要在构建环境中运行才能正常运行。</p>
+<p><code>windeployqt</code>将<code>.exe</code>文件或包含文件的目录<code>.exe</code>作为参数，并扫描可执行文件的依赖关系。如果使用<code>--qmldir</code>参数传递目录，则<code>windeployqt</code>使用该<code>qmlimportscanner</code>工具扫描目录内的 QML 文件以查找 QML 导入依赖项。然后将识别的依赖项复制到可执行文件的目录中。</p>
+<p>如果 Qt 是在配置开关<code>-relocatable</code>关闭的情况下构建的，则将<code>windeployqt</code>Qt5Core.dll 中的硬编码本地路径替换为相关路径。</p>
+<p>对于 Windows 桌面应用程序，编译器所需的运行时文件默认也会复制到可部署文件夹（除非<code>--no-compiler-runtime</code>指定了该选项）。在使用 Microsoft Visual C++ 的发布版本的情况下，这些包含 Visual C++ Redistributable Packages，旨在由应用程序的安装程序在目标机器上递归安装。否则，将使用编译器运行时的共享库。</p>
+<p>应用程序可能需要额外的第 3 方库（例如，数据库库），windeployqt 没有考虑到这些库。</p>
+<p>工具的帮助输出中描述了其他参数：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">用法：windeployqt [选项] [文件]</span><br><span class="line">Qt 部署工具 <span class="number">5.14</span>.<span class="number">1</span></span><br><span class="line"></span><br><span class="line">使用windeployqt最简单的方法是添加你的Qt的bin目录</span><br><span class="line">安装（例如 &lt;QT_DIR\bin&gt;）到 PATH 变量，然后运行：</span><br><span class="line">  windeployqt <span class="symbol">&lt;path-to-app-binary&gt;</span></span><br><span class="line">如果ICU、ANGLE等不在bin目录下，则需要在PATH中</span><br><span class="line">多变的。如果您的应用程序使用 Qt Quick，请运行：</span><br><span class="line">  windeployqt --qmldir <span class="symbol">&lt;path-to-app-qml-files&gt;</span> <span class="symbol">&lt;path-to-app-binary&gt;</span></span><br><span class="line"></span><br><span class="line">选项：</span><br><span class="line">  -?, -h, --<span class="keyword">help</span> 显示有关命令行选项的帮助。</span><br><span class="line">  --<span class="keyword">help</span>-<span class="keyword">all</span> 显示帮助，包括 Qt 特定选项。</span><br><span class="line">  -v, --<span class="keyword">version</span> 显示版本信息。</span><br><span class="line">  --dir <span class="symbol">&lt;directory&gt;</span> 使用目录而不是二进制目录。</span><br><span class="line">  --libdir <span class="symbol">&lt;path&gt;</span> 将库复制到路径。</span><br><span class="line">  --plugindir <span class="symbol">&lt;path&gt;</span> 将插件复制到路径。</span><br><span class="line">  --<span class="keyword">debug</span> 假设调试二进制文件。</span><br><span class="line">  --release 假设发布二进制文件。</span><br><span class="line">  --pdb 部署 .pdb 文件 (MSVC)。</span><br><span class="line">  --force 强制更新文件。</span><br><span class="line">  --dry-run 模拟模式。表现正常，但不要</span><br><span class="line">                            复制/更新任何文件。</span><br><span class="line">  --<span class="keyword">no</span>-patchqt 不要修补 Qt5Core 库。</span><br><span class="line">  --<span class="keyword">no</span>-plugins 跳过插件部署。</span><br><span class="line">  --<span class="keyword">no</span>-libraries 跳过库部署。</span><br><span class="line">  --qmldir <span class="symbol">&lt;directory&gt;</span> 从目录开始扫描 QML 导入。</span><br><span class="line">  --qmlimport <span class="symbol">&lt;directory&gt;</span> 将给定的路径添加到 QML 模块搜索中</span><br><span class="line">                            地点。</span><br><span class="line">  --<span class="keyword">no</span>-quick-import 跳过 Qt Quick 导入的部署。</span><br><span class="line">  --<span class="keyword">no</span>-translations 跳过翻译部署。</span><br><span class="line">  --<span class="keyword">no</span>-<span class="built_in">system</span>-d3d-<span class="keyword">compiler</span> 跳过系统 D3D 编译器的部署。</span><br><span class="line">  --<span class="keyword">compiler</span>-<span class="keyword">runtime</span> 部署编译器运行时（仅限桌面）。</span><br><span class="line">  --<span class="keyword">no</span>-virtualkeyboard 禁用虚拟键盘的部署。</span><br><span class="line">  --<span class="keyword">no</span>-<span class="keyword">compiler</span>-<span class="keyword">runtime</span> 不部署编译器运行时（仅限桌面）。</span><br><span class="line">  --webkit2 部署 WebKit2（网络进程）。</span><br><span class="line">  --<span class="keyword">no</span>-webkit2 跳过部署 WebKit2。</span><br><span class="line">  --json 以 JSON 格式打印到标准输出。</span><br><span class="line">  --angle 强制部署 ANGLE。</span><br><span class="line">  --<span class="keyword">no</span>-angle 禁用 ANGLE 的部署。</span><br><span class="line">  --<span class="keyword">no</span>-opengl-<span class="keyword">sw</span> 不部署软件光栅化库。</span><br><span class="line">  --<span class="keyword">list</span> <span class="symbol">&lt;option&gt;</span> 仅打印复制文件的名称。</span><br><span class="line">                            可用选项：</span><br><span class="line">                             <span class="keyword">source</span>：源文件的绝对路径</span><br><span class="line">                             target：目标文件的绝对路径</span><br><span class="line">                             相对：目标文件的路径，相对</span><br><span class="line">                                       到目标目录</span><br><span class="line">                             映射：输出源和相对</span><br><span class="line">                                       目标，适用于</span><br><span class="line">                                       Appx 映射文件</span><br><span class="line">  --<span class="keyword">verbose</span> &lt;级别&gt; 详细级别 (<span class="number">0</span>-<span class="number">2</span>)。</span><br><span class="line"></span><br><span class="line">Qt 库可以通过传递它们的名称 (-xml) 添加或通过传递删除</span><br><span class="line">以--<span class="keyword">no</span>- (--<span class="keyword">no</span>-xml) 开头的名称。可用库：</span><br><span class="line">蓝牙并发核心声明式设计器设计器组件引擎</span><br><span class="line">游戏手柄 <span class="keyword">gui</span> qthelp 多媒体 多媒体小部件 多媒体快速网络 nfc</span><br><span class="line">opengl 定位 printsupport qml qmltooling quick quickparticles quickwidgets</span><br><span class="line">脚本脚本工具传感器串行端口 sql svg 测试 webkit webkitwidgets</span><br><span class="line">websockets 小部件 winextras xml xmlpatterns webenginecore webengine</span><br><span class="line">webenginewidgets <span class="number">3</span>dcore <span class="number">3</span>drenderer <span class="number">3</span>dquick <span class="number">3</span>dquickrenderer <span class="number">3</span>dinput <span class="number">3</span>danimation</span><br><span class="line"><span class="number">3</span>dextras geoservices webchannel texttospeech serialbus webview</span><br><span class="line"></span><br><span class="line">参数：</span><br><span class="line">  [<span class="keyword">files</span>] 二进制文件或包含二进制文件的目录。</span><br></pre></td></tr></table></figure>
+<h1 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h1><h2 id="通过shell脚本"><a href="#通过shell脚本" class="headerlink" title="通过shell脚本"></a>通过shell脚本</h2><p>1).首先执行第一种方法的第4步 (如新建目录名为 test,下面所有test都表示我们的打包目录)</p>
+<p>2).在test中新建脚本copy.sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">LibDir=<span class="variable">$PWD</span><span class="string">"/lib"</span>  <span class="comment">#获取lib目录路径</span></span><br><span class="line">Target=<span class="variable">$1</span></span><br><span class="line">lib_array=($(ldd <span class="variable">$Target</span> | grep -o <span class="string">"/.*"</span> | grep -o <span class="string">"/.*/[^[:space:]]*"</span>))</span><br><span class="line">$(mkdir <span class="variable">$LibDir</span>)   <span class="comment">#创建lib目录</span></span><br><span class="line"><span class="keyword">for</span> Variable <span class="keyword">in</span> <span class="variable">$&#123;lib_array[@]&#125;</span>  <span class="comment">#循环所有依赖的动态库路径</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    cp <span class="string">"<span class="variable">$Variable</span>"</span> <span class="variable">$LibDir</span>  <span class="comment">#拷贝到lib目录中</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>3).给脚本赋予权限</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod <span class="number">777</span> <span class="keyword">copy</span>.<span class="bash">sh</span></span><br></pre></td></tr></table></figure>
+<p>4).执行脚本，参数是可执行文件名</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./<span class="keyword">copy</span>.<span class="bash">sh checkServer</span></span><br></pre></td></tr></table></figure>
+<p>5).将生成的lib目录中的所有文件移动到上层，与可执行文件同级,然后将lib目录删除</p>
+<p>6).进入QT安装目录的/usr/local/Qt5.15.2/plugins/platforms 将copy.sh放到该目录下并执行</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./<span class="keyword">copy</span>.<span class="keyword">sh</span> libqxcb.<span class="keyword">so</span></span><br></pre></td></tr></table></figure>
+<p>7). 将生成的platforms整个目录移动到test下，将lib中的所有文件放到test目录下（即test/platforms/lib* 移动到test），然后将test/platforms/的lib目录及copy.sh脚本文件删除</p>
+<p>8).在test目录下编写.sh运行脚本,脚本名必须与可执行程序一致，比如这里叫checkServer.sh(因为如果目前将程序发送到其他电脑上,执行程序则因系统无法获取so库路径，将无法运行)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">appname=`basename <span class="variable">$0</span> | sed s,\.sh$,,`</span><br><span class="line"></span><br><span class="line">dirname=`dirname <span class="variable">$0</span>`</span><br><span class="line">tmp=<span class="string">"<span class="variable">$&#123;dirname#?&#125;</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"<span class="variable">$&#123;dirname%$tmp&#125;</span>"</span> != <span class="string">"/"</span> ]; <span class="keyword">then</span></span><br><span class="line">dirname=<span class="variable">$PWD</span>/<span class="variable">$dirname</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">LD_LIBRARY_PATH=<span class="variable">$dirname</span></span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH</span><br><span class="line"><span class="variable">$dirname</span>/<span class="variable">$appname</span> <span class="string">"<span class="variable">$@</span>"</span></span><br></pre></td></tr></table></figure>
+<p>9).赋予运行脚本权限</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Chmod</span> 777 <span class="selector-tag">checkServer</span><span class="selector-class">.sh</span></span><br></pre></td></tr></table></figure>
+<p>10).现在可以将test目录拷贝到其他主机上,通过./checkServer.sh来运行 (脚本作用是在运行可执行文件前,先将test目录中的依赖库路径加入到环境变量中，使系统知道这些库的存在)</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+    
+        <a href="/archives/2021/07/100674.html" class="next-post btn btn-default" title='龙芯硬件平台使用源码安装Qt5.15.2'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">龙芯硬件平台使用源码安装Qt5.15.2</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows"><span class="toc-text">Windows</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#通过windeployqt打包"><span class="toc-text">通过windeployqt打包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux"><span class="toc-text">Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#通过shell脚本"><span class="toc-text">通过shell脚本</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
