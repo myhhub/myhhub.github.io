@@ -1,0 +1,380 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,spark,streaming">
+
+
+    <meta name="description" content="MySQL创建存储offset的表格123456789mysql&gt; use testmysql&gt; create table hlw_offset(        topic varc...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>SparkStreaming实现生产数据零丢失实例(附源码) | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="SparkStreaming实现生产数据零丢失实例(附源码)">
+            
+	            SparkStreaming实现生产数据零丢失实例(附源码)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/streaming/">streaming</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/01/18</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1540</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="MySQL创建存储offset的表格"><a href="#MySQL创建存储offset的表格" class="headerlink" title="MySQL创建存储offset的表格"></a>MySQL创建存储offset的表格</h2><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use test</span><br><span class="line">mysql&gt; create table hlw_offset(</span><br><span class="line">        topic varchar(<span class="number">32</span>),</span><br><span class="line">        groupid varchar(<span class="number">50</span>),</span><br><span class="line">        partitions int,</span><br><span class="line">        fromoffset bigint,</span><br><span class="line">        untiloffset bigint,</span><br><span class="line">        primary key(<span class="name">topic</span>,groupid,partitions)</span><br><span class="line">        )<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Maven依赖包"><a href="#Maven依赖包" class="headerlink" title="Maven依赖包"></a>Maven依赖包</h2><figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">scala.version</span>&gt;</span>2.11.8<span class="tag">&lt;/<span class="name">scala.version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">spark.version</span>&gt;</span>2.3.1<span class="tag">&lt;/<span class="name">spark.version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">scalikejdbc.version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">scalikejdbc.version</span>&gt;</span></span></span><br><span class="line"><span class="xml">--------------------------------------------------</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scala-lang<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scala-library<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;scala.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-core_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;spark.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-sql_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;spark.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-streaming_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;spark.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-streaming-kafka-0-8_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;spark.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.1.27<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.scalikejdbc/scalikejdbc --&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalikejdbc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalikejdbc_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.scalikejdbc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>scalikejdbc-config_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.typesafe<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>config<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）StreamingContext</span><br><span class="line"><span class="number">2</span>）从kafka中获取数据(从外部存储获取offset--&gt;根据offset获取kafka中的数据)</span><br><span class="line"><span class="number">3</span>）根据业务进行逻辑处理</span><br><span class="line"><span class="number">4</span>）将处理结果存到外部存储中--保存offset</span><br><span class="line"><span class="number">5</span>）启动程序，等待程序结束</span><br></pre></td></tr></table></figure>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><ol>
+<li><p>SparkStreaming主体代码如下</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> kafka.common.TopicAndPartition</span><br><span class="line"><span class="keyword">import</span> kafka.message.MessageAndMetadata</span><br><span class="line"><span class="keyword">import</span> kafka.serializer.StringDecoder</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.SparkConf</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.streaming.kafka.&#123;HasOffsetRanges, KafkaUtils&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.streaming.&#123;Seconds, StreamingContext&#125;</span><br><span class="line"><span class="keyword">import</span> scalikejdbc._</span><br><span class="line"><span class="keyword">import</span> scalikejdbc.config._</span><br><span class="line">object JDBCOffsetApp &#123;</span><br><span class="line"> def main(args: Array[<span class="built_in">String</span>]): Unit = &#123;</span><br><span class="line">   <span class="comment">//创建SparkStreaming入口</span></span><br><span class="line">   val conf = <span class="keyword">new</span> SparkConf().setMaster(<span class="string">"local[2]"</span>).setAppName(<span class="string">"JDBCOffsetApp"</span>)</span><br><span class="line">   val ssc = <span class="keyword">new</span> StreamingContext(conf,Seconds(<span class="number">5</span>))</span><br><span class="line">   <span class="comment">//kafka消费主题</span></span><br><span class="line">   val topics = ValueUtils.getStringValue(<span class="string">"kafka.topics"</span>).split(<span class="string">","</span>).toSet</span><br><span class="line">   <span class="comment">//kafka参数</span></span><br><span class="line">   <span class="comment">//这里应用了自定义的ValueUtils工具类，来获取application.conf里的参数，方便后期修改</span></span><br><span class="line">   val kafkaParams = <span class="built_in">Map</span>[<span class="built_in">String</span>,<span class="built_in">String</span>](</span><br><span class="line">     <span class="string">"metadata.broker.list"</span>-&gt;ValueUtils.getStringValue(<span class="string">"metadata.broker.list"</span>),</span><br><span class="line">     <span class="string">"auto.offset.reset"</span>-&gt;ValueUtils.getStringValue(<span class="string">"auto.offset.reset"</span>),</span><br><span class="line">     <span class="string">"group.id"</span>-&gt;ValueUtils.getStringValue(<span class="string">"group.id"</span>)</span><br><span class="line">   )</span><br><span class="line">   <span class="comment">//先使用scalikejdbc从MySQL数据库中读取offset信息</span></span><br><span class="line">   <span class="comment">//+------------+------------------+------------+------------+-------------+</span></span><br><span class="line">   <span class="comment">//| topic      | groupid          | partitions | fromoffset | untiloffset |</span></span><br><span class="line">   <span class="comment">//+------------+------------------+------------+------------+-------------+</span></span><br><span class="line">   <span class="comment">//MySQL表结构如上，将“topic”，“partitions”，“untiloffset”列读取出来</span></span><br><span class="line">   <span class="comment">//组成 fromOffsets: Map[TopicAndPartition, Long]，后面createDirectStream用到</span></span><br><span class="line">   DBs.setup()</span><br><span class="line">   val fromOffset = DB.readOnly( implicit session =&gt; &#123;</span><br><span class="line">     SQL(<span class="string">"select * from hlw_offset"</span>).map(rs =&gt; &#123;</span><br><span class="line">       (TopicAndPartition(rs.string(<span class="string">"topic"</span>),rs.<span class="built_in">int</span>(<span class="string">"partitions"</span>)),rs.long(<span class="string">"untiloffset"</span>))</span><br><span class="line">     &#125;).list().apply()</span><br><span class="line">   &#125;).toMap</span><br><span class="line">   <span class="comment">//如果MySQL表中没有offset信息，就从0开始消费；如果有，就从已经存在的offset开始消费</span></span><br><span class="line">     val messages = <span class="keyword">if</span> (fromOffset.isEmpty) &#123;</span><br><span class="line">       println(<span class="string">"从头开始消费..."</span>)</span><br><span class="line">       KafkaUtils.createDirectStream[<span class="built_in">String</span>,<span class="built_in">String</span>,StringDecoder,StringDecoder](ssc,kafkaParams,topics)</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       println(<span class="string">"从已存在记录开始消费..."</span>)</span><br><span class="line">       val messageHandler = (mm:MessageAndMetadata[<span class="built_in">String</span>,<span class="built_in">String</span>]) =&gt; (mm.key(),mm.message())</span><br><span class="line">       KafkaUtils.createDirectStream[<span class="built_in">String</span>,<span class="built_in">String</span>,StringDecoder,StringDecoder,(<span class="built_in">String</span>,<span class="built_in">String</span>)](ssc,kafkaParams,fromOffset,messageHandler)</span><br><span class="line">     &#125;</span><br><span class="line">     messages.foreachRDD(rdd=&gt;&#123;</span><br><span class="line">       <span class="keyword">if</span>(!rdd.isEmpty())&#123;</span><br><span class="line">         <span class="comment">//输出rdd的数据量</span></span><br><span class="line">         println(<span class="string">"数据统计记录为："</span>+rdd.count())</span><br><span class="line">         <span class="comment">//官方案例给出的获得rdd offset信息的方法，offsetRanges是由一系列offsetRange组成的数组</span></span><br><span class="line"><span class="comment">//          trait HasOffsetRanges &#123;</span></span><br><span class="line"><span class="comment">//            def offsetRanges: Array[OffsetRange]</span></span><br><span class="line"><span class="comment">//          &#125;</span></span><br><span class="line">         val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges</span><br><span class="line">         offsetRanges.foreach(x =&gt; &#123;</span><br><span class="line">           <span class="comment">//输出每次消费的主题，分区，开始偏移量和结束偏移量</span></span><br><span class="line">           println(s<span class="string">"---<span class="subst">$&#123;x.topic&#125;</span>,<span class="subst">$&#123;x.partition&#125;</span>,<span class="subst">$&#123;x.fromOffset&#125;</span>,<span class="subst">$&#123;x.untilOffset&#125;</span>---"</span>)</span><br><span class="line">          <span class="comment">//将最新的偏移量信息保存到MySQL表中</span></span><br><span class="line">           DB.autoCommit( implicit session =&gt; &#123;</span><br><span class="line">             SQL(<span class="string">"replace into hlw_offset(topic,groupid,partitions,fromoffset,untiloffset) values (?,?,?,?,?)"</span>)</span><br><span class="line">           .bind(x.topic,ValueUtils.getStringValue(<span class="string">"group.id"</span>),x.partition,x.fromOffset,x.untilOffset)</span><br><span class="line">             .update().apply()</span><br><span class="line">           &#125;)</span><br><span class="line">         &#125;)</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;)</span><br><span class="line">   ssc.start()</span><br><span class="line">   ssc.awaitTermination()</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>自定义的ValueUtils工具类如下</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.typesafe.config.<span class="type">ConfigFactory</span></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang3.<span class="type">StringUtils</span></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">ValueUtils</span> </span>&#123;</span><br><span class="line"><span class="keyword">val</span> load = <span class="type">ConfigFactory</span>.load()</span><br><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">getStringValue</span></span>(key:<span class="type">String</span>, defaultValue:<span class="type">String</span>=<span class="string">""</span>) = &#123;</span><br><span class="line"><span class="keyword">val</span> value = load.getString(key)</span><br><span class="line">   <span class="keyword">if</span>(<span class="type">StringUtils</span>.isNotEmpty(value)) &#123;</span><br><span class="line">     value</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     defaultValue</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>application.conf内容如下</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">metadata.broker.list</span> = <span class="string">"192.168.137.251:9092"</span></span><br><span class="line"><span class="attr">auto.offset.reset</span> = <span class="string">"smallest"</span></span><br><span class="line"><span class="attr">group.id</span> = <span class="string">"hlw_offset_group"</span></span><br><span class="line"><span class="attr">kafka.topics</span> = <span class="string">"hlw_offset"</span></span><br><span class="line"><span class="attr">serializer.class</span> = <span class="string">"kafka.serializer.StringEncoder"</span></span><br><span class="line"><span class="attr">request.required.acks</span> = <span class="string">"1"</span></span><br><span class="line"><span class="comment"># JDBC settings</span></span><br><span class="line"><span class="attr">db.default.driver</span> = <span class="string">"com.mysql.jdbc.Driver"</span></span><br><span class="line"><span class="attr">db.default.url</span>=<span class="string">"jdbc:mysql://hadoop000:3306/test"</span></span><br><span class="line"><span class="attr">db.default.user</span>=<span class="string">"root"</span></span><br><span class="line"><span class="attr">db.default.password</span>=<span class="string">"123456"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>自定义kafka producer</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.&#123;Date, Properties&#125;</span><br><span class="line"><span class="keyword">import</span> kafka.producer.&#123;KeyedMessage, Producer, ProducerConfig&#125;</span><br><span class="line">object KafkaProducer &#123;</span><br><span class="line"> def main(args: <span class="type">Array</span>[<span class="keyword">String</span>]): <span class="type">Unit </span>= &#123;</span><br><span class="line">   val properties = <span class="keyword">new</span> <span class="type">Properties</span>()</span><br><span class="line">   properties.put(<span class="string">"serializer.class"</span>,ValueUtils.getStringValue(<span class="string">"serializer.class"</span>))</span><br><span class="line">   properties.put(<span class="string">"metadata.broker.list"</span>,ValueUtils.getStringValue(<span class="string">"metadata.broker.list"</span>))</span><br><span class="line">   properties.put(<span class="string">"request.required.acks"</span>,ValueUtils.getStringValue(<span class="string">"request.required.acks"</span>))</span><br><span class="line">   val producerConfig = <span class="keyword">new</span> <span class="type">ProducerConfig</span>(properties)</span><br><span class="line">   val producer = <span class="keyword">new</span> <span class="type">Producer</span>[<span class="keyword">String</span>,<span class="keyword">String</span>](producerConfig)</span><br><span class="line">   val topic = ValueUtils.getStringValue(<span class="string">"kafka.topics"</span>)</span><br><span class="line">   <span class="comment">//每次产生100条数据</span></span><br><span class="line">   <span class="keyword">var</span> i = <span class="number">0</span></span><br><span class="line">   <span class="keyword">for</span> (i &lt;- <span class="number">1</span> to <span class="number">100</span>) &#123;</span><br><span class="line">     val runtimes = <span class="keyword">new</span> <span class="type">Date</span>().toString</span><br><span class="line">    val messages = <span class="keyword">new</span> <span class="type">KeyedMessage</span>[<span class="keyword">String</span>, <span class="keyword">String</span>](topic,i+<span class="string">""</span>,<span class="string">"hlw: "</span>+runtimes)</span><br><span class="line">     producer.send(messages)</span><br><span class="line">   &#125;</span><br><span class="line">   println(<span class="string">"数据发送完毕..."</span>)</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><ol>
+<li><p>启动kafka服务，并创建主题</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[hadoop@hadoop000 bin]$ <span class="string">./kafka-server-start.sh</span> -daemon <span class="string">/home/hadoop/app/kafka_2.11-0.10.0.1/config/server.properties</span></span><br><span class="line">[hadoop@hadoop000 bin]$ <span class="string">./kafka-topics.sh</span> <span class="params">--list</span> <span class="params">--zookeeper</span> localhost<span class="function">:2181</span>/kafka</span><br><span class="line">[hadoop@hadoop000 bin]$ <span class="string">./kafka-topics.sh</span> <span class="params">--create</span> <span class="params">--zookeeper</span> localhost<span class="function">:2181</span>/kafka <span class="params">--replication-factor</span> 1 <span class="params">--partitions</span> 1 <span class="params">--topic</span> hlw_offset</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试前查看MySQL中offset表，刚开始是个空表</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> hlw_offset;</span><br><span class="line"><span class="keyword">Empty</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过kafka producer产生500条数据</p>
+</li>
+<li><p>启动SparkStreaming程序</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//控制台输出结果：</span></span><br><span class="line">从头开始消费...</span><br><span class="line">数据统计记录为：<span class="number">500</span></span><br><span class="line">---hlw_offset,<span class="number">0</span>,<span class="number">0</span>,<span class="number">500</span>---</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">查看MySQL表，offset记录成功</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from hlw<span class="emphasis">_offset;</span></span><br><span class="line"><span class="emphasis">+------------+------------------+------------+------------+-------------+</span></span><br><span class="line"><span class="emphasis">| topic      | groupid          | partitions | fromoffset | untiloffset |</span></span><br><span class="line"><span class="emphasis">+------------+------------------+------------+------------+-------------+</span></span><br><span class="line"><span class="emphasis">| hlw_</span>offset | hlw<span class="emphasis">_offset_</span>group |          0 |          0 |         500 |</span><br><span class="line"><span class="code">+------------+</span>------------------<span class="code">+------------+</span>------------<span class="code">+-------------+</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>关闭SparkStreaming程序，再使用kafka producer生产300条数据,再次启动spark程序（如果spark从500开始消费，说明成功读取了offset，做到了只读取一次语义）</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//控制台结果输出：</span></span><br><span class="line">从已存在记录开始消费...</span><br><span class="line">数据统计记录为：<span class="number">300</span></span><br><span class="line">---hlw_offset,<span class="number">0</span>,<span class="number">500</span>,<span class="number">800</span>---</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看更新后的offset MySQL数据</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from hlw<span class="emphasis">_offset;</span></span><br><span class="line"><span class="emphasis">+------------+------------------+------------+------------+-------------+</span></span><br><span class="line"><span class="emphasis">| topic      | groupid          | partitions | fromoffset | untiloffset |</span></span><br><span class="line"><span class="emphasis">+------------+------------------+------------+------------+-------------+</span></span><br><span class="line"><span class="emphasis">| hlw_</span>offset | hlw<span class="emphasis">_offset_</span>group |          0 |        500 |         800 |</span><br><span class="line"><span class="code">+------------+</span>------------------<span class="code">+------------+</span>------------<span class="code">+-------------+</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/01/100164.html" class="pre-post btn btn-default" title='使用WebSocket解决分布式秒杀系统的推送通知'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">使用WebSocket解决分布式秒杀系统的推送通知</span>
+        </a>
+    
+    
+        <a href="/archives/2019/01/100162.html" class="next-post btn btn-default" title='python字节码还原成源码'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">python字节码还原成源码</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL创建存储offset的表格"><span class="toc-text">MySQL创建存储offset的表格</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maven依赖包"><span class="toc-text">Maven依赖包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现思路"><span class="toc-text">实现思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码实现"><span class="toc-text">代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

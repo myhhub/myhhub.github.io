@@ -1,0 +1,439 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="知识图谱,neo4j">
+
+
+    <meta name="description" content="一. 简介图数据库是基于图论实现的一种新型NoSQL数据库。它的数据数据存储结构和数据的查询方式都是以图论为基础的。图论中图的节本元素为节点和边，对应于图数据库中的节点和关系。
+Neo4j 是由...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>从零开始学习知识图谱 之 六.电影知识图谱构建 6.将关系型数据存入图数据库Neo4j | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="从零开始学习知识图谱 之 六.电影知识图谱构建 6.将关系型数据存入图数据库Neo4j">
+            
+	            从零开始学习知识图谱 之 六.电影知识图谱构建 6.将关系型数据存入图数据库Neo4j
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/neo4j/">neo4j</a> <a class="tag-link" href="/tags/knowledgegraph/">知识图谱</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/10/18</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1266</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h1><p>图数据库是基于图论实现的一种新型NoSQL数据库。它的数据数据存储结构和数据的查询方式都是以图论为基础的。图论中图的节本元素为节点和边，对应于图数据库中的节点和关系。</p>
+<p>Neo4j 是由 Java 实现的开源 NoSQL 图数据库，它提供了完整的数据库特性，包括ADID事务的支持、集群的支持、备份与故障转移等。</p>
+<p>Cypher 是一种声明式的图数据库查询语言，能高效地查询和更新图数据。Cypher 语句可分为三类，包括读语句、写语句和通用语句：</p>
+<ul>
+<li>读语句： MATCH、OPTIONAL MATCH、WHERE、START、AGGREGATION、LOAD CSV。</li>
+<li>写语句： CREATE、MERGE、SET、DELETE、REMOVE、FOREACH、CREATE UNIQUE。</li>
+<li>通用语句： RETURN、ORDER BY、LIMIT、SKIP、WITH、UNWIND、UNION、CALL。</li>
+</ul>
+<p>熟悉SQL语句的应该能根据上面这些猜出大概用途了。</p>
+<p>本教程的项目代码放在github上，下载地址为<a href="https://github.com/myhhub/zero_knowledge_graph" target="_blank" rel="noopener">《从零开始学习知识图谱》项目源代码</a> 。</p>
+<h1 id="二-环境准备"><a href="#二-环境准备" class="headerlink" title="二. 环境准备"></a>二. 环境准备</h1><h2 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h2><p>支持操作系统：windows、macOS、Linux。为了方便大家搭建开发环境，笔者尽可能在windows下构建，系列篇未特意说明时操作系统都是<strong>windows</strong>。Linux安装可以参考<a href="100590.html">VirtualBox虚拟机安装Ubuntu</a>或<a href="100589.html">VirtualBox虚拟机安装CentOS8</a>进行安装。</p>
+<h2 id="2-jdk"><a href="#2-jdk" class="headerlink" title="2. jdk"></a>2. jdk</h2><p>安装参见<a href="100604.html">windows系统安装JDK</a></p>
+<h2 id="3-安装Neo4j"><a href="#3-安装Neo4j" class="headerlink" title="3. 安装Neo4j"></a>3. 安装Neo4j</h2><h3 id="1-下载"><a href="#1-下载" class="headerlink" title="1) 下载"></a>1) 下载</h3><p>下载页面：<a href="https://neo4j.com/download-center/" target="_blank" rel="noopener">https://neo4j.com/download-center/</a>  ，下载Neo4j Community Edition  Windows版 。通过下载页点击下载反应极慢而且下载也极慢。建议在Neo4j国内的下载地址<a href="http://we-yun.com/index.php/blog/releases-56.html" target="_blank" rel="noopener">Neo4j 产品下载</a>上下载。</p>
+<h3 id="2）安装"><a href="#2）安装" class="headerlink" title="2）安装"></a>2）安装</h3><p>需要jdk环境支持。<br>a. 先解压放在自己想放的位置，C:\my\neo4j</p>
+<p>Neo4j应用程序有如下主要的目录结构：</p>
+<ul>
+<li>bin目录：用于存储Neo4j的可执行程序；</li>
+<li>conf目录：用于控制Neo4j启动的配置文件；</li>
+<li>data目录：用于存储核心数据库文件；</li>
+<li>plugins目录：用于存储Neo4j的插件；</li>
+</ul>
+<p>b.  创建系统环境变量 </p>
+<p>创建主目录环境变量NEO4J_HOME，并把主目录设置为变量值。<a href="https://jingyan.baidu.com/album/ce4366494d82043772afd370.html?picindex=4" target="_blank" rel="noopener">win10系统环境变量设置步骤</a></p>
+<p>NEO4J_HOME = C:\my\neo4j</p>
+<p>Path = %NEO4J_HOME%\bin </p>
+<p>c.  启动并验证是否成功</p>
+<p>CMD管理员身份运行<code>neo4j.bat console</code></p>
+<p>一定要以管理员身份进入CMD,否则会出现警告。警告: This command does not appear to be running with administrative rights.  Some commands may fail e.g. Start/Stop</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\mmm&gt;neo4j console</span><br><span class="line">2019<span class="string">-10</span><span class="string">-18</span> 07:28:23.597<span class="string">+0000</span> INFO  ======== Neo4j 3.5.11 ========</span><br><span class="line">2019<span class="string">-10</span><span class="string">-18</span> 07:28:23.621<span class="string">+0000</span> INFO  Starting...</span><br><span class="line">2019<span class="string">-10</span><span class="string">-18</span> 07:28:30.974<span class="string">+0000</span> INFO  Bolt enabled on 0.0.0.0:7687.</span><br><span class="line">2019<span class="string">-10</span><span class="string">-18</span> 07:28:32.347<span class="string">+0000</span> INFO  Started.</span><br><span class="line">2019<span class="string">-10</span><span class="string">-18</span> 07:28:33.177<span class="string">+0000</span> INFO  Remote interface available at http://localhost:7474/</span><br></pre></td></tr></table></figure>
+<h3 id="3）配置成Windows服务"><a href="#3）配置成Windows服务" class="headerlink" title="3）配置成Windows服务"></a>3）配置成Windows服务</h3><p><strong>可以跳过此步。</strong></p>
+<p><strong>也可以把Neo4j配置成Windows服务，不推荐。</strong></p>
+<p>Neo4j也可以作为Windows服务运行。使用安装服务<code>bin\neo4j install-service</code>，然后使用进行启动<code>bin\neo4j start</code>。</p>
+<p>对于可用的命令<code>bin\neo4j</code>是：<code>help</code>，<code>start</code>，<code>stop</code>，<code>restart</code>，<code>status</code>，<code>install-service</code>，<code>uninstall-service</code>，和<code>update-service</code>。</p>
+<h3 id="4）打开Neo4j集成的浏览器"><a href="#4）打开Neo4j集成的浏览器" class="headerlink" title="4）打开Neo4j集成的浏览器"></a>4）打开Neo4j集成的浏览器</h3><p><strong>可以跳过此步。</strong></p>
+<h4 id="a-Neo4j浏览器"><a href="#a-Neo4j浏览器" class="headerlink" title="a. Neo4j浏览器"></a>a. Neo4j浏览器</h4><p> Neo4j服务器具有一个集成的浏览器，在一个运行的服务器实例上访问 “<a href="http://localhost:7474/”，打开浏览器，显示启动页面" target="_blank" rel="noopener">http://localhost:7474/”，打开浏览器，显示启动页面</a> 。</p>
+<p>默认的host是bolt://localhost:7687，默认的用户是neo4j，其默认的密码是：neo4j，第一次成功登陆到Neo4j服务器之后，需要重置密码。</p>
+<p>访问Graph Database需要输入身份验证，Host是Bolt协议标识的主机。</p>
+<h4 id="b-在Neo4j浏览器中创建节点和关系"><a href="#b-在Neo4j浏览器中创建节点和关系" class="headerlink" title="b. 在Neo4j浏览器中创建节点和关系"></a>b. 在Neo4j浏览器中创建节点和关系</h4><p>示例，编写Cypher命令，创建两个节点和两个关系：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">CREATE</span> (<span class="selector-tag">n</span><span class="selector-pseudo">:Person</span> &#123; <span class="attribute">name</span>: <span class="string">'Andres'</span>, title: <span class="string">'Developer'</span> &#125;) <span class="selector-tag">return</span> <span class="selector-tag">n</span>;</span><br><span class="line"><span class="selector-tag">CREATE</span> (<span class="selector-tag">n</span><span class="selector-pseudo">:Person</span> &#123; <span class="attribute">name</span>: <span class="string">'Vic'</span>, title: <span class="string">'Developer'</span> &#125;) <span class="selector-tag">return</span> <span class="selector-tag">n</span>;</span><br><span class="line"><span class="selector-tag">match</span>(<span class="selector-tag">n</span><span class="selector-pseudo">:Person</span>&#123;<span class="attribute">name</span>:<span class="string">"Vic"</span>&#125;),(<span class="selector-tag">m</span><span class="selector-pseudo">:Person</span>&#123;<span class="attribute">name</span>:<span class="string">"Andres"</span>&#125;) <span class="selector-tag">create</span> (<span class="selector-tag">n</span>)<span class="selector-tag">-</span><span class="selector-attr">[r:Friend]</span><span class="selector-tag">-</span>&gt;(<span class="selector-tag">m</span>) <span class="selector-tag">return</span> <span class="selector-tag">r</span>;</span><br><span class="line"><span class="selector-tag">match</span>(<span class="selector-tag">n</span><span class="selector-pseudo">:Person</span>&#123;<span class="attribute">name</span>:<span class="string">"Vic"</span>&#125;),(<span class="selector-tag">m</span><span class="selector-pseudo">:Person</span>&#123;<span class="attribute">name</span>:<span class="string">"Andres"</span>&#125;) <span class="selector-tag">create</span> (<span class="selector-tag">n</span>)&lt;<span class="selector-tag">-</span><span class="selector-attr">[r:Friend]</span><span class="selector-tag">-</span>(<span class="selector-tag">m</span>) <span class="selector-tag">return</span> <span class="selector-tag">r</span>;</span><br></pre></td></tr></table></figure>
+<p>在$ 命令行中，编写Cypher脚本代码，点击Play按钮，点击创建第一个节点，</p>
+<p> 在第一个节点创建之后，在Graph模式下，能够看到创建的图形，继续编写Cypher脚本，创建其他节点和关系 </p>
+<h3 id="5）快速清除Neo4j数据库数据"><a href="#5）快速清除Neo4j数据库数据" class="headerlink" title="5）快速清除Neo4j数据库数据"></a>5）快速清除Neo4j数据库数据</h3><p>a. 关闭Neo4j服务器进程<br>检查服务器进程是否启动，如启动，可通过kill -9或其它方式杀掉服务器进程。</p>
+<p>b. 删除graph.db数据库文件<br>找到&lt;NEO4J_HOME&gt;/data/databases/路径，可以看到graph.db文件夹。删除此文件夹即可。</p>
+<p>c. 重新启动Neo4j服务器<br>通过bin目录下执行<code>neo4j.bat console</code>命令启动Neo4j<br>Neo4j在启动过程中，会发现graph.db文件夹丢失，重新建立新数据，从而完成清空任务。</p>
+<p>d. 连接Neo4j Browser重设密码<br>由于数据库重新建立，需要重新设置数据库用户名和密码。可通过连接启动后的Neo4j Browser重新设置，也可通过命令行等进行设置。</p>
+<p>通过以上四个步骤，即完成了Neo4j数据的清空。</p>
+<h1 id="三-MYSQL-数据的导出"><a href="#三-MYSQL-数据的导出" class="headerlink" title="三. MYSQL 数据的导出"></a>三. MYSQL 数据的导出</h1><h2 id="1-说明"><a href="#1-说明" class="headerlink" title="1. 说明"></a>1. 说明</h2><p>MYSQl 支持将查询结果直接导出为 CSV 文本格式，在使用 SELECT 语句查询数据时，在语句后面加上导出指令即可，格式如下：</p>
+<ul>
+<li>into outfile &lt; 导出的目录和文件名&gt;： 指定导出的目录和文件名。</li>
+<li>fields terminated by &lt;字段间分隔符&gt;：定义字段间的分隔符。</li>
+<li>optionally enclosed by &lt;字段包围符&gt;：定义包围字段的字符(数值型字段无效)。</li>
+<li>lines terminated by &lt;行间分隔符&gt;：定义每行的分隔符。</li>
+</ul>
+<p>下面我们基于<a href="100591.html">从零开始学习知识图谱(一)</a>中建立的互动百科数据库，导出 actor 表中所有数据</p>
+<p>其中 actor 表的属性为：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 演员 : ID, 简介， 中文名，外文名，国籍，星座，出生地，出生日期，代表作品，主要成就，经纪公司；</span></span><br><span class="line"><span class="meta"># actor: actor_id, actor_bio, actor_chName, actor_foreName, actor_nationality,  actor_constellation, actor_birthPlace, actor_birthDay, actor_repWorks, actor_achiem, actor_brokerage;</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-导出表"><a href="#2-导出表" class="headerlink" title="2. 导出表"></a>2. 导出表</h2><p>我们导出获得 actor 表、movie 表、电影类型 genre 表、actor-movie表、 movie-genre 表中的数据：</p>
+<p>建议使用MySQL Workbench执行下面脚本，mysql 中导出表的代码为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> actor <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/hudong_actor.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> movie <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/hudong_movie.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> genre <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/hudong_genre.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> actor_to_movie <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/hudong_actor_to_movie.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> movie_to_genre <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/hudong_movie_to_genre.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="3-导出可能出现的问题及解决"><a href="#3-导出可能出现的问题及解决" class="headerlink" title="3. 导出可能出现的问题及解决"></a>3. <strong>导出可能出现的问题及解决</strong></h2><p>问题：MySQL导出文件时，遇到报错“The MySQL server is running with the –secure-file-priv option so it cannot execute this statement” 。</p>
+<p>解决：MySQL Workbench执行<code>show variables like &#39;%secure%&#39;;</code>返回结果<code>secure_file_priv=C:\ProgramData\MySQL\MySQL Server 8.0\Uploads\</code>，把outfile中路径改成secure_file_priv值，<strong>注意<code>\</code>要换成<code>/</code></strong>。</p>
+<h2 id="4-导出数据校验"><a href="#4-导出数据校验" class="headerlink" title="4. 导出数据校验"></a>4. 导出数据校验</h2><p>hudong_actor.csv 的第一行数据为：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>,<span class="string">"周星驰（Stephen Chow），1962年6月22日生于香港，华语喜剧演员、导演、编剧、监制、制片人、出品人。1980年成为丽的电视特约演员，开始出道。1988年初涉影坛，后相继主演《唐伯虎点秋香》、《大话西游》等，自编自导自演《国产凌凌漆》、《食神》、《功夫》等多部影片，6度打破香港电影票房纪录，并获得8个香港电影年度票房冠军，创下打破票房纪录次数及获得年度票房冠军次数的纪录。2003年当选《时代周刊》“年度风云人物”，并成为“亚洲英雄”的封面人物。2004年《功夫》创下数十个国家和地区的华语电影票房纪录，并被《时代周刊》评为“2005年十大佳片”之一。2013年导演的《西游·降魔篇》破23项华语电影票房纪录，全球票房达2.18亿美元，刷新华语电影全球票房纪录。2014年执导的科幻电影《美人鱼》开拍，该片已于2016年2月8日上映，上映19天累计票房超过30亿，刷新了华语电影票房记录。2017年1月28日，担任监制、编剧的古装喜剧片《西游伏妖篇》上映。编辑摘要"</span>,<span class="string">"周星驰"</span>,<span class="string">"Stephen Chow"</span>,<span class="string">"中国"</span>,<span class="string">"巨蟹座"</span>,<span class="string">"香港"</span>,<span class="string">"None"</span>,<span class="string">"唐伯虎点秋香、功夫"</span>,<span class="string">"获得两届香港电影金像奖最佳影片 第21届香港电影金像奖最佳导演 第42届台湾电影金马奖最佳导演"</span>,<span class="string">"创办星辉电影公司和上市比高集团"</span></span><br></pre></td></tr></table></figure>
+<h1 id="四-将数据导入到Neo4j"><a href="#四-将数据导入到Neo4j" class="headerlink" title="四. 将数据导入到Neo4j"></a>四. 将数据导入到Neo4j</h1><h2 id="1-准备工作"><a href="#1-准备工作" class="headerlink" title="1. 准备工作"></a>1. 准备工作</h2><p>1) neo4j load csv 的使用</p>
+<p>文件URL将相对于<code>dbms.directories.import</code>目录解析。例如，一个文件的URL通常会看起来像<code>file:///myfile.csv</code>或<code>file:///myproject/myfile.csv</code>。 </p>
+<p>打开&lt;NEO4J_HOME&gt;/conf\neo4j.conf，我的是C:\my\neo4j\conf\neo4j.conf。查看<code>dbms.directories.import</code></p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">dbms</span>.directories.<span class="keyword">import</span>=<span class="keyword">import</span></span><br></pre></td></tr></table></figure>
+<p>从而得知&lt;NEO4J_HOME&gt;/import目录是<code>file:///</code>根路径。我的是C:\my\neo4j\import</p>
+<p>2)  移动文件</p>
+<p>把mysql导出的csv文件全部移动到C:\my\neo4j\import</p>
+<h2 id="2-导入实体"><a href="#2-导入实体" class="headerlink" title="2. 导入实体"></a>2. 导入实体</h2><p>我们首先将 actor 实体导入到 Neo4j 中，对应文件为 hudong_actor.csv：</p>
+<p>打开Neo4j浏览器： <a href="http://localhost:7474/" target="_blank" rel="noopener">http://localhost:7474/</a> ，在它页面命令行(位置在首页右边上面)里，执行下面命令：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD CSV FROM <span class="string">'file:///hudong_actor.csv'</span> AS <span class="built_in">line</span> CREATE (:Actor &#123; actor_id: <span class="built_in">line</span>[<span class="number">0</span>], actor_bio: <span class="built_in">line</span>[<span class="number">1</span>], actor_chName: <span class="built_in">line</span>[<span class="number">2</span>], actor_foreName: <span class="built_in">line</span>[<span class="number">3</span>],actor_nationality: <span class="built_in">line</span>[<span class="number">4</span>], actor_constellation: <span class="built_in">line</span>[<span class="number">5</span>], actor_birthPlace:  <span class="built_in">line</span>[<span class="number">6</span>], actor_birthDay: <span class="built_in">line</span>[<span class="number">7</span>], actor_repWork<span class="variable">s:</span> <span class="built_in">line</span>[<span class="number">8</span>], actor_achiem: <span class="built_in">line</span>[<span class="number">9</span>], actor_brokerage: <span class="built_in">line</span>[<span class="number">10</span>] &#125;)</span><br></pre></td></tr></table></figure>
+<p>其中 LOAD CSV FROM “file-url” AS line 是将指定路径下的 CSV 文件读取出来，”file-url” 就是文件的地址，它可以是本地文件路径也可以是网址。需要注意的是，对于本地文件，该路径默认为 import 文件夹，要想读取其他文件夹下的文件，需要修改配置文件才可以。</p>
+<p>上面命令在读取 CSV 文件后，调用 CREATE 命令创建了对应的节点，也就是用圆括号 (:Actor {… line[10]}) 包起来的部分。节点的标签为 :Actor，节点的属性为 花括号{} 包起来的部分。包含 actor_id、actor_bio 等。属性的值从 line 中读取，line[0] 表示 CSV 文件中的第一列，其他列以此类推。</p>
+<p>命令行输入下面命令，查看导入结果：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH (<span class="name">n</span><span class="symbol">:Actor</span>) RETURN n LIMIT <span class="number">25</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>通过上面的命令我们就创建了 actor 实体的节点，下面我们按照类似的命令分别创建 movie 的节点和 genre 节点：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD CSV FROM <span class="string">'file:///hudong_movie.csv'</span> AS <span class="built_in">line</span> CREATE (:Movie &#123; movie_id: <span class="built_in">line</span>[<span class="number">0</span>], movie_bio: <span class="built_in">line</span>[<span class="number">1</span>], movie_chName: <span class="built_in">line</span>[<span class="number">2</span>], movie_foreName: <span class="built_in">line</span>[<span class="number">3</span>],movie_prodTime: <span class="built_in">line</span>[<span class="number">4</span>], movie_prodCompany: <span class="built_in">line</span>[<span class="number">5</span>], movie_director: <span class="built_in">line</span>[<span class="number">6</span>], movie_screenwriter: <span class="built_in">line</span>[<span class="number">7</span>], movie_genre: <span class="built_in">line</span>[<span class="number">8</span>], movie_star: <span class="built_in">line</span>[<span class="number">9</span>], movie_length: <span class="built_in">line</span>[<span class="number">10</span>], movie_rekeaseTime: <span class="built_in">line</span>[<span class="number">11</span>], movie_language: <span class="built_in">line</span>[<span class="number">12</span>],  movie_achiem: <span class="built_in">line</span>[<span class="number">13</span>]  &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">FROM</span> <span class="string">'file:///hudong_genre.csv'</span> <span class="keyword">AS</span> line <span class="keyword">CREATE</span> (:Genre &#123; genre_id:  line[<span class="number">0</span>], genre_name: line[<span class="number">1</span>]  &#125;);</span><br></pre></td></tr></table></figure>
+<p>最终我们有 actor 节点 5392 个，属性 65252。movie 节点 13865 个，属性194110. genre 节点11，属性 11。</p>
+<h2 id="2-导入关系"><a href="#2-导入关系" class="headerlink" title="2. 导入关系"></a>2. 导入关系</h2><p>前面我们只是建立的演员和电影的节点，并没有关系链接它们。关系在 MYSQL中 对应于 actor_to_movie 表 和 movie_to_genre 表，分别对应 演员 :ACTED_IN 电影 的关系 和 电影 :Belong_to 类别 关系。</p>
+<p>导入演员 :ACTED_IN 电影关系对应的语句为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">FROM</span> <span class="string">'file:///hudong_actor_to_movie.csv'</span> <span class="keyword">AS</span> line <span class="keyword">MATCH</span> (a:Actor), (m:Movie) <span class="keyword">WHERE</span> a.actor_id = line[<span class="number">1</span>] <span class="keyword">AND</span> m.movie_id = line[<span class="number">2</span>] <span class="keyword">CREATE</span> (a) - [r:ACTED_IN] -&gt; (m) <span class="keyword">RETURN</span> r;</span><br></pre></td></tr></table></figure>
+<p>其中采用 LOAD CSV FROM 语句读取 CSV 文件，而后采用 CREATE 语句创建关系。第一对括号 (a:Actor {actor_id: line[1]}) 表示对于 line[1] 中给出的 actor_id 对应的节点 :Actor 节点a。第二对括号 (m:Movie {movie_id: line[2]}) 表示 line[2] 给出的 movie_id 对应的 :Movie 节点 m。它们之间的 - [r:ACTED_IN] -&gt; 表示一个有向的关系r,它的标签为:ACTED_IN。因此上述语句就是先找到节点a 和 m，而后创建它们之间的关系 r。</p>
+<p>运行语句后，我们得到 actor :ACTED_IN movie 关系 800个。</p>
+<p>查看导入结果：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">MATCH p</span>=()-[r:ACTED_IN]-&gt;() RETURN p LIMIT 25;</span><br></pre></td></tr></table></figure>
+<p>与此类似，我们可以建立 电影 :Belong_to 类别关系。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD CSV FROM <span class="string">'file:///hudong_movie_to_genre.csv'</span> AS line CREATE (<span class="string">a:</span>Movie &#123;<span class="string">movie_id:</span> line[<span class="number">1</span>]&#125;) - [<span class="string">r:</span>Belong_to] -&gt;(<span class="string">m:</span>Genre &#123;<span class="string">genre_id:</span> line[<span class="number">2</span>]&#125;);</span><br></pre></td></tr></table></figure>
+<p>获得 movie :Belong_to genre 关系 14558 个。</p>
+<p>查看导入结果：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">MATCH p</span>=()-[r:Belong_to]-&gt;() RETURN p LIMIT 25;</span><br></pre></td></tr></table></figure>
+<p>最终我们来一个总的结果：</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MATCH <span class="function"><span class="title">p</span>=() -[] -&gt;</span> () - [<span class="function"><span class="title">r</span>:Belong_to]-&gt;</span>() RETURN p LIMIT <span class="number">25</span></span><br></pre></td></tr></table></figure>
+<p><img src="/img/neo4j/actor_movie_genre.png" alt="img"></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/10/100597.html" class="pre-post btn btn-default" title='从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取</span>
+        </a>
+    
+    
+        <a href="/archives/2019/10/100595.html" class="next-post btn btn-default" title='从零开始学习知识图谱 之 五.电影知识图谱构建 5.基于Deepdive非结构化文本关系抽取'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 五.电影知识图谱构建 5.基于Deepdive非结构化文本关系抽取</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-简介"><span class="toc-text">一. 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-环境准备"><span class="toc-text">二. 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统"><span class="toc-text">1. 操作系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-jdk"><span class="toc-text">2. jdk</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-安装Neo4j"><span class="toc-text">3. 安装Neo4j</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-下载"><span class="toc-text">1) 下载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2）安装"><span class="toc-text">2）安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3）配置成Windows服务"><span class="toc-text">3）配置成Windows服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4）打开Neo4j集成的浏览器"><span class="toc-text">4）打开Neo4j集成的浏览器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#a-Neo4j浏览器"><span class="toc-text">a. Neo4j浏览器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#b-在Neo4j浏览器中创建节点和关系"><span class="toc-text">b. 在Neo4j浏览器中创建节点和关系</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5）快速清除Neo4j数据库数据"><span class="toc-text">5）快速清除Neo4j数据库数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-MYSQL-数据的导出"><span class="toc-text">三. MYSQL 数据的导出</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-说明"><span class="toc-text">1. 说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-导出表"><span class="toc-text">2. 导出表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-导出可能出现的问题及解决"><span class="toc-text">3. 导出可能出现的问题及解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-导出数据校验"><span class="toc-text">4. 导出数据校验</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四-将数据导入到Neo4j"><span class="toc-text">四. 将数据导入到Neo4j</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-准备工作"><span class="toc-text">1. 准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-导入实体"><span class="toc-text">2. 导入实体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-导入关系"><span class="toc-text">2. 导入关系</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

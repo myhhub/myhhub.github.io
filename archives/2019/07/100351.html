@@ -1,0 +1,402 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,spark">
+
+
+    <meta name="description" content="一. Apache Spark是什么？Spark是一个用来实现快速而通用的集群计算的平台。扩展了广泛使用的MapReduce计算模型，而且高效地支持更多的计算模式，包括交互式查询和流处理。在处理...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 四十五.Spark介绍 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 四十五.Spark介绍">
+            
+	            大数据hadoop之 四十五.Spark介绍
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/01</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1375</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-Apache-Spark是什么？"><a href="#一-Apache-Spark是什么？" class="headerlink" title="一. Apache Spark是什么？"></a>一. Apache Spark是什么？</h2><p>Spark是一个用来实现快速而通用的集群计算的平台。扩展了广泛使用的MapReduce计算模型，而且高效地支持更多的计算模式，包括交互式查询和流处理。在处理大规模数据集的时候，速度是非常重要的。Spark的一个重要特点就是能够在内存中计算，因而更快。即使在磁盘上进行的复杂计算，Spark依然比MapReduce更加高效。</p>
+<h2 id="二-Spark的四大特性"><a href="#二-Spark的四大特性" class="headerlink" title="二. Spark的四大特性"></a>二. Spark的四大特性</h2><h3 id="1-高效性"><a href="#1-高效性" class="headerlink" title="1. 高效性"></a>1. 高效性</h3><p>运行速度提高100倍。<br>Apache Spark使用最先进的DAG调度程序，查询优化程序和物理执行引擎，实现批量和流式数据的高性能。</p>
+<p><img src="/img/hadoop/1228818-20180419210923327-1692975321.png" alt="img"></p>
+<h3 id="2-易用性"><a href="#2-易用性" class="headerlink" title="2. 易用性"></a>2. 易用性</h3><p>Spark支持Java、Python和Scala的API，还支持超过80种高级算法，使用户可以快速构建不同的应用。而且Spark支持交互式的Python和Scala的shell，可以非常方便地在这些shell中使用Spark集群来验证解决问题的方法。</p>
+<h3 id="3-通用性"><a href="#3-通用性" class="headerlink" title="3. 通用性"></a>3. 通用性</h3><p>Spark提供了统一的解决方案。Spark可以用于批处理、交互式查询（Spark SQL）、实时流处理（Spark Streaming）、机器学习（Spark MLlib）和图计算（GraphX）。这些不同类型的处理都可以在同一个应用中无缝使用。Spark统一的解决方案非常具有吸引力，毕竟任何公司都想用统一的平台去处理遇到的问题，减少开发和维护的人力成本和部署平台的物力成本。</p>
+<p><img src="/img/hadoop/1228818-20180419211451611-367631364.png" alt="img"></p>
+<h3 id="4-兼容性"><a href="#4-兼容性" class="headerlink" title="4. 兼容性"></a>4. 兼容性</h3><p>Spark可以非常方便地与其他的开源产品进行融合。比如，Spark可以使用Hadoop的YARN和Apache Mesos作为它的资源管理和调度器，器，并且可以处理所有Hadoop支持的数据，包括HDFS、HBase和Cassandra等。这对于已经部署Hadoop集群的用户特别重要，因为不需要做任何数据迁移就可以使用Spark的强大处理能力。Spark也可以不依赖于第三方的资源管理和调度器，它实现了Standalone作为其内置的资源管理和调度框架，这样进一步降低了Spark的使用门槛，使得所有人都可以非常容易地部署和使用Spark。此外，Spark还提供了在EC2上部署Standalone的Spark集群的工具。</p>
+<p><img src="/img/hadoop/1228818-20180419211657058-248260284.png" alt="img"></p>
+<ul>
+<li><p>Mesos：Spark可以运行在Mesos里面（Mesos 类似于yarn的一个资源调度框架）</p>
+</li>
+<li><p>standalone：Spark自己可以给自己分配资源（master，worker）</p>
+</li>
+<li><p>YARN：Spark可以运行在yarn上面</p>
+</li>
+<li><p>Kubernetes：Spark接收 Kubernetes的资源调度</p>
+</li>
+</ul>
+<h2 id="三-Spark重要概念"><a href="#三-Spark重要概念" class="headerlink" title="三. Spark重要概念"></a>三. Spark重要概念</h2><h3 id="1-Spark运行模式"><a href="#1-Spark运行模式" class="headerlink" title="1. Spark运行模式"></a>1. Spark运行模式</h3><p>目前Spark的运行模式主要有以下几种:</p>
+<ul>
+<li><p><code>local</code>:主要用于开发调试Spark应用程序</p>
+</li>
+<li><p><code>Standlone</code>:利用Spark自带的资源管理与调度器运行Spark集群，采用Master/Slave结构，为解决单点故障，可以采用Xookeeper实现高可靠(High Availability, HA)</p>
+</li>
+<li><p><code>Apache Mesos</code>:运行在著名的Mesos资源管理框架基础之上，该集群运行模式将资源管理管理交给Mesos,Spark只负责运行任务调度和计算</p>
+</li>
+<li><p><code>Hadoop YARN</code>:集群运行在Yarn资源管理器上，资源管理交给YARN，Spark只负责进行任务调度和计算<br>Spark运行模式中Hadoop YARN的集群方式最为常用。</p>
+<h3 id="2-Spark组件-Components"><a href="#2-Spark组件-Components" class="headerlink" title="2. Spark组件(Components)"></a>2. Spark组件(Components)</h3><p>一个完整的Spark应用程序，如前面一章当中的SparkWorkdCount程序，在提交集群运行时，它涉及到如下图所示的组件：</p>
+</li>
+</ul>
+<p><img src="/img/hadoop/633343-20160627190032046-1376896570.jpg" alt="Spark组件"></p>
+<p>每个Spark应用都由一个驱动器程序(drive program)来发起集群上的各种并行操作。驱动器程序包含应用的main函数，驱动器负责创建SparkContext,SparkContext可以与不同种类的集群资源管理器(Cluster Manager)，例如Hadoop YARN，Mesos进行通信，获取到集群进行所需的资源后，SparkContext将<br>得到集群中工作节点(Worker Node)上对应的Executor(不同的Spark程序有不同的Executor,他们之间是相互独立的进程，Executor为应用程序提供分布式计算以及数据存储功能)，之后SparkContext将应用程序代码发送到各Executor,最后将任务(Task)分配给executors执行</p>
+<ul>
+<li><p>ClusterManager:在Standalone模式中即为Master节点（主节点），控制整个集群，监控Worker.在YARN中为ResourceManager</p>
+</li>
+<li><p>Worker:从节点，负责控制计算节点，启动Executor或Driver。在YARN模式中为NodeManager,负责计算节点的控制。</p>
+</li>
+<li><p>Driver:运行Application的main()函数并创建SparkContect。</p>
+</li>
+<li><p>Executor:执行器，在worker node上执行任务的组件、用于启动线程池运行任务。每个Application拥有独立的一组Executor。</p>
+</li>
+<li><p>SparkContext:整个应用的上下文，控制应用的生命周期。</p>
+</li>
+<li><p>RDD：Spark的计算单元，一组RDD可形成执行的有向无环图RDD Graph。</p>
+</li>
+<li><p>DAG Scheduler:根据作业(Job)构建基于Stage的DAG，并提交Stage给TaskScheduler。</p>
+</li>
+<li><p>TaskScheduler:将任务(Task)分发给Executor。</p>
+</li>
+<li><p>SparkEnv:线程级别的上下文，存储运行时的重要组件的引用。<br>SparkEnv内构建并包含如下一些重要组件的引用。</p>
+<p>1、MapOutPutTracker:负责Shuffle元信息的存储。<br>2、BroadcastManager:负责广播变量的控制与元信息的存储。<br>3、BlockManager:负责存储管理、创建和查找快。<br>4、MetricsSystem:监控运行时性能指标信息。<br>5、SparkConf:负责存储配置信息。</p>
+</li>
+</ul>
+<h2 id="四-Spark的整体流程"><a href="#四-Spark的整体流程" class="headerlink" title="四. Spark的整体流程"></a>四. Spark的整体流程</h2><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、Client提交应用。  </span><br><span class="line"><span class="number">2</span>、Master找到一个Worker启动Driver  </span><br><span class="line"><span class="number">3</span>、Driver向Master或者资源管理器申请资源，之后将应用转化为RDD Graph  </span><br><span class="line"><span class="number">4</span>、再由DAGSchedule将RDD Graph转化为Stage的有向无环图提交给TaskSchedule。  </span><br><span class="line"><span class="number">5</span>、再由TaskSchedule提交任务给Executor执行。  </span><br><span class="line"><span class="number">6</span>、其它组件协同工作，确保整个应用顺利执行。</span><br></pre></td></tr></table></figure>
+<p>图片：</p>
+<p><img src="/img/hadoop/633343-20160627190319921-1626468332.png" alt="Spark有向无环图"></p>
+<h2 id="五-Spark-on-Yarn流程："><a href="#五-Spark-on-Yarn流程：" class="headerlink" title="五. Spark on Yarn流程："></a>五. Spark on Yarn流程：</h2><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>、基于YARN的Spark作业首先由客户端生成作业信息，提交给ResourceManager。  </span><br><span class="line"><span class="number">2</span>、ResourceManager在某一NodeManager汇报时把AppMaster分配给NodeManager。  </span><br><span class="line"><span class="number">3</span>、NodeManager启动SparkAppMaster。</span><br><span class="line"><span class="number">4</span>、SparkAppMastere启动后初始化然后向ResourceManager申请资源。  </span><br><span class="line"><span class="number">5</span>、申请到资源后，SparkAppMaster通过RPC让NodeManager启动相应的SparkExecutor。  </span><br><span class="line"><span class="number">6</span>、SparkExecutor向SparkAppMaster汇报并完成相应的任务。  </span><br><span class="line"><span class="number">7</span>、SparkClient会通过AppMaster获取作业运行状态。</span><br></pre></td></tr></table></figure>
+<p><img src="/img/hadoop/633343-20160627190358046-563157254.png" alt="SparkOnYARN"></p>
+<h2 id="六-应用场景"><a href="#六-应用场景" class="headerlink" title="六. 应用场景"></a>六. 应用场景</h2><p>Yahoo将Spark用在Audience Expansion中的应用，进行点击预测和即席查询等</p>
+<p>淘宝技术团队使用了Spark来解决多次迭代的机器学习算法、高计算复杂度的算法等。应用于内容推荐、社区发现等<br>腾讯大数据精准推荐借助Spark快速迭代的优势，实现了在“数据实时采集、算法实时训练、系统实时预测”的全流程实时并行高维算法，最终成功应用于广点通pCTR投放系统上。<br>优酷土豆将Spark应用于视频推荐(图计算)、广告业务，主要实现机器学习、图计算等迭代计算。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100352.html" class="pre-post btn btn-default" title='大数据hadoop之 四十六.Spark基于YARN的部署方案'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十六.Spark基于YARN的部署方案</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100349.html" class="next-post btn btn-default" title='大数据hadoop之 四十四.HBase监控语诊断'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十四.HBase监控语诊断</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-Apache-Spark是什么？"><span class="toc-text">一. Apache Spark是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-Spark的四大特性"><span class="toc-text">二. Spark的四大特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-高效性"><span class="toc-text">1. 高效性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-易用性"><span class="toc-text">2. 易用性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-通用性"><span class="toc-text">3. 通用性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-兼容性"><span class="toc-text">4. 兼容性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-Spark重要概念"><span class="toc-text">三. Spark重要概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Spark运行模式"><span class="toc-text">1. Spark运行模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Spark组件-Components"><span class="toc-text">2. Spark组件(Components)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-Spark的整体流程"><span class="toc-text">四. Spark的整体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-Spark-on-Yarn流程："><span class="toc-text">五. Spark on Yarn流程：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-应用场景"><span class="toc-text">六. 应用场景</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

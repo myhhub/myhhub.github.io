@@ -1,0 +1,380 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="docker">
+
+
+    <meta name="description" content="接上文: Docker基础之 五.数据共享与持久化
+
+Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0的虚拟网桥，此主机上启动的Docker容器会连接到这个虚拟网桥...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Docker基础之 六.网络模式 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Docker基础之 六.网络模式">
+            
+	            Docker基础之 六.网络模式
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/docker/">docker</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/06/12</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1760</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100211.html">Docker基础之 五.数据共享与持久化</a></p>
+<hr>
+<h2 id="Bridge模式"><a href="#Bridge模式" class="headerlink" title="Bridge模式"></a>Bridge模式</h2><p>当<code>Docker</code>进程启动时，会在主机上创建一个名为<code>docker0</code>的虚拟网桥，此主机上启动的<code>Docker</code>容器会连接到这个虚拟网桥上。虚拟网桥的工作方式和物理交换机类似，这样主机上的所有容器就通过交换机连在了一个二层网络中。从<code>docker0</code>子网中分配一个 IP 给容器使用，并设置 docker0 的 IP 地址为容器的<strong>默认网关</strong>。在主机上创建一对虚拟网卡<code>veth pair</code>设备，Docker 将 veth pair 设备的一端放在新创建的容器中，并命名为<code>eth0</code>（容器的网卡），另一端放在主机中，以<code>vethxxx</code>这样类似的名字命名，并将这个网络设备加入到 docker0 网桥中。可以通过<code>brctl show</code>命令查看。</p>
+<p><code>bridge</code>模式是 docker 的默认网络模式，不写<code>–net</code>参数，就是<code>bridge</code>模式。使用<code>docker run -p</code>时，docker 实际是在<code>iptables</code>做了<code>DNAT</code>规则，实现端口转发功能。可以使用<code>iptables -t nat -vnL</code>查看。<code>bridge</code>模式如下图所示： <img src="/img/docker/docker-netework-bridge.jpeg" alt="bridge network"></p>
+<p>演示：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=bridge --name docker_bri1 \</span><br><span class="line">             ubuntu-base:v3</span><br><span class="line">             docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=bridge --name docker_bri2 \</span><br><span class="line">             ubuntu-base:v3 </span><br><span class="line"></span><br><span class="line">$ brctl show</span><br><span class="line">$ docker exec -ti docker_bri1 /bin/bash</span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>–n</span><br></pre></td></tr></table></figure>
+<p>如果你之前有 Docker 使用经验，你可能已经习惯了使用<code>--link</code>参数来使容器互联。</p>
+<p>随着 Docker 网络的完善，强烈建议大家将容器加入自定义的 Docker 网络来连接多个容器，而不是使用 –link 参数。</p>
+<p>下面先创建一个新的 Docker 网络。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker<span class="built_in"> network </span>create -d<span class="built_in"> bridge </span>my-net</span><br></pre></td></tr></table></figure>
+<p><code>-d</code>参数指定 Docker 网络类型，有 <code>bridge overlay</code>。其中 overlay 网络类型用于 Swarm mode，在本小节中你可以忽略它。</p>
+<p>运行一个容器并连接到新建的 my-net 网络</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="keyword">run</span> -it --<span class="keyword">rm</span> --name busybox1 --network my-<span class="keyword">net</span> busybox <span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>打开新的终端，再运行一个容器并加入到 my-net 网络</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="keyword">run</span> -it --<span class="keyword">rm</span> --name busybox2 --network my-<span class="keyword">net</span> busybox <span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>再打开一个新的终端查看容器信息</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker container ls</span><br><span class="line"></span><br><span class="line">CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES</span><br><span class="line">b47060aca56b        busybox             <span class="string">"sh"</span>                <span class="number">11</span> minutes ago      Up <span class="number">11</span> minutes                           busybox2</span><br><span class="line"><span class="number">8720575823</span>ec        busybox             <span class="string">"sh"</span>                <span class="number">16</span> minutes ago      Up <span class="number">16</span> minutes                           busybox1</span><br></pre></td></tr></table></figure>
+<p>下面通过 ping 来证明 busybox1 容器和 busybox2 容器建立了互联关系。 在 busybox1 容器输入以下命令</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/ #<span class="built_in"> ping </span>busybox2</span><br><span class="line">PING busybox2 (172.19.0.3): 56 data bytes</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.3: <span class="attribute">seq</span>=0 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.072 ms</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.3: <span class="attribute">seq</span>=1 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.118 ms</span><br></pre></td></tr></table></figure>
+<p>用 ping 来测试连接 busybox2 容器，它会解析成 172.19.0.3。 同理在 busybox2 容器执行 ping busybox1，也会成功连接到。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/ #<span class="built_in"> ping </span>busybox1</span><br><span class="line">PING busybox1 (172.19.0.2): 56 data bytes</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.2: <span class="attribute">seq</span>=0 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.064 ms</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.2: <span class="attribute">seq</span>=1 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.143 ms</span><br></pre></td></tr></table></figure>
+<p>这样，busybox1 容器和 busybox2 容器建立了互联关系。</p>
+<p>如果你有多个容器之间需要互相连接，推荐使用<code>Docker Compose</code>。</p>
+<h2 id="Host-模式"><a href="#Host-模式" class="headerlink" title="Host 模式"></a>Host 模式</h2><p>如果启动容器的时候使用<code>host</code>模式，那么这个容器将不会获得一个独立的<code>Network Namespace</code>，而是和宿主机共用一个 Network Namespace。容器将不会虚拟出自己的网卡，配置自己的 IP 等，而是使用宿主机的 IP 和端口。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 Host模式如下图所示：</p>
+<p><img src="/img/docker/docker-network-host.jpeg" alt="network host"></p>
+<p>演示：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=host --name docker_host1 ubuntu-base:v3</span><br><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=host --name docker_host2 ubuntu-base:v3</span><br><span class="line"></span><br><span class="line">$ docker exec -ti docker_host1 /bin/bash</span><br><span class="line">$ docker exec -ti docker_host1 /bin/bash</span><br><span class="line"></span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>–n</span><br></pre></td></tr></table></figure>
+<h2 id="Container-模式"><a href="#Container-模式" class="headerlink" title="Container 模式"></a>Container 模式</h2><p>这个模式指定新创建的容器和已经存在的一个容器共享一个 Network Namespace，而不是和宿主机共享。新创建的容器不会创建自己的网卡，配置自己的 IP，而是和一个指定的容器共享 IP、端口范围等。同样，两个容器除了网络方面，其他的如文件系统、进程列表等还是隔离的。两个容器的进程可以通过 lo 网卡设备通信。 Container模式示意图：<br><img src="/img/docker/docker-network-container.jpeg" alt="network container"> </p>
+<p>演示：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=container:docker_bri1 \</span><br><span class="line">              --name docker_con1 ubuntu-base:v3</span><br><span class="line"></span><br><span class="line">$ docker exec -ti docker_con1 /bin/bash</span><br><span class="line">$ docker exec -ti docker_bri1 /bin/bash</span><br><span class="line"></span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>-n</span><br></pre></td></tr></table></figure>
+<h2 id="None模式"><a href="#None模式" class="headerlink" title="None模式"></a>None模式</h2><p>使用<code>none</code>模式，Docker 容器拥有自己的 Network Namespace，但是，并不为Docker 容器进行任何网络配置。也就是说，这个 Docker 容器没有网卡、IP、路由等信息。需要我们自己为 Docker 容器添加网卡、配置 IP 等。 None模式示意图:<br><img src="/img/docker/docker-network-none.jpeg" alt="network none"></p>
+<p>演示：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=none --name \</span><br><span class="line">                docker_non1 ubuntu-base:v3</span><br><span class="line"></span><br><span class="line">$ docker exec -ti docker_non1 /bin/bash</span><br><span class="line"></span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>-n</span><br></pre></td></tr></table></figure>
+<p>Docker 的跨主机通信在这里就先暂时不讲解，在后面的<code>Kubernetes</code>文章当中会讲到。</p>
+<hr>
+<p>接下文: <a href="100213.html">Docker基础之 七.Docker Compose</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/06/100213.html" class="pre-post btn btn-default" title='Docker基础之 七.Docker Compose'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Docker基础之 七.Docker Compose</span>
+        </a>
+    
+    
+        <a href="/archives/2018/06/100211.html" class="next-post btn btn-default" title='Docker基础之 五.数据共享与持久化'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Docker基础之 五.数据共享与持久化</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bridge模式"><span class="toc-text">Bridge模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Host-模式"><span class="toc-text">Host 模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Container-模式"><span class="toc-text">Container 模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#None模式"><span class="toc-text">None模式</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

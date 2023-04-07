@@ -1,0 +1,494 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink,集群">
+
+
+    <meta name="description" content="独立群集此页面提供有关如何在静态（但可能是异构）集群上以完全分布式方式运行Flink的说明。
+要求软件要求Flink可在所有类UNIX环境中运行，例如Linux，Mac OS X和Cygwin（...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink集群部署 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink集群部署">
+            
+	            Flink集群部署
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/colony/">集群</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1356</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="独立群集"><a href="#独立群集" class="headerlink" title="独立群集"></a>独立群集</h1><p>此页面提供有关如何在<em>静态</em>（但可能是异构）集群上以<em>完全分布式方式</em>运行Flink的说明。</p>
+<h2 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h2><h3 id="软件要求"><a href="#软件要求" class="headerlink" title="软件要求"></a>软件要求</h3><p>Flink可在所有<em>类UNIX环境中运行</em>，例如<strong>Linux</strong>，<strong>Mac OS X</strong>和<strong>Cygwin</strong>（适用于Windows），并期望集群由<strong>一个主节点</strong>和<strong>一个或多个工作节点组成</strong>。在开始设置系统之前，请确保<strong>在每个节点上</strong>安装了以下软件：</p>
+<ul>
+<li><strong>Java 1.8.x</strong>或更高版本，</li>
+<li><strong>ssh</strong>（必须运行sshd才能使用管理远程组件的Flink脚本）</li>
+</ul>
+<p>如果您的集群不满足这些软件要求，则需要安装/升级它。</p>
+<p>在所有集群节点上使用无<strong>密码SSH</strong>和 <strong>相同的目录结构</strong>将允许您使用我们的脚本来控制所有内容。</p>
+<h3 id="JAVA-HOME-配置"><a href="#JAVA-HOME-配置" class="headerlink" title="JAVA_HOME 配置"></a><code>JAVA_HOME</code> 配置</h3><p>Flink要求在<code>JAVA_HOME</code>主节点和所有工作节点上设置环境变量，并指向Java安装的目录。</p>
+<p>您可以<code>conf/flink-conf.yaml</code>通过<code>env.java.home</code>键设置此变量。</p>
+<h2 id="Flink设置"><a href="#Flink设置" class="headerlink" title="Flink设置"></a>Flink设置</h2><p>转到<a href="http://flink.apache.org/downloads.html" target="_blank" rel="noopener">下载页面</a>并获取可立即运行的包。确保选择<strong>与您的Hadoop版本匹配</strong>的Flink包。如果您不打算使用Hadoop，请选择任何版本。</p>
+<p>下载最新版本后，将存档复制到主节点并解压缩：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar xzf flink-*<span class="string">.tgz</span></span><br><span class="line"><span class="keyword">cd</span> flink-*</span><br></pre></td></tr></table></figure>
+<h3 id="配置Flink"><a href="#配置Flink" class="headerlink" title="配置Flink"></a>配置Flink</h3><p>解压缩系统文件后，需要通过编辑<em>conf / flink-conf.yaml</em>为集群配置Flink 。</p>
+<p>将<code>jobmanager.rpc.address</code>Keys设置为指向主节点。您还应该通过设置<code>jobmanager.heap.mb</code>和<code>taskmanager.heap.mb</code>键来定义允许JVM在每个节点上分配的最大主内存量。</p>
+<p>这些值以MB为单位。如果某些工作节点有更多主内存要分配给Flink系统，则可以通过<code>FLINK_TM_HEAP</code>在这些特定节点上设置环境变量来覆盖默认值。</p>
+<p>最后，您必须提供集群中所有节点的列表，这些节点将用作工作节点。因此，与HDFS配置类似，编辑文件<em>conf / slaves</em>并输入每个工作节点的IP /主机名。每个工作节点稍后将运行TaskManager。</p>
+<p>以下示例说明了具有三个节点（IP地址从<em>10.0.0.1</em> 到<em>10.0.0.3</em>以及主机名<em>master</em>，<em>worker1</em>，<em>worker2</em>）的设置，并显示了配置文件的内容（需要在所有计算机上的相同路径上访问） ）：</p>
+<p><img src="/img/flink/quickstart_cluster.png" alt="img"></p>
+<p>/ path / to / <strong>flink / conf / flink-conf.yaml</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">jobmanager</span><span class="selector-class">.rpc</span><span class="selector-class">.address</span>：10<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.1</span></span><br></pre></td></tr></table></figure>
+<p>/ path / to / <strong>flink / conf / slaves</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">10<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.2</span></span><br><span class="line">10<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.3</span></span><br></pre></td></tr></table></figure>
+<p>Flink目录必须在同一路径下的每个worker上都可用。您可以使用共享NFS目录，也可以将整个Flink目录复制到每个工作节点。</p>
+<p>有关详细信息和其他配置选项，请参阅<a href="100469.html">配置页面</a>。</p>
+<p>尤其是，</p>
+<ul>
+<li>每个JobManager（<code>jobmanager.heap.mb</code>）的可用内存量，</li>
+<li>每个TaskManager（<code>taskmanager.heap.mb</code>）的可用内存量，</li>
+<li>每台机器的可用CPU数量（<code>taskmanager.numberOfTaskSlots</code>），</li>
+<li>集群中的CPU总数（<code>parallelism.default</code>）和</li>
+<li>临时目录（<code>taskmanager.tmp.dirs</code>）</li>
+</ul>
+<p>是非常重要的配置值。</p>
+<h3 id="启动Flink"><a href="#启动Flink" class="headerlink" title="启动Flink"></a>启动Flink</h3><p>以下脚本在本地节点上启动JobManager，并通过SSH连接到<em>从属</em>文件中列出的所有工作节点，以在每个节点上启动TaskManager。现在您的Flink系统已启动并正在运行。在本地节点上运行的JobManager现在将接受配置的RPC端口上的作业。</p>
+<p>假设您在主节点上并在Flink目录中：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/start-<span class="keyword">cluster</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>要停止Flink，还有一个<code>stop-cluster.sh</code>脚本。</p>
+<h3 id="将JobManager-TaskManager实例添加到集群"><a href="#将JobManager-TaskManager实例添加到集群" class="headerlink" title="将JobManager / TaskManager实例添加到集群"></a>将JobManager / TaskManager实例添加到集群</h3><p>您可以使用<code>bin/jobmanager.sh</code>和<code>bin/taskmanager.sh</code>脚本将JobManager和TaskManager实例添加到正在运行的集群中。</p>
+<h4 id="添加JobManager"><a href="#添加JobManager" class="headerlink" title="添加JobManager"></a>添加JobManager</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/jobmanager.sh ((<span class="keyword">start</span>|<span class="keyword">start</span>-foreground) cluster)|<span class="keyword">stop</span>|<span class="keyword">stop</span>-<span class="keyword">all</span></span><br></pre></td></tr></table></figure>
+<h4 id="添加TaskManager"><a href="#添加TaskManager" class="headerlink" title="添加TaskManager"></a>添加TaskManager</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/taskmanager.sh <span class="keyword">start</span>|<span class="keyword">start</span>-foreground|<span class="keyword">stop</span>|<span class="keyword">stop</span>-<span class="keyword">all</span></span><br></pre></td></tr></table></figure>
+<p>确保在要启动/停止相应实例的主机上调用这些脚本。</p>
+<h1 id="YARN设置"><a href="#YARN设置" class="headerlink" title="YARN设置"></a>YARN设置</h1><h2 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h2><h3 id="在YARN上启动长时间运行的Flink集群"><a href="#在YARN上启动长时间运行的Flink集群" class="headerlink" title="在YARN上启动长时间运行的Flink集群"></a>在YARN上启动长时间运行的Flink集群</h3><p>与4个TaskManager（每个具有4 GB的Heapspace）启动YARN会话：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># get the hadoop2 package from the Flink download page at</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># http://flink.apache.org/downloads.html</span></span><br><span class="line"></span><br><span class="line">curl -O &lt;flink_hadoop2_download_url&gt;</span><br><span class="line">tar xvzf flink-1.7-SNAPSHOT-bin-hadoop2.tgz</span><br><span class="line"><span class="keyword">cd</span> flink-1.7-SNAPSHOT/</span><br><span class="line"><span class="string">./bin/yarn-session.sh</span> -n 4 -jm 1024m -tm 4096m</span><br></pre></td></tr></table></figure>
+<p>指定<code>-s</code>每个TaskManager的处理槽数的标志。我们建议将插槽数设置为每台计算机的处理器数。</p>
+<p>会话启动后，您可以使用该<code>./bin/flink</code>工具将作业提交到群集。</p>
+<h3 id="在YARN上运行Flink作业"><a href="#在YARN上运行Flink作业" class="headerlink" title="在YARN上运行Flink作业"></a>在YARN上运行Flink作业</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># get the hadoop2 package from the Flink download page at</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># http://flink.apache.org/downloads.html</span></span><br><span class="line"></span><br><span class="line">curl -O &lt;flink_hadoop2_download_url&gt;</span><br><span class="line">tar xvzf flink-1.7-SNAPSHOT-bin-hadoop2.tgz</span><br><span class="line"><span class="keyword">cd</span> flink-1.7-SNAPSHOT/</span><br><span class="line"><span class="string">./bin/flink</span> run -m yarn-cluster -yn 4 -yjm 1024m -ytm 4096m <span class="string">./examples/batch/WordCount.jar</span></span><br></pre></td></tr></table></figure>
+<h2 id="Flink-YARN-Session"><a href="#Flink-YARN-Session" class="headerlink" title="Flink YARN Session"></a>Flink YARN Session</h2><p>Apache <a href="http://hadoop.apache.org/" target="_blank" rel="noopener">Hadoop YARN</a>是一个集群资源管理框架。它允许在群集上运行各种分布式应用程序。Flink在其他应用程序旁边的YARN上运行。如果已经有YARN设置，用户不必设置或安装任何东西。</p>
+<p><strong>要求</strong></p>
+<ul>
+<li>至少是Apache Hadoop 2.2</li>
+<li>HDFS（Hadoop分布式文件系统）（或Hadoop支持的其他分布式文件系统）</li>
+</ul>
+<p>如果您在使用Flink YARN客户端时遇到麻烦，请查看<a href="http://flink.apache.org/faq.html#yarn-deployment" target="_blank" rel="noopener">FAQ部分</a>。</p>
+<h3 id="启动Flink会话"><a href="#启动Flink会话" class="headerlink" title="启动Flink会话"></a>启动Flink会话</h3><p>请按照以下说明了解如何在YARN群集中启动Flink会话。</p>
+<p>会话将启动所有必需的Flink服务（JobManager和TaskManagers），以便您可以将程序提交到群集。请注意，您可以在每个会话中运行多个程序。</p>
+<h4 id="下载Flink"><a href="#下载Flink" class="headerlink" title="下载Flink"></a>下载Flink</h4><p>从<a href="http://flink.apache.org/downloads.html" target="_blank" rel="noopener">下载页面下载</a> Hadoop&gt; = 2的Flink软件包。它包含所需的文件。</p>
+<p>使用以下方法解压缩包：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar xvzf flink<span class="number">-1.7</span>-SNAPSHOT-bin-hadoop2.tgz</span><br><span class="line">cd flink<span class="number">-1.7</span>-SNAPSHOT/</span><br></pre></td></tr></table></figure>
+<h4 id="启动一个会话"><a href="#启动一个会话" class="headerlink" title="启动一个会话"></a>启动一个会话</h4><p>使用以下命令启动会话</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/y</span>arn-session.sh</span><br></pre></td></tr></table></figure>
+<p>此命令将显示以下概述：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Usage:</span><br><span class="line">   Required</span><br><span class="line">     -n,--container &lt;arg&gt;   Number <span class="keyword">of</span> YARN container <span class="keyword">to</span> allocate (=Number <span class="keyword">of</span> Task Managers)</span><br><span class="line">   <span class="keyword">Optional</span></span><br><span class="line">     -D &lt;arg&gt;                        Dynamic properties</span><br><span class="line">     -d,--detached                   Start detached</span><br><span class="line">     -jm,--jobManagerMemory &lt;arg&gt;    Memory <span class="keyword">for</span> JobManager Container <span class="keyword">with</span> <span class="keyword">optional</span> unit (<span class="keyword">default</span>: MB)</span><br><span class="line">     -nm,--name                      <span class="keyword">Set</span> a <span class="keyword">custom</span> name <span class="keyword">for</span> the application <span class="keyword">on</span> YARN</span><br><span class="line">     -q,--query                      Display available YARN resources (memory, cores)</span><br><span class="line">     -qu,--queue &lt;arg&gt;               Specify YARN queue.</span><br><span class="line">     -s,--slots &lt;arg&gt;                Number <span class="keyword">of</span> slots per TaskManager</span><br><span class="line">     -tm,--taskManagerMemory &lt;arg&gt;   Memory per TaskManager Container <span class="keyword">with</span> <span class="keyword">optional</span> unit (<span class="keyword">default</span>: MB)</span><br><span class="line">     -z,--zookeeperNamespace &lt;arg&gt;   <span class="keyword">Namespace</span> <span class="keyword">to</span> create the Zookeeper <span class="keyword">sub</span>-paths <span class="keyword">for</span> HA mode</span><br></pre></td></tr></table></figure>
+<p>请注意，客户要求<code>YARN_CONF_DIR</code>或<code>HADOOP_CONF_DIR</code>环境变量设置为read YARN和HDFS配置。</p>
+<p><strong>示例：</strong>发出以下命令以分配10个TaskManager，每个管理器具有8 GB内存和32个处理插槽：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/yarn-session.sh -n <span class="number">10</span> -tm <span class="number">8192</span> -s <span class="number">32</span></span><br></pre></td></tr></table></figure>
+<p>系统将使用配置<code>conf/flink-conf.yaml</code>。如果您想更改某些内容，请按照我们的<a href="100469.html">配置指南 算子操作</a>。</p>
+<p>YARN上的Flink将覆盖以下配置参数<code>jobmanager.rpc.address</code>（因为JobManager总是在不同的机器上分配），<code>taskmanager.tmp.dirs</code>（我们使用YARN给出的tmp目录）以及<code>parallelism.default</code>是否已指定插槽数。</p>
+<p>如果您不想更改配置文件以设置配置参数，则可以选择通过<code>-D</code>标志传递动态属性。所以你可以这样传递参数：<code>-Dfs.overwrite-files=true -Dtaskmanager.network.memory.min=536346624</code>。</p>
+<p>示例调用启动了11个容器（即使只请求了10个容器），因为ApplicationMaster和Job Manager还有一个额外的容器。</p>
+<p>在YARN群集中部署Flink后，它将显示JobManager的连接详细信息。</p>
+<p>通过停止unix进程（使用CTRL + C）或在客户端输入“stop”来停止YARN会话。</p>
+<p>如果群集上有足够的资源，则YARN上的Flink将仅启动所有请求的容器。大多数YARN调度程序考虑了所请求的容器内存，一些帐户也考虑了vcores的数量。默认情况下，vcores的数量等于处理slots（<code>-s</code>）参数。在<code>yarn.containers.vcores</code>允许覆盖vcores的数量与自定义值。为了使此参数起作用，您应该在群集中启用CPU调度。</p>
+<h4 id="分离的YARN会话"><a href="#分离的YARN会话" class="headerlink" title="分离的YARN会话"></a>分离的YARN会话</h4><p>如果您不想让Flink YARN客户端一直运行，也可以启动<em>分离的</em> YARN会话。该参数称为<code>-d</code>或<code>--detached</code>。</p>
+<p>在这种情况下，Flink YARN客户端将仅向群集提交Flink，然后自行关闭。请注意，在这种情况下，无法使用Flink停止YARN会话。</p>
+<p>使用YARN实用程序（<code>yarn application -kill &amp;lt;appId&amp;gt;</code>）来停止YARN会话。</p>
+<h4 id="附加到现有会话"><a href="#附加到现有会话" class="headerlink" title="附加到现有会话"></a>附加到现有会话</h4><p>使用以下命令启动会话</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/y</span>arn-session.sh</span><br></pre></td></tr></table></figure>
+<p>此命令将显示以下概述：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Usage:</span><br><span class="line">   Required</span><br><span class="line">     -<span class="built_in">id</span>,<span class="comment">--applicationId &lt;yarnAppId&gt; YARN application Id</span></span><br></pre></td></tr></table></figure>
+<p>如前所述，<code>YARN_CONF_DIR</code>或者<code>HADOOP_CONF_DIR</code>必须设置环境变量以读取YARN和HDFS配置。</p>
+<p><strong>示例：</strong>发出以下命令以附加到正在运行的Flink YARN会话<code>application_1463870264508_0029</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/yarn-session<span class="selector-class">.sh</span> -id application_1463870264508_0029</span><br></pre></td></tr></table></figure>
+<p>附加到正在运行的会话使用YARN ResourceManager来确定JobManagerRPC端口。</p>
+<p>通过停止unix进程（使用CTRL + C）或在客户端输入“stop”来停止YARN会话。</p>
+<h3 id="向Flink提交工作"><a href="#向Flink提交工作" class="headerlink" title="向Flink提交工作"></a>向Flink提交工作</h3><p>使用以下命令将Flink程序提交到YARN群集：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink</span><br></pre></td></tr></table></figure>
+<p>请参阅<a href="100470.html">命令行客户端</a>的文档。</p>
+<p>该命令将显示如下的帮助菜单：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">..</span>.]</span><br><span class="line">Action <span class="string">"run"</span> compiles <span class="keyword">and</span> runs a program.</span><br><span class="line"></span><br><span class="line">  Syntax: <span class="builtin-name">run</span> [OPTIONS] &lt;jar-file&gt; &lt;arguments&gt;</span><br><span class="line">  <span class="string">"run"</span> action arguments:</span><br><span class="line">     -c,--class &lt;classname&gt;           Class with the program entry point (<span class="string">"main"</span></span><br><span class="line">                                      method <span class="keyword">or</span> <span class="string">"getPlan()"</span> method. Only needed</span><br><span class="line">                                      <span class="keyword">if</span> the JAR file does <span class="keyword">not</span> specify the class</span><br><span class="line">                                      <span class="keyword">in</span> its manifest.</span><br><span class="line">     -m,--jobmanager &lt;host:port&gt;     <span class="built_in"> Address </span>of the JobManager (master) <span class="keyword">to</span></span><br><span class="line">                                      which <span class="keyword">to</span> connect. Use this flag <span class="keyword">to</span> connect</span><br><span class="line">                                      <span class="keyword">to</span> a different JobManager than the one</span><br><span class="line">                                      specified <span class="keyword">in</span> the configuration.</span><br><span class="line">     -p,--parallelism &lt;parallelism&gt;   The parallelism with which <span class="keyword">to</span> <span class="builtin-name">run</span> the</span><br><span class="line">                                      program. Optional flag <span class="keyword">to</span> override the</span><br><span class="line">                                     <span class="built_in"> default </span>value specified <span class="keyword">in</span> the</span><br><span class="line">                                      configuration</span><br></pre></td></tr></table></figure>
+<p>使用<em>运行</em> 算子操作将作业提交给YARN。客户端能够确定JobManager的地址。在极少数问题的情况下，您还可以使用<code>-m</code>参数传递JobManager地址。JobManager地址在YARN控制台中可见。</p>
+<p><strong>例</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget -O LICENSE-<span class="number">2.0</span><span class="selector-class">.txt</span> http:<span class="comment">//www.apache.org/licenses/LICENSE-2.0.txt</span></span><br><span class="line">hadoop fs -copyFromLocal LICENSE-<span class="number">2.0</span><span class="selector-class">.txt</span> hdfs:<span class="comment">/// ...</span></span><br><span class="line">./bin/flink run ./examples/batch/WordCount<span class="selector-class">.jar</span> \</span><br><span class="line">        hdfs:<span class="comment">///..../LICENSE-2.0.txt hdfs:///.../wordcount-result.txt</span></span><br></pre></td></tr></table></figure>
+<p>如果出现以下错误，请确保所有TaskManagers都已启动：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Exception <span class="keyword">in</span> thread <span class="string">"main"</span> org.apache.flink.compiler.CompilerException:</span><br><span class="line">    Available instances could <span class="keyword">not</span> be determined <span class="keyword">from</span> job manager:<span class="built_in"> Connection </span>timed out.</span><br></pre></td></tr></table></figure>
+<p>您可以在JobManager Web界面中检查TaskManagers的数量。该接口的地址打印在YARN会话控制台中。</p>
+<p>如果一分钟后TaskManagers没有出现，您应该使用日志文件调查问题。</p>
+<h2 id="在YARN上运行单个Flink作业"><a href="#在YARN上运行单个Flink作业" class="headerlink" title="在YARN上运行单个Flink作业"></a>在YARN上运行单个Flink作业</h2><p>上面的文档描述了如何在Hadoop YARN环境中启动Flink集群。也可以仅在执行单个作业时在YARN中启动Flink。</p>
+<p>请注意，客户端然后期望设置<code>-yn</code>值（TaskManagers的数量）。</p>
+<p><strong>例：</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run -m yarn-cluster -yn <span class="number">2</span> .<span class="regexp">/examples/</span>batch<span class="regexp">/WordCount.jar</span></span><br></pre></td></tr></table></figure>
+<p>YARN会话的命令行选项也可用于该<code>./bin/flink</code>工具。它们以<code>y</code>or或<code>yarn</code>（对于长参数选项）作为前缀。</p>
+<p>注意：您可以通过设置环境变量为每个作业使用不同的配置目录<code>FLINK_CONF_DIR</code>。要使用此副本，请<code>conf</code>从Flink分发中复制目录，并根据每个作业修改日志记录设置。</p>
+<p>注意：可以<code>-m yarn-cluster</code>与分离的YARN提交（<code>-yd</code>）组合以“触发并忘记”到YARN群集的Flink作业。在这种情况下，您的应用程序将不会从ExecutionEnvironment.execute（）调用获得任何累加器结果或异常！</p>
+<h3 id="用户jar和Classpath"><a href="#用户jar和Classpath" class="headerlink" title="用户jar和Classpath"></a>用户jar和Classpath</h3><p>默认情况下，Flink将在运行单个作业时将用户jar包含到系统类路径中。可以使用<code>yarn.per-job-cluster.include-user-jar</code>参数控制此行为。</p>
+<p>将此设置为<code>DISABLED</code> Flink时，将在用户类路径中包含jar。</p>
+<p>可以通过将参数设置为以下之一来控制类路径中的user-jar位置：</p>
+<ul>
+<li><code>ORDER</code>:(默认）根据字典顺序将jar添加到系统类路径。</li>
+<li><code>FIRST</code>：将jar添加到系统类路径的开头。</li>
+<li><code>LAST</code>：将jar添加到系统类路径的末尾。</li>
+</ul>
+<h2 id="Flink在YARN上的恢复行为"><a href="#Flink在YARN上的恢复行为" class="headerlink" title="Flink在YARN上的恢复行为"></a>Flink在YARN上的恢复行为</h2><p>Flink的YARN客户端具有以下配置参数来控制容器故障时的行为方式。可以<code>conf/flink-conf.yaml</code>使用<code>-D</code>参数从启动YARN会话时或在启动YARN会话时设置这些参数。</p>
+<ul>
+<li><code>yarn.reallocate-failed</code>：此参数控制Flink是否应重新分配失败的TaskManager容器。默认值：true</li>
+<li><code>yarn.maximum-failed-containers</code>：ApplicationMaster在YARN会话失败之前接受的最大失败容器数。默认值：最初请求的TaskManagers（<code>-n</code>）的数量。</li>
+<li><code>yarn.application-attempts</code>：ApplicationMaster（+其TaskManager容器）尝试的数量。如果此值设置为1（默认值），则当Application master失败时，整个YARN会话将失败。较高的值指定YARN重新启动ApplicationMaster的次数。</li>
+</ul>
+<h2 id="调试失败的YARN会话"><a href="#调试失败的YARN会话" class="headerlink" title="调试失败的YARN会话"></a>调试失败的YARN会话</h2><p>Flink YARN会话部署失败的原因有很多。配置错误的Hadoop设置（HDFS权限，YARN配置），版本不兼容（在Cloudera Hadoop上运行Flink与vanilla Hadoop依赖关系）或其他错误。</p>
+<h3 id="日志文件"><a href="#日志文件" class="headerlink" title="日志文件"></a>日志文件</h3><p>如果Flink YARN会话在部署期间失败，则用户必须依赖Hadoop YARN的日志记录函数。最有用的函数是YARN日志聚合。要启用它，用户必须将<code>yarn.log-aggregation-enable</code>属性设置<code>true</code>为<code>yarn-site.xml</code>文件。启用后，用户可以使用以下命令检索（失败的）YARN会话的所有日志文件。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn logs -applicationId &lt;<span class="built_in">application</span> ID&gt;</span><br></pre></td></tr></table></figure>
+<p>请注意，会话结束后需要几秒钟才会显示日志。</p>
+<h3 id="YARN客户端控制台和Web界面"><a href="#YARN客户端控制台和Web界面" class="headerlink" title="YARN客户端控制台和Web界面"></a>YARN客户端控制台和Web界面</h3><p>如果在运行期间发生错误，Flink YARN客户端还会在终端中打印错误消息（例如，如果TaskManager在一段时间后停止工作）。</p>
+<p>除此之外，还有YARN Resource Manager Web界面（默认情况下在端口8088上）。资源管理器Web界面的端口由<code>yarn.resourcemanager.webapp.address</code>配置值确定。</p>
+<p>它允许访问日志文件以运行YARN应用程序，并显示失败应用程序的诊断信息。</p>
+<h2 id="为特定的Hadoop版本构建YARN客户端"><a href="#为特定的Hadoop版本构建YARN客户端" class="headerlink" title="为特定的Hadoop版本构建YARN客户端"></a>为特定的Hadoop版本构建YARN客户端</h2><p>使用Hortonworks，Cloudera或MapR等公司的Hadoop发行版的用户可能必须针对其特定版本的Hadoop（HDFS）和YARN构建Flink。</p>
+<h2 id="在防火墙后面的YARN上运行Flink"><a href="#在防火墙后面的YARN上运行Flink" class="headerlink" title="在防火墙后面的YARN上运行Flink"></a>在防火墙后面的YARN上运行Flink</h2><p>某些YARN群集使用防火墙来控制群集与网络其余部分之间的网络流量。在这些设置中，Flink作业只能从群集网络内（防火墙后面）提交到YARN会话。如果这对生产使用不可行，Flink允许为所有相关服务配置端口范围。通过配置这些范围，用户还可以通过防火墙向Flink提交作业。</p>
+<p>目前，提交工作需要两项服务：</p>
+<ul>
+<li>JobManager（YARN中的ApplicationMaster）</li>
+<li>在JobManager中运行的BlobServer。</li>
+</ul>
+<p>向Flink提交作业时，BlobServer会将带有用户代码的jar分发给所有工作节点（TaskManagers）。JobManager自己接收作业并触发执行。</p>
+<p>用于指定端口的两个配置参数如下：</p>
+<ul>
+<li><code>yarn.application-master.port</code></li>
+<li><code>blob.server.port</code></li>
+</ul>
+<p>这两个配置选项接受单个端口（例如：“50010”），范围（“50000-50025”）或两者的组合（“50010,50011,50020-50025,50050-50075”）。</p>
+<p>（Hadoop使用类似的机制，在那里调用配置参数<code>yarn.app.mapreduce.am.job.client.port-range</code>。）</p>
+<h2 id="背景-内部"><a href="#背景-内部" class="headerlink" title="背景/内部"></a>背景/内部</h2><p>本节简要介绍Flink和YARN如何交互。</p>
+<p><img src="/img/flink/FlinkOnYarn.svg" alt="img"></p>
+<p>YARN客户端需要访问Hadoop配置以连接到YARN资源管理器和HDFS。它使用以下策略确定Hadoop配置：</p>
+<ul>
+<li>测试是否<code>YARN_CONF_DIR</code>，<code>HADOOP_CONF_DIR</code>或<code>HADOOP_CONF_PATH</code>设置（按顺序）。如果设置了其中一个变量，则使用它们来读取配置。</li>
+<li>如果上述策略失败（在正确的YARN设置中不应该这样），则客户端正在使用<code>HADOOP_HOME</code>环境变量。如果已设置，则客户端尝试访问<code>$HADOOP_HOME/etc/hadoop</code>（Hadoop 2）和<code>$HADOOP_HOME/conf</code>（Hadoop 1）。</li>
+</ul>
+<p>启动新的Flink YARN会话时，客户端首先检查所请求的资源（容器和内存）是否可用。之后，它将包含Flink和配置的jar上传到HDFS（步骤1）。</p>
+<p>客户端的下一步是请求（步骤2）YARN容器以启动<em>ApplicationMaster</em>（步骤3）。由于客户端将配置和jar文件注册为容器的资源，因此在该特定机器上运行的YARN的NodeManager将负责准备容器（例如，下载文件）。完成后，将启动<em>ApplicationMaster</em>（AM）。</p>
+<p>该<em>JobManager</em>和AM在同一容器中运行。一旦它们成功启动，AM就知道JobManager（它自己的主机）的地址。它正在为TaskManagers生成一个新的Flink配置文件（以便它们可以连接到JobManager）。该文件也上传到HDFS。此外，<em>AM</em>容器还提供Flink的Web界面。YARN代码分配的所有端口都是<em>临时端口</em>。这允许用户并行执行多个Flink YARN会话。</p>
+<p>之后，AM开始为Flink的TaskManagers分配容器，这将从HDFS下载jar文件和修改后的配置。完成这些步骤后，即可建立Flink并准备接受作业。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100468.html" class="pre-post btn btn-default" title='Flink高可用集群部署'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink高可用集群部署</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100466.html" class="next-post btn btn-default" title='Flink本地安装'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink本地安装</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#独立群集"><span class="toc-text">独立群集</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#要求"><span class="toc-text">要求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#软件要求"><span class="toc-text">软件要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JAVA-HOME-配置"><span class="toc-text">JAVA_HOME 配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink设置"><span class="toc-text">Flink设置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置Flink"><span class="toc-text">配置Flink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Flink"><span class="toc-text">启动Flink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将JobManager-TaskManager实例添加到集群"><span class="toc-text">将JobManager / TaskManager实例添加到集群</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#添加JobManager"><span class="toc-text">添加JobManager</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#添加TaskManager"><span class="toc-text">添加TaskManager</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#YARN设置"><span class="toc-text">YARN设置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#快速开始"><span class="toc-text">快速开始</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#在YARN上启动长时间运行的Flink集群"><span class="toc-text">在YARN上启动长时间运行的Flink集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在YARN上运行Flink作业"><span class="toc-text">在YARN上运行Flink作业</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-YARN-Session"><span class="toc-text">Flink YARN Session</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#启动Flink会话"><span class="toc-text">启动Flink会话</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#下载Flink"><span class="toc-text">下载Flink</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#启动一个会话"><span class="toc-text">启动一个会话</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分离的YARN会话"><span class="toc-text">分离的YARN会话</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#附加到现有会话"><span class="toc-text">附加到现有会话</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#向Flink提交工作"><span class="toc-text">向Flink提交工作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#在YARN上运行单个Flink作业"><span class="toc-text">在YARN上运行单个Flink作业</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用户jar和Classpath"><span class="toc-text">用户jar和Classpath</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink在YARN上的恢复行为"><span class="toc-text">Flink在YARN上的恢复行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#调试失败的YARN会话"><span class="toc-text">调试失败的YARN会话</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#日志文件"><span class="toc-text">日志文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YARN客户端控制台和Web界面"><span class="toc-text">YARN客户端控制台和Web界面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为特定的Hadoop版本构建YARN客户端"><span class="toc-text">为特定的Hadoop版本构建YARN客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#在防火墙后面的YARN上运行Flink"><span class="toc-text">在防火墙后面的YARN上运行Flink</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#背景-内部"><span class="toc-text">背景/内部</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

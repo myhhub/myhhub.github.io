@@ -1,0 +1,396 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,集群,高可用,spark,zookeeper">
+
+
+    <meta name="description" content="一、集群规划这里搭建一个3节点的Spark集群，其中三台主机上均部署Worker服务。同时为了保证高可用，除了在hadoop001上部署主Master服务外，还在hadoop002和hadoop...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>基于ZooKeeper搭建Spark高可用集群 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="基于ZooKeeper搭建Spark高可用集群">
+            
+	            基于ZooKeeper搭建Spark高可用集群
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/zookeeper/">zookeeper</a> <a class="tag-link" href="/tags/colony/">集群</a> <a class="tag-link" href="/tags/availability/">高可用</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/07</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1369</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、集群规划"><a href="#一、集群规划" class="headerlink" title="一、集群规划"></a>一、集群规划</h2><p>这里搭建一个3节点的Spark集群，其中三台主机上均部署<code>Worker</code>服务。同时为了保证高可用，除了在hadoop001上部署主<code>Master</code>服务外，还在hadoop002和hadoop003上分别部署备用的<code>Master</code>服务，Master服务由Zookeeper集群进行协调管理，如果主<code>Master</code>不可用，则备用<code>Master</code>会成为新的主<code>Master</code>。</p>
+<div align="center"> <img src="/img/bigdata/sparkjqgh.png"> </div>
+
+<h2 id="二、前置条件"><a href="#二、前置条件" class="headerlink" title="二、前置条件"></a>二、前置条件</h2><p>搭建Spark集群前，需要保证JDK环境、Zookeeper集群和Hadoop集群已经搭建，相关步骤可以参阅：</p>
+<ul>
+<li><a href="100371.html">Linux环境下JDK安装</a></li>
+<li><a href="100386.html">Zookeeper单机环境和集群环境搭建</a></li>
+<li><a href="100375.html">Hadoop集群环境搭建</a></li>
+</ul>
+<h2 id="三、Spark集群搭建"><a href="#三、Spark集群搭建" class="headerlink" title="三、Spark集群搭建"></a>三、Spark集群搭建</h2><h3 id="3-1-下载解压"><a href="#3-1-下载解压" class="headerlink" title="3.1 下载解压"></a>3.1 下载解压</h3><p>下载所需版本的Spark，官网下载地址：<a href="http://spark.apache.org/downloads.html" target="_blank" rel="noopener">http://spark.apache.org/downloads.html</a></p>
+<div align="center"> <img width="600px" src="/img/bigdata/spark-download.png"> </div>
+
+
+
+<p>下载后进行解压：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># <span class="selector-tag">tar</span> <span class="selector-tag">-zxvf</span>  <span class="selector-tag">spark-2</span><span class="selector-class">.2</span><span class="selector-class">.3-bin-hadoop2</span><span class="selector-class">.6</span><span class="selector-class">.tgz</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-2-配置环境变量"><a href="#3-2-配置环境变量" class="headerlink" title="3.2 配置环境变量"></a>3.2 配置环境变量</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># vim /etc/profile</span></span><br></pre></td></tr></table></figure>
+<p>添加环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">SPARK_HOME</span>=/usr/app/spark-2.2.3-bin-hadoop2.6</span><br><span class="line"><span class="builtin-name">export</span>  <span class="attribute">PATH</span>=<span class="variable">$&#123;SPARK_HOME&#125;</span>/bin:$PATH</span><br></pre></td></tr></table></figure>
+<p>使得配置的环境变量立即生效：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">source</span> <span class="regexp">/etc/</span>profile</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-集群配置"><a href="#3-3-集群配置" class="headerlink" title="3.3 集群配置"></a>3.3 集群配置</h3><p>进入<code>${SPARK_HOME}/conf</code>目录，拷贝配置样本进行修改：</p>
+<h4 id="1-spark-env-sh"><a href="#1-spark-env-sh" class="headerlink" title="1. spark-env.sh"></a>1. spark-env.sh</h4><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">cp</span> <span class="selector-tag">spark-env</span><span class="selector-class">.sh</span><span class="selector-class">.template</span> <span class="selector-tag">spark-env</span><span class="selector-class">.sh</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置JDK安装位置</span></span><br><span class="line"><span class="attr">JAVA_HOME</span>=/usr/java/jdk1.<span class="number">8.0</span>_201</span><br><span class="line"><span class="comment"># 配置hadoop配置文件的位置</span></span><br><span class="line"><span class="attr">HADOOP_CONF_DIR</span>=/usr/app/hadoop-<span class="number">2.6</span>.<span class="number">0</span>-cdh5.<span class="number">15.2</span>/etc/hadoop</span><br><span class="line"><span class="comment"># 配置zookeeper地址</span></span><br><span class="line"><span class="attr">SPARK_DAEMON_JAVA_OPTS</span>=<span class="string">"-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=hadoop001:2181,hadoop002:2181,hadoop003:2181 -Dspark.deploy.zookeeper.dir=/spark"</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-slaves"><a href="#2-slaves" class="headerlink" title="2. slaves"></a>2. slaves</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp slaves<span class="selector-class">.template</span> slaves</span><br></pre></td></tr></table></figure>
+<p>配置所有Woker节点的位置：<br><figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">h</span><br><span class="line">hadoop001</span><br><span class="line">hadoop002</span><br><span class="line">hadoop003</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-4-安装包分发"><a href="#3-4-安装包分发" class="headerlink" title="3.4 安装包分发"></a>3.4 安装包分发</h3><p>将Spark的安装包分发到其他服务器，分发后建议在这两台服务器上也配置一下Spark的环境变量。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -r <span class="regexp">/usr/</span>app<span class="regexp">/spark-2.4.0-bin-hadoop2.6/</span>   <span class="string">hadoop002:</span>usr<span class="regexp">/app/</span></span><br><span class="line">scp -r <span class="regexp">/usr/</span>app<span class="regexp">/spark-2.4.0-bin-hadoop2.6/</span>   <span class="string">hadoop003:</span>usr<span class="regexp">/app/</span></span><br></pre></td></tr></table></figure>
+<h2 id="四、启动集群"><a href="#四、启动集群" class="headerlink" title="四、启动集群"></a>四、启动集群</h2><h3 id="4-1-启动ZooKeeper集群"><a href="#4-1-启动ZooKeeper集群" class="headerlink" title="4.1 启动ZooKeeper集群"></a>4.1 启动ZooKeeper集群</h3><p>分别到三台服务器上启动ZooKeeper服务：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zkServer<span class="selector-class">.sh</span> start</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-启动Hadoop集群"><a href="#4-2-启动Hadoop集群" class="headerlink" title="4.2 启动Hadoop集群"></a>4.2 启动Hadoop集群</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动dfs服务</span></span><br><span class="line"><span class="literal">start</span>-dfs.sh</span><br><span class="line"><span class="comment"># 启动yarn服务</span></span><br><span class="line"><span class="literal">start</span>-yarn.sh</span><br></pre></td></tr></table></figure>
+<h3 id="4-3-启动Spark集群"><a href="#4-3-启动Spark集群" class="headerlink" title="4.3 启动Spark集群"></a>4.3 启动Spark集群</h3><p>进入hadoop001的<code>${SPARK_HOME}/sbin</code>目录下，执行下面命令启动集群。执行命令后，会在hadoop001上启动<code>Maser</code>服务，会在<code>slaves</code>配置文件中配置的所有节点上启动<code>Worker</code>服务。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-<span class="keyword">all</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>分别在hadoop002和hadoop003上执行下面的命令，启动备用的<code>Master</code>服务：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># $&#123;SPARK_HOME&#125;/sbin 下执行</span></span><br><span class="line"><span class="literal">start</span>-<span class="literal">master</span>.sh</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-查看服务"><a href="#4-4-查看服务" class="headerlink" title="4.4 查看服务"></a>4.4 查看服务</h3><p>查看Spark的Web-UI页面，端口为<code>8080</code>。此时可以看到hadoop001上的Master节点处于<code>ALIVE</code>状态，并有3个可用的<code>Worker</code>节点。</p>
+<div align="center"> <img src="/img/bigdata/spark-jqdj1.png"> </div>
+
+<p>而hadoop002和hadoop003上的Master节点均处于<code>STANDBY</code>状态，没有可用的<code>Worker</code>节点。</p>
+<div align="center"> <img src="/img/bigdata/spark-jqdj2.png"> </div>
+
+<div align="center"> <img src="/img/bigdata/spark-jqdj3.png"> </div>
+
+
+
+<h2 id="五、验证集群高可用"><a href="#五、验证集群高可用" class="headerlink" title="五、验证集群高可用"></a>五、验证集群高可用</h2><p>此时可以使用<code>kill</code>命令杀死hadoop001上的<code>Master</code>进程，此时备用<code>Master</code>会中会有一个再次成为<code>主Master</code>，我这里是hadoop002，可以看到hadoop2上的<code>Master</code>经过<code>RECOVERING</code>后成为了新的主<code>Master</code>，并且获得了全部可以用的<code>Workers</code>。</p>
+<div align="center"> <img src="/img/bigdata/spark-jqdj4.png"> </div>
+
+<p>Hadoop002上的<code>Master</code>成为主<code>Master</code>，并获得了全部可以用的<code>Workers</code>。</p>
+<div align="center"> <img src="/img/bigdata/spark-jqdj5.png"> </div>
+
+<p>此时如果你再在hadoop001上使用<code>start-master.sh</code>启动Master服务，那么其会作为备用<code>Master</code>存在。</p>
+<h2 id="六、提交作业"><a href="#六、提交作业" class="headerlink" title="六、提交作业"></a>六、提交作业</h2><p>和单机环境下的提交到Yarn上的命令完全一致，这里以Spark内置的计算Pi的样例程序为例，提交命令如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spark-submit \</span><br><span class="line">--class org.apache.spark.examples.SparkPi \</span><br><span class="line">--master yarn \</span><br><span class="line">--deploy-mode<span class="built_in"> client </span>\</span><br><span class="line">--executor-memory 1G \</span><br><span class="line">--num-executors 10 \</span><br><span class="line">/usr/app/spark-2.4.0-bin-hadoop2.6/examples/jars/spark-examples_2.11-2.4.0.jar \</span><br><span class="line">100</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100379.html" class="pre-post btn btn-default" title='Storm单机版本环境搭建'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Storm单机版本环境搭建</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100377.html" class="next-post btn btn-default" title='Spark开发环境搭建'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark开发环境搭建</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、集群规划"><span class="toc-text">一、集群规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、前置条件"><span class="toc-text">二、前置条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Spark集群搭建"><span class="toc-text">三、Spark集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-下载解压"><span class="toc-text">3.1 下载解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-配置环境变量"><span class="toc-text">3.2 配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-集群配置"><span class="toc-text">3.3 集群配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-spark-env-sh"><span class="toc-text">1. spark-env.sh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-slaves"><span class="toc-text">2. slaves</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-安装包分发"><span class="toc-text">3.4 安装包分发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、启动集群"><span class="toc-text">四、启动集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-启动ZooKeeper集群"><span class="toc-text">4.1 启动ZooKeeper集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-启动Hadoop集群"><span class="toc-text">4.2 启动Hadoop集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-启动Spark集群"><span class="toc-text">4.3 启动Spark集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-查看服务"><span class="toc-text">4.4 查看服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、验证集群高可用"><span class="toc-text">五、验证集群高可用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、提交作业"><span class="toc-text">六、提交作业</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

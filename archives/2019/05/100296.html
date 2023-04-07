@@ -1,0 +1,381 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="android,java,stackoverflow">
+
+
+    <meta name="description" content="问题尝试写一个可以进行“应用更新”的APP。为了达到这个效果，我写了一个可以下载文件并且在一个ProgressDialog里面显示进度的简单方法。我知道怎么使用ProgressDialog，但是...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>在Android里面下载文件，并在ProgressDialog显示进度 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="在Android里面下载文件，并在ProgressDialog显示进度">
+            
+	            在Android里面下载文件，并在ProgressDialog显示进度
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/android/">android</a> <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/stackoverflow/">stackoverflow</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/05/26</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1412</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>尝试写一个可以进行“应用更新”的APP。为了达到这个效果，我写了一个可以下载文件并且在一个<code>ProgressDialog</code>里面显示进度的简单方法。我知道怎么使用<code>ProgressDialog</code>，但是我不太确定怎么显示当前进度和下载文件。</p>
+<h2 id="回答"><a href="#回答" class="headerlink" title="回答"></a>回答</h2><p>有很多方式去下载文件。我给出一些最常用的方法；由你来选择选择哪一个最适合你的应用。</p>
+<h3 id="1-使用AsyncTask，并且在一个dialog里面显示进度"><a href="#1-使用AsyncTask，并且在一个dialog里面显示进度" class="headerlink" title="1. 使用AsyncTask，并且在一个dialog里面显示进度"></a>1. 使用AsyncTask，并且在一个dialog里面显示进度</h3><p>这种方法允许你执行一些后台任务，并且同时更新UI（在这里，我们是更新进度条progress bar）。</p>
+<p>首先是实例代码<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个dialog为Activity的成员变量</span></span><br><span class="line">ProgressDialog mProgressDialog;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在OnCreate()方法里面初始化</span></span><br><span class="line">mProgressDialog = <span class="keyword">new</span> ProgressDialog(YourActivity.<span class="keyword">this</span>);</span><br><span class="line">mProgressDialog.setMessage(<span class="string">"A message"</span>);</span><br><span class="line">mProgressDialog.setIndeterminate(<span class="keyword">true</span>);</span><br><span class="line">mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);</span><br><span class="line">mProgressDialog.setCancelable(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行下载器</span></span><br><span class="line"><span class="keyword">final</span> DownloadTask downloadTask = <span class="keyword">new</span> DownloadTask(YourActivity.<span class="keyword">this</span>);</span><br><span class="line">downloadTask.execute(<span class="string">"你要下载文件的Url"</span>);</span><br><span class="line"></span><br><span class="line">mProgressDialog.setOnCancelListener(<span class="keyword">new</span> DialogInterface.OnCancelListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">onCancel</span><span class="params">(DialogInterface dialog)</span> </span>&#123;</span><br><span class="line">        downloadTask.cancel(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p><code>AsyncTask</code>看起来像这样</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一般我们把AsyncTask的子类定义在Activity的内部</span></span><br><span class="line"><span class="comment">// 通过这种方式，我们就可以轻松地在这里更改UI线程</span></span><br><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DownloadTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>, <span class="title">String</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Context context;</span><br><span class="line">    <span class="keyword">private</span> PowerManager.WakeLock mWakeLock;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> DownloadTask(Context context) &#123;</span><br><span class="line">        <span class="keyword">this</span>.context = context;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="keyword">protected</span> String doInBackground(String... sUrl) &#123;</span><br><span class="line">        InputStream input = <span class="keyword">null</span>;</span><br><span class="line">        OutputStream output = <span class="keyword">null</span>;</span><br><span class="line">        HttpURLConnection connection = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            URL url = <span class="keyword">new</span> URL(sUrl[<span class="number">0</span>]);</span><br><span class="line">            connection = (HttpURLConnection) url.openConnection();</span><br><span class="line">            connection.connect();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 避免因为接收到非HTTP 200 OK状态，而导致只或者错误代码，而不是要下载的文件</span></span><br><span class="line">            <span class="keyword">if</span> (connection.getResponseCode() != HttpURLConnection.HTTP_OK) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">"Server returned HTTP "</span> + connection.getResponseCode()</span><br><span class="line">                        + <span class="string">" "</span> + connection.getResponseMessage();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 这对显示下载百分比有帮助</span></span><br><span class="line">            <span class="comment">// 当服务器没有返回文件的大小时，数字可能为-1</span></span><br><span class="line">            <span class="keyword">int</span> fileLength = connection.getContentLength();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 下载文件</span></span><br><span class="line">            input = connection.getInputStream();</span><br><span class="line">            output = <span class="keyword">new</span> FileOutputStream(<span class="string">"/sdcard/file_name.extension"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">byte</span> data[] = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4096</span>];</span><br><span class="line">            <span class="keyword">long</span> total = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">int</span> <span class="keyword">count</span>;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">count</span> = input.read(data)) != <span class="number">-1</span>) &#123;</span><br><span class="line">                <span class="comment">// 允许用返回键取消下载</span></span><br><span class="line">                <span class="keyword">if</span> (isCancelled()) &#123;</span><br><span class="line">                    input.close();</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                total += <span class="keyword">count</span>;</span><br><span class="line">                <span class="comment">// 更新下载进度</span></span><br><span class="line">                <span class="keyword">if</span> (fileLength &gt; <span class="number">0</span>) <span class="comment">// 只有当 fileLength&gt;0 的时候才会调用</span></span><br><span class="line">                    publishProgress((<span class="keyword">int</span>) (total * <span class="number">100</span> / fileLength));</span><br><span class="line">                output.write(data, <span class="number">0</span>, <span class="keyword">count</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">return</span> e.toString();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (output != <span class="keyword">null</span>)</span><br><span class="line">                    output.close();</span><br><span class="line">                <span class="keyword">if</span> (input != <span class="keyword">null</span>)</span><br><span class="line">                    input.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException ignored) &#123;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (connection != <span class="keyword">null</span>)</span><br><span class="line">                connection.disconnect();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>上面的<code>doInBackground</code>方法总是在后台线程中运行。你不能在这里做任何UI线程相关的任务。另一方面，<code>onProgressUpdate</code>和<code>onPreExecute</code>是在UI线程里面运行的，所以你可以在这里更改进度条。</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">onPreExecute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onPreExecute();</span><br><span class="line">        <span class="comment">// 取得CPU锁，避免因为用户在下载过程中按了电源键而导致的失效</span></span><br><span class="line">        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);</span><br><span class="line">        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,</span><br><span class="line">             getClass().getName());</span><br><span class="line">        mWakeLock.acquire();</span><br><span class="line">        mProgressDialog.show();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Integer... progress)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onProgressUpdate(progress);</span><br><span class="line">        <span class="comment">// 如果到了这里，文件长度是确定的，设置indeterminate为false</span></span><br><span class="line">        mProgressDialog.setIndeterminate(<span class="keyword">false</span>);</span><br><span class="line">        mProgressDialog.setMax(<span class="number">100</span>);</span><br><span class="line">        mProgressDialog.setProgress(progress[<span class="number">0</span>]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(String result)</span> </span>&#123;</span><br><span class="line">        mWakeLock.release();</span><br><span class="line">        mProgressDialog.dismiss();</span><br><span class="line">        <span class="keyword">if</span> (result != <span class="keyword">null</span>)</span><br><span class="line">            Toast.makeText(context,<span class="string">"Download error: "</span>+result, Toast.LENGTH_LONG).show();</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            Toast.makeText(context,<span class="string">"File downloaded"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>为了可正常运行，你还要取得WAKE_LOCK权限<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:<span class="built_in">name</span>=<span class="string">"android.permission.WAKE_LOCK"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-从服务器上下载文件"><a href="#2-从服务器上下载文件" class="headerlink" title="2. 从服务器上下载文件"></a>2. 从服务器上下载文件</h3><p>这里有个最大的问题：<em>我怎么从service来更新我的activity？</em>。<br>在下一个例子当中我们会使用两个你可能不熟悉的类：<code>ResultReceiver</code>和<code>IntentService</code>。<code>ResultReceiver</code>是一个可以允许我们用Service来更新线程的类；<code>IntentService</code>是一个可以生成用来处理后台任务的线程的<code>Service</code>子类（你需要知道，<code>Service</code>实际上是和你的应用运行在同一个线程的；当你继承了<code>Service</code>之后，你必须手动生成一个新的线程来处理费时操作）。  </p>
+<p>一个提供下载功能的<code>Service</code>看起来像这样：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DownloadService</span> <span class="keyword">extends</span> <span class="title">IntentService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UPDATE_PROGRESS = <span class="number">8344</span>;</span><br><span class="line">    <span class="keyword">public</span> DownloadService() &#123;</span><br><span class="line">        <span class="keyword">super</span>(<span class="string">"DownloadService"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> onHandleIntent(Intent intent) &#123;</span><br><span class="line">        String urlToDownload = intent.getStringExtra(<span class="string">"url"</span>);</span><br><span class="line">        ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra(<span class="string">"receiver"</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            URL url = <span class="keyword">new</span> URL(urlToDownload);</span><br><span class="line">            URLConnection connection = url.openConnection();</span><br><span class="line">            connection.connect();</span><br><span class="line">            <span class="comment">// 这对你在进度条上面显示百分比很有用</span></span><br><span class="line">            <span class="keyword">int</span> fileLength = connection.getContentLength();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// download the file</span></span><br><span class="line">            InputStream input = <span class="keyword">new</span> BufferedInputStream(connection.getInputStream());</span><br><span class="line">            OutputStream output = <span class="keyword">new</span> FileOutputStream(<span class="string">"/sdcard/BarcodeScanner-debug.apk"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">byte</span> data[] = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">            <span class="keyword">long</span> total = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">int</span> <span class="keyword">count</span>;</span><br><span class="line">            <span class="keyword">while</span> ((<span class="keyword">count</span> = input.read(data)) != <span class="number">-1</span>) &#123;</span><br><span class="line">                total += <span class="keyword">count</span>;</span><br><span class="line">                <span class="comment">// 更新进度条....</span></span><br><span class="line">                Bundle resultData = <span class="keyword">new</span> Bundle();</span><br><span class="line">                resultData.putInt(<span class="string">"progress"</span> ,(<span class="keyword">int</span>) (total * <span class="number">100</span> / fileLength));</span><br><span class="line">                receiver.send(UPDATE_PROGRESS, resultData);</span><br><span class="line">                output.write(data, <span class="number">0</span>, <span class="keyword">count</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            output.flush();</span><br><span class="line">            output.close();</span><br><span class="line">            input.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Bundle resultData = <span class="keyword">new</span> Bundle();</span><br><span class="line">        resultData.putInt(<span class="string">"progress"</span> ,<span class="number">100</span>);</span><br><span class="line">        receiver.send(UPDATE_PROGRESS, resultData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>把这个<code>Service</code>添加到清单文件中：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;service android:<span class="attribute">name</span>=<span class="string">".DownloadService"</span>/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>activity里面的代码：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 像第一个例子里面一样初始化ProgressBar</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在这里启动下载</span></span><br><span class="line">mProgressDialog.show();</span><br><span class="line">Intent intent = <span class="keyword">new</span> <span class="type">Intent</span>(<span class="built_in">this</span>, DownloadService.class);</span><br><span class="line">intent.putExtra(<span class="string">"url"</span>, <span class="string">"url of the file to download"</span>);</span><br><span class="line">intent.putExtra(<span class="string">"receiver"</span>, <span class="keyword">new</span> <span class="type">DownloadReceiver</span>(<span class="keyword">new</span> <span class="type">Handler</span>()));</span><br><span class="line">startService(intent);</span><br></pre></td></tr></table></figure>
+<p>然后像这样来使用<code>ResultReceiver</code>：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DownloadReceiver</span> <span class="keyword">extends</span> <span class="title">ResultReceiver</span></span>&#123;</span><br><span class="line">    public <span class="type">DownloadReceiver</span>(<span class="type">Handler</span> handler) &#123;</span><br><span class="line">        <span class="keyword">super</span>(handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void onReceiveResult(int resultCode, <span class="type">Bundle</span> resultData) &#123;</span><br><span class="line">        <span class="keyword">super</span>.onReceiveResult(resultCode, resultData);</span><br><span class="line">        <span class="keyword">if</span> (resultCode == <span class="type">DownloadService</span>.<span class="type">UPDATE_PROGRESS</span>) &#123;</span><br><span class="line">            int progress = resultData.getInt(<span class="string">"progress"</span>);</span><br><span class="line">            mProgressDialog.setProgress(progress);</span><br><span class="line">            <span class="keyword">if</span> (progress == <span class="number">100</span>) &#123;</span><br><span class="line">                mProgressDialog.dismiss();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-1-使用Groundy库"><a href="#2-1-使用Groundy库" class="headerlink" title="2.1 使用Groundy库"></a>2.1 使用Groundy库</h4><p><a href="http://casidiablo.github.com/groundy" target="_blank" rel="noopener">Groundy</a>是一个可以帮助你在后台服务中运行代码片段的库，它是基于<code>ResultReceiver</code>这一概念。但是这个库现在已经被标记为<strong>过时</strong>了（deprecated）。下面是<strong>完整</strong>代码的样子。</p>
+<p>你要展示dialog的Activity。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ProgressDialog mProgressDialog;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.main);</span><br><span class="line"></span><br><span class="line">        findViewById(R.id.btn_download).setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> onClick(View view) &#123;</span><br><span class="line">                String url = ((EditText) findViewById(R.id.edit_url)).getText().toString().trim();</span><br><span class="line">                Bundle extras = <span class="keyword">new</span> Bundler().add(DownloadTask.PARAM_URL, url).build();</span><br><span class="line">                Groundy.create(DownloadExample.<span class="keyword">this</span>, DownloadTask.<span class="keyword">class</span>)</span><br><span class="line">                        .receiver(mReceiver)</span><br><span class="line">                        .params(extras)</span><br><span class="line">                        .queue();</span><br><span class="line"></span><br><span class="line">                mProgressDialog = <span class="keyword">new</span> ProgressDialog(MainActivity.<span class="keyword">this</span>);</span><br><span class="line">                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);</span><br><span class="line">                mProgressDialog.setCancelable(<span class="literal">false</span>);</span><br><span class="line">                mProgressDialog.show();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ResultReceiver mReceiver = <span class="keyword">new</span> ResultReceiver(<span class="keyword">new</span> Handler()) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">protected</span> <span class="keyword">void</span> onReceiveResult(<span class="keyword">int</span> resultCode, Bundle resultData) &#123;</span><br><span class="line">            <span class="keyword">super</span>.onReceiveResult(resultCode, resultData);</span><br><span class="line">            <span class="keyword">switch</span> (resultCode) &#123;</span><br><span class="line">                <span class="keyword">case</span> Groundy.<span class="string">STATUS_PROGRESS:</span></span><br><span class="line">                    mProgressDialog.setProgress(resultData.getInt(Groundy.KEY_PROGRESS));</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Groundy.<span class="string">STATUS_FINISHED:</span></span><br><span class="line">                    Toast.makeText(DownloadExample.<span class="keyword">this</span>, R.string.file_downloaded, Toast.LENGTH_LONG);</span><br><span class="line">                    mProgressDialog.dismiss();</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Groundy.<span class="string">STATUS_ERROR:</span></span><br><span class="line">                    Toast.makeText(DownloadExample.<span class="keyword">this</span>, resultData.getString(Groundy.KEY_ERROR), Toast.LENGTH_LONG).show();</span><br><span class="line">                    mProgressDialog.dismiss();</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Groundy</strong>使用一个<code>GroundyTask</code>的实现类来下载文件和显示进度：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">DownloadTask</span> <span class="keyword">extends</span> <span class="title">GroundyTask</span> </span>&#123;    </span><br><span class="line">    public static <span class="keyword">final</span> <span class="type">String</span> <span class="type">PARAM_URL</span> = <span class="string">"com.groundy.sample.param.url"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> boolean doInBackground() &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">String</span> url = getParameters().getString(<span class="type">PARAM_URL</span>);</span><br><span class="line">            <span class="type">File</span> dest = <span class="keyword">new</span> <span class="type">File</span>(getContext().getFilesDir(), <span class="keyword">new</span> <span class="type">File</span>(url).getName());</span><br><span class="line">            <span class="type">DownloadUtils</span>.downloadFile(getContext(), url, dest, <span class="type">DownloadUtils</span>.getDownloadListenerForTask(<span class="keyword">this</span>));</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (<span class="type">Exception</span> pokemon) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>添加这行代码到清单文件中：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;service android:<span class="attribute">name</span>=<span class="string">"com.codeslap.groundy.GroundyService"</span>/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这实在是太简单了！只需要从<a href="https://github.com/casidiablo/groundy/downloads" target="_blank" rel="noopener">Github</a>上下载最新的jar文件就可以开始了。但是要记住，Groundy的主要用途是在后台服务中调用外部的REST API，然后更简单地在UI上更新结果。如果你要在你的应用里面做类似的事情，这个库将非常有帮助。   </p>
+<h4 id="2-2-使用ion"><a href="#2-2-使用ion" class="headerlink" title="2.2 使用ion"></a>2.2 使用<a href="https://github.com/koush/ion" target="_blank" rel="noopener">ion</a></h4><h3 id="3-使用DownloadManager类（只适用于GingerBread及其以上的系统）"><a href="#3-使用DownloadManager类（只适用于GingerBread及其以上的系统）" class="headerlink" title="3. 使用DownloadManager类（只适用于GingerBread及其以上的系统）"></a>3. 使用<code>DownloadManager</code>类（只适用于GingerBread及其以上的系统）</h3><p>这个方法很酷炫，你不需要担心手动下载文件、处理线程和流之类等乱七八糟的东西。GingerBread带来一项新功能：<code>DownloadManager</code>。<code>DownloadManager</code>允许你轻松地下载文件和把复杂计算的任务委托给系统。  </p>
+<p>首先，我们来看一下工具方法：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> 使用context来检查设备信息和 DownloadManager 的信息</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 如果downloadmanager可用则返回 true</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">boolean</span> <span class="title">isDownloadManagerAvailable</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.GINGERBREAD) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方法的名字就已经告诉了我们一切，只有当你确保可以使用<code>DownloadManager</code>的时候，你才可以做下面的事情：</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> <span class="built_in">url</span> = <span class="string">"url you want to download"</span>;</span><br><span class="line">DownloadManager.Request request = <span class="keyword">new</span> DownloadManager.Request(Uri.parse(<span class="built_in">url</span>));</span><br><span class="line">request.setDescription(<span class="string">"Some descrition"</span>);</span><br><span class="line">request.setTitle(<span class="string">"Some title"</span>);</span><br><span class="line"><span class="comment">// in order for this if to run, you must use the android 3.2 to compile your app</span></span><br><span class="line"><span class="comment">// 为了保证这个if语句会运行，你必须使用android 3.2来编译 （译者注：应该是大于android 3.2的版本）</span></span><br><span class="line"><span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.HONEYCOMB) &#123;</span><br><span class="line">    request.allowScanningByMediaScanner();</span><br><span class="line">    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);</span><br><span class="line">&#125;</span><br><span class="line">request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, <span class="string">"name-of-the-file.ext"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获得下载服务和队列文件</span></span><br><span class="line">DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);</span><br><span class="line">manager.enqueue(request);</span><br></pre></td></tr></table></figure>
+<h3 id="最后的一些思考"><a href="#最后的一些思考" class="headerlink" title="最后的一些思考"></a>最后的一些思考</h3><p>第一个和第二个方法只是冰山一角。如果你想你的应用更加健壮，你得留意许多事情。这里是一些建议：</p>
+<ul>
+<li>你必须检查用户是否有Internet连接。</li>
+<li>确保你有正确的权限（<code>Internet</code>和<code>WRITE_EXTERNAL_STORAGE</code>），如果要检查网络可用性，你还需要<code>ACCESS_NETWORK_STATE</code>权限。</li>
+<li>确保你要保存下载文件的目录存在，并且有相应的写入权限。</li>
+<li>如果下载的文件太大，你可能需要实现一种方法来确保上次的请求失败后，可以接着从来。</li>
+<li>如果可以有暂停或者取消下载的选项，用户会很感激你的！  </li>
+</ul>
+<p>除非你想对下载过程有绝对的控制权，否则我强烈推荐你使用<code>DownloadManager</code>。因为他已经处理好了上面的大部分建议。</p>
+<p>stackoverflow链接：<a href="http://stackoverflow.com/questions/3028306/download-a-file-with-android-and-showing-the-progress-in-a-progressdialog" target="_blank" rel="noopener">http://stackoverflow.com/questions/3028306/download-a-file-with-android-and-showing-the-progress-in-a-progressdialog</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/05/100302.html" class="pre-post btn btn-default" title='高并发系统之 一.如何设计一个高并发系统？'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">高并发系统之 一.如何设计一个高并发系统？</span>
+        </a>
+    
+    
+        <a href="/archives/2019/05/100295.html" class="next-post btn btn-default" title='如何获取Android设备唯一ID？'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">如何获取Android设备唯一ID？</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#回答"><span class="toc-text">回答</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-使用AsyncTask，并且在一个dialog里面显示进度"><span class="toc-text">1. 使用AsyncTask，并且在一个dialog里面显示进度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-从服务器上下载文件"><span class="toc-text">2. 从服务器上下载文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-使用Groundy库"><span class="toc-text">2.1 使用Groundy库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-使用ion"><span class="toc-text">2.2 使用ion</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-使用DownloadManager类（只适用于GingerBread及其以上的系统）"><span class="toc-text">3. 使用DownloadManager类（只适用于GingerBread及其以上的系统）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后的一些思考"><span class="toc-text">最后的一些思考</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

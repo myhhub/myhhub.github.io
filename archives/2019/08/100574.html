@@ -1,0 +1,524 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="java">
+
+
+    <meta name="description" content="主要介绍以下内容：
+
+什么是打破模块的封装
+如何使用命令行选项将依赖项（添加需要）添加到模块
+如何使用--add-exports命令行选项导出模块的未导出包，并使用可执行JAR的MANIFEST...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Java 9 打破模块的封装 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Java 9 打破模块的封装">
+            
+	            Java 9 打破模块的封装
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/08/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1332</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>主要介绍以下内容：</p>
+<ul>
+<li>什么是打破模块的封装</li>
+<li>如何使用命令行选项将依赖项（添加需要）添加到模块</li>
+<li>如何使用<code>--add-exports</code>命令行选项导出模块的未导出包，并使用可执行JAR的MANIFEST.MF文件</li>
+<li>如何使用<code>--add-opens</code>命令行选项并使用可执行JAR的MANIFEST.MF文件打开模块的非开放包</li>
+<li>如何使用<code>--add-read</code>s命令行选项增加模块的可读性</li>
+</ul>
+<h3 id="一-什么是打破模块的封装"><a href="#一-什么是打破模块的封装" class="headerlink" title="一. 什么是打破模块的封装"></a>一. 什么是打破模块的封装</h3><p>JDK 9的主要目标之一是将类型和资源封装在模块中，并仅导出其他模块要访问其公共类型的软件包。 有时，可能需要打破模块指定的封装，以启用白盒测试或使用不受支持的JDK内部API或类库。 这可以通过在编译时和运行时使用非标准命令行选项来实现。 具有这些选项的另一个原因是向后兼容性。 并不是所有现有的应用程序将完全迁移到JDK 9并将被模块化。 如果这些应用程序需要使用以前是公开的但已经封装在JDK 9中的库提供的JDK API或API，则这些应用程序有一种方法可以继续工作。 其中一些选项具有可以添加到可执行JAR的MANIFEST.MF文件中的对应属性，以避免使用命令行选项。</p>
+<blockquote>
+<p>Tips<br>使用Module API也可以使用每个命令行选项来打破模块的封装。</p>
+</blockquote>
+<p>虽然可能听起来像这些选项与JDK 9之前的操作相同，但是在访问JDK内部API时没有任何限制。 如果模块中的软件包未导出或打开，则表示模块的设计人员无意在模块外部使用这些软件包。 这样的包可能会被修改或甚至从模块中删除，无需任何通知。 如果仍然使用这些软件包通过使用命令行选项导出或打开它们，可能会面临破坏应用程序的风险！</p>
+<h3 id="二-命令行选项"><a href="#二-命令行选项" class="headerlink" title="二. 命令行选项"></a>二. 命令行选项</h3><p>模块声明中的三个模块语句（statement）允许模块封装其类型和资源，并让其他模块使用来自第一个模块的封装类型和资源。 这些语句是<code>exports</code>, <code>opens</code>, 和<code>requires</code>。 每个模块语句都有一个命令行选项。 对于<code>exports</code>和<code>opens</code>语句，可以在JAR的manifest文件中使用相应的属性。 下表列出了这些语句及其相应的命令行选项和清单属性。 在以下部分详细描述这些选项。</p>
+<table>
+<thead>
+<tr>
+<th>Module Statement</th>
+<th>Command-Line Option</th>
+<th>Manifest Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exports</td>
+<td>–add-exports</td>
+<td>Add-Exports</td>
+</tr>
+<tr>
+<td>opens</td>
+<td>–add-opens</td>
+<td>Add-Opens</td>
+</tr>
+<tr>
+<td>requires</td>
+<td>–add-reads</td>
+<td>无属性可用</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Tips<br>您可以在相同的命令行中多次使用<code>--add-exports</code>，<code>--add-opens</code>和<code>--add-reads</code>命令行选项。</p>
+</blockquote>
+<h4 id="1-add-exports选项"><a href="#1-add-exports选项" class="headerlink" title="1. --add-exports选项"></a>1. <code>--add-exports</code>选项</h4><p>模块声明中的<code>exports</code>语句将模块中的包导出到所有或其他模块，因此这些模块可以使用该包中的公共API。 如果程序包未由模块导出，则可以使用<code>-add-exports</code>的命令行选项导出程序包。 其语法如下：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">-add-exports &lt;source-<span class="class"><span class="keyword">module</span>&gt;/&lt;package&gt;=&lt;target-<span class="title">module</span>-<span class="title">list</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>这里，<code>&lt;source-module&gt;</code>是将<code>&lt;package&gt;</code>导出到<code>&lt;target-module-list&gt;</code>的模块，它是以逗号分隔的目标模块名称列表。 相当于向<code>&lt;source-module&gt;</code>的声明添加一个限定的<code>exports</code>语句：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> &lt;source-<span class="keyword">module</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">exports</span> &lt;<span class="keyword">package</span>&gt; to &lt;target-<span class="keyword">module</span>-list&gt;;</span><br><span class="line">    <span class="comment">// More statements go here</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Tips<br>如果目标模块列表是特殊值<code>ALL-UNNAMED</code>，对于<code>--add-exports</code>选项，模块的包将导出到所有未命名的模块。 <code>--add-exports</code>选项可用于javac和java命令。</p>
+</blockquote>
+<p>以下选项将java.base模块中的sun.util.logging包导出到com.jdojo.test和com.jdojo.prime模块：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--add-exports java.base/sun<span class="selector-class">.util</span><span class="selector-class">.logging</span>=com<span class="selector-class">.jdojo</span><span class="selector-class">.test</span>,com<span class="selector-class">.jdojo</span><span class="selector-class">.prime</span></span><br></pre></td></tr></table></figure>
+<p>以下选项将java.base模块中的sun.util.logging包导出到所有未命名的模块：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--add-exports java.base/sun<span class="selector-class">.util</span><span class="selector-class">.logging</span>=ALL-UNNAMED</span><br></pre></td></tr></table></figure>
+<h4 id="2-add-opens选项"><a href="#2-add-opens选项" class="headerlink" title="2. --add-opens选项"></a>2. <code>--add-opens</code>选项</h4><p>模块声明中的<code>opens</code>语句使模块里面的包对其他模块开放，因此这些模块可以在运行期使用深层反射访问该程序包中的所有成员类型。 如果一个模块的包未打开，可以使用<code>--add-opens</code>命令行选项打开它。 其语法如下：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">-add-opens &lt;source-<span class="class"><span class="keyword">module</span>&gt;/&lt;package&gt;=&lt;target-<span class="title">module</span>-<span class="title">list</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>这里，<code>&lt;source-module&gt;</code>是打开<code>&lt;package&gt;</code>到<code>&lt;target-module-list&gt;</code>的模块，它是以逗号分隔的目标模块名称列表。 相当于向<code>&lt;source-module&gt;</code>的声明添加一个限定的<code>opens</code>语句：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> &lt;source-<span class="keyword">module</span>&gt; &#123;</span><br><span class="line">    opens &lt;package&gt; to &lt;target-<span class="keyword">module</span>-<span class="built_in">list</span>&gt;;</span><br><span class="line">    <span class="comment">// More statements go here</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Tips<br>如果目标模块列表是特殊值<code>ALL-UNNAMED</code>，对于<code>--add-opened</code>选项，模块的软件包对所有未命名的模块开放。 <code>--add-opened</code>选项可用于java命令。 在编译时使用javac命令使用此选项会生成警告，但没有影响。</p>
+</blockquote>
+<p>以下选项将java.base模块中的sun.util.logging包对com.jdojo.test和com.jdojo.prime模块开放：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--add-opens java.base/sun<span class="selector-class">.util</span><span class="selector-class">.logging</span>=com<span class="selector-class">.jdojo</span><span class="selector-class">.test</span>,com<span class="selector-class">.jdojo</span><span class="selector-class">.prime</span></span><br></pre></td></tr></table></figure>
+<p>以下选项将java.base模块中的sun.util.logging包对所有未命名的模块开放：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--add-opens java.base/sun<span class="selector-class">.util</span><span class="selector-class">.logging</span>=ALL-UNNAMED</span><br></pre></td></tr></table></figure>
+<h4 id="3-add-reads-选项"><a href="#3-add-reads-选项" class="headerlink" title="3.--add-reads 选项"></a>3.<code>--add-reads</code> 选项</h4><p><code>--add-reads</code>选项不是关于打破封装。 相反，它是关于增加模块的可读性。 在测试和调试过程中，即使第一个模块不依赖于第二个模块，模块有时也需要读取另一个模块。 模块声明中的<code>requires</code>语句用于声明当前模块对另一个模块的依赖关系。 可以使用<code>--add-reads</code>命令行选项将可读性边缘从模块添加到另一个模块。 这对于将第一个模块添加<code>requires</code>语句具有相同的效果。 其语法如下：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">-add-reads &lt;source-<span class="class"><span class="keyword">module</span>&gt;=&lt;target-<span class="title">module</span>-<span class="title">list</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p><code>&lt;source-module&gt;</code>是其定义被更新以读取<code>&lt;target-module-list&gt;</code>中指定的模块列表的模块，该目标模块名称是以逗号分隔的列表。 相当于将目标模块列表中每个模块的源模块添加一个<code>requires</code>语句：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> &lt;source-<span class="keyword">module</span>&gt; &#123;</span><br><span class="line">    requires &lt;<span class="keyword">target</span>-<span class="keyword">module</span><span class="number">1</span>&gt;<span class="comment">;</span></span><br><span class="line"><span class="comment">    requires &lt;target-module2&gt;;</span></span><br><span class="line"><span class="comment">    // More statements go here</span></span><br><span class="line"><span class="comment">&#125;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Tips<br>如果目标模块列表是特殊值<code>ALL-UNNAMED</code>，则对于<code>--add-reads</code>选项，源模块读 有未命名的模块。 这是命名模块可以读取未命名模块的唯一方法。 没有可以在命名模块声明中使用的等效模块语句来读取未命名的模块。 此选项在编译时和运行时可用。</p>
+</blockquote>
+<p>以下选项为com.jdojo.common模块添加了一个读取边界，使其读取jdk.accessibility模块：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--add-reads com<span class="selector-class">.jdojo</span><span class="selector-class">.common</span>=jdk.accessibility</span><br></pre></td></tr></table></figure>
+<h4 id="4-permit-illegal-access选项"><a href="#4-permit-illegal-access选项" class="headerlink" title="4. --permit-illegal-access选项"></a>4. <code>--permit-illegal-access</code>选项</h4><p>前面提到的三个命令行选项，用于添加<code>exports</code> ，<code>opens</code>和<code>reads</code>仅用于向后兼容。 但是，当需要“非法”访问（反射访问模块中类型不可访问的成员）到几个模块时，使用这些选项是乏味的。 对于这种情况，java命令可以使用<code>--permit-illegal-access</code>选项。 顾名思义，它允许通过使用深层反射的任何未命名模块（类路径中的代码）的代码非法访问任何命名模块中的类型的成员。 其语法如下：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java --permit-illegal-access &lt;other-<span class="keyword">options</span>-<span class="keyword">and</span>-arguments&gt;</span><br></pre></td></tr></table></figure>
+<p><code>--permit-illegal-access</code>选项不允许将命名模块中的代码非法访问其他命名模块中的类型的成员。 在这种情况下，可以将此选项与<code>--add-exports</code>，<code>--add-opens</code>和<code>--add-reads</code>选项组合使用。</p>
+<blockquote>
+<p>Tips<br><code>--permit-illegal-access</code>选项在JDK 9中可用，并将在JDK 10中删除。使用此选项会在标准错误流上打印警告。 一个警告打印一个消息，规定此选项将在将来的版本中被删除。 其他警告报告了授予非法访问的代码的详细信息，授予非法访问的代码以及授予访问权限的选项。</p>
+</blockquote>
+<p>在下一节中介绍一个使用所有这些选项的示例，这些选项允许打破模块封装。</p>
+<h3 id="三-一个示例"><a href="#三-一个示例" class="headerlink" title="三. 一个示例"></a>三. 一个示例</h3><p>我们来看一下打破封装的例子。 我使用一个简单的例子。 它的目的是展示可用于打破封装的所有概念和命令行选项。</p>
+<p>使用之前创建com.jdojo.intro模块作为第一个模块。 它在com.jdojo.intro包中包含一个<code>Welcome</code>类。 该模块不导出包，所以<code>Welcome</code>类被封装，不能在模块外部访问。 在这个例子中，从另一个模块com.jdojo.intruder调用<code>Welcome</code>类的<code>main()</code>方法。其声明如下所示。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// module-info.java</span></span><br><span class="line">module com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span> &#123;</span><br><span class="line">    <span class="comment">// No module statements</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面显示了此模块中<code>TestNonExported</code>类的代码。</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TestNonExported.java</span></span><br><span class="line"><span class="keyword">package</span> com.jdojo.intruder;</span><br><span class="line"><span class="keyword">import</span> com.jdojo.intro.Welcome;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestNonExported</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> void main(<span class="keyword">String</span>[] args) &#123;</span><br><span class="line">        Welcome.main(<span class="keyword">new</span> <span class="type">String</span>[]&#123;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>TestNonExported</code>类只包含一行代码。 它调用<code>Welcome</code>类的静态方法<code>main()</code>传递一个空的<code>String</code>数组。 如果该类被编译并运行，则在运行<code>Welcome</code>类时打印与第3章中相同的消息：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the <span class="keyword">Module</span> System.</span><br><span class="line"><span class="keyword">Module</span> Name: com.jdojo.<span class="built_in">intro</span></span><br></pre></td></tr></table></figure>
+<p>编译com.jdojo.intruder模块的代码：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;javac --module-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>\dist</span><br><span class="line">-d com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\build\classes</span><br><span class="line">com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\module-info<span class="selector-class">.java</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\com\jdojo\intruder\TestNonExported.java</span><br></pre></td></tr></table></figure>
+<p>如果收到如下错误：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\<span class="selector-tag">src</span>\<span class="selector-tag">com</span>\<span class="selector-tag">jdojo</span>\<span class="selector-tag">intruder</span>\<span class="selector-tag">TestNonExported</span><span class="selector-class">.java</span><span class="selector-pseudo">:4</span>: <span class="selector-tag">error</span>: <span class="selector-tag">package</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span> <span class="selector-tag">is</span> <span class="selector-tag">not</span> <span class="selector-tag">visible</span></span><br><span class="line"><span class="selector-tag">import</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span><span class="selector-class">.Welcome</span>;</span><br><span class="line">                ^</span><br><span class="line">  (<span class="selector-tag">package</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span> <span class="selector-tag">is</span> <span class="selector-tag">declared</span> <span class="selector-tag">in</span> <span class="selector-tag">module</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>, <span class="selector-tag">but</span> <span class="selector-tag">module</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span> <span class="selector-tag">does</span> <span class="selector-tag">not</span> <span class="selector-tag">read</span> <span class="selector-tag">it</span>)</span><br><span class="line">1 <span class="selector-tag">error</span></span><br></pre></td></tr></table></figure>
+<p>该命令使用<code>--module-path</code>选项将com.jdojo.intro模块包含在模块路径上。 编译时错误指向导入com.jdojo.intro.Welcome类的<code>import</code>语句。 它声明包com.jdojo.intro对于com.jdojo.intruder模块是不可见的。 也就是说，com.jdojo.intro模块不导出包含Welcome类的com.jdojo.intro包。 要解决此错误，需要使用<code>--add-exports</code>命令行选项将com.jdojo.intro模块的com.jdojo.intro包导出到com.jdojo.intruder模块中：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;javac --module-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>\dist</span><br><span class="line">--add-exports com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>/com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>=com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span></span><br><span class="line">-d com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\build\classes</span><br><span class="line">com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\module-info<span class="selector-class">.java</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\com\jdojo\intruder\TestNonExported.java</span><br></pre></td></tr></table></figure>
+<p>但是仍然报错：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">warning</span>: <span class="selector-attr">[options]</span> <span class="selector-tag">module</span> <span class="selector-tag">name</span> <span class="selector-tag">in</span> <span class="selector-tag">--add-exports</span> <span class="selector-tag">option</span> <span class="selector-tag">not</span> <span class="selector-tag">found</span>: <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span></span><br><span class="line"><span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\<span class="selector-tag">src</span>\<span class="selector-tag">com</span>\<span class="selector-tag">jdojo</span>\<span class="selector-tag">intruder</span>\<span class="selector-tag">TestNonExported</span><span class="selector-class">.java</span><span class="selector-pseudo">:4</span>: <span class="selector-tag">error</span>: <span class="selector-tag">package</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span> <span class="selector-tag">is</span> <span class="selector-tag">not</span> <span class="selector-tag">visible</span></span><br><span class="line"><span class="selector-tag">import</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span><span class="selector-class">.Welcome</span>;</span><br><span class="line">                ^</span><br><span class="line">  (<span class="selector-tag">package</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span> <span class="selector-tag">is</span> <span class="selector-tag">declared</span> <span class="selector-tag">in</span> <span class="selector-tag">module</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>, <span class="selector-tag">but</span> <span class="selector-tag">module</span> <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span> <span class="selector-tag">does</span> <span class="selector-tag">not</span> <span class="selector-tag">read</span> <span class="selector-tag">it</span>)</span><br><span class="line">1 <span class="selector-tag">error</span></span><br><span class="line">1 <span class="selector-tag">warning</span></span><br></pre></td></tr></table></figure>
+<p>这一次，你会得到警告和错误。 错误与以前相同。 该警告消息指出编译器找不到com.jdojo.intro模块。 因为这个模块没有依赖关系，所以即使在模块路径中也没有解决这个模块。 要解决警告，需要使用–<code>add-modules</code>选项将com.jdojo.intro模块添加到默认的根模块中：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;javac --module-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>\dist</span><br><span class="line">--add-modules com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span></span><br><span class="line">--add-exports com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>/com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>=com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span></span><br><span class="line">-d com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\build\classes</span><br><span class="line">com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\module-info.java</span><br><span class="line">com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\com\jdojo\intruder\TestNonExported.java</span><br></pre></td></tr></table></figure>
+<p>即使com.jdojo.intruder模块未读取com.jdojo.intro模块，此javac命令仍然成功。 这似乎是一个错误。 如果它不是一个bug，那么没有找到支持这种行为的文档。 稍后，将看到java命令将不适用于相同的模块。 如果此命令出错，并显示一条消息，表示<code>TestNonExported</code>类无法访问<code>Welcome</code>类，请添加以下选项来修复它：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--add-reads com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>=com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span></span><br></pre></td></tr></table></figure>
+<p>尝试使用以下命令重新运行<code>TestNonExported</code>类，该命令包括模块路径上的com.jdojo.intruder模块：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">C:</span>\Java9Revealed&gt;java --module-path <span class="keyword">com</span>.jdojo.intro\dist<span class="comment">;com.jdojo.intruder\build\classes</span></span><br><span class="line">--<span class="keyword">add</span>-modules <span class="keyword">com</span>.jdojo.intro</span><br><span class="line">--<span class="keyword">add</span>-exports <span class="keyword">com</span>.jdojo.intro/<span class="keyword">com</span>.jdojo.intro=<span class="keyword">com</span>.jdojo.intruder</span><br><span class="line">--module <span class="keyword">com</span>.jdojo.intruder/<span class="keyword">com</span>.jdojo.intruder.TestNonExported</span><br></pre></td></tr></table></figure>
+<p>但是会报出以下错误信息：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Exception <span class="keyword">in</span> thread <span class="string">"main"</span> java<span class="selector-class">.lang</span><span class="selector-class">.IllegalAccessError</span>: class com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestNonExported</span> (<span class="keyword">in</span> module com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>) cannot access class com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span><span class="selector-class">.Welcome</span> (<span class="keyword">in</span> module com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span>) because module com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span> does not read module com<span class="selector-class">.jdojo</span><span class="selector-class">.intro</span></span><br><span class="line">        at com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>/com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestNonExported</span><span class="selector-class">.main</span>(TestNonExported<span class="selector-class">.java</span>:<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<p>错误信息已经很清晰。 它声明com.jdojo.intruder模块必须读取com.jdojo.intro模块，以便前者使用后者的<code>Welcome</code>类。 可以使用-<code>-add-reads</code>选项来修复错误，该选项将在com.jdojo.intruder模块中添加一个读取边界（等同于<code>requires</code>语句）以读取com.jdojo.intro模块。 以下命令执行此操作：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">C:</span>\Java9Revealed&gt;java --module-path <span class="keyword">com</span>.jdojo.intro\dist<span class="comment">;com.jdojo.intruder\build\classes</span></span><br><span class="line">--<span class="keyword">add</span>-modules <span class="keyword">com</span>.jdojo.intro</span><br><span class="line">--<span class="keyword">add</span>-exports <span class="keyword">com</span>.jdojo.intro/<span class="keyword">com</span>.jdojo.intro=<span class="keyword">com</span>.jdojo.intruder</span><br><span class="line">--<span class="keyword">add</span>-reads <span class="keyword">com</span>.jdojo.intruder=<span class="keyword">com</span>.jdojo.intro</span><br><span class="line">--module <span class="keyword">com</span>.jdojo.intruder/<span class="keyword">com</span>.jdojo.intruder.TestNonExported</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the <span class="keyword">Module</span> System.</span><br><span class="line"><span class="keyword">Module</span> Name: com.jdojo.<span class="built_in">intro</span></span><br></pre></td></tr></table></figure>
+<p>这一次，你会收到所期望的输出。 下图显示了运行此命令时创建的模块图。</p>
+<p><img src="/img/posts/4366140-0380217a4d857646.png" alt></p>
+<p>com.jdojo.intruder和com.jdojo.intro模块都是根模块。 com.jdojo.intruder模块被添加到默认的根模块中，因为正在运行的主类在此模块中。 com.jdojo.intro模块通过<code>--add-modules</code>选项添加到默认的根模块集中。 通过<code>--add-reads</code>选项从com.jdojo.intruder模块将一个读取边界添加到com.jdojo.intro模块。 模块图中，使用虚线显示了从前者到后者的读取，以便在构建模块图之后作为<code>--add-reads</code>选项的结果添加它。 使用此命令使用<code>-Xdiag:resolver</code>选项来查看模块的解决方法。</p>
+<p>来看看另一个例子，它将展示如何使用<code>--add-opens</code>命令行选项打开一个包到另一个模块。 在第4章中，有一个com.jdojo.address模块，其中包含com.jdojo.address包中的<code>Address</code>类。 该模块导出com.jdojo.address包。 该类包含一个名为<code>line1</code>的私有字段， 有一个<code>public getLine1()</code>方法返回<code>line1</code>字段的值。</p>
+<p>如下代码所示，<code>TestNonOpen</code>类尝试加载<code>Address</code>类，创建类的实例，并访问其公共和私有成员。 <code>TestNonOpen</code>类是com.jdojo.intruder模块的成员。 在<code>main()</code>方法的<code>throws</code>子句中添加了一些异常，以保持逻辑简单。 在实际的程序中，在<code>try-catch</code>块中处理它们。</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TestNonOpen.java</span></span><br><span class="line"><span class="keyword">package</span> com.jdojo.intruder;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">public</span> class TestNonOpen &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args)</span><br><span class="line">            <span class="keyword">throws</span> IllegalAccessException, IllegalArgumentException,</span><br><span class="line">            NoSuchMethodException, ClassNotFoundException,</span><br><span class="line">            InvocationTargetException, InstantiationException,</span><br><span class="line">            NoSuchFieldException &#123;</span><br><span class="line">        <span class="keyword">String</span> className = <span class="string">"com.jdojo.address.Address"</span>;</span><br><span class="line">        <span class="comment">// Get the class reference</span></span><br><span class="line">        Class&lt;?&gt; cls = Class.forName(className);</span><br><span class="line">        <span class="comment">// Get the no-args constructor</span></span><br><span class="line">        Constructor constructor = cls.getConstructor();</span><br><span class="line">        <span class="comment">// Create an Object of the Address class</span></span><br><span class="line">        <span class="keyword">Object</span> address = constructor.newInstance();</span><br><span class="line">        <span class="comment">// Call the getLine1() method to get the line1 value</span></span><br><span class="line">        Method getLine1Ref = cls.getMethod(<span class="string">"getLine1"</span>);</span><br><span class="line">        <span class="keyword">String</span> line1 = (<span class="keyword">String</span>)getLine1Ref.invoke(address);</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"Using method reference, Line1: "</span> + line1);</span><br><span class="line">        <span class="comment">// Use the private line1 instance variable to read its value</span></span><br><span class="line">        Field line1Field = cls.getDeclaredField(<span class="string">"line1"</span>);</span><br><span class="line">        line1Field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">String</span> line11 = (<span class="keyword">String</span>)line1Field.<span class="built_in">get</span>(address);</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"Using private field reference, Line1: "</span> + line11);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用以下命令编译<code>TestNonOpen</code>类：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:Java9revealed&gt; javac -d com.jdojo.intruder<span class="symbol">\b</span>uild<span class="symbol">\c</span>lasses</span><br><span class="line">com.jdojo.intruder<span class="symbol">\s</span>rc<span class="symbol">\c</span>om<span class="symbol">\j</span>dojo<span class="symbol">\i</span>ntruder<span class="symbol">\T</span>estNonOpen.java</span><br></pre></td></tr></table></figure>
+<p><code>TestNonOpen</code>类编译正常。 请注意，它使用深层反射访问<code>Address</code>类，编译器不知道此类不允许读取<code>Address</code>类及其私有字段。 现在尝试运行<code>TestNonOpen</code>类：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">C:</span>Java9revealed&gt; java --module-path <span class="keyword">com</span>.jdojo.address\dist<span class="comment">;com.jdojo.intruder\build\classes</span></span><br><span class="line">--<span class="keyword">add</span>-modules <span class="keyword">com</span>.jdojo.address</span><br><span class="line">--module <span class="keyword">com</span>.jdojo.intruder/<span class="keyword">com</span>.jdojo.intruder.TestNonOpen</span><br></pre></td></tr></table></figure>
+<p>会出现以下错误信息：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Using method reference, Line <span class="number">1</span>: <span class="number">1111</span> Main Blvd.</span><br><span class="line">Exception <span class="keyword">in</span> thread <span class="string">"main"</span> java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.InaccessibleObjectException</span>: Unable to make field private java<span class="selector-class">.lang</span><span class="selector-class">.String</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span><span class="selector-class">.Address</span><span class="selector-class">.line1</span> accessible: module com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span> does not <span class="string">"opens com.jdojo.address"</span> to module com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span></span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.AccessibleObject</span><span class="selector-class">.checkCanSetAccessible</span>(AccessibleObject<span class="selector-class">.java</span>:<span class="number">207</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.checkCanSetAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">171</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.setAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">165</span>)</span><br><span class="line">        at com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>/com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestNonOpen</span><span class="selector-class">.main</span>(TestNonOpen<span class="selector-class">.java</span>:<span class="number">35</span>)</span><br></pre></td></tr></table></figure>
+<p>使用<code>--add-modules</code>选项将com.jdojo.address模块添加到默认的根模块中。 即使com.jdojo.intruder模块没有读取com.jdojo.address模块，也可以实例化<code>Address</code>类。 有两个原因：</p>
+<ul>
+<li>com.jdojo.address模块导出包含<code>Address</code>类的com.jdojo.address包。 因此，其他模块可访问<code>Address</code>类，只要其他模块读取com.jdojo.address模块即可。</li>
+<li>Java 反射 API假定所有反射操作都是可读性的。 该规则假设com.jdojo.intruder模块读取com.jdojo.address模块，即使在其模块声明中，com.jdojo.intruder模块未读取com.jdojo.address模块。 如果要在编译时使用com.jdojo.address包中的类型，例如，声明<code>Address</code>类类型的变量，则com.jdojo.intruder模块必须在它声明或命令行中读取com.jdojo.address模块。</li>
+</ul>
+<p>输出显示<code>TestNonOpen</code>类能够调用<code>Address</code>类的<code>public getLine1()</code>方法。 但是，当它尝试访问私有<code>line1</code>字段时，抛出异常。 回想一下，如果模块导出了类型，其他模块可以使用反射来访问该类型的公共成员。 对于其他模块访问类型的私有成员，包含该类型的包必须是打开的。 com.jdojo.address包未打开。 因此，com.jdojo.intruder模块无法访问<code>Address</code>类的私有<code>line1</code>字段。 为此，可以使用<code>--add-opens</code>选项将com.jdojo.address包打开到com.jdojo.intruder模块中：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">C:</span>Java9revealed&gt; java --module-path <span class="keyword">com</span>.jdojo.address\dist<span class="comment">;com.jdojo.intruder\build\classes</span></span><br><span class="line">--<span class="keyword">add</span>-modules <span class="keyword">com</span>.jdojo.address</span><br><span class="line">--<span class="keyword">add</span>-opens <span class="keyword">com</span>.jdojo.address/<span class="keyword">com</span>.jdojo.address=<span class="keyword">com</span>.jdojo.intruder</span><br><span class="line">--module <span class="keyword">com</span>.jdojo.intruder/<span class="keyword">com</span>.jdojo.intruder.TestNonOpen</span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Using</span> <span class="function"><span class="keyword">method</span> <span class="title">reference</span>, <span class="title">Line1</span>:</span> <span class="number">1111</span> Main Blvd.</span><br><span class="line"><span class="keyword">Using</span> <span class="keyword">private</span> field <span class="keyword">reference</span>, Line1: <span class="number">1111</span> Main Blvd.</span><br></pre></td></tr></table></figure>
+<p>现在是时候使用<code>--permit-illegal-access</code>选项了。 我们试试从类路径运行<code>TestNonOpen</code>类，如下所示：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java --module-path com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span>\dist</span><br><span class="line">--class-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\build\classes</span><br><span class="line">--add-modules com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestNonOpen</span></span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Using method reference, Line1: <span class="number">1111</span> Main Blvd.</span><br><span class="line">Exception <span class="keyword">in</span> thread <span class="string">"main"</span> java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.InaccessibleObjectException</span>: Unable to make field private java<span class="selector-class">.lang</span><span class="selector-class">.String</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span><span class="selector-class">.Address</span><span class="selector-class">.line1</span> accessible: module com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span> does not <span class="string">"opens com.jdojo.address"</span> to unnamed module @<span class="number">9</span>f70c54</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.AccessibleObject</span><span class="selector-class">.checkCanSetAccessible</span>(AccessibleObject<span class="selector-class">.java</span>:<span class="number">337</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.AccessibleObject</span><span class="selector-class">.checkCanSetAccessible</span>(AccessibleObject<span class="selector-class">.java</span>:<span class="number">281</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.checkCanSetAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">175</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.setAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">169</span>)</span><br><span class="line">        at com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestNonOpen</span><span class="selector-class">.main</span>(TestNonOpen<span class="selector-class">.java</span>:<span class="number">34</span>)</span><br></pre></td></tr></table></figure>
+<p>从输出可以看出，由于它位于类路径上，加载到未命名模块中的<code>TestNonOpen</code>类能够在com.jdojo.address模块中读取导出的类型及其公共方法。 但是，它无法访问私有实例变量。 可以使用<code>--permit-illegal-access</code>选项修复此问题，如下所示：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java --module-path com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span>\dist</span><br><span class="line">--class-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\build\classes</span><br><span class="line">--add-modules com<span class="selector-class">.jdojo</span><span class="selector-class">.address</span></span><br><span class="line">--permit-illegal-access com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestNonOpen</span></span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">WARNING: </span>--permit-illegal-access will be removed in the next major release</span><br><span class="line">Using method reference, Line1: 1111 Main Blvd.</span><br><span class="line"><span class="symbol">WARNING: </span>Illegal access by com.jdojo.intruder.TestNonOpen (file:/C:/Java9Revealed/com.jdojo.intruder/build/classes/) to field com.jdojo.address.Address.line1 (permitted by --permit-illegal-access)</span><br><span class="line">Using private field reference, Line1: 1111 Main Blvd.</span><br></pre></td></tr></table></figure>
+<p>请注意，由于<code>--permit-illegal-access</code>选项的警告和<code>TestNonOpen</code>类的消息的都会混合在输出中。</p>
+<h3 id="四-使用JAR的Manifest属性"><a href="#四-使用JAR的Manifest属性" class="headerlink" title="四. 使用JAR的Manifest属性"></a>四. 使用JAR的Manifest属性</h3><p>可执行的JAR是一个JAR文件，可用于使用如下所示的<code>-jar</code>选项直接运行Java应用程序：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">java </span>-<span class="keyword">jar </span>myapp.<span class="keyword">jar</span></span><br></pre></td></tr></table></figure>
+<p>这里，myapp.jar被称为可执行JAR。其MANIFEST.MF文件中的可执行JAR包含一个名为Main-Class的属性，其值是java命应运行的主类的完全限定名。回想一下，还有其他种类的JAR，如模块化JAR和多版本JAR。 JAR基于哪种JAR无关紧要；可执行JAR仅在使用<code>-jar</code>选项用于启动应用程序的方式的上下文中定义。</p>
+<p>考虑现有应用程序作为可执行JAR。假设应用程序使用深层反射来访问JDK内部API。它在JDK 8中工作正常。希望在JDK 9上运行可执行文件JAR。JDK 9中的JDK内部API已封装。现在，必须使用<code>--add-exports</code>和<code>-add-opens</code>命令行选项协同<code>-jar</code>选项来运行相同的可执行文件JAR。在JDK 9中使用新的命令行选项提供了一个解决方案。然而，对于可执行JAR的最终用户来说，这是不方便的。要使用JDK 9，他们需要知道所需要使用的新的命令行选项。为了缓解这种迁移，JDK 9中添加了可执行JAR的MANIFEST.MF文件的两个新属性：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Add</span><span class="bash">-Exports</span></span><br><span class="line"><span class="keyword">Add</span><span class="bash">-Opens</span></span><br></pre></td></tr></table></figure>
+<p>这些属性将添加到manifest文件的主要部分。 它们是<code>--add-exports</code>和<code>--add-opened</code>两个命令行选项的对应。 使用这些属性有一个区别。 它们导出和打开模块的包给所有的未命名模块。 因此，可以指定源模块列表，它们的包不必将目标模块指定为这些属性的值。 换句话说，在manifest文件中，可以导出或打开包给所有的未命名模块，也可以不打开所选模块。 这些属性的值是以分隔开的模块名/包名称对的空格分隔的列表。 这是一个例子：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Add-Exports: </span>m1/<span class="built_in">p1</span> m2/<span class="built_in">p2</span> m3/<span class="built_in">p3</span> m1/<span class="built_in">p1</span></span><br></pre></td></tr></table></figure>
+<p>该条目将将模块m1中的软件包p1，模块m2中的软件包p2，模块m3中的软件包p3导出到所有未命名的模块。 解析manifest文件的规则是宽松的，并允许重复。 请注意该值中的重复条目<code>m1/p1</code>。 在运行时，这些包将被导出到所有未命名的模块。</p>
+<p>来看一个例子。 这个例子很简单，<code>java.lang.Long</code>类包含一个名为<code>serialVersionUID</code>私有静态字段，声明如下：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">4290774380558885855</span>L;</span><br></pre></td></tr></table></figure>
+<p>下面包含使用深层反射访问<code>Long.serialVersionUID</code>字段的<code>TestManifestAttributes</code>类的代码。 该类在com.jdojo.intruder模块中。 现有应用程序不使用模块，它们将使用JDK版本8或更低版本开发。 但是，对于这个例子，它没有任何区别。</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TestManifestAttributes.java</span></span><br><span class="line"><span class="keyword">package</span> com.jdojo.intruder;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> TestManifestAttributes &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) <span class="keyword">throws</span> NoSuchFieldException,</span><br><span class="line">                     IllegalArgumentException, IllegalAccessException &#123;</span><br><span class="line">        <span class="keyword">Class</span>&lt;<span class="keyword">Long</span>&gt; cls = <span class="keyword">Long</span>.<span class="keyword">class</span>;</span><br><span class="line">        Field svUid = cls.getDeclaredField(<span class="string">"serialVersionUID"</span>);</span><br><span class="line">        svUid.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">long</span> svUidValue = (<span class="keyword">long</span>)svUid.get(<span class="keyword">null</span>);</span><br><span class="line">        System.out.<span class="keyword">println</span>(<span class="string">"Long.serialVersionUID="</span> + svUidValue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>TestManifestAttributes</code>类编译没有任何错误。 我们把它打包成一个可执行的JAR。 如下显示了在JDK 9之前可执行的JAR中的MANIFEST.MF文件的内容。MANIFEST.MF文件保持在JAR文件根目录下的META-INF目录中。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Manifest-Version</span>: 1<span class="selector-class">.0</span></span><br><span class="line"><span class="selector-tag">Main-Class</span>: <span class="selector-tag">com</span><span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestManifestAttributes</span></span><br></pre></td></tr></table></figure>
+<p>以下命令将创建名为com.jdojo.intruder.jar的可执行文件JAR：可执行文件JAR将被放置在com.jdojo.intruder\dist目录中。 或者，可以从NetBeans IDE中清理并构建com.jdojo.intruder项目，以创建此JAR。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;jar --create --file com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\dist\com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.jar</span></span><br><span class="line">--manifest=com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\src\META-INF\MANIFEST.MF</span><br><span class="line">-C com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\build\classes.</span><br></pre></td></tr></table></figure>
+<p>现在运行可执行文件JAR：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java -jar com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\dist\com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.jar</span></span><br></pre></td></tr></table></figure>
+<p>会出现以下错误信息：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Exception <span class="keyword">in</span> thread <span class="string">"main"</span> java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.InaccessibleObjectException</span>: Unable to make field private static final long java<span class="selector-class">.lang</span><span class="selector-class">.Long</span><span class="selector-class">.serialVersionUID</span> accessible: module java<span class="selector-class">.base</span> does not <span class="string">"opens java.lang"</span> to unnamed module @<span class="number">224</span>aed64</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.AccessibleObject</span><span class="selector-class">.checkCanSetAccessible</span>(AccessibleObject<span class="selector-class">.java</span>:<span class="number">207</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.checkCanSetAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">171</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.setAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">165</span>)</span><br><span class="line">        at com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestManifestAttributes</span><span class="selector-class">.main</span>(TestManifestAttributes<span class="selector-class">.java</span>:<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p>运行时错误表明应用程序无法访问私有静态<code>serialVersionUID</code>，因为java.base模块中的java.lang包未打开。我们先试试<code>--add-opens</code>这个选项：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java --add-opens java.base/java.lang=ALL-UNNAMED</span><br><span class="line">-jar com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\dist\com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.jar</span></span><br></pre></td></tr></table></figure>
+<p>输出信息如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Long.serialVersionUID</span>=<span class="number">4290774380558885855</span></span><br></pre></td></tr></table></figure>
+<p>此命令工作正常，并验证命令行选项是这种情况下的解决方案。 我们使用MANIFEST.MF文件中的<code>Add-Opens</code>属性来修复此错误，如下所示。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: <span class="number">1.0</span></span><br><span class="line">Main-Class: com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestManifestAttributes</span></span><br><span class="line">Add-Opens: java.base/java.lang</span><br></pre></td></tr></table></figure>
+<p>使用相同的命令重新创建可执行文件JAR并运行它：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java -jar com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\dist\com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.jar</span></span><br></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Long.serialVersionUID</span>=<span class="number">4290774380558885855</span></span><br></pre></td></tr></table></figure>
+<p>应用程序运行正常。 如果JAR不用作可执行JAR，我们来验证是否忽略Add-Opens属性。 怎么验证这个？ 通过将可执行JAR放置在类路径或模块路径上来运行应用程序，并且期望运行时发生错误。 请注意，能够在模块路径上运行此应用程序，因为正在使用JDK 9并在JAR中包含模块描述。 对于较旧的应用程序，只有一个选项 —— 从类路径运行它。 以下命令从类路径运行应用程序：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java --class-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\dist\com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.jar</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestManifestAttributes</span></span><br></pre></td></tr></table></figure>
+<p>会出现以下错误：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Exception <span class="keyword">in</span> thread <span class="string">"main"</span> java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.InaccessibleObjectException</span>: Unable to make field private static final long java<span class="selector-class">.lang</span><span class="selector-class">.Long</span><span class="selector-class">.serialVersionUID</span> accessible: module java<span class="selector-class">.base</span> does not <span class="string">"opens java.lang"</span> to unnamed module @<span class="number">17</span>ed40e0</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.AccessibleObject</span><span class="selector-class">.checkCanSetAccessible</span>(AccessibleObject<span class="selector-class">.java</span>:<span class="number">207</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.checkCanSetAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">171</span>)</span><br><span class="line">        at java.base/java<span class="selector-class">.lang</span><span class="selector-class">.reflect</span><span class="selector-class">.Field</span><span class="selector-class">.setAccessible</span>(Field<span class="selector-class">.java</span>:<span class="number">165</span>)</span><br><span class="line">        at com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestManifestAttributes</span><span class="selector-class">.main</span>(TestManifestAttributes<span class="selector-class">.java</span>:<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p>如果要使用类路径运行此应用程序，如何解决此错误？ 使用<code>--add-open</code>命令行选项来修复它：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:\Java9Revealed&gt;java --add-opens java.base/java.lang=ALL-UNNAMED</span><br><span class="line">--class-path com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span>\dist\com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.jar</span> com<span class="selector-class">.jdojo</span><span class="selector-class">.intruder</span><span class="selector-class">.TestManifestAttributes</span></span><br></pre></td></tr></table></figure>
+<h3 id="五-总结"><a href="#五-总结" class="headerlink" title="五. 总结"></a>五. 总结</h3><p>JDK 9的主要目标之一是将类型和资源封装在模块中，并仅导出其他模块要访问其公共类型的软件包。 有时，可能需要打破模块指定的封装，以启用白盒测试或使用不受支持的JDK内部API或库。 这可以通过在编译时和运行时使用非标准命令行选项来实现。 具有这些选项的另一个原因是向后兼容性。</p>
+<p>JDK 9提供了两个命令行选项<code>--add-exports</code>和<code>-add-opened</code>，可以在模块声明中定义封装。 <code>--add-exports</code>选项允许在模块中将未导出的包导出到编译时和运行时的其他模块。<code>--add-opened</code>选项允许在模块中打开一个非开放的软件包到其他模块，以便在运行时进行深度反射。 这些选项的值为/=，其中<code>&lt;source-module&gt;</code>是导出或打开<code>&lt;package&gt;</code>到<code>&lt;target-module-list&gt;</code>，它是以逗号分隔的目标模块名称列表。 可以使用<code>ALL-UNNAMED</code>作为将所有未命名模块导出或打开的目标模块列表的特殊值。</p>
+<p>有两个名为<code>Add-Exports</code>和<code>Add-Opens</code>的新属性可用于可执行JAR的manifest 文件的主要部分。 使用这些属性的效果与使用类似命名的命令行选项相同，只是这些属性将指定的包导出或打开到所有未命名的模块。 这些属性的值是以空格分隔的斜体分隔的<code>module-name/package-name</code>对列表。 例如，可执行JAR的manifest文件的主要部分中的<code>Add-Opens:java.base/java.lang</code>条目将为java.base模块中的所有未命名模块打开java.lang包。</p>
+<p>在测试和调试过程中，有时需要一个模块读取另一个模块，其中第一个模块在其声明中不使用<code>requires</code>语句来读取第二个模块。 这可以使用<code>--add-reads</code>命令行选项来实现，该选项的值以<code>&lt;source-module&gt;=&lt;target-module-list&gt;</code>的形式指定。<code>&lt;source-module&gt;</code>是其定义被更新以读取在<code>&lt;target-module-list&gt;</code>中指定的模块列表的模块，该模块是目标模块名称的逗号分隔列表。 目标模块列表的<code>ALL-UNNAMED</code>的特殊值使得源模块读取所有未命名的模块。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/08/100575.html" class="pre-post btn btn-default" title='用于运行JavaFX 11+应用程序的Maven插件'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">用于运行JavaFX 11+应用程序的Maven插件</span>
+        </a>
+    
+    
+        <a href="/archives/2019/08/100572.html" class="next-post btn btn-default" title='JavaFX 学习教程'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">JavaFX 学习教程</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一-什么是打破模块的封装"><span class="toc-text">一. 什么是打破模块的封装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二-命令行选项"><span class="toc-text">二. 命令行选项</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-add-exports选项"><span class="toc-text">1. --add-exports选项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-add-opens选项"><span class="toc-text">2. --add-opens选项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-add-reads-选项"><span class="toc-text">3.--add-reads 选项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-permit-illegal-access选项"><span class="toc-text">4. --permit-illegal-access选项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三-一个示例"><span class="toc-text">三. 一个示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四-使用JAR的Manifest属性"><span class="toc-text">四. 使用JAR的Manifest属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五-总结"><span class="toc-text">五. 总结</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

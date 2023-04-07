@@ -1,0 +1,365 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,scala">
+
+
+    <meta name="description" content="一、定长数组在Scala中，如果你需要一个长度不变的数组，可以使用Array。但需要注意以下两点：
+
+在Scala中使用(index)而不是[index]来访问数组中的元素，因为访问元素，对于S...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Scala数组相关操作 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Scala数组相关操作">
+            
+	            Scala数组相关操作
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/scala/">scala</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/17</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1359</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、定长数组"><a href="#一、定长数组" class="headerlink" title="一、定长数组"></a>一、定长数组</h2><p>在Scala中，如果你需要一个长度不变的数组，可以使用Array。但需要注意以下两点：</p>
+<ul>
+<li>在Scala中使用<code>(index)</code>而不是<code>[index]</code>来访问数组中的元素，因为访问元素，对于Scala来说是方法调用，<code>(index)</code>相当于执行了<code>.apply(index)</code>方法。</li>
+<li>Scala中的数组与Java中的是等价的，<code>Array[Int]()</code>在虚拟机层面就等价于Java的<code>int[]</code>。</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 10个整数的数组，所有元素初始化为0</span></span><br><span class="line">scala&gt; <span class="keyword">val</span> nums=<span class="keyword">new</span> <span class="type">Array</span>[<span class="type">Int</span>](<span class="number">10</span>)</span><br><span class="line">nums: <span class="type">Array</span>[<span class="type">Int</span>] = <span class="type">Array</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 10个元素的字符串数组，所有元素初始化为null</span></span><br><span class="line">scala&gt; <span class="keyword">val</span> strings=<span class="keyword">new</span> <span class="type">Array</span>[<span class="type">String</span>](<span class="number">10</span>)</span><br><span class="line">strings: <span class="type">Array</span>[<span class="type">String</span>] = <span class="type">Array</span>(<span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用指定值初始化，此时不需要new关键字</span></span><br><span class="line">scala&gt; <span class="keyword">val</span> a=<span class="type">Array</span>(<span class="string">"hello"</span>,<span class="string">"scala"</span>)</span><br><span class="line">a: <span class="type">Array</span>[<span class="type">String</span>] = <span class="type">Array</span>(hello, scala)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用()来访问元素</span></span><br><span class="line">scala&gt; a(<span class="number">0</span>)</span><br><span class="line">res3: <span class="type">String</span> = hello</span><br></pre></td></tr></table></figure>
+<h2 id="二、变长数组"><a href="#二、变长数组" class="headerlink" title="二、变长数组"></a>二、变长数组</h2><p>在scala中通过ArrayBuffer实现变长数组(又称缓冲数组)。在构建ArrayBuffer时必须给出类型参数，但不必指定长度，因为ArrayBuffer会在需要的时候自动扩容和缩容。变长数组的构建方式及常用操作如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scala.collection.mutable.ArrayBuffer</span><br><span class="line"></span><br><span class="line">object ScalaApp &#123;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 相当于Java中的main方法</span></span><br><span class="line">  <span class="function">def <span class="title">main</span><span class="params">(args: Array[String])</span>: Unit </span>= &#123;</span><br><span class="line">    <span class="comment">// 1.声明变长数组(缓冲数组)</span></span><br><span class="line">    val ab = <span class="keyword">new</span> ArrayBuffer[Int]()</span><br><span class="line">    <span class="comment">// 2.在末端增加元素</span></span><br><span class="line">    ab += <span class="number">1</span></span><br><span class="line">    <span class="comment">// 3.在末端添加多个元素</span></span><br><span class="line">    ab += (<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">    <span class="comment">// 4.可以使用++=追加任何集合</span></span><br><span class="line">    ab ++= Array(<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>)</span><br><span class="line">    <span class="comment">// 5.缓冲数组可以直接打印查看</span></span><br><span class="line">    println(ab)</span><br><span class="line">    <span class="comment">// 6.移除最后三个元素</span></span><br><span class="line">    ab.trimEnd(<span class="number">3</span>)</span><br><span class="line">    <span class="comment">// 7.在第1个元素之后插入多个新元素</span></span><br><span class="line">    ab.insert(<span class="number">1</span>, <span class="number">8</span>, <span class="number">9</span>)</span><br><span class="line">    <span class="comment">// 8.从第2个元素开始,移除3个元素,不指定第二个参数的话,默认值为1</span></span><br><span class="line">    ab.remove(<span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">    <span class="comment">// 9.缓冲数组转定长数组</span></span><br><span class="line">    val abToA = ab.toArray</span><br><span class="line">    <span class="comment">// 10. 定长数组打印为其hashcode值</span></span><br><span class="line">    println(abToA)</span><br><span class="line">    <span class="comment">// 11. 定长数组转缓冲数组</span></span><br><span class="line">    val aToAb = abToA.toBuffer</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要注意的是：使用<code>+=</code>在末尾插入元素是一个高效的操作，其时间复杂度是O(1)。而使用<code>insert</code>随机插入元素的时间复杂度是O(n)，因为在其插入位置之后的所有元素都要进行对应的后移，所以在<code>ArrayBuffer</code>中随机插入元素是一个低效的操作。</p>
+<h2 id="三、数组遍历"><a href="#三、数组遍历" class="headerlink" title="三、数组遍历"></a>三、数组遍历</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">ScalaApp</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> a = <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 1.方式一 相当于Java中的增强for循环</span></span><br><span class="line">  <span class="keyword">for</span> (elem &lt;- a) &#123;</span><br><span class="line">    print(elem)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2.方式二</span></span><br><span class="line">  <span class="keyword">for</span> (index &lt;- <span class="number">0</span> until a.length) &#123;</span><br><span class="line">    print(a(index))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3.方式三, 是第二种方式的简写</span></span><br><span class="line">  <span class="keyword">for</span> (index &lt;- a.indices) &#123;</span><br><span class="line">    print(a(index))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 4.反向遍历</span></span><br><span class="line">  <span class="keyword">for</span> (index &lt;- a.indices.reverse) &#123;</span><br><span class="line">    print(a(index))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们没有将代码写在main方法中，而是继承自App.scala，这是Scala提供的一种简写方式，此时将代码写在类中，等价于写在main方法中，直接运行该类即可。</p>
+<h2 id="四、数组转换"><a href="#四、数组转换" class="headerlink" title="四、数组转换"></a>四、数组转换</h2><p>数组转换是指由现有数组产生新的数组。假设当前拥有a数组，想把a中的偶数元素乘以10后产生一个新的数组，可以采用下面两种方式来实现：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">ScalaApp</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> a = <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 1.方式一 yield关键字</span></span><br><span class="line">  <span class="keyword">val</span> ints1 = <span class="keyword">for</span> (elem &lt;- a <span class="keyword">if</span> elem % <span class="number">2</span> == <span class="number">0</span>) <span class="keyword">yield</span> <span class="number">10</span> * elem</span><br><span class="line">  <span class="keyword">for</span> (elem &lt;- ints1) &#123;</span><br><span class="line">    println(elem)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2.方式二 采用函数式编程的方式,这和Java 8中的函数式编程是类似的，这里采用下划线标表示其中的每个元素</span></span><br><span class="line">  <span class="keyword">val</span> ints2 = a.filter(_ % <span class="number">2</span> == <span class="number">0</span>).map(_ * <span class="number">10</span>)</span><br><span class="line">  <span class="keyword">for</span> (elem &lt;- ints1) &#123;</span><br><span class="line">    println(elem)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="五、多维数组"><a href="#五、多维数组" class="headerlink" title="五、多维数组"></a>五、多维数组</h2><p>和Java中一样，多维数组由单维数组组成。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">ScalaApp</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> matrix = <span class="type">Array</span>(<span class="type">Array</span>(<span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">20</span>),</span><br><span class="line">    <span class="type">Array</span>(<span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">27</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">30</span>),</span><br><span class="line">    <span class="type">Array</span>(<span class="number">31</span>, <span class="number">32</span>, <span class="number">33</span>, <span class="number">34</span>, <span class="number">35</span>, <span class="number">36</span>, <span class="number">37</span>, <span class="number">38</span>, <span class="number">39</span>, <span class="number">40</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (elem &lt;- matrix) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (elem &lt;- elem) &#123;</span><br><span class="line">      print(elem + <span class="string">"-"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    println()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">打印输出如下：</span><br><span class="line"><span class="number">11</span><span class="number">-12</span><span class="number">-13</span><span class="number">-14</span><span class="number">-15</span><span class="number">-16</span><span class="number">-17</span><span class="number">-18</span><span class="number">-19</span><span class="number">-20</span>-</span><br><span class="line"><span class="number">21</span><span class="number">-22</span><span class="number">-23</span><span class="number">-24</span><span class="number">-25</span><span class="number">-26</span><span class="number">-27</span><span class="number">-28</span><span class="number">-29</span><span class="number">-30</span>-</span><br><span class="line"><span class="number">31</span><span class="number">-32</span><span class="number">-33</span><span class="number">-34</span><span class="number">-35</span><span class="number">-36</span><span class="number">-37</span><span class="number">-38</span><span class="number">-39</span><span class="number">-40</span>-</span><br></pre></td></tr></table></figure>
+<h2 id="六、与Java互操作"><a href="#六、与Java互操作" class="headerlink" title="六、与Java互操作"></a>六、与Java互操作</h2><p>由于Scala的数组是使用Java的数组来实现的，所以两者之间可以相互转换。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> scala.collection.mutable.<span class="type">ArrayBuffer</span></span><br><span class="line"><span class="keyword">import</span> scala.collection.&#123;<span class="type">JavaConverters</span>, mutable&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">ScalaApp</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> element = <span class="type">ArrayBuffer</span>(<span class="string">"hadoop"</span>, <span class="string">"spark"</span>, <span class="string">"storm"</span>)</span><br><span class="line">  <span class="comment">// Scala转Java</span></span><br><span class="line">  <span class="keyword">val</span> javaList: util.<span class="type">List</span>[<span class="type">String</span>] = <span class="type">JavaConverters</span>.bufferAsJavaList(element)</span><br><span class="line">  <span class="comment">// Java转Scala</span></span><br><span class="line">  <span class="keyword">val</span> scalaBuffer: mutable.<span class="type">Buffer</span>[<span class="type">String</span>] = <span class="type">JavaConverters</span>.asScalaBuffer(javaList)</span><br><span class="line">  <span class="keyword">for</span> (elem &lt;- scalaBuffer) &#123;</span><br><span class="line">    println(elem)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Martin Odersky . Scala编程(第3版)[M] . 电子工业出版社 . 2018-1-1  </li>
+<li>凯.S.霍斯特曼  . 快学Scala(第2版)[M] . 电子工业出版社 . 2017-7</li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100448.html" class="pre-post btn btn-default" title='Scala集合综述'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Scala集合综述</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100446.html" class="next-post btn btn-default" title='Scala流程控制语句'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Scala流程控制语句</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、定长数组"><span class="toc-text">一、定长数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、变长数组"><span class="toc-text">二、变长数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、数组遍历"><span class="toc-text">三、数组遍历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、数组转换"><span class="toc-text">四、数组转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、多维数组"><span class="toc-text">五、多维数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、与Java互操作"><span class="toc-text">六、与Java互操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

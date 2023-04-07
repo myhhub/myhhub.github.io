@@ -1,0 +1,476 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,java,注入">
+
+
+    <meta name="description" content="Byteman的是由Jboss发明主要是为了支持多线程和多JVM测试的自动化。
+Byteman规则语言提供了一组标准的内置操作，这些操作支持特定的上述类别中的任务
+为了简化测试自动化，Bytem...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Java逆向基础之二十二.Byteman | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Java逆向基础之二十二.Byteman">
+            
+	            Java逆向基础之二十二.Byteman
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/injection/">注入</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/09/22</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1657</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>Byteman的是由Jboss发明主要是为了支持多线程和多JVM测试的自动化。</p>
+<p>Byteman规则语言提供了一组标准的内置操作，这些操作支持特定的上述类别中的任务</p>
+<p>为了简化测试自动化，Byteman已经与两种流行的测试框架JUnit和TestNG集成</p>
+<p>在逆向中，我们也可以利用Byteman来帮助我们分析方法的调用</p>
+<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><p>Byteman下载地址：<a href="http://byteman.jboss.org/downloads.html" target="_blank" rel="noopener">http://byteman.jboss.org/downloads.html</a></p>
+<p>环境变量配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BYTEMAN_HOME = C:\byteman-download-4.0.2</span><br></pre></td></tr></table></figure>
+<p>PATH添加%BYTEMAN_HOME%\bin</p>
+<p>安装验证</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmcheck</span><br></pre></td></tr></table></figure>
+<p><img src="/img/posts/1525221324817898.png" alt="QQ截图20180502083044.png"></p>
+<h2 id="2-看一个例子"><a href="#2-看一个例子" class="headerlink" title="2. 看一个例子"></a>2. 看一个例子</h2><p>HelloWorld.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//HelloWorld.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"Hello, world!"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>规则文件appmain.btm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#appmain.btm</span><br><span class="line">RULE trace main entry</span><br><span class="line">CLASS HelloWorld</span><br><span class="line">METHOD main</span><br><span class="line">AT ENTRY</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;entering main&quot;)</span><br><span class="line">ENDRULE</span><br><span class="line"></span><br><span class="line">RULE trace main exit</span><br><span class="line">CLASS HelloWorld</span><br><span class="line">METHOD main</span><br><span class="line">AT EXIT</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;exiting main&quot;)</span><br><span class="line">ENDRULE</span><br></pre></td></tr></table></figure>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac HelloWorld.java</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java HelloWorld</span><br></pre></td></tr></table></figure>
+<p>规则检查</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmcheck -cp . -v appmain.btm</span><br></pre></td></tr></table></figure>
+<p>Byteman运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -javaagent:%BYTEMAN_HOME%\lib\byteman.jar=script:appmain.btm HelloWorld</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<p><img src="/img/posts/1525221957775127.png" alt="QQ截图20180502084108.png"></p>
+<p>规则文件定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 规则骨架</span><br><span class="line">RULE &lt;规则名&gt;</span><br><span class="line">CLASS &lt;类名&gt;</span><br><span class="line">METHOD &lt;方法名&gt;</span><br><span class="line">BIND &lt;绑定事件&gt;</span><br><span class="line">IF &lt;条件&gt;</span><br><span class="line">DO &lt;动作&gt;</span><br><span class="line">ENDRULE</span><br></pre></td></tr></table></figure>
+<p>在脚本中我们使用了traceln语句，那么这个调用的其实是Byteman的org.jboss.byteman.rule.helper.Helper类的方法，这些方法都是已经内置的，可以直接在脚本中调用。我们也可以扩展Helper类进行调用。</p>
+<p>从上面我们可以看出Byteman的使用方法：1.写规则文件，2.写Helper类的扩展方法(可选)，3.指定脚本文件调用</p>
+<h2 id="3-再看一个例子"><a href="#3-再看一个例子" class="headerlink" title="3. 再看一个例子"></a>3. 再看一个例子</h2><p>输出参数和返回值</p>
+<p>Main.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.vvvtimes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> x + y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> z)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> x + y + z;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> </span>&#123;</span><br><span class="line">		Main m = <span class="keyword">new</span> Main();</span><br><span class="line">		System.out.println(m.add(<span class="number">1</span>, <span class="number">2</span>));</span><br><span class="line">		System.out.println(m.add(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>规则文件appmain.btm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">RULE trace arg1</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int,int)</span><br><span class="line">AT ENTRY</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;arg1=&quot; + $1 + &quot; arg2=&quot; + $2)</span><br><span class="line">ENDRULE</span><br><span class="line">RULE trace return value1</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int,int)</span><br><span class="line">AT EXIT</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;Return value: &quot; +$!)</span><br><span class="line">ENDRULE</span><br><span class="line">RULE trace arg2</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int,int,int)</span><br><span class="line">AT ENTRY</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;arg1=&quot; + $1 + &quot; arg2=&quot; + $2 + &quot; arg3=&quot; + $3)</span><br><span class="line">ENDRULE</span><br><span class="line">RULE trace return value2</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int,int,int)</span><br><span class="line">AT EXIT</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;Return value: &quot; +$!)</span><br><span class="line">ENDRULE</span><br></pre></td></tr></table></figure>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac com/vvvtimes/Main.java</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>规则检查</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmcheck -cp . -v scripts/appmain.btm</span><br></pre></td></tr></table></figure>
+<p>byteman运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -javaagent:%BYTEMAN_HOME%\lib\byteman.jar=script:scripts/appmain.btm com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<p><img src="/img/posts/1525230895716234.png" alt="QQ截图20180502110959.png"></p>
+<p>这里的$0指的是当前对象。$1指的是当前方法的第一个参数，如果有多个参数，数字依次增长。$!指返回值，AT与AFTER同义</p>
+<p>需要注意的是，RULE的语法规则中的CLASS METHOD都不支持通配符模式，逆向中如果用这个规则去写会很麻烦，官方建议用批量脚本去生成。。。</p>
+<p>所以如果同名方法很多，还是用前面的AspectJ去找吧</p>
+<p>更多内容可参考docs/byteman-programmers-guide.pdf</p>
+<p>网上有个追踪局部变量的没啥用。需要-g编译，逆向中用不了</p>
+<h2 id="4-扩展Helper类"><a href="#4-扩展Helper类" class="headerlink" title="4. 扩展Helper类"></a>4. 扩展Helper类</h2><p>看一个例子</p>
+<p>新建目标项目和扩展Helper类项目，结构如下</p>
+<p><img src="/img/posts/1525325447223986.png" alt="QQ截图20180503133008.png"></p>
+<p>其中目标项目使用上一篇博客的第二个例子的代码</p>
+<p>扩展Helper类项目需要用到第三方jar，在C:\byteman-download-4.0.2\lib找到byteman.jar复制过来</p>
+<p>TraceHelper.java代码如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package com.vvvtimes;</span><br><span class="line"></span><br><span class="line">import org.jboss.byteman.rule.Rule;</span><br><span class="line">import org.jboss.byteman.rule.helper.Helper;</span><br><span class="line"></span><br><span class="line">public class TraceHelper extends Helper &#123;</span><br><span class="line"></span><br><span class="line">	protected TraceHelper(Rule rule) &#123;</span><br><span class="line">		super(rule);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public boolean myprint(String message) &#123;</span><br><span class="line">		<span class="built_in">return</span> super.traceln(<span class="string">"!!! IMPORTANT EVENT !!!"</span> + message);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将这个项目导出为BytemanHelperDemo.jar</p>
+<p>目标项目里的规则文件tracing.btm内容如下，其中HELPER项指定自定义了Helper类名</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">RULE trace return value1</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int,int)</span><br><span class="line">HELPER com.vvvtimes.TraceHelper</span><br><span class="line">AT EXIT</span><br><span class="line">IF true</span><br><span class="line">DO myprint(&quot;Return value: &quot; +$!)</span><br><span class="line">ENDRULE</span><br></pre></td></tr></table></figure>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac com/vvvtimes/Main.java</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>加helper类的规则文件检查，注意多了个-cp BytemanHelperDemo.jar</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmcheck -cp . -cp BytemanHelperDemo.jar  -v scripts/tracing.btm</span><br></pre></td></tr></table></figure>
+<p>byteman运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -cp <span class="string">".;BytemanHelperDemo.jar;%CLASSPATH%"</span> -javaagent:%BYTEMAN_HOME%\lib\byteman.jar=script:scripts/tracing.btm com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>运行结果如下</p>
+<p><img src="/img/posts/1525327086109118.png" alt="QQ截图20180503135751.png"></p>
+<p>如果我们将上面的目标项目打包成jar，则命令可以改成如下形式</p>
+<p>目标项目打包成的jar名为BytemanDemo2.jar</p>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -cp <span class="string">"BytemanDemo2.jar;%CLASSPATH%"</span> com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>加helper类的规则文件检查</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmcheck -cp BytemanDemo2.jar -cp BytemanHelperDemo.jar  -v scripts/tracing.btm</span><br></pre></td></tr></table></figure>
+<p>byteman运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -cp <span class="string">"BytemanDemo2.jar;BytemanHelperDemo.jar;%CLASSPATH%"</span> -javaagent:%BYTEMAN_HOME%\lib\byteman.jar=script:scripts/tracing.btm com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>运行结果如图</p>
+<p><img src="/img/posts/1525327776933563.png" alt="QQ截图20180503135840.png"></p>
+<h2 id="5-运行后注入"><a href="#5-运行后注入" class="headerlink" title="5. 运行后注入"></a>5. 运行后注入</h2><p>Byteman可以在目标程序运行后进行注入，命令如下</p>
+<p><strong>运行后注入</strong></p>
+<ol>
+<li>查看java进程，找到目标进程的pid</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>安装pid</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bminstall &lt;pid&gt;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>装载规则脚本</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmsubmit -l tracing.btm</span><br></pre></td></tr></table></figure>
+<p>//指定监听端口默认是9091</p>
+<p>//bmsubmit -p <port> -l tracing.btm</port></p>
+<ol start="4">
+<li>卸载规则脚本</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmsubmit -u tracing.btm</span><br></pre></td></tr></table></figure>
+<p>//指定监听端口</p>
+<p>//bmsubmit -p <port> -u tracing.btm</port></p>
+<p><strong>规则文件如果用到了自定义的扩展Helper类，需要先加载扩展类的jar包</strong></p>
+<ol>
+<li>装载jar包</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmsubmit -s helpers.jar</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>装载规则脚本</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmsubmit -l tracing.btm</span><br></pre></td></tr></table></figure>
+<p><strong>看一个例子</strong></p>
+<p>Main.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Main.java</span></span><br><span class="line"><span class="keyword">package</span> com.vvvtimes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">			BufferedReader bufferedReader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in));</span><br><span class="line">			System.out.println(<span class="string">"please input the first param:"</span>);</span><br><span class="line">			String p1 = bufferedReader.readLine();</span><br><span class="line">			System.out.println(<span class="string">"please input the first param:"</span>);</span><br><span class="line">			String p2 = bufferedReader.readLine();</span><br><span class="line">			System.out.println(<span class="string">"result is "</span> + add(Integer.parseInt(p1), Integer.parseInt(p2)));</span><br><span class="line">			System.out.println(<span class="string">"press ENTER TO EXIT ..."</span>);</span><br><span class="line">			bufferedReader.readLine();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a + b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>tracing.btm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">RULE trace arg1</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int, int)</span><br><span class="line">AT ENTRY</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;arg1=&quot; + $1 + &quot; arg2=&quot; + $2)</span><br><span class="line">ENDRULE</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">RULE trace return value1</span><br><span class="line">CLASS com.vvvtimes.Main</span><br><span class="line">METHOD add(int, int)</span><br><span class="line">AT EXIT</span><br><span class="line">IF true</span><br><span class="line">DO traceln(&quot;Return value: &quot; +$!)</span><br><span class="line">ENDRULE</span><br></pre></td></tr></table></figure>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac com/vvvtimes/Main.java</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>新开窗口查看注入到Main进程</p>
+<p>查看进程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
+<p>安装pid</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bminstall 6852</span><br></pre></td></tr></table></figure>
+<p>规则检查</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmcheck -cp . -v scripts/tracing.btm</span><br></pre></td></tr></table></figure>
+<p>装载规则脚本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bmsubmit -l scripts/tracing.btm</span><br></pre></td></tr></table></figure>
+<p>之后回到Main窗口输入参数</p>
+<p>运行结果如下</p>
+<p><img src="/img/posts/1525835161263884.png" alt="QQ截图20180509110435.png"></p>
+<p><img src="/img/posts/1525835165487256.png" alt="QQ截图20180509110550.png"></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/09/100036.html" class="pre-post btn btn-default" title='docker + selenium + jenkins并行跑自动化测试'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">docker + selenium + jenkins并行跑自动化测试</span>
+        </a>
+    
+    
+        <a href="/archives/2018/09/100034.html" class="next-post btn btn-default" title='Java逆向基础之二十一.AspectJ'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Java逆向基础之二十一.AspectJ</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-安装"><span class="toc-text">1. 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-看一个例子"><span class="toc-text">2. 看一个例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-再看一个例子"><span class="toc-text">3. 再看一个例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-扩展Helper类"><span class="toc-text">4. 扩展Helper类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-运行后注入"><span class="toc-text">5. 运行后注入</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

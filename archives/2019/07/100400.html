@@ -1,0 +1,435 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hive">
+
+
+    <meta name="description" content="一、数据准备为了演示查询操作，这里需要预先创建三张表，并加载测试数据。
+
+数据文件emp.txt和dept.txt可以从本仓库的resources目录下载。
+
+1.1 员工表1234567891...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Hive数据查询详解 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Hive数据查询详解">
+            
+	            Hive数据查询详解
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hive/">hive</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/09</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1367</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、数据准备"><a href="#一、数据准备" class="headerlink" title="一、数据准备"></a>一、数据准备</h2><p>为了演示查询操作，这里需要预先创建三张表，并加载测试数据。</p>
+<blockquote>
+<p>数据文件emp.txt和dept.txt可以从本仓库的<a href="https://github.com/myhhub/BigData-Notes/tree/master/resources" target="_blank" rel="noopener">resources</a>目录下载。</p>
+</blockquote>
+<h3 id="1-1-员工表"><a href="#1-1-员工表" class="headerlink" title="1.1 员工表"></a>1.1 员工表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">-- 建表语句</span></span><br><span class="line"> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> emp(</span><br><span class="line">     empno <span class="built_in">INT</span>,     <span class="comment">-- 员工表编号</span></span><br><span class="line">     ename <span class="keyword">STRING</span>,  <span class="comment">-- 员工姓名</span></span><br><span class="line">     job <span class="keyword">STRING</span>,    <span class="comment">-- 职位类型</span></span><br><span class="line">     mgr <span class="built_in">INT</span>,   </span><br><span class="line">     hiredate <span class="built_in">TIMESTAMP</span>,  <span class="comment">--雇佣日期</span></span><br><span class="line">     sal <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>),  <span class="comment">--工资</span></span><br><span class="line">     comm <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>),</span><br><span class="line">     deptno <span class="built_in">INT</span>)   <span class="comment">--部门编号</span></span><br><span class="line">    <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">"\t"</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">--加载数据</span></span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> <span class="keyword">LOCAL</span> INPATH <span class="string">"/usr/file/emp.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp;</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-部门表"><a href="#1-2-部门表" class="headerlink" title="1.2 部门表"></a>1.2 部门表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 建表语句</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> dept(</span><br><span class="line">    deptno <span class="built_in">INT</span>,   <span class="comment">--部门编号</span></span><br><span class="line">    dname <span class="keyword">STRING</span>,  <span class="comment">--部门名称</span></span><br><span class="line">    loc <span class="keyword">STRING</span>    <span class="comment">--部门所在的城市</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">"\t"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--加载数据</span></span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> <span class="keyword">LOCAL</span> INPATH <span class="string">"/usr/file/dept.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> dept;</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-分区表"><a href="#1-3-分区表" class="headerlink" title="1.3 分区表"></a>1.3 分区表</h3><p>这里需要额外创建一张分区表，主要是为了演示分区查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EXTERNAL</span> <span class="keyword">TABLE</span> emp_ptn(</span><br><span class="line">      empno <span class="built_in">INT</span>,</span><br><span class="line">      ename <span class="keyword">STRING</span>,</span><br><span class="line">      job <span class="keyword">STRING</span>,</span><br><span class="line">      mgr <span class="built_in">INT</span>,</span><br><span class="line">      hiredate <span class="built_in">TIMESTAMP</span>,</span><br><span class="line">      sal <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>),</span><br><span class="line">      comm <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>)</span><br><span class="line">  )</span><br><span class="line"> PARTITIONED <span class="keyword">BY</span> (deptno <span class="built_in">INT</span>)   <span class="comment">-- 按照部门编号进行分区</span></span><br><span class="line"> <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">"\t"</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">--加载数据</span></span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> <span class="keyword">LOCAL</span> INPATH <span class="string">"/usr/file/emp.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno=<span class="number">20</span>)</span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> <span class="keyword">LOCAL</span> INPATH <span class="string">"/usr/file/emp.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno=<span class="number">30</span>)</span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> <span class="keyword">LOCAL</span> INPATH <span class="string">"/usr/file/emp.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno=<span class="number">40</span>)</span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> <span class="keyword">LOCAL</span> INPATH <span class="string">"/usr/file/emp.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno=<span class="number">50</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="二、单表查询"><a href="#二、单表查询" class="headerlink" title="二、单表查询"></a>二、单表查询</h2><h3 id="2-1-SELECT"><a href="#2-1-SELECT" class="headerlink" title="2.1 SELECT"></a>2.1 SELECT</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询表中全部数据</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-WHERE"><a href="#2-2-WHERE" class="headerlink" title="2.2 WHERE"></a>2.2 WHERE</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询10号部门中员工编号大于 7782 的员工信息 </span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> empno &gt; <span class="number">7782</span> <span class="keyword">AND</span> deptno = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-DISTINCT"><a href="#2-3-DISTINCT" class="headerlink" title="2.3  DISTINCT"></a>2.3  DISTINCT</h3><p>Hive支持使用DISTINCT关键字去重。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询所有工作类型</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> job <span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-分区查询"><a href="#2-4-分区查询" class="headerlink" title="2.4 分区查询"></a>2.4 分区查询</h3><p>分区查询(Partition Based Queries)，可以指定某个分区或者分区范围。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询分区表中部门编号在[20,40]之间的员工</span></span><br><span class="line"><span class="keyword">SELECT</span> emp_ptn.* <span class="keyword">FROM</span> emp_ptn</span><br><span class="line"><span class="keyword">WHERE</span> emp_ptn.deptno &gt;= <span class="number">20</span> <span class="keyword">AND</span> emp_ptn.deptno &lt;= <span class="number">40</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-LIMIT"><a href="#2-5-LIMIT" class="headerlink" title="2.5 LIMIT"></a>2.5 LIMIT</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询薪资最高的5名员工</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">ORDER</span> <span class="keyword">BY</span> sal <span class="keyword">DESC</span> <span class="keyword">LIMIT</span> <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-GROUP-BY"><a href="#2-6-GROUP-BY" class="headerlink" title="2.6 GROUP BY"></a>2.6 GROUP BY</h3><p>Hive支持使用GROUP BY进行分组聚合操作。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">set</span> hive.map.<span class="attribute">aggr</span>=<span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">-- 查询各个部门薪酬综合</span><br><span class="line">SELECT deptno,SUM(sal) <span class="keyword">FROM</span> emp<span class="built_in"> GROUP </span>BY deptno;</span><br></pre></td></tr></table></figure>
+<p><code>hive.map.aggr</code>控制程序如何进行聚合。默认值为false。如果设置为true，Hive会在map阶段就执行一次聚合。这可以提高聚合效率，但需要消耗更多内存。</p>
+<h3 id="2-7-ORDER-AND-SORT"><a href="#2-7-ORDER-AND-SORT" class="headerlink" title="2.7 ORDER AND SORT"></a>2.7 ORDER AND SORT</h3><p>可以使用ORDER BY或者Sort BY对查询结果进行排序，排序字段可以是整型也可以是字符串：如果是整型，则按照大小排序；如果是字符串，则按照字典序排序。ORDER BY 和 SORT BY 的区别如下：</p>
+<ul>
+<li>使用ORDER BY时会有一个Reducer对全部查询结果进行排序，可以保证数据的全局有序性；</li>
+<li>使用SORT BY时只会在每个Reducer中进行排序，这可以保证每个Reducer的输出数据是有序的，但不能保证全局有序。</li>
+</ul>
+<p>由于ORDER BY的时间可能很长，如果你设置了严格模式(hive.mapred.mode = strict)，则其后面必须再跟一个<code>limit</code>子句。</p>
+<blockquote>
+<p>注 ：hive.mapred.mode默认值是nonstrict ，也就是非严格模式。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询员工工资，结果按照部门升序，按照工资降序排列</span></span><br><span class="line"><span class="keyword">SELECT</span> empno, deptno, sal <span class="keyword">FROM</span> emp <span class="keyword">ORDER</span> <span class="keyword">BY</span> deptno <span class="keyword">ASC</span>, sal <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="2-8-HAVING"><a href="#2-8-HAVING" class="headerlink" title="2.8 HAVING"></a>2.8 HAVING</h3><p>可以使用HAVING对分组数据进行过滤。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-- 查询工资总和大于9000的所有部门</span><br><span class="line">SELECT deptno,SUM(sal) <span class="keyword">FROM</span> emp<span class="built_in"> GROUP </span>BY deptno HAVING SUM(sal)&gt;9000;</span><br></pre></td></tr></table></figure>
+<h3 id="2-9-DISTRIBUTE-BY"><a href="#2-9-DISTRIBUTE-BY" class="headerlink" title="2.9 DISTRIBUTE BY"></a>2.9 DISTRIBUTE BY</h3><p>默认情况下，MapReduce程序会对Map输出结果的Key值进行散列，并均匀分发到所有Reducer上。如果想要把具有相同Key值的数据分发到同一个Reducer进行处理，这就需要使用DISTRIBUTE BY字句。</p>
+<p>需要注意的是，DISTRIBUTE BY虽然能保证具有相同Key值的数据分发到同一个Reducer，但是不能保证数据在Reducer上是有序的。情况如下：</p>
+<p>把以下5个数据发送到两个Reducer上进行处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">k1</span><br><span class="line">k2</span><br><span class="line">k4</span><br><span class="line">k3</span><br><span class="line">k1</span><br></pre></td></tr></table></figure>
+<p>Reducer1得到如下乱序数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">k1</span><br><span class="line">k2</span><br><span class="line">k1</span><br></pre></td></tr></table></figure>
+<p>Reducer2得到数据如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">k4</span><br><span class="line">k3</span><br></pre></td></tr></table></figure>
+<p>如果想让Reducer上的数据时有序的，可以结合<code>SORT BY</code>使用(示例如下)，或者使用下面我们将要介绍的CLUSTER BY。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 将数据按照部门分发到对应的Reducer上处理</span></span><br><span class="line"><span class="keyword">SELECT</span> empno, deptno, sal <span class="keyword">FROM</span> emp <span class="keyword">DISTRIBUTE</span> <span class="keyword">BY</span> deptno <span class="keyword">SORT</span> <span class="keyword">BY</span> deptno <span class="keyword">ASC</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="2-10-CLUSTER-BY"><a href="#2-10-CLUSTER-BY" class="headerlink" title="2.10 CLUSTER BY"></a>2.10 CLUSTER BY</h3><p>如果<code>SORT BY</code>和<code>DISTRIBUTE BY</code>指定的是相同字段，且SORT BY排序规则是ASC，此时可以使用<code>CLUSTER BY</code>进行替换，同时<code>CLUSTER BY</code>可以保证数据在全局是有序的。</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> empno, deptno, sal <span class="keyword">FROM</span> emp <span class="keyword">CLUSTER</span>  <span class="keyword">BY</span> deptno ;</span><br></pre></td></tr></table></figure>
+<h2 id="三、多表联结查询"><a href="#三、多表联结查询" class="headerlink" title="三、多表联结查询"></a>三、多表联结查询</h2><p>Hive支持内连接，外连接，左外连接，右外连接，笛卡尔连接，这和传统数据库中的概念是一致的，可以参见下图。</p>
+<p>需要特别强调：JOIN语句的关联条件必须用ON指定，不能用WHERE指定，否则就会先做笛卡尔积，再过滤，这会导致你得不到预期的结果(下面的演示会有说明)。</p>
+<div align="center"> <img width="600px" src="/img/bigdata/sql-join.jpg"> </div>
+
+
+
+<h3 id="3-1-INNER-JOIN"><a href="#3-1-INNER-JOIN" class="headerlink" title="3.1 INNER JOIN"></a>3.1 INNER JOIN</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-- 查询员工编号为7369的员工的详细信息</span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">e</span>.*,d.* <span class="keyword">FROM</span> </span><br><span class="line">emp <span class="built_in">e</span> <span class="keyword">JOIN</span> dept d</span><br><span class="line"><span class="keyword">ON</span> <span class="built_in">e</span>.deptno = d.deptno </span><br><span class="line"><span class="keyword">WHERE</span> empno=<span class="number">7369</span>;</span><br><span class="line"></span><br><span class="line">--如果是三表或者更多表连接，语法如下</span><br><span class="line"><span class="keyword">SELECT</span> a.val, b.val, c.val <span class="keyword">FROM</span> a <span class="keyword">JOIN</span> b <span class="keyword">ON</span> (a.<span class="keyword">key</span> = b.key1) <span class="keyword">JOIN</span> c <span class="keyword">ON</span> (c.<span class="keyword">key</span> = b.key1)</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-LEFT-OUTER-JOIN"><a href="#3-2-LEFT-OUTER-JOIN" class="headerlink" title="3.2 LEFT OUTER  JOIN"></a>3.2 LEFT OUTER  JOIN</h3><p>LEFT OUTER  JOIN 和 LEFT  JOIN是等价的。 </p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-- 左连接</span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">e</span>.*,d.*</span><br><span class="line"><span class="keyword">FROM</span> emp <span class="built_in">e</span> <span class="keyword">LEFT</span> <span class="keyword">OUTER</span>  <span class="keyword">JOIN</span>  dept d</span><br><span class="line"><span class="keyword">ON</span> <span class="built_in">e</span>.deptno = d.deptno;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-RIGHT-OUTER-JOIN"><a href="#3-3-RIGHT-OUTER-JOIN" class="headerlink" title="3.3 RIGHT OUTER  JOIN"></a>3.3 RIGHT OUTER  JOIN</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--右连接</span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">e</span>.*,d.*</span><br><span class="line"><span class="keyword">FROM</span> emp <span class="built_in">e</span> <span class="keyword">RIGHT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span>  dept d</span><br><span class="line"><span class="keyword">ON</span> <span class="built_in">e</span>.deptno = d.deptno;</span><br></pre></td></tr></table></figure>
+<p>执行右连接后，由于40号部门下没有任何员工，所以此时员工信息为NULL。这个查询可以很好的复述上面提到的——JOIN语句的关联条件必须用ON指定，不能用WHERE指定。你可以把ON改成WHERE，你会发现无论如何都查不出40号部门这条数据，因为笛卡尔运算不会有(NULL, 40)这种情况。</p>
+<div align="center"> <img width="700px" src="/img/bigdata/hive-right-join.png"> </div>
+
+<h3 id="3-4-FULL-OUTER-JOIN"><a href="#3-4-FULL-OUTER-JOIN" class="headerlink" title="3.4 FULL OUTER  JOIN"></a>3.4 FULL OUTER  JOIN</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">e</span>.*,d.*</span><br><span class="line"><span class="keyword">FROM</span> emp <span class="built_in">e</span> FULL <span class="keyword">OUTER</span> <span class="keyword">JOIN</span>  dept d</span><br><span class="line"><span class="keyword">ON</span> <span class="built_in">e</span>.deptno = d.deptno;</span><br></pre></td></tr></table></figure>
+<h3 id="3-5-LEFT-SEMI-JOIN"><a href="#3-5-LEFT-SEMI-JOIN" class="headerlink" title="3.5 LEFT SEMI JOIN"></a>3.5 LEFT SEMI JOIN</h3><p>LEFT SEMI JOIN （左半连接）是 IN/EXISTS 子查询的一种更高效的实现。</p>
+<ul>
+<li>JOIN 子句中右边的表只能在 ON 子句中设置过滤条件;</li>
+<li>查询结果只包含左边表的数据，所以只能SELECT左表中的列。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询在纽约办公的所有员工信息</span></span><br><span class="line"><span class="keyword">SELECT</span> emp.*</span><br><span class="line"><span class="keyword">FROM</span> emp <span class="keyword">LEFT</span> <span class="keyword">SEMI</span> <span class="keyword">JOIN</span> dept </span><br><span class="line"><span class="keyword">ON</span> emp.deptno = dept.deptno <span class="keyword">AND</span> dept.loc=<span class="string">"NEW YORK"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--上面的语句就等价于</span></span><br><span class="line"><span class="keyword">SELECT</span> emp.* <span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> emp.deptno <span class="keyword">IN</span> (<span class="keyword">SELECT</span> deptno <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> loc=<span class="string">"NEW YORK"</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="3-6-JOIN"><a href="#3-6-JOIN" class="headerlink" title="3.6 JOIN"></a>3.6 JOIN</h3><p>笛卡尔积连接，这个连接日常的开发中可能很少遇到，且性能消耗比较大，基于这个原因，如果在严格模式下(hive.mapred.mode = strict)，Hive会阻止用户执行此操作。</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">JOIN</span> dept;</span><br></pre></td></tr></table></figure>
+<h2 id="四、JOIN优化"><a href="#四、JOIN优化" class="headerlink" title="四、JOIN优化"></a>四、JOIN优化</h2><h3 id="4-1-STREAMTABLE"><a href="#4-1-STREAMTABLE" class="headerlink" title="4.1 STREAMTABLE"></a>4.1 STREAMTABLE</h3><p>在多表进行联结的时候，如果每个ON字句都使用到共同的列（如下面的<code>b.key</code>），此时Hive会进行优化，将多表JOIN在同一个map / reduce作业上进行。同时假定查询的最后一个表（如下面的 c 表）是最大的一个表，在对每行记录进行JOIN操作时，它将尝试将其他的表缓存起来，然后扫描最后那个表进行计算。因此用户需要保证查询的表的大小从左到右是依次增加的。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`SELECT <span class="selector-tag">a</span><span class="selector-class">.val</span>, <span class="selector-tag">b</span><span class="selector-class">.val</span>, c<span class="selector-class">.val</span> FROM <span class="selector-tag">a</span> JOIN <span class="selector-tag">b</span> ON (<span class="selector-tag">a</span><span class="selector-class">.key</span> = <span class="selector-tag">b</span>.key) JOIN c ON (c<span class="selector-class">.key</span> = <span class="selector-tag">b</span>.key)`</span><br></pre></td></tr></table></figure>
+<p>然后，用户并非需要总是把最大的表放在查询语句的最后面，Hive提供了<code>/*+ STREAMTABLE() */</code>标志，用于标识最大的表，示例如下：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="comment">/*+ STREAMTABLE(d) */</span>  <span class="built_in">e</span>.*,d.* </span><br><span class="line"><span class="keyword">FROM</span> emp <span class="built_in">e</span> <span class="keyword">JOIN</span> dept d</span><br><span class="line"><span class="keyword">ON</span> <span class="built_in">e</span>.deptno = d.deptno</span><br><span class="line"><span class="keyword">WHERE</span> job=<span class="string">'CLERK'</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-MAPJOIN"><a href="#4-2-MAPJOIN" class="headerlink" title="4.2 MAPJOIN"></a>4.2 MAPJOIN</h3><p>如果所有表中只有一张表是小表，那么Hive把这张小表加载到内存中。这时候程序会在map阶段直接拿另外一个表的数据和内存中表数据做匹配，由于在map就进行了JOIN操作，从而可以省略reduce过程，这样效率可以提升很多。Hive中提供了<code>/*+ MAPJOIN() */</code>来标记小表，示例如下：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="comment">/*+ MAPJOIN(d) */</span> <span class="built_in">e</span>.*,d.* </span><br><span class="line"><span class="keyword">FROM</span> emp <span class="built_in">e</span> <span class="keyword">JOIN</span> dept d</span><br><span class="line"><span class="keyword">ON</span> <span class="built_in">e</span>.deptno = d.deptno</span><br><span class="line"><span class="keyword">WHERE</span> job=<span class="string">'CLERK'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="五、SELECT的其他用途"><a href="#五、SELECT的其他用途" class="headerlink" title="五、SELECT的其他用途"></a>五、SELECT的其他用途</h2><p>查看当前数据库：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> current_database()</span><br></pre></td></tr></table></figure>
+<h2 id="六、本地模式"><a href="#六、本地模式" class="headerlink" title="六、本地模式"></a>六、本地模式</h2><p>在上面演示的语句中，大多数都会触发MapReduce, 少部分不会触发，比如<code>select * from emp limit 5</code>就不会触发MR，此时Hive只是简单的读取数据文件中的内容，然后格式化后进行输出。在需要执行MapReduce的查询中，你会发现执行时间可能会很长，这时候你可以选择开启本地模式。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--本地模式默认关闭，需要手动开启此功能</span><br><span class="line"><span class="builtin-name">SET</span> hive.exec.mode.local.<span class="attribute">auto</span>=<span class="literal">true</span>;</span><br></pre></td></tr></table></figure>
+<p>启用后，Hive将分析查询中每个map-reduce作业的大小，如果满足以下条件，则可以在本地运行它：</p>
+<ul>
+<li>作业的总输入大小低于：hive.exec.mode.local.auto.inputbytes.max（默认为128MB）；</li>
+<li>map-tasks的总数小于：hive.exec.mode.local.auto.tasks.max（默认为4）；</li>
+<li>所需的reduce任务总数为1或0。</li>
+</ul>
+<p>因为我们测试的数据集很小，所以你再次去执行上面涉及MR操作的查询，你会发现速度会有显著的提升。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><p><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select" target="_blank" rel="noopener">LanguageManual Select</a></p>
+</li>
+<li><p><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Joins" target="_blank" rel="noopener">LanguageManual Joins</a></p>
+</li>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+GroupBy" target="_blank" rel="noopener">LanguageManual GroupBy</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+SortBy" target="_blank" rel="noopener">LanguageManual SortBy</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100401.html" class="pre-post btn btn-default" title='Spark简介'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark简介</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100399.html" class="next-post btn btn-default" title='Hive常用DML操作'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Hive常用DML操作</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、数据准备"><span class="toc-text">一、数据准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-员工表"><span class="toc-text">1.1 员工表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-部门表"><span class="toc-text">1.2 部门表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-分区表"><span class="toc-text">1.3 分区表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、单表查询"><span class="toc-text">二、单表查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-SELECT"><span class="toc-text">2.1 SELECT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-WHERE"><span class="toc-text">2.2 WHERE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-DISTINCT"><span class="toc-text">2.3  DISTINCT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-分区查询"><span class="toc-text">2.4 分区查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-LIMIT"><span class="toc-text">2.5 LIMIT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-GROUP-BY"><span class="toc-text">2.6 GROUP BY</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-ORDER-AND-SORT"><span class="toc-text">2.7 ORDER AND SORT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-8-HAVING"><span class="toc-text">2.8 HAVING</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-9-DISTRIBUTE-BY"><span class="toc-text">2.9 DISTRIBUTE BY</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-10-CLUSTER-BY"><span class="toc-text">2.10 CLUSTER BY</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、多表联结查询"><span class="toc-text">三、多表联结查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-INNER-JOIN"><span class="toc-text">3.1 INNER JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-LEFT-OUTER-JOIN"><span class="toc-text">3.2 LEFT OUTER  JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-RIGHT-OUTER-JOIN"><span class="toc-text">3.3 RIGHT OUTER  JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-FULL-OUTER-JOIN"><span class="toc-text">3.4 FULL OUTER  JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-LEFT-SEMI-JOIN"><span class="toc-text">3.5 LEFT SEMI JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-JOIN"><span class="toc-text">3.6 JOIN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、JOIN优化"><span class="toc-text">四、JOIN优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-STREAMTABLE"><span class="toc-text">4.1 STREAMTABLE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-MAPJOIN"><span class="toc-text">4.2 MAPJOIN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、SELECT的其他用途"><span class="toc-text">五、SELECT的其他用途</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、本地模式"><span class="toc-text">六、本地模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

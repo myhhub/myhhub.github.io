@@ -1,0 +1,594 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink,集群,高可用">
+
+
+    <meta name="description" content="本文主要内容包括：
+
+Flink 开发环境的部署和配置
+运行 Flink 应用（包括：单机 Standalone 模式、多机 Standalone 模式和 Yarn 集群模式）
+
+一、Flink...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink开发环境搭建、集群环境搭建和应用部署 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink开发环境搭建、集群环境搭建和应用部署">
+            
+	            Flink开发环境搭建、集群环境搭建和应用部署
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/colony/">集群</a> <a class="tag-link" href="/tags/availability/">高可用</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/22</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1354</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>本文主要内容包括：</p>
+<ul>
+<li>Flink 开发环境的部署和配置</li>
+<li>运行 Flink 应用（包括：单机 Standalone 模式、多机 Standalone 模式和 Yarn 集群模式）</li>
+</ul>
+<h2 id="一、Flink-开发环境部署和配置"><a href="#一、Flink-开发环境部署和配置" class="headerlink" title="一、Flink 开发环境部署和配置"></a>一、Flink 开发环境部署和配置</h2><p>Flink 是一个以 Java 及 Scala 作为开发语言的开源大数据项目，代码开源在 GitHub 上，并使用 Maven 来编译和构建项目。对于大部分使用 Flink 的同学来说，Java、Maven 和 Git 这三个工具是必不可少的，另外一个强大的 IDE 有助于我们更快的阅读代码、开发新功能以及修复 Bug。因为篇幅所限，我们不会详述每个工具的安装细节，但会给出必要的安装建议。</p>
+<p>关于开发测试环境，Mac OS、Linux 系统或者 Windows 都可以。如果使用的是 Windows 10 系统，建议使用 Windows 10 系统的 Linux 子系统来编译和运行。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">工具</th>
+<th style="text-align:left">注释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Java</td>
+<td style="text-align:left">Java 版本至少是 Java 8，且最好选用 Java 8u51 及以上版本</td>
+</tr>
+<tr>
+<td style="text-align:left">Maven</td>
+<td style="text-align:left">必须使用 Maven 3，建议使用 Maven 3.2.5。Maven 3.3.x 能够编译成功，但是在 Shade 一些 Dependencies 的过程中有些问题</td>
+</tr>
+<tr>
+<td style="text-align:left">Git</td>
+<td style="text-align:left">Flink 的代码仓库是： <a href="https://github.com/apache/flink" target="_blank" rel="noopener">https://github.com/apache/flink</a></td>
+</tr>
+</tbody>
+</table>
+<p>建议选用社区已发布的稳定分支，比如 Release-1.6 或者 Release-1.7。</p>
+<h3 id="1-编译-Flink-代码"><a href="#1-编译-Flink-代码" class="headerlink" title="1. 编译 Flink 代码"></a>1. 编译 Flink 代码</h3><p>在我们配置好之前的几个工具后，编译 Flink 就非常简单了，执行如下命令即可：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -D<span class="keyword">skip</span>Tests</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">mvn clean package -D<span class="keyword">skip</span>Tests</span><br></pre></td></tr></table></figure>
+<p>常用编译参数：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">Dfast	主要是忽略 QA plugins 和 JavaDocs 的编译</span></span><br><span class="line"><span class="ruby">-Dhadoop.version=<span class="number">2.6</span>.<span class="number">1</span>	指定 hadoop 版本</span></span><br><span class="line"><span class="ruby">--settings=$&#123;maven_file_path&#125;	显式指定 maven settings.xml 配置文件</span></span><br></pre></td></tr></table></figure>
+<p>当成功编译完成后，能在当前 Flink 代码目录下的 flink-dist/target/ 子目录 中看到如下文件（不同的 Flink 代码分支编译出的版本号不同，这里的版本号是 Flink 1.5.1）：</p>
+<p><img src="/img/flink/5f50faeafbc163dd263b031ab6588cfd.png" alt="img"></p>
+<p>其中有三个文件可以留意一下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">版本</th>
+<th style="text-align:left">注释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">flink-1.5.1.tar.gz</td>
+<td style="text-align:left">Binary 的压缩包</td>
+</tr>
+<tr>
+<td style="text-align:left">flink-1.5.1-bin/flink-1.5.1</td>
+<td style="text-align:left">解压后的 Flink binary 目录</td>
+</tr>
+<tr>
+<td style="text-align:left">flink-dist_2.11-1.5.1.jar</td>
+<td style="text-align:left">包含 Flink 核心功能的 jar 包</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意：<br>国内用户在编译时可能遇到编译失败“Build Failure”（且有 MapR 相关报错），一般都和 MapR 相关依赖的下载失败有关，即使使用了推荐的 settings.xml 配置（其中 Aliyun Maven 源专门为 MapR 相关依赖做了代理），还是可能出现下载失败的情况。问题主要和 MapR 的 Jar 包比较大有关。遇到这些问题时，重试即可。在重试之前，要先根据失败信息删除 Maven local repository 中对应的目录，否则需要等待 Maven 下载的超时时间才能再次出发下载依赖到本地。</p>
+</blockquote>
+<h3 id="2-开发环境准备"><a href="#2-开发环境准备" class="headerlink" title="2. 开发环境准备"></a>2. 开发环境准备</h3><p>推荐使用 IntelliJ IDEA IDE 作为 Flink 的 IDE 工具。官方不建议使用 Eclipse IDE，主要原因是 Eclipse 的 Scala IDE 和 Flink 用 Scala 的不兼容。</p>
+<p>如果你需要做一些 Flink 代码的开发工作，则需要根据 Flink 代码的 tools/maven/ 目录 下的配置文件来配置 Checkstyle ，因为 Flink 在编译时会强制代码风格的检查，如果代码风格不符合规范，可能会直接编译失败。</p>
+<h2 id="二、运行-Flink-应用"><a href="#二、运行-Flink-应用" class="headerlink" title="二、运行 Flink 应用"></a>二、运行 Flink 应用</h2><h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h3><p>运行 Flink 应用其实非常简单，但是在运行 Flink 应用之前，还是有必要了解 Flink 运行时的各个组件，因为这涉及到 Flink 应用的配置问题。图 1 所示，这是用户用 DataStream API 写的一个数据处理程序。可以看到，在一个 DAG 图中不能被 Chain 在一起的 Operator 会被分隔到不同的 Task 中，也就是说 Task 是 Flink 中资源调度的最小单位。</p>
+<p><img src="/img/flink/3b3757e98ffb19cb8f884238b9232875.png" alt="img"></p>
+<p>图 1 Parallel Dataflows</p>
+<p>图 2 所示，Flink 实际运行时包括两类进程：</p>
+<ul>
+<li>JobManager（又称为 JobMaster）：协调 Task 的分布式执行，包括调度 Task、协调创 Checkpoint 以及当 Job failover 时协调各个 Task 从 Checkpoint 恢复等。</li>
+<li>TaskManager（又称为 Worker）：执行 Dataflow 中的 Tasks，包括内存 Buffer 的分配、Data Stream 的传递等。</li>
+</ul>
+<p><img src="/img/flink/e12094d84a92e1ecf33f7b99f14e670f.png" alt="img"></p>
+<p>图 2 Flink Runtime 架构图</p>
+<p>图 3 所示，Task Slot 是一个 TaskManager 中的最小资源分配单位，一个 TaskManager 中有多少个 Task Slot 就意味着能支持多少并发的 Task 处理。需要注意的是，一个 Task Slot 中可以执行多个 Operator，一般这些 Operator 是能被 Chain 在一起处理的。</p>
+<p><img src="/img/flink/5dc7b5dd339c21adcc14c9ba6203a389.png" alt="img"></p>
+<p>图 3 Process</p>
+<h3 id="2-运行环境准备"><a href="#2-运行环境准备" class="headerlink" title="2. 运行环境准备"></a>2. 运行环境准备</h3><ul>
+<li>准备 Flink binary<br>○    直接从 Flink 官网上下载 Flink binary 的压缩包<br>○    或者从 Flink 源码编译而来</li>
+<li>安装 Java，并配置 JAVA_HOME 环境变量</li>
+</ul>
+<h3 id="3-单机-Standalone-的方式运行-Flink"><a href="#3-单机-Standalone-的方式运行-Flink" class="headerlink" title="3. 单机 Standalone 的方式运行 Flink"></a>3. 单机 Standalone 的方式运行 Flink</h3><h4 id="（1）基本的启动流程"><a href="#（1）基本的启动流程" class="headerlink" title="（1）基本的启动流程"></a>（1）基本的启动流程</h4><p>最简单的运行 Flink 应用的方法就是以单机 Standalone 的方式运行。</p>
+<p>启动集群：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/start-<span class="keyword">cluster</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>打开 <a href="http://127.0.0.1:8081/" target="_blank" rel="noopener">http://127.0.0.1:8081/</a> 就能看到 Flink 的 Web 界面。尝试提交 Word Count 任务：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run examples<span class="regexp">/streaming/</span>WordCount.jar</span><br></pre></td></tr></table></figure>
+<p>大家可以自行探索 Web 界面中展示的信息，比如，我们可以看看 TaskManager 的 stdout 日志，就可以看到 Word Count 的计算结果。</p>
+<p>我们还可以尝试通过“–input”参数指定我们自己的本地文件作为输入，然后执行：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/flink run examples/streaming/WordCount<span class="selector-class">.jar</span> --<span class="selector-tag">input</span> $&#123;your_source_file&#125;</span><br></pre></td></tr></table></figure>
+<p>停止集群：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/stop-<span class="keyword">cluster</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<h4 id="（2）常用配置介绍"><a href="#（2）常用配置介绍" class="headerlink" title="（2）常用配置介绍"></a>（2）常用配置介绍</h4><ul>
+<li>conf / slaves</li>
+</ul>
+<p>conf / slaves 用于配置 TaskManager 的部署，默认配置下只会启动一个 TaskManager 进程，如果想增加一个 TaskManager 进程的，只需要文件中追加一行“localhost”。</p>
+<p>也可以直接通过“ ./bin/taskmanager.sh start ”这个命令来追加一个新的 TaskManager：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/taskmanager.sh <span class="keyword">start</span>|<span class="keyword">start</span>-foreground|<span class="keyword">stop</span>|<span class="keyword">stop</span>-<span class="keyword">all</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>conf/flink-conf.yaml</li>
+</ul>
+<p>conf/flink-conf.yaml 用于配置 JM 和 TM 的运行参数，常用配置有：</p>
+<figure class="highlight ldif"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The heap size for the JobManager JVM</span></span><br><span class="line"><span class="attribute">jobmanager.heap.mb</span>: 1024</span><br><span class="line"> </span><br><span class="line"><span class="comment"># The heap size for the TaskManager JVM</span></span><br><span class="line"><span class="attribute">taskmanager.heap.mb</span>: 1024</span><br><span class="line"> </span><br><span class="line"><span class="comment"># The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.</span></span><br><span class="line"><span class="attribute">taskmanager.numberOfTaskSlots</span>: 4</span><br><span class="line"> </span><br><span class="line"><span class="comment"># the managed memory size for each task manager.</span></span><br><span class="line"><span class="attribute">taskmanager.managed.memory.size</span>: 256</span><br></pre></td></tr></table></figure>
+<p>Standalone 集群启动后，我们可以尝试分析一下 Flink 相关进程的运行情况。执行 jps 命令，可以看到 Flink 相关的进程主要有两个，一个是 JobManager 进程，另一个是 TaskManager 进程。我们可以进一步用 ps 命令看看进程的启动参数中“-Xmx”和“-Xms”的配置。然后我们可以尝试修改 flink-conf.yaml 中若干配置，然后重启 Standalone 集群看看发生了什么变化。</p>
+<p>需要补充的是，在 Blink 开源分支上，TaskManager 的内存计算上相对于现在的社区版本要更精细化，TaskManager 进程的堆内存限制（-Xmx）一般的计算方法是：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TotalHeapMemory = taskmanager<span class="selector-class">.heap</span><span class="selector-class">.mb</span> + taskmanager<span class="selector-class">.managed</span><span class="selector-class">.memory</span><span class="selector-class">.size</span> + taskmanager<span class="selector-class">.process</span><span class="selector-class">.heap</span><span class="selector-class">.memory</span><span class="selector-class">.mb</span>（默认值为 <span class="number">128</span>MB）</span><br></pre></td></tr></table></figure>
+<p>而最新的 Flink 社区版本 Release-1.7 中 JobManager 和 TaskManager 默认内存配置方式为：</p>
+<figure class="highlight ldif"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The heap size for the JobManager JVM</span></span><br><span class="line"><span class="attribute">jobmanager.heap.size</span>: 1024m</span><br><span class="line"> </span><br><span class="line"><span class="comment"># The heap size for the TaskManager JVM</span></span><br><span class="line"><span class="attribute">taskmanager.heap.size</span>: 1024m</span><br></pre></td></tr></table></figure>
+<p>Flink 社区 Release-1.7 版本中的“taskmanager.heap.size”配置实际上指的不是 Java heap 的内存限制，而是 TaskManager 进程总的内存限制。我们可以同样用上述方法查看 Release-1.7 版本的 Flink binary 启动的 TaskManager 进程的 -Xmx 配置，会发现实际进程上的 -Xmx 要小于配置的“taskmanager.heap.size”的值，原因在于从中扣除了 Network buffer 用的内存，因为 Network buffer 用的内存一定是 Direct memory，所以不应该算在堆内存限制中。</p>
+<h4 id="（3）日志的查看和配置"><a href="#（3）日志的查看和配置" class="headerlink" title="（3）日志的查看和配置"></a>（3）日志的查看和配置</h4><p>JobManager 和 TaskManager 的启动日志可以在 Flink binary 目录下的 Log 子目录中找到。Log 目录中以“flink-user−standalonesession−user−standalonesession−{id}-${hostname}”为前缀的文件对应的是 JobManager 的输出，其中有三个文件：</p>
+<ul>
+<li>flink-user−standalonesession−user−standalonesession−{id}-${hostname}.log：代码中的日志输出</li>
+<li>flink-user−standalonesession−user−standalonesession−{id}-${hostname}.out：进程执行时的 stdout 输出</li>
+<li>flink-user−standalonesession−user−standalonesession−{id}-${hostname}-gc.log：JVM 的 GC 的日志</li>
+</ul>
+<p>Log 目录中以“flink-user−taskexecutor−user−taskexecutor−{id}-${hostname}”为前缀的文件对应的是 TaskManager 的输出，也包括三个文件，和 JobManager 的输出一致。</p>
+<p>日志的配置文件在 Flink binary 目录的 conf 子目录下，其中：</p>
+<ul>
+<li>log4j-cli.properties：用 Flink 命令行时用的 log 配置，比如执行“ flink run”命令</li>
+<li>log4j-yarn-session.properties：用 <a href="http://yarn-session.sh/" target="_blank" rel="noopener">yarn-session.sh</a> 启动时命令行执行时用的 log 配置</li>
+<li>log4j.properties：无论是 Standalone 还是 Yarn 模式，JobManager 和 TaskManager 上用的 log 配置都是 log4j.properties</li>
+</ul>
+<p>这三个“log4j.<em>properties”文件分别有三个“logback.</em>xml”文件与之对应，如果想使用 Logback 的同学，之需要把与之对应的“log4j.*properties”文件删掉即可，对应关系如下：</p>
+<ul>
+<li>log4j-cli.properties -&gt; logback-console.xml</li>
+<li>log4j-yarn-session.properties -&gt; logback-yarn.xml</li>
+<li>log4j.properties -&gt; logback.xml</li>
+</ul>
+<p>需要注意的是，“flink-user−standalonesession−user−standalonesession−{id}-hostname”和“flink−hostname”和“flink−{user}-taskexecutor-id−id−{hostname}”都带有“id”，“id”，“{id}”表示本进程在本机上该角色（JobManager 或 TaskManager）的所有进程中的启动顺序，默认从 0 开始。</p>
+<h4 id="（4）进一步探索"><a href="#（4）进一步探索" class="headerlink" title="（4）进一步探索"></a>（4）进一步探索</h4><p>尝试重复执行“./bin/start-cluster.sh”命令，然后看看 Web 页面（或者执行 jps 命令），看看会发生什么？可以尝试看看启动脚本，分析一下原因。接着可以重复执行“./bin/stop-cluster.sh”，每次执行完后，看看会发生什么。</p>
+<h3 id="4-多机部署-Flink-Standalone-集群"><a href="#4-多机部署-Flink-Standalone-集群" class="headerlink" title="4. 多机部署 Flink Standalone 集群"></a>4. 多机部署 Flink Standalone 集群</h3><p>部署前要注意的要点：</p>
+<ul>
+<li>每台机器上配置好 Java 以及 JAVA_HOME 环境变量</li>
+<li>每台机器上部署的 Flink binary 的目录要保证是同一个目录</li>
+<li>如果需要用 HDFS，需要配置 HADOOP_CONF_DIR 环境变量配置</li>
+</ul>
+<p>根据你的集群信息修改 conf/masters 和 conf/slaves 配置。</p>
+<p>修改 conf/flink-conf.yaml 配置，注意要确保和 Masters 文件中的地址一致：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jobmanager<span class="selector-class">.rpc</span><span class="selector-class">.address</span>: z05f06378<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span></span><br></pre></td></tr></table></figure>
+<p>确保所有机器的 Flink binary 目录中 conf 中的配置文件相同，特别是以下三个：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">conf</span>/masters</span><br><span class="line"><span class="keyword">conf</span>/slaves</span><br><span class="line"><span class="keyword">conf</span>/flink-<span class="keyword">conf</span>.yaml</span><br></pre></td></tr></table></figure>
+<p>然后启动 Flink 集群：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/start-<span class="keyword">cluster</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>提交 WordCount 作业：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run examples<span class="regexp">/streaming/</span>WordCount.jar</span><br></pre></td></tr></table></figure>
+<p>上传 WordCount 的 Input 文件：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -copyFromLocal story <span class="regexp">/test_dir/i</span>nput_dir<span class="regexp">/story</span></span><br></pre></td></tr></table></figure>
+<p>提交读写 HDFS 的 WordCount 作业：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run examples<span class="regexp">/streaming/</span>WordCount.jar --input hdfs:<span class="regexp">//</span><span class="regexp">/test_dir/i</span>nput_dir<span class="regexp">/story --output hdfs:/</span><span class="regexp">//</span>test_dir<span class="regexp">/output_dir/</span>output</span><br></pre></td></tr></table></figure>
+<p>增加 WordCount 作业的并发度（注意输出文件重名会提交失败）：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run examples<span class="regexp">/streaming/</span>WordCount.jar --input hdfs:<span class="regexp">//</span><span class="regexp">/test_dir/i</span>nput_dir<span class="regexp">/story --output hdfs:/</span><span class="regexp">//</span>test_dir<span class="regexp">/output_dir/</span>output --parallelism <span class="number">20</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-Standalone-模式的-HighAvailability（HA）部署和配置"><a href="#5-Standalone-模式的-HighAvailability（HA）部署和配置" class="headerlink" title="5. Standalone 模式的 HighAvailability（HA）部署和配置"></a>5. Standalone 模式的 HighAvailability（HA）部署和配置</h3><p>通过图 2 Flink Runtime 架构图，我们可以看到 JobManager 是整个系统中最可能导致系统不可用的角色。如果一个 TaskManager 挂了，在资源足够的情况下，只需要把相关 Task 调度到其他空闲 TaskSlot 上，然后 Job 从 Checkpoint 中恢复即可。而如果当前集群中只配置了一个 JobManager，则一旦 JobManager 挂了，就必须等待这个 JobManager 重新恢复，如果恢复时间过长，就可能导致整个 Job 失败。</p>
+<p>因此如果在生产业务使用 Standalone 模式，则需要部署配置 HighAvailability，这样同时可以有多个 JobManager 待命，从而使得 JobManager 能够持续服务。</p>
+<p><img src="/img/flink/03d0bd65bc2809b8b8836537105ae30d.png" alt="img"></p>
+<p>图 4 Flink JobManager HA 示意图</p>
+<blockquote>
+<p>注意：</p>
+</blockquote>
+<ul>
+<li>如果想使用 Flink standalone HA 模式，需要确保基于 Flink Release-1.6.1 及以上版本，因为这里社区有个 bug 会导致这个模式下主 JobManager 不能正常工作。</li>
+<li>接下来的实验中需要用到 HDFS，所以需要下载带有 Hadoop 支持的 Flink Binary 包。</li>
+</ul>
+<h4 id="（1）（可选）使用-Flink-自带的脚本部署-ZK"><a href="#（1）（可选）使用-Flink-自带的脚本部署-ZK" class="headerlink" title="（1）（可选）使用 Flink 自带的脚本部署 ZK"></a>（1）（可选）使用 Flink 自带的脚本部署 ZK</h4><p>Flink 目前支持基于 Zookeeper 的 HA。如果你的集群中没有部署 ZK，Flink 提供了启动 Zookeeper 集群的脚本。首先修改配置文件“conf/zoo.cfg”，根据你要部署的 Zookeeper Server 的机器数来配置“server.X=addressX:peerPort:leaderPort”，其中“X”是一个 Zookeeper Server 的唯一 ID，且必须是数字。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The port at which the clients will connect</span></span><br><span class="line"><span class="attr">clientPort</span>=<span class="number">3181</span></span><br><span class="line"> </span><br><span class="line"><span class="attr">server.1</span>=z05f06378.sqa.zth.tbsite.net:<span class="number">4888</span>:<span class="number">5888</span></span><br><span class="line"><span class="attr">server.2</span>=z05c19426.sqa.zth.tbsite.net:<span class="number">4888</span>:<span class="number">5888</span></span><br><span class="line"><span class="attr">server.3</span>=z05f10219.sqa.zth.tbsite.net:<span class="number">4888</span>:<span class="number">5888</span></span><br></pre></td></tr></table></figure>
+<p>然后启动 Zookeeper：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>start-zookeeper-quorum.sh</span><br></pre></td></tr></table></figure>
+<p>jps 命令看到 ZK 进程已经启动：</p>
+<p><img src="/img/flink/8e82cb3c2fabaa948aa315435b545840.png" alt="img"></p>
+<p>停掉 Zookeeper 集群的命令：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/<span class="keyword">stop</span>-zookeeper-quorum.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<h4 id="（2）修改-Flink-Standalone-集群的配置"><a href="#（2）修改-Flink-Standalone-集群的配置" class="headerlink" title="（2）修改 Flink Standalone 集群的配置"></a>（2）修改 Flink Standalone 集群的配置</h4><p>修改 conf/masters 文件，增加一个 JobManager：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$cat</span> conf/masters</span><br><span class="line">z05f06378<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span>:<span class="number">8081</span></span><br><span class="line">z05c19426<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span>:<span class="number">8081</span></span><br></pre></td></tr></table></figure>
+<p>之前修改过的 conf/slaves 文件保持不变：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$cat</span> conf/slaves</span><br><span class="line">z05f06378<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span></span><br><span class="line">z05c19426<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span></span><br><span class="line">z05f10219<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span></span><br></pre></td></tr></table></figure>
+<p>修改 conf/flink-conf.yaml 文件：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 配置 high-availability mode</span></span><br><span class="line">high-availability: zookeeper</span><br><span class="line"> </span><br><span class="line"><span class="meta"># 配置 zookeeper quorum（hostname 和端口需要依据对应 zk 的实际配置）</span></span><br><span class="line">high-availability.zookeeper.quorum: z05f02321.sqa.zth.tbsite.net:<span class="number">2181</span>,z05f10215.sqa.zth.tbsite.net:<span class="number">2181</span></span><br><span class="line"> </span><br><span class="line"><span class="meta"># （可选）设置 zookeeper 的 root 目录</span></span><br><span class="line">high-availability.zookeeper.path.root: /test_dir/test_standalone2_root</span><br><span class="line"> </span><br><span class="line"><span class="meta"># （可选）相当于是这个 standalone 集群中创建的 zk node 的 namespace</span></span><br><span class="line">high-availability.cluster-id: /test_dir/test_standalone2</span><br><span class="line"> </span><br><span class="line"><span class="meta"># JobManager 的 meta 信息放在 dfs，在 zk 上主要会保存一个指向 dfs 路径的指针</span></span><br><span class="line">high-availability.storageDir: hdfs:<span class="comment">///test_dir/recovery2/</span></span><br></pre></td></tr></table></figure>
+<p>需要注意的是，在 HA 模式下 conf/flink-conf.yaml 中的这两个配置都失效了（想想为什么）。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jobmanager<span class="selector-class">.rpc</span><span class="selector-class">.address</span></span><br><span class="line">jobmanager<span class="selector-class">.rpc</span><span class="selector-class">.port</span></span><br></pre></td></tr></table></figure>
+<p>修改完成后，确保配置同步到其他机器。</p>
+<p>启动 Zookeeper 集群：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>start-zookeeper-quorum.sh</span><br></pre></td></tr></table></figure>
+<p>再启动 Standalone 集群（要确保之前的 Standalone 集群已经停掉）：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/start-<span class="keyword">cluster</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+<p>分别打开两个 Master 节点上的 JobManager Web 页面：</p>
+<p><a href="http://z05f06378.sqa.zth.tbsite.net:8081/" target="_blank" rel="noopener">http://z05f06378.sqa.zth.tbsite.net:8081</a><br><a href="http://z05c19426.sqa.zth.tbsite.net:8081/" target="_blank" rel="noopener">http://z05c19426.sqa.zth.tbsite.net:8081</a></p>
+<p>可以看到两个页面最后都转到了同一个地址上，这个地址就是当前主 JobManager 所在机器，另一个就是 Standby JobManager。以上我们就完成了 Standalone 模式下 HA 的配置。</p>
+<p>接下来我们可以测试验证 HA 的有效性。当我们知道主 JobManager 的机器后，我们可以把主 JobManager 进程 Kill 掉，比如当前主 JobManager 在 <a href="http://z05c19426.sqa.zth.tbsite.net/" target="_blank" rel="noopener">z05c19426.sqa.zth.tbsite.net</a> 这个机器上，就把这个进程杀掉。</p>
+<p>接着，再打开这两个链接：<br><a href="http://z05f06378.sqa.zth.tbsite.net:8081/" target="_blank" rel="noopener">http://z05f06378.sqa.zth.tbsite.net:8081</a><br><a href="http://z05c19426.sqa.zth.tbsite.net:8081/" target="_blank" rel="noopener">http://z05c19426.sqa.zth.tbsite.net:8081</a></p>
+<p>可以发现后一个链接已经不能展示了，而前一个链接可以展示，说明发生主备切换。<br>然后我们再重启前一次的主 JobManager：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/jobmanager<span class="selector-class">.sh</span> start z05c19426<span class="selector-class">.sqa</span><span class="selector-class">.zth</span><span class="selector-class">.tbsite</span><span class="selector-class">.net</span> <span class="number">8081</span></span><br></pre></td></tr></table></figure>
+<p>再打开 <a href="http://z05c19426.sqa.zth.tbsite.net:8081/" target="_blank" rel="noopener">http://z05c19426.sqa.zth.tbsite.net:8081</a> 这个链接，会发现现在这个链接可以转到 <a href="http://z05f06378.sqa.zth.tbsite.net:8081/" target="_blank" rel="noopener">http://z05f06378.sqa.zth.tbsite.net:8081</a> 这个页面上了。说明这个 JobManager 完成了一个 Failover Recovery。</p>
+<h3 id="6-使用-Yarn-模式跑-Flink-job"><a href="#6-使用-Yarn-模式跑-Flink-job" class="headerlink" title="6. 使用 Yarn 模式跑 Flink job"></a>6. 使用 Yarn 模式跑 Flink job</h3><p><img src="/img/flink/80732b4c68fd8186d34f16db5fa51f6b.png" alt="img"></p>
+<p>图 5 Flink Yarn 部署流程图</p>
+<p>相对于 Standalone 模式，Yarn 模式允许 Flink job 的好处有：</p>
+<ul>
+<li>资源按需使用，提高集群的资源利用率</li>
+<li>任务有优先级，根据优先级运行作业</li>
+<li>基于 Yarn 调度系统，能够自动化地处理各个角色的 Failover<br>○    JobManager 进程和 TaskManager 进程都由 Yarn NodeManager 监控<br>○    如果 JobManager 进程异常退出，则 Yarn ResourceManager 会重新调度 JobManager 到其他机器<br>○    如果 TaskManager 进程异常退出，JobManager 会收到消息并重新向 Yarn ResourceManager 申请资源，重新启动 TaskManager</li>
+</ul>
+<h4 id="（1）在-Yarn-上启动-Long-Running-的-Flink-集群（Session-Cluster-模式）"><a href="#（1）在-Yarn-上启动-Long-Running-的-Flink-集群（Session-Cluster-模式）" class="headerlink" title="（1）在 Yarn 上启动 Long Running 的 Flink 集群（Session Cluster 模式）"></a>（1）在 Yarn 上启动 Long Running 的 Flink 集群（Session Cluster 模式）</h4><p>查看命令参数：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/yarn-session.<span class="keyword">sh</span> -<span class="built_in">h</span></span><br></pre></td></tr></table></figure>
+<p>创建一个 Yarn 模式的 Flink 集群：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/yarn-session.sh -n <span class="number">4</span> -jm <span class="number">1024</span>m -tm <span class="number">4096</span>m</span><br></pre></td></tr></table></figure>
+<p>其中用到的参数是：</p>
+<ul>
+<li>-n,–container Number of TaskManagers</li>
+<li>-jm,–jobManagerMemory Memory for JobManager Container with optional unit (default: MB)</li>
+<li>-tm,–taskManagerMemory Memory per TaskManager Container with optional unit (default: MB)</li>
+<li>-qu,–queue Specify YARN queue.</li>
+<li>-s,–slots Number of slots per TaskManager</li>
+<li>-t,–ship Ship files in the specified directory (t for transfer)</li>
+</ul>
+<p>提交一个 Flink job 到 Flink 集群：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run examples<span class="regexp">/streaming/</span>WordCount.jar --input hdfs:<span class="regexp">//</span><span class="regexp">/test_dir/i</span>nput_dir<span class="regexp">/story --output hdfs:/</span><span class="regexp">//</span>test_dir<span class="regexp">/output_dir/</span>output</span><br></pre></td></tr></table></figure>
+<p>这次提交 Flink job，虽然没有指定对应 Yarn application 的信息，却可以提交到对应的 Flink 集群，原因在于“/tmp/.yarn-properties-${user}”文件中保存了上一次创建 Yarn session 的集群信息。所以如果同一用户在同一机器上再次创建一个 Yarn session，则这个文件会被覆盖掉。</p>
+<ul>
+<li>如果删掉“/tmp/.yarn-properties-${user}”或者在另一个机器上提交作业能否提交到预期到 yarn session 中呢？<br>可以配置了“high-availability.cluster-id”参数，据此从 Zookeeper 上获取到 JobManager 的地址和端口，从而提交作业。</li>
+<li>如果 Yarn session 没有配置 HA，又该如何提交呢？</li>
+</ul>
+<p>这个时候就必须要在提交 Flink job 的命令中指明 Yarn 上的 Application ID，通过“-yid”参数传入：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/bin/</span>flink run -yid application_1548056325049_0048 examples<span class="regexp">/streaming/</span>WordCount.jar --input hdfs:<span class="regexp">//</span><span class="regexp">/test_dir/i</span>nput_dir<span class="regexp">/story --output hdfs:/</span><span class="regexp">//</span>test_dir<span class="regexp">/output_dir/</span>output</span><br></pre></td></tr></table></figure>
+<p>我们可以发现，每次跑完任务不久，TaskManager 就被释放了，下次在提交任务的时候，TaskManager 又会重新拉起来。如果希望延长空闲 TaskManager 的超时时间，可以在 conf/flink-conf.yaml 文件中配置下面这个参数，单位是 milliseconds：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">slotmanager.taskmanager-<span class="keyword">timeout</span>: <span class="number">30000</span>L         <span class="comment"># deprecated, used in release-1.5</span></span><br><span class="line">resourcemanager.taskmanager-<span class="keyword">timeout</span>: <span class="number">30000</span>L</span><br></pre></td></tr></table></figure>
+<h4 id="（2）在-Yarn-上运行单个-Flink-job（Job-Cluster-模式）"><a href="#（2）在-Yarn-上运行单个-Flink-job（Job-Cluster-模式）" class="headerlink" title="（2）在 Yarn 上运行单个 Flink job（Job Cluster 模式）"></a>（2）在 Yarn 上运行单个 Flink job（Job Cluster 模式）</h4><p>如果你只想运行单个 Flink Job 后就退出，那么可以用下面这个命令：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>flink run -m yarn-cluster -yn <span class="number">2</span> examples<span class="regexp">/streaming/</span>WordCount.jar --input hdfs:<span class="regexp">//</span><span class="regexp">/test_dir/i</span>nput_dir<span class="regexp">/story --output hdfs:/</span><span class="regexp">//</span>test_dir<span class="regexp">/output_dir/</span>output</span><br></pre></td></tr></table></figure>
+<p>常用的配置有：</p>
+<ul>
+<li>-yn,–yarncontainer Number of Task Managers</li>
+<li>-yqu,–yarnqueue Specify YARN queue.</li>
+<li>-ys,–yarnslots Number of slots per TaskManager</li>
+<li>-yqu,–yarnqueue Specify YARN queue.</li>
+</ul>
+<p>可以通过 Help 命令查看 Run 的可用参数：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/flink <span class="keyword">run</span><span class="bash"> -h</span></span><br></pre></td></tr></table></figure>
+<p>我们可以看到，“./bin/flink run -h”看到的“Options for yarn-cluster mode”中的“-y”和“–yarn”为前缀的参数其实和“./bin/yarn-session.sh -h”命令是一一对应的，语义上也基本一致。</p>
+<p>关于“-n”（在 yarn session 模式下）、“-yn”在（yarn single job 模式下）与“-p”参数的关系：</p>
+<ul>
+<li>“-n”和“-yn”在社区版本中（Release-1.5 ～ Release-1.7）中没有实际的控制作用，实际的资源是根据“-p”参数来申请的，并且 TM 使用完后就会归还</li>
+<li>在 Blink 的开源版本中，“-n”（在 Yarn Session 模式下）的作用就是一开始启动指定数量的 TaskManager，之后即使 Job 需要更多的 Slot，也不会申请新的 TaskManager</li>
+<li>在 Blink 的开源版本中，Yarn single job 模式“-yn”表示的是初始 TaskManager 的数量，不设置 TaskManager 的上限。（需要特别注意的是，只有加上“-yd”参数才能用 Single job 模式（例如：命令“./bin/flink run -yd -m yarn-cluster xxx”）</li>
+</ul>
+<h3 id="7-Yarn-模式下的-HighAvailability-配置"><a href="#7-Yarn-模式下的-HighAvailability-配置" class="headerlink" title="7. Yarn 模式下的 HighAvailability 配置"></a>7. Yarn 模式下的 HighAvailability 配置</h3><p>首先要确保启动 Yarn 集群用的“yarn-site.xml”文件中的这个配置，这个是 Yarn 集群级别 AM 重启的上限。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.am.max-attempts<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>100<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后在 conf/flink-conf.yaml 文件中配置这个 Flink job 的 JobManager 能够重启的次数。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn.<span class="built_in">application</span>-attempts: <span class="number">10</span>     <span class="comment"># 1+ 9 retries</span></span><br></pre></td></tr></table></figure>
+<p>最后再在 conf/flink-conf.yaml 文件中配置上 ZK 相关配置，这几个配置的配置方法和 Standalone 的 HA 配置方法基本一致，如下所示。</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 配置 high-availability mode</span></span><br><span class="line">high-availability: zookeeper</span><br><span class="line"> </span><br><span class="line"><span class="meta"># 配置 zookeeper quorum（hostname 和端口需要依据对应 zk 的实际配置）</span></span><br><span class="line">high-availability.zookeeper.quorum: z05f02321.sqa.zth.tbsite.net:<span class="number">2181</span>,z05f10215.sqa.zth.tbsite.net:<span class="number">2181</span></span><br><span class="line"> </span><br><span class="line"><span class="meta"># （可选）设置 zookeeper 的 root 目录</span></span><br><span class="line">high-availability.zookeeper.path.root: /test_dir/test_standalone2_root</span><br><span class="line"> </span><br><span class="line"><span class="meta"># 删除这个配置</span></span><br><span class="line"><span class="meta"># high-availability.cluster-id: /test_dir/test_standalone2</span></span><br><span class="line"> </span><br><span class="line"><span class="meta"># JobManager 的 meta 信息放在 dfs，在 zk 上主要会保存一个指向 dfs 路径的指针</span></span><br><span class="line">high-availability.storageDir: hdfs:<span class="comment">///test_dir/recovery2/</span></span><br></pre></td></tr></table></figure>
+<p>需要特别注意的是：“high-availability.cluster-id”这个配置最好去掉，因为在 Yarn（以及 Mesos）模式下，cluster-id 如果不配置的话，会配置成 Yarn 上的 Application ID ，从而可以保证唯一性。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100475.html" class="pre-post btn btn-default" title='Flink DataStream API编程'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink DataStream API编程</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100473.html" class="next-post btn btn-default" title='Flink基础概念'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink基础概念</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Flink-开发环境部署和配置"><span class="toc-text">一、Flink 开发环境部署和配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-编译-Flink-代码"><span class="toc-text">1. 编译 Flink 代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-开发环境准备"><span class="toc-text">2. 开发环境准备</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、运行-Flink-应用"><span class="toc-text">二、运行 Flink 应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-基本概念"><span class="toc-text">1. 基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-运行环境准备"><span class="toc-text">2. 运行环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-单机-Standalone-的方式运行-Flink"><span class="toc-text">3. 单机 Standalone 的方式运行 Flink</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#（1）基本的启动流程"><span class="toc-text">（1）基本的启动流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（2）常用配置介绍"><span class="toc-text">（2）常用配置介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（3）日志的查看和配置"><span class="toc-text">（3）日志的查看和配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（4）进一步探索"><span class="toc-text">（4）进一步探索</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-多机部署-Flink-Standalone-集群"><span class="toc-text">4. 多机部署 Flink Standalone 集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Standalone-模式的-HighAvailability（HA）部署和配置"><span class="toc-text">5. Standalone 模式的 HighAvailability（HA）部署和配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#（1）（可选）使用-Flink-自带的脚本部署-ZK"><span class="toc-text">（1）（可选）使用 Flink 自带的脚本部署 ZK</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（2）修改-Flink-Standalone-集群的配置"><span class="toc-text">（2）修改 Flink Standalone 集群的配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-使用-Yarn-模式跑-Flink-job"><span class="toc-text">6. 使用 Yarn 模式跑 Flink job</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#（1）在-Yarn-上启动-Long-Running-的-Flink-集群（Session-Cluster-模式）"><span class="toc-text">（1）在 Yarn 上启动 Long Running 的 Flink 集群（Session Cluster 模式）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（2）在-Yarn-上运行单个-Flink-job（Job-Cluster-模式）"><span class="toc-text">（2）在 Yarn 上运行单个 Flink job（Job Cluster 模式）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Yarn-模式下的-HighAvailability-配置"><span class="toc-text">7. Yarn 模式下的 HighAvailability 配置</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

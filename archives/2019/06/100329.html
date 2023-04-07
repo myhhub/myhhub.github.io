@@ -1,0 +1,368 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hive">
+
+
+    <meta name="description" content="一 概述在了解Hive的安全机制之前,我们需要首先清楚Hadoop的安全机制以及Hadoop的历史,Hadoop起源于Apache Nuch的子项目.在那个时代以及整个早期原型时代,功能性需要比...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 二十四.Hive的安全 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 二十四.Hive的安全">
+            
+	            大数据hadoop之 二十四.Hive的安全
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hive/">hive</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1386</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-概述"><a href="#一-概述" class="headerlink" title="一 概述"></a>一 概述</h2><p>在了解Hive的安全机制之前,我们需要首先清楚Hadoop的安全机制以及Hadoop的历史,Hadoop起源于Apache Nuch的子项目.在那个时代以及整个早期原型时代,功能性需要比安全性需求优先级要高.分布式系统的安全问题要比正常情况下更加复杂,因为不同机器上的多个组件需要相互进行通信.</p>
+<p>Hadoop的安全性近期有了许多变化,其中主要是对Kerberos安全认证的支持,还包括其他一些问题的修复.Kerberos允许客户端和服务器端相互认证.客户端的每次请求中都会带有凭证(ticket)信息.在TaskTracker上执行的任务(task)都是由执行任务(job)的用户来执行的.用户无法通过设置hadoop.job.ugi属性的值来模拟其他人来执行任务.为了达到这个目的,所有的Hadoop组件从头到尾都要使用kerberos安全认证.</p>
+<p>Hive在Hadoop引入Kerberos支持之前就已经存在了,而且Hive目前还没有完全和Hadoop的安全改变相融合.例如,Hive元数据存储链接可能是直接连接到一个JDBC数据库或者通过Thrift进行链接,这些都是要用用户身份进行各种操作.像HiverService这样的基于Thrift的组件还是要冒充他人来执行.Hadoop的文件用户权限模型(也就是对于一个文件分为用户 组 和其他3层权限)和很多其他数据库中用户权限模型具有很大的差异,数据库中通常是对使用字段级别进行授权和权限回收操作来进行权限控制的.</p>
+<h2 id="和Hadoop安全功能相结合"><a href="#和Hadoop安全功能相结合" class="headerlink" title="和Hadoop安全功能相结合"></a>和Hadoop安全功能相结合</h2><p>Hive v0.70增加了和Hadoop安全功能的结合，这意味着，当Hive提交到安全集群的JobTracker上时，将使用合适的认证处理过程。用户权限可以被授予也可以被回收。</p>
+<h2 id="使用Hive进行验证"><a href="#使用Hive进行验证" class="headerlink" title="使用Hive进行验证"></a>使用Hive进行验证</h2><p>如果文件和文件夹是多个用户共同拥有，那么文件的权限就变得非常重要。HDFS中文件目录权限和Unix中的模式非常类似，都包含有3层：用户、组和其他。同时具有3种权限：可读、可写和可执行。Hive中有一个配置变量hive.files.umask.value来定义对于新创建的文件设置的默认权限的umask值，也就是掩码字节数。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.files.umask.value<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>0002<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>同时，当属性hive.metastore.authorization.storage.checks的值为true时，如果用户没有权限删除表底层的文件，Hive就会阻止用户来删除这样的表。这个参数的默认值是false。其应该设置为true的:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.metastore.authorization.storage.checks<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>当在安全模式下执行时，Hive元数据存储要尽可能的将hive.metastore.execute.setugi设置为true。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.metastore.execute.setugi<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="Hive中的权限管理"><a href="#Hive中的权限管理" class="headerlink" title="Hive中的权限管理"></a>Hive中的权限管理</h2><p>Hive v0.7.0增加了HiveQL进行授权设置的功能。默认授权模块是不开启的，需要将如下的属性设置为true，才能开启授权：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.security.authorization.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.security.authorization.createtable.owner.grants<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>ALL<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>默认情况下，hive.security.authorization.createtable.owner.grants的值是null，这使得用户无法访问自己的表，因此，我们也要给予表创建者对应的权限才能访问自己创建的表。</p>
+<h2 id="用户、组和角色"><a href="#用户、组和角色" class="headerlink" title="用户、组和角色"></a>用户、组和角色</h2><p>可以对用户(user)、组(group)、或者角色(role)授予权限或者回收权限。<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="keyword">set</span> hive.security.authorization.enabled=<span class="literal">true</span>;</span><br><span class="line">hive&gt; <span class="function">create table <span class="title">authorization_test</span>(<span class="params">key <span class="keyword">int</span>, <span class="keyword">value</span> <span class="keyword">string</span></span>)</span>;  ---&gt;会报权限错误</span><br></pre></td></tr></table></figure></p>
+<p>我们使用的用户没有在default数据库下创建表的权限。我们可以对多个实体进行授权。第一个实体就是用户(user)，Hive中的用户就是用户的系统用户名。我们可以确定其名称，并按照如下语句将在default数据库下的创建表(create)权限授予这个用户:<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="builtin-name">set</span> system:user.name;</span><br><span class="line">hive&gt; grant create on database<span class="built_in"> default </span><span class="keyword">to</span><span class="built_in"> user </span>edward;</span><br><span class="line">hive&gt; create table authorization_test(key int, value string);</span><br></pre></td></tr></table></figure></p>
+<p>通过show grant查看授权结果<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; show grant<span class="built_in"> user </span>edward on database default;</span><br><span class="line">database		default</span><br><span class="line">principalName	        edward</span><br><span class="line">principalType	        USER</span><br><span class="line">privilege		Create</span><br><span class="line">grantTime		Mon Mar 18 17:37:00 EDT 2019</span><br><span class="line">grantor			edward</span><br></pre></td></tr></table></figure></p>
+<p>可以基于组级别授权，Hive中组和用户的住POSIX组是等价的。<br><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="keyword">create</span> table authorization_test_group(a int, b int);</span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorization_test_group;	----&gt; 权限异常</span><br><span class="line">hive&gt; grant <span class="keyword">select</span> <span class="keyword">on</span> table authorization_test_group <span class="keyword">to</span> <span class="keyword">group</span> edward;</span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorization_test_group;</span><br></pre></td></tr></table></figure></p>
+<p>也可以使用角色(role)。用户可以放置在角色中同时可以为角色进行授权。角色关系灵活，因为和组不一样，组由系统外部控制，角色是由Hive内部控制:<br><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="keyword">create</span> table authorization_test_role(a int, b int);</span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorization_test_role;	----&gt; 权限异常</span><br><span class="line">hive&gt; <span class="keyword">create</span> <span class="keyword">role</span> users_who_can_select_authentication_test_role;</span><br><span class="line">hive&gt; grant role users_who_can_select_authentication_test_role to user edward;</span><br><span class="line">hive&gt; grant <span class="keyword">select</span> <span class="keyword">on</span> table authorization_test_role <span class="keyword">to</span> <span class="keyword">role</span> users_who_can_select_authentication_test_role;</span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorization_test_role;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Grant和Revoke权限"><a href="#Grant和Revoke权限" class="headerlink" title="Grant和Revoke权限"></a>Grant和Revoke权限</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">权限						       	描述</span><br><span class="line">ALL							赋予所有的权限</span><br><span class="line"><span class="keyword">ALTER</span>							有修改表结构的权限</span><br><span class="line"><span class="keyword">CREATE</span>							有创建表的权限</span><br><span class="line"><span class="keyword">DROP</span>							有删除表或表中的分区权限</span><br><span class="line"><span class="keyword">INDEX</span>							创建表索引的权限</span><br><span class="line"><span class="keyword">LOCK</span>							开启并发后，锁定和解锁定表的权限</span><br><span class="line"><span class="keyword">SELECT</span>							查询表或者分区中数据的权限</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASE</span>				        	查看所有数据库的权限</span><br><span class="line"><span class="keyword">UPDATE</span>							向表或者分区中插入或加载数据的权限</span><br></pre></td></tr></table></figure>
+<p>以create权限为例：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="builtin-name">set</span> hive.security.authorization.<span class="attribute">enabled</span>=<span class="literal">true</span>;</span><br><span class="line">hive&gt; create database edsstuff;</span><br><span class="line">hive&gt; use edsstuff;</span><br><span class="line">hive&gt; create table a (id int);	---&gt;权限异常</span><br><span class="line">hive&gt; grant create on database edsstuff <span class="keyword">to</span><span class="built_in"> user </span>edward;</span><br><span class="line">hive&gt; create table a (id int);</span><br><span class="line">hive&gt; create external table a (id int);</span><br></pre></td></tr></table></figure></p>
+<p>同样，我们可以通过如下命名授予ALTER权限：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; alter table a replace columns(a int, b int); ---&gt;权限异常</span><br><span class="line">hive&gt; grant alter on table a <span class="keyword">to</span><span class="built_in"> user </span>edward;</span><br><span class="line">hive&gt; alter table a replace columns(a int, b int);</span><br></pre></td></tr></table></figure></p>
+<p>注意：为分区表新增分区的操作是不需要alter权限的:<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; alter table a_part_table <span class="builtin-name">add</span> partition(<span class="attribute">b</span>=5);</span><br></pre></td></tr></table></figure></p>
+<p>往表中加载数据的话需要使用UPDATE权限:<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; load data inpath <span class="string">'$&#123;env:HIVE_HOME&#125;/NOTICE'</span> into <span class="keyword">table</span> a_part_table <span class="comment">partition(b=5)</span>;	<span class="comment">---&gt;</span> 权限异常</span><br><span class="line">hive&gt; grant update on <span class="keyword">table</span> a_part_table <span class="comment">to user edward</span>;</span><br><span class="line">hive&gt; load data inpath <span class="string">'$&#123;env:HIVE_HOME&#125;/NOTICE'</span> into <span class="keyword">table</span> a_part_table <span class="comment">partition(b=5)</span>;</span><br></pre></td></tr></table></figure></p>
+<p>删除表或者分区需要drop权限:<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; alter <span class="keyword">table</span> a_part_table <span class="comment">drop partition(b=5)</span>;	<span class="comment">---&gt;</span>权限异常</span><br></pre></td></tr></table></figure></p>
+<p>从表或者分区中查询数据需要select权限<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select id <span class="keyword">from</span> a_part_table;	---&gt;权限异常</span><br><span class="line">hive&gt; grant select on table a_part_table <span class="keyword">to</span><span class="built_in"> user </span>edward;</span><br><span class="line">hive&gt; select id <span class="keyword">from</span> a_part_table;</span><br></pre></td></tr></table></figure></p>
+<p>授予全部的权限:<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; grant all on table a_part_table <span class="keyword">to</span><span class="built_in"> user </span>edward;</span><br></pre></td></tr></table></figure></p>
+<h2 id="分区级别的权限"><a href="#分区级别的权限" class="headerlink" title="分区级别的权限"></a>分区级别的权限</h2><p>Hive中分区表非常常见。默认是在表级别授予权限，不过，同样可以在分区级别进行授权。为达到这个目标，只需要将表属性PARTITION_LEVEL_PRIVILEGE设置为TRUE即可：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="function">create table <span class="title">authorize_part</span>(<span class="params">key <span class="keyword">int</span>, <span class="keyword">value</span> <span class="keyword">string</span></span>) partitioned <span class="title">by</span> (<span class="params">ds <span class="keyword">string</span></span>)</span>;</span><br><span class="line">hive&gt; <span class="function">alter table authorize_part <span class="keyword">set</span> <span class="title">tblproperties</span>(<span class="params"><span class="string">"PARTITION_LEVEL_PRIVILEGE"</span>=<span class="string">"TRUE"</span></span>)</span>;	---&gt;权限异常</span><br><span class="line">hive&gt; grant alter <span class="keyword">on</span> table authorize_part to user edward;</span><br><span class="line">hive&gt; <span class="function">alter table authorize_part <span class="keyword">set</span> <span class="title">tblproperties</span>(<span class="params"><span class="string">"PARTITION_LEVEL_PRIVILEGE"</span>=<span class="string">"TRUE"</span></span>)</span>;</span><br><span class="line">hive&gt; grant <span class="keyword">select</span> <span class="keyword">on</span> table authorize_part to user edward;</span><br><span class="line">hive&gt; <span class="function">alter table authorize_part <span class="keyword">add</span> <span class="title">partition</span>(<span class="params">ds=<span class="string">'3'</span></span>)</span>;</span><br><span class="line">hive&gt; <span class="function">alter table authorize_part <span class="keyword">add</span> <span class="title">partition</span>(<span class="params">ds=<span class="string">'4'</span></span>)</span>;</span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorize_part <span class="keyword">where</span> ds = <span class="string">'3'</span>;</span><br><span class="line">hive&gt; <span class="function">revoke <span class="keyword">select</span> <span class="keyword">on</span> table authorize_part <span class="title">partition</span>(<span class="params">ds=<span class="string">'3'</span></span>) <span class="keyword">from</span> user edward</span>; </span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorize_part <span class="keyword">where</span> ds = <span class="string">'3'</span>;	---&gt;权限异常</span><br><span class="line">hive&gt; <span class="keyword">select</span> * <span class="keyword">from</span> authorize_part <span class="keyword">where</span> ds = <span class="string">'4'</span>;</span><br></pre></td></tr></table></figure></p>
+<h2 id="自动授权"><a href="#自动授权" class="headerlink" title="自动授权"></a>自动授权</h2><p>用户经常会期望创建表后不再执行烦人的授权命令，就可以具有相关的权限，而直接去执行后续的查询等等。早期，用户可能需要具有ALL权限才可以，不过现在为默认情况制定更细节的权限。<br>属性hive.security.authorization.createtable.owner.grants中可以定义为创建表的用户自动授予这张表的指定的权限。比如下面的例子为用户自动授予对其所创建表的表的select和drop权限:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.security.authorization.createtable.owner.grants<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>select, drop<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>类似的，可以在创建表时自动授予指定用户指定的权限。属性hive.security.authorization.createtable.user.grants控制这个行为。<br>比如下面的例子展示了Hive管理员账号admin1和用户edward默认授予所有表的读权限，而user1只有创建表的权限。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.security.authorization.createtable.user.grants<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>admin,edward:select;user1:create<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>对于组(group)和角色(role)同样具有类似的属性来控制自动授予的权限。对于组，该属性名为hive.security.authorization.createtable.group.grants;对于角色，这个属性是hive.security.authorization.createtable.role.grants。这些属性的值的形式和前面介绍的是相同的。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100330.html" class="pre-post btn btn-default" title='大数据hadoop之 二十五.Hive有关问题FAQ解答'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 二十五.Hive有关问题FAQ解答</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100328.html" class="next-post btn btn-default" title='大数据hadoop之 二十三.Hive的开发'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 二十三.Hive的开发</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-概述"><span class="toc-text">一 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#和Hadoop安全功能相结合"><span class="toc-text">和Hadoop安全功能相结合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用Hive进行验证"><span class="toc-text">使用Hive进行验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive中的权限管理"><span class="toc-text">Hive中的权限管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用户、组和角色"><span class="toc-text">用户、组和角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Grant和Revoke权限"><span class="toc-text">Grant和Revoke权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分区级别的权限"><span class="toc-text">分区级别的权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动授权"><span class="toc-text">自动授权</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

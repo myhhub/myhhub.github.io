@@ -1,0 +1,481 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content=".net,csharp,wpf,mvvm,prism">
+
+
+    <meta name="description" content="1. 前言介绍系统分层模型、如何安装Prism快速开发模板与MVVM框架使用、如何配置ORM框架Entity Framework Core与使用、以及Postgresql数据库配置。
+2. 系统...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>使用 Prism、EntityFramework Core 实现 WPF MVVM 开发 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="使用 Prism、EntityFramework Core 实现 WPF MVVM 开发">
+            
+	            使用 Prism、EntityFramework Core 实现 WPF MVVM 开发
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/net/">.net</a> <a class="tag-link" href="/tags/csharp/">csharp</a> <a class="tag-link" href="/tags/mvvm/">mvvm</a> <a class="tag-link" href="/tags/prism/">prism</a> <a class="tag-link" href="/tags/wpf/">wpf</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2020/06/30</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1010</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>介绍系统分层模型、如何安装Prism快速开发模板与MVVM框架使用、如何配置ORM框架Entity Framework Core与使用、以及Postgresql数据库配置。</p>
+<h1 id="2-系统分层"><a href="#2-系统分层" class="headerlink" title="2. 系统分层"></a>2. 系统分层</h1><p>项目比较简单，大概分层模型如下：</p>
+<ol>
+<li>View双向绑定ViewModel；</li>
+<li>ViewModel调用Service取得DataModel业务数据；</li>
+<li>Service通过调用Repository取得Entity数据；</li>
+<li>Repository调用Entity Framework Core，自动创建Sql执行并返回Entity对象；</li>
+<li>Entity Framework Core通过驱动链接数据库。</li>
+</ol>
+<p><img src="/img/net/csharp/319628-20200413151058945-1599158260.png" alt="img"></p>
+<p>如果项目功能或者对接端末比较多，最好扩展成微服务。</p>
+<p><img src="/img/net/csharp/319628-20200413182515864-194500206.png" alt="img"></p>
+<h1 id="3-MVVM框架之Prism"><a href="#3-MVVM框架之Prism" class="headerlink" title="3. MVVM框架之Prism"></a>3. MVVM框架之Prism</h1><p>MVVM（Model–view–viewmodel）是微软的WPF和Silverlight架构师之一John Gossman于2005年发布的软件架构模式。目的就是把用户界面设计与业务逻辑开发分离，方便团队开发和自动化测试。</p>
+<p>架构的设计目标永远都是高内聚低耦合，当然架构的设计不免会带来代码量的”增加”，但是带来的好处很多:扩展性高/复用度高/易修改/可读性高。MVVM优点：</p>
+<ul>
+<li><p>低耦合：视图（View）可以独立于Model变化和修改，一个ViewModel可以绑定到不同的”View”上，当View变化的时候Model可以不变，当Model变化的时候View也可以不变</p>
+</li>
+<li><p>可重用性：你可以把一些视图逻辑放在一个ViewModel里面，让很多view重用这段视图逻辑</p>
+</li>
+<li><p>独立开发：开发人员可以专注于业务逻辑和数据的开发（ViewModel），设计人员可以专注于页面设计，使用Expression Blend可以很容易设计界面并生成xml代码</p>
+</li>
+<li><p>可测试：界面素来是比较难于测试的，而现在测试可以针对ViewModel来写</p>
+</li>
+</ul>
+<h2 id="3-1、无框架的MVVM实现"><a href="#3-1、无框架的MVVM实现" class="headerlink" title="3.1、无框架的MVVM实现"></a>3.1、无框架的MVVM实现</h2><p>设计与逻辑分离的基本就是绑定，通过发布者订阅者模式实现数据更新通知。</p>
+<h3 id="3-1-1、属性绑定"><a href="#3-1-1、属性绑定" class="headerlink" title="3.1.1、属性绑定"></a><strong>3.1.1、属性绑定</strong></h3><p>默认属性为单向绑定，如果需要双向绑定需要实现INotifyPropertyChanged接口。</p>
+<p>第一步：一般是建立如下基类。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.ComponentModel;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.CompilerServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MvvmDemo.Common</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> Viewmodel基类，属性双向绑定基础</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ViewModelBase</span> : <span class="title">INotifyPropertyChanged</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">event</span> PropertyChangedEventHandler PropertyChanged;</span><br><span class="line"></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 属性变更通知</span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="propertyName"&gt;</span>属性名<span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">NotifyPropertyChanged</span>(<span class="params">[CallerMemberName] String propertyName = <span class="string">""</span></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">if</span> (PropertyChanged != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                PropertyChanged(<span class="keyword">this</span>, <span class="keyword">new</span> PropertyChangedEventArgs(propertyName));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步：各个ViewModel继承基类。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UserViewModel</span> : <span class="title">ViewModelBase</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">string</span> _userId;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">string</span> _userName;</span><br><span class="line"></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 用户名</span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">string</span> UserId</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">get</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> _userId;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">set</span></span><br><span class="line">            &#123;</span><br><span class="line">                _userId = <span class="keyword">value</span>;</span><br><span class="line">                NotifyPropertyChanged();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 用户名</span></span><br><span class="line">        <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">string</span> UserName</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">get</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> _userName;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">set</span></span><br><span class="line">            &#123;</span><br><span class="line">                _userName = <span class="keyword">value</span>;</span><br><span class="line">                NotifyPropertyChanged();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>第三步：Xaml绑定属性，实现消息通知。</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">TextBox</span> <span class="keyword">Text</span>=<span class="string">"&#123;Binding UserID,Mode=TwoWay&#125;"</span> /&gt;</span><br><span class="line">&lt;<span class="keyword">TextBox</span> <span class="keyword">Grid</span>.<span class="keyword">Row</span>=<span class="string">"1"</span> <span class="keyword">Text</span>=<span class="string">"&#123;Binding UserName,Mode=OneWay&#125;"</span> /&gt;</span><br></pre></td></tr></table></figure>
+<p>备注：通过IValueConverter可以做一些特殊绑定处理。比如，经典的就是Bool值控制Visibility。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">ValueConversion(typeof(bool), typeof(Visibility))</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">BoolToVisibiltyConverter</span> : <span class="title">MarkupExtension</span>, <span class="title">IValueConverter</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">object</span> <span class="title">Convert</span>(<span class="params"><span class="keyword">object</span> <span class="keyword">value</span>, Type targetType, <span class="keyword">object</span> parameter, CultureInfo culture</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">bool</span> flag = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">value</span> <span class="keyword">is</span> <span class="keyword">bool</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                flag = (<span class="keyword">bool</span>)<span class="keyword">value</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">value</span> <span class="keyword">is</span> <span class="keyword">bool</span>?)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">bool</span>? nullable = (<span class="keyword">bool</span>?)<span class="keyword">value</span>;</span><br><span class="line">                flag = nullable.HasValue ? nullable.Value : <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> (flag ? Visibility.Visible : Visibility.Collapsed);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">object</span> <span class="title">ConvertBack</span>(<span class="params"><span class="keyword">object</span> <span class="keyword">value</span>, Type targetType, <span class="keyword">object</span> parameter, CultureInfo culture</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">value</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">object</span> <span class="title">ProvideValue</span>(<span class="params">IServiceProvider serviceProvider</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>Xaml绑定：头部需要引入命名空间。</p>
+<p><code>xmlns:converter=&quot;clr-namespace:WpfMvvm.Core.Converters&quot;</code></p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;Button</span><br><span class="line">    Grid.Row=<span class="string">"2"</span></span><br><span class="line">    Visibility=<span class="string">"&#123;Binding ShowFlg,Converter=&#123;converter:BoolToVisibiltyConverter&#125;&#125;"</span></span><br><span class="line">    Command=<span class="string">"&#123;Binding AddCmd&#125;"</span></span><br><span class="line">    Content=<span class="string">"登录"</span> /&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1-2、事件绑定"><a href="#3-1-2、事件绑定" class="headerlink" title="3.1.2、事件绑定"></a><strong>3.1.2、事件绑定</strong></h3><p>WPF提供了Command事件处理属性，想利用控件中的Command属性需要实现了ICommand接口的属性。</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Text;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> System.Windows.Input;</span><br><span class="line"></span><br><span class="line">namespace MvvmDemo.Common</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelegateCommand</span>&lt;<span class="title">T</span>&gt;: <span class="title">ICommand</span></span></span><br><span class="line"><span class="class">    </span>&#123;</span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 命令</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="keyword">private</span> Action&lt;T&gt; _Command;</span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 命令可否执行判断</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="keyword">private</span> Func&lt;T, bool&gt; _CanExecute;</span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 可执行判断结束后通知命令执行</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="keyword">public</span> event EventHandler CanExecuteChanged;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 构造函数</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="comment">/// &lt;param name="command"&gt;命令&lt;/param&gt;</span></span><br><span class="line">        <span class="keyword">public</span> DelegateCommand(Action&lt;T&gt; command):<span class="type">this</span>(command,<span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 构造函数</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="comment">/// &lt;param name="command"&gt;命令&lt;/param&gt;</span></span><br><span class="line">        <span class="comment">/// &lt;param name="canexecute"&gt;命令可执行判断&lt;/param&gt;</span></span><br><span class="line">        <span class="keyword">public</span> DelegateCommand(Action&lt;T&gt; command,Func&lt;T,bool&gt; canexecute)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(command==<span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ArgumentException</span>(<span class="string">"command"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            _Command = command;</span><br><span class="line">            _CanExecute = canexecute;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 命令执行判断</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="comment">/// &lt;param name="parameter"&gt;判断数据&lt;/param&gt;</span></span><br><span class="line">        <span class="comment">/// &lt;returns&gt;判定结果（True：可执行，False：不可执行）&lt;/returns&gt;</span></span><br><span class="line">        <span class="keyword">public</span> bool CanExecute(object parameter)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> _CanExecute == <span class="literal">null</span> ? <span class="literal">true</span> : <span class="type">_CanExecute</span>((T)parameter);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 执行命令</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="comment">/// &lt;param name="parameter"&gt;参数&lt;/param&gt;</span></span><br><span class="line">        <span class="keyword">public</span> void Execute(object parameter)</span><br><span class="line">        &#123;</span><br><span class="line">            _Command((T)parameter);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用它作为事件属性的类型就可以了。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// &lt;summary&gt;</span></span><br><span class="line">        <span class="comment">/// 登陆命令</span></span><br><span class="line">        <span class="comment">/// &lt;/summary&gt;</span></span><br><span class="line">        <span class="keyword">public</span> DelegateCommand&lt;<span class="built_in">string</span>&gt; <span class="function"><span class="params">LoginCommand</span> =&gt;</span> <span class="keyword">new</span> DelegateCommand&lt;<span class="built_in">string</span>&gt;(</span><br><span class="line">                        s =&gt;</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="comment">// todo</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        s =&gt; !<span class="built_in">string</span>.IsNullOrEmpty(s)</span><br><span class="line">                        );</span><br></pre></td></tr></table></figure>
+<h2 id="3-2、Prism的MVVM实现"><a href="#3-2、Prism的MVVM实现" class="headerlink" title="3.2、Prism的MVVM实现"></a>3.2、Prism的MVVM实现</h2><p>至于Prism有很多种理由让我选择它，比如：</p>
+<ol>
+<li>支持MVVM(Binding、Notification、Command等)、微软成员维护</li>
+<li>支持Unity和DryIoc两种IOC容器</li>
+<li>支持WPF、UWP、Xamarin.Froms开发</li>
+<li>封装界面跳转</li>
+<li>封装弹出消息框</li>
+<li>自带项目模板与快速开发代码片段</li>
+<li>创建View时自动创建ViewModel</li>
+<li>默认自动绑定ViewModel到View</li>
+<li>…等等</li>
+</ol>
+<h3 id="3-2-1、配置Prism"><a href="#3-2-1、配置Prism" class="headerlink" title="3.2.1、配置Prism"></a><strong>3.2.1、配置Prism</strong></h3><p>最简单的方法：安装Prism Template Pack扩展包。</p>
+<p><img src="/img/net/csharp/319628-20200413153507068-593389296.png" alt="img"></p>
+<h3 id="3-2-2、使用Prism"><a href="#3-2-2、使用Prism" class="headerlink" title="3.2.2、使用Prism"></a><strong>3.2.2、使用Prism</strong></h3><p>通过Prism项目模板创建项目，目前可以创建WPF(.Net Framework和.Net Core)、UWP、Xamarin.Froms等应用。</p>
+<p><img src="/img/net/csharp/319628-20200413154138490-1963283970.png" alt="img"></p>
+<p> 以前支持四种容器，现在只支持两种IOC容器：Unity、DryIoc。</p>
+<p><img src="/img/net/csharp/319628-20200413154248792-1156946909.png" alt="img"></p>
+<p> *备注：如果通过Prism模板创建项目时出现以下错误：</p>
+<p><img src="/img/net/csharp/319628-20200409115424653-209074600.png" alt="img"></p>
+<p>这是因为Autofac已经不被支持。解决办法：regedit进入注册表HKEY_CURRENT_USER\Software\Prism，把SelectedContainer删除或者改成Unity。</p>
+<p><img src="/img/net/csharp/319628-20200409115613484-730836778.png" alt="img"></p>
+<p>生成的解决方案如下：</p>
+<p><img src="/img/net/csharp/319628-20200413154619889-1585594266.png" alt="img"></p>
+<p> 亮点：解决方案中自动设置了ViewModel的IOC配置，MainWindow.xaml中ViewModel的绑定也自动设置了。</p>
+<p><img src="/img/net/csharp/319628-20200413154910493-21286179.png" alt="img"></p>
+<p> 下面通过建立一个简单的局部界面跳转实例，体验一把Prism的高效率：cmd、propp、vs智能提示。</p>
+<p><img src="/img/net/csharp/319628-20200413162134303-1426990356.gif" alt="img"></p>
+<p> Prism包提供的代码片段如下，要好好加以利用：</p>
+<p><img src="/img/net/csharp/319628-20200413163425182-1870447670.png" alt="img"></p>
+<p> 此次项目还用到了以下特性：</p>
+<p><strong>3.2.2.1 Region Navigation</strong></p>
+<p>局部页面跳转：</p>
+<ul>
+<li>传递对象参数；</li>
+<li>跳转前确认；</li>
+<li>自定义如何处理已经显示过的页面（覆盖与否）；</li>
+<li>通过IRegionNavigationJournal接口可以操作页面跳转履历（返回与前进等）。</li>
+</ul>
+<p>如上例所示简单应用。</p>
+<p>第一步：标识显示位置。</p>
+<p><code>&lt;ContentControl prism:RegionManager.RegionName=&quot;ContentRegion&quot; /&gt;</code></p>
+<p>第二步：在App.xaml.cs注册跳转页面。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> Window <span class="title">CreateShell</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> Container.Resolve&lt;MainWindow&gt;();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RegisterTypes</span>(<span class="params">IContainerRegistry containerRegistry</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            containerRegistry.RegisterForNavigation&lt;PageTwo, PageTwoViewModel&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>第三步：使用IRegionManager实现跳转。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定需要显示的页面名字与显示位置的ContentControl的名字</span></span><br><span class="line"><span class="selector-tag">_manager</span><span class="selector-class">.RequestNavigate</span>(<span class="string">"ContentRegion"</span>, <span class="string">"PageTwo"</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>3.2.2.2、Modules</strong></p>
+<p>如果系统功能比较多最好进行分块处理，如下面订单和用户信息的分块处理。</p>
+<p><img src="/img/net/csharp/319628-20200413170700305-981547030.png" alt="img"></p>
+<p>App.xaml.cs中统一各个模块数据。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ModuleLoader会把各个模块的IOC依赖注入数据汇总共有管理</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">ConfigureModuleCatalog</span>(<span class="params">IModuleCatalog moduleCatalog</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    moduleCatalog.AddModule&lt;OrderModule&gt;();</span><br><span class="line">    moduleCatalog.AddModule&lt;CustomerModule&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>各个Module里面还是一样，使用到的所有Service和Repository都注册，使用IOC容器进行生命周期管理。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderModule</span> :</span> IModule</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnInitialized</span><span class="params">(IContainerProvider containerProvider)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">RegisterTypes</span><span class="params">(IContainerRegistry containerRegistry)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            containerRegistry.RegisterForNavigation&lt;MainWin&gt;(PageDefine.Order);</span><br><span class="line">            containerRegistry.Register&lt;ISearchService, SearchService&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>3.2.2.3、Dialog Service</strong></p>
+<p>自定义消息弹出框，比如警告、错误、提示等消息框。</p>
+<p>第一步：自定义消息框控件，ViewModel继承IDialogAware接口并实现：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">NotificationDialogViewModel</span> : <span class="title">BindableBase</span>, <span class="title">IDialogAware</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> DelegateCommand&lt;<span class="keyword">string</span>&gt; _closeDialogCommand;</span><br><span class="line">        <span class="keyword">public</span> DelegateCommand&lt;<span class="keyword">string</span>&gt; CloseDialogCommand =&gt;</span><br><span class="line">            _closeDialogCommand ?? (_closeDialogCommand = <span class="keyword">new</span> DelegateCommand&lt;<span class="keyword">string</span>&gt;(CloseDialog));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">string</span> _message;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">string</span> Message</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">get</span> &#123; <span class="keyword">return</span> _message; &#125;</span><br><span class="line">            <span class="keyword">set</span> &#123; SetProperty(<span class="keyword">ref</span> _message, <span class="keyword">value</span>); &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">string</span> _title = <span class="string">"Notification"</span>;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">string</span> Title</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">get</span> &#123; <span class="keyword">return</span> _title; &#125;</span><br><span class="line">            <span class="keyword">set</span> &#123; SetProperty(<span class="keyword">ref</span> _title, <span class="keyword">value</span>); &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">event</span> Action&lt;IDialogResult&gt; RequestClose;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">CloseDialog</span>(<span class="params"><span class="keyword">string</span> parameter</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            ButtonResult result = ButtonResult.None;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (parameter?.ToLower() == <span class="string">"true"</span>)</span><br><span class="line">                result = ButtonResult.OK;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (parameter?.ToLower() == <span class="string">"false"</span>)</span><br><span class="line">                result = ButtonResult.Cancel;</span><br><span class="line"></span><br><span class="line">            RaiseRequestClose(<span class="keyword">new</span> DialogResult(result));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">RaiseRequestClose</span>(<span class="params">IDialogResult dialogResult</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            RequestClose?.Invoke(dialogResult);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">CanCloseDialog</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnDialogClosed</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnDialogOpened</span>(<span class="params">IDialogParameters parameters</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Message = parameters.GetValue&lt;<span class="keyword">string</span>&gt;(<span class="string">"message"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>第二步：App.xaml.cs中注册自定义的消息框，从而覆盖默认的消息框：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">partial</span> <span class="keyword">class</span> <span class="title">App</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> Window <span class="title">CreateShell</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> Container.Resolve&lt;MainWindow&gt;();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">RegisterTypes</span>(<span class="params">IContainerRegistry containerRegistry</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            containerRegistry.RegisterDialog&lt;NotificationDialog, NotificationDialogViewModel&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>第三步：通过IDialogService使用消息框：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">private void ShowDialog()</span><br><span class="line">        &#123;</span><br><span class="line">            var <span class="attr">message</span> = <span class="string">"This is a message that should be shown in the dialog."</span>;</span><br><span class="line">            //using the dialog service as-is</span><br><span class="line">            _dialogService.ShowDialog(<span class="string">"NotificationDialog"</span>, new DialogParameters($<span class="string">"message=&#123;message&#125;"</span>), <span class="attr">r</span> =&gt;</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (r.<span class="attr">Result</span> == ButtonResult.None)</span><br><span class="line">                    <span class="attr">Title</span> = <span class="string">"Result is None"</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (r.<span class="attr">Result</span> == ButtonResult.OK)</span><br><span class="line">                    <span class="attr">Title</span> = <span class="string">"Result is OK"</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (r.<span class="attr">Result</span> == ButtonResult.Cancel)</span><br><span class="line">                    <span class="attr">Title</span> = <span class="string">"Result is Cancel"</span>;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="attr">Title</span> = <span class="string">"I Don't know what you did!?"</span>;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>第四步：定义消息框显示属性：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;prism:<span class="keyword">Dialog</span>.WindowStyle&gt;</span><br><span class="line">        &lt;<span class="keyword">Style</span> TargetType=<span class="string">"Window"</span>&gt;</span><br><span class="line">            &lt;<span class="keyword">Setter</span> <span class="keyword">Property</span>=<span class="string">"prism:Dialog.WindowStartupLocation"</span> <span class="keyword">Value</span>=<span class="string">"CenterScreen"</span> /&gt;</span><br><span class="line">            &lt;<span class="keyword">Setter</span> <span class="keyword">Property</span>=<span class="string">"ResizeMode"</span> <span class="keyword">Value</span>=<span class="string">"NoResize"</span> /&gt;</span><br><span class="line">            &lt;<span class="keyword">Setter</span> <span class="keyword">Property</span>=<span class="string">"ShowInTaskbar"</span> <span class="keyword">Value</span>=<span class="string">"False"</span> /&gt;</span><br><span class="line">            &lt;<span class="keyword">Setter</span> <span class="keyword">Property</span>=<span class="string">"SizeToContent"</span> <span class="keyword">Value</span>=<span class="string">"WidthAndHeight"</span> /&gt;</span><br><span class="line">        &lt;/<span class="keyword">Style</span>&gt;</span><br><span class="line">    &lt;/prism:<span class="keyword">Dialog</span>.WindowStyle&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="/img/net/csharp/319628-20200413173745448-1058277559.png" alt="img"></p>
+<p>其他用法可以参照Prism开源库：<a href="https://github.com/PrismLibrary/Prism" target="_blank" rel="noopener">https://github.com/PrismLibrary/Prism</a></p>
+<h1 id="4-Entity-Framework-Core-Postgresql"><a href="#4-Entity-Framework-Core-Postgresql" class="headerlink" title="4. Entity Framework Core + Postgresql"></a>4. Entity Framework Core + Postgresql</h1><p>EntityFrameworkCore：是对象关系映射(ORM)程序，支持语言集成查询Linq，是轻量、可扩展、开源跨平台的数据访问框架。下一个5.0版本将与.NET 5.0一起发布。EntityFrameworkCore只支持CodeFirst，EntityFramework支持DB First和Code First。之所以选择EFCore是因为：</p>
+<ul>
+<li>支持CodeFirst</li>
+<li>支持Linq</li>
+<li>双向映射（linq映射成sql，结果集映射成对象）</li>
+<li>速度很快</li>
+</ul>
+<p>PostgreSQL：是开源先进的对象-关系型数据库管理系统（ORDBMS），有些特性甚至连商业数据库都不具备。支持JSON数据存储，表之间还可以继承。</p>
+<h2 id="4-1、配置EFCore与PostgreSQL"><a href="#4-1、配置EFCore与PostgreSQL" class="headerlink" title="4.1、配置EFCore与PostgreSQL"></a>4.1、配置EFCore与PostgreSQL</h2><h3 id="4-1-1、引入针对PostgreSQL的EFCore包"><a href="#4-1-1、引入针对PostgreSQL的EFCore包" class="headerlink" title="4.1.1、引入针对PostgreSQL的EFCore包"></a>4.1.1、引入针对PostgreSQL的EFCore包</h3><p><img src="/img/net/csharp/319628-20200413201033866-649241036.png" alt="img"></p>
+<h3 id="4-1-2、添加DB操作上下文"><a href="#4-1-2、添加DB操作上下文" class="headerlink" title="4.1.2、添加DB操作上下文"></a>4.1.2、添加DB操作上下文</h3><p>数据库链接替换为你的链接，一般都是放配置文件管理。</p>
+<p>添加Users字段，通过EFCore将自动创建Users表。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line">using Microsoft.EntityFrameworkCore;</span><br><span class="line">using WpfMccm.Entitys;</span><br><span class="line"></span><br><span class="line">namespace WpfMvvm.DataAccess</span><br><span class="line">&#123;</span><br><span class="line">    public class UserDbContext : DbContext</span><br><span class="line">    &#123;</span><br><span class="line">        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)</span><br><span class="line">        &#123;</span><br><span class="line">            optionsBuilder.UseNpgsql(<span class="string">"Server=127.0.0.1;Database=HBMCS;Port=5432;User Id=test;Password=test;Ssl Mode=Prefer;"</span>,</span><br><span class="line">                     npgsqlOptionsAction: options =&gt;</span><br><span class="line">                     &#123;</span><br><span class="line">                         options.CommandTimeout(60);</span><br><span class="line">                         options.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(30), errorCodesToAdd: <span class="literal">null</span>);</span><br><span class="line">                     &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public DbSet&lt;User&gt;<span class="built_in"> Users </span>&#123; get; set; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-1-3、安装Microsoft-EntityFrameworkCore-Tools工具"><a href="#4-1-3、安装Microsoft-EntityFrameworkCore-Tools工具" class="headerlink" title="4.1.3、安装Microsoft.EntityFrameworkCore.Tools工具"></a>4.1.3、安装Microsoft.EntityFrameworkCore.Tools工具</h3><p>CodeFirst必备神器。进入程序包管理器控制台，输入以下命名安装EFCore设计工具：</p>
+<p>※必须安装在启动项目里面，不然会失败。</p>
+<p><code>Install-Package Microsoft.EntityFrameworkCore.Tools</code></p>
+<p><img src="/img/net/csharp/319628-20200413211219624-165237032.png" alt="img"></p>
+<h3 id="4-1-4、创建Migration"><a href="#4-1-4、创建Migration" class="headerlink" title="4.1.4、创建Migration"></a>4.1.4、创建Migration</h3><p>程序包管理器控制台，默认项目一定要选择DB操作上下文的项目，然后执行命令：InitDB是文件区分，可以任意修改。</p>
+<p><code>Add-Migration InitDB</code></p>
+<p><img src="/img/net/csharp/319628-20200413215506010-213596107.png" alt="img"></p>
+<h3 id="4-1-5、生成数据库脚本（生产阶段用，开发阶段可跳过）"><a href="#4-1-5、生成数据库脚本（生产阶段用，开发阶段可跳过）" class="headerlink" title="4.1.5、生成数据库脚本（生产阶段用，开发阶段可跳过）"></a>4.1.5、生成数据库脚本（生产阶段用，开发阶段可跳过）</h3><p>程序包管理器控制台，执行如下命令生成SQL脚本文件：</p>
+<p><code>Script-Migration</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> <span class="string">"__EFMigrationsHistory"</span> (</span><br><span class="line">    <span class="string">"MigrationId"</span> <span class="built_in">character</span> <span class="built_in">varying</span>(<span class="number">150</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="string">"ProductVersion"</span> <span class="built_in">character</span> <span class="built_in">varying</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">CONSTRAINT</span> <span class="string">"PK___EFMigrationsHistory"</span> PRIMARY <span class="keyword">KEY</span> (<span class="string">"MigrationId"</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">"Users"</span> (</span><br><span class="line">    <span class="string">"ID"</span> <span class="built_in">integer</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">GENERATED</span> <span class="keyword">BY</span> <span class="keyword">DEFAULT</span> <span class="keyword">AS</span> <span class="keyword">IDENTITY</span>,</span><br><span class="line">    <span class="string">"Name"</span> <span class="built_in">text</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="string">"Age"</span> <span class="built_in">integer</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">CONSTRAINT</span> <span class="string">"PK_Users"</span> PRIMARY <span class="keyword">KEY</span> (<span class="string">"ID"</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">"__EFMigrationsHistory"</span> (<span class="string">"MigrationId"</span>, <span class="string">"ProductVersion"</span>)</span><br><span class="line"><span class="keyword">VALUES</span> (<span class="string">'20200413133616_InitDB'</span>, <span class="string">'3.1.3'</span>);</span><br></pre></td></tr></table></figure>
+<p>如果系统已经上线，安全起见则需要使用这个方法生成SQL脚本，手动执行SQL更新数据库。</p>
+<h3 id="4-1-6、更新数据库（开发阶段用）"><a href="#4-1-6、更新数据库（开发阶段用）" class="headerlink" title="4.1.6、更新数据库（开发阶段用）"></a>4.1.6、更新数据库（开发阶段用）</h3><p>程序包管理器控制台，执行如下命令将表定义更新到DB（按文件名的时间顺序添加）：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Update</span>-<span class="keyword">Database</span></span><br></pre></td></tr></table></figure>
+<p>这样我们就通过类创建了一个数据库表Users，同时默认会在__EFMigrationsHistory履历表添加一条合并记录。</p>
+<p>※如果__EFMigrationsHistory中记录存在则忽略本次更新。</p>
+<h2 id="4-2、使用DB上下文操作数据库"><a href="#4-2、使用DB上下文操作数据库" class="headerlink" title="4.2、使用DB上下文操作数据库"></a>4.2、使用DB上下文操作数据库</h2><h3 id="4-2-1、创建IRepository，DB操作基本接口"><a href="#4-2-1、创建IRepository，DB操作基本接口" class="headerlink" title="4.2.1、创建IRepository，DB操作基本接口"></a>4.2.1、创建IRepository，DB操作基本接口</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public<span class="built_in"> interface </span>IRepository&lt;TEntity&gt; where TEntity : class</span><br><span class="line">&#123;</span><br><span class="line">    Task&lt;TEntity&gt; GetAsync(int id);</span><br><span class="line">    Task&lt;bool&gt; AddAsync(TEntity obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-2、创建UserRepository，User专用的DB操作类"><a href="#4-2-2、创建UserRepository，User专用的DB操作类" class="headerlink" title="4.2.2、创建UserRepository，User专用的DB操作类"></a>4.2.2、创建UserRepository，User专用的DB操作类</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserRepository</span> :</span> IRepository&lt;User&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> readonly DbContext _dbContext;</span><br><span class="line">        <span class="keyword">private</span> readonly DbSet&lt;User&gt; _dbSet;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">UserRepository</span><span class="params">(UserDbContext dbContext)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            _dbContext = dbContext;</span><br><span class="line">            _dbSet = dbContext.Set&lt;User&gt;();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> async Task&lt;<span class="keyword">bool</span>&gt; AddAsync(User obj)</span><br><span class="line">        &#123;</span><br><span class="line">            _dbSet.Add(obj);</span><br><span class="line">            <span class="keyword">return</span> await _dbContext.SaveChangesAsync() &gt; <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> async Task&lt;User&gt; GetAsync(<span class="keyword">int</span> id)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> await _dbSet.FindAsync(id);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>如果需要进行事务操作，可以使用下面方法：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="keyword">tran</span>= <span class="number">_</span>dbContext<span class="variable">.Database</span><span class="variable">.BeginTransaction</span>();</span><br><span class="line"><span class="keyword">tran</span><span class="variable">.Commit</span>();</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-3、Service层调用UserRepository就可以完成用户的操作。"><a href="#4-2-3、Service层调用UserRepository就可以完成用户的操作。" class="headerlink" title="4.2.3、Service层调用UserRepository就可以完成用户的操作。"></a>4.2.3、Service层调用UserRepository就可以完成用户的操作。</h3><h1 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h1><p>整体来说Prism简化了应用的设计与架构，EFCore简化了数据库操作。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2020/07/100630.html" class="pre-post btn btn-default" title='使用 spy++ 查找弹窗广告进程，删除广告程序'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">使用 spy++ 查找弹窗广告进程，删除广告程序</span>
+        </a>
+    
+    
+        <a href="/archives/2020/03/100627.html" class="next-post btn btn-default" title='Google出品Java编码规范中文版'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Google出品Java编码规范中文版</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-前言"><span class="toc-text">1. 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-系统分层"><span class="toc-text">2. 系统分层</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-MVVM框架之Prism"><span class="toc-text">3. MVVM框架之Prism</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1、无框架的MVVM实现"><span class="toc-text">3.1、无框架的MVVM实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1、属性绑定"><span class="toc-text">3.1.1、属性绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2、事件绑定"><span class="toc-text">3.1.2、事件绑定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2、Prism的MVVM实现"><span class="toc-text">3.2、Prism的MVVM实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1、配置Prism"><span class="toc-text">3.2.1、配置Prism</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2、使用Prism"><span class="toc-text">3.2.2、使用Prism</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-Entity-Framework-Core-Postgresql"><span class="toc-text">4. Entity Framework Core + Postgresql</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1、配置EFCore与PostgreSQL"><span class="toc-text">4.1、配置EFCore与PostgreSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1、引入针对PostgreSQL的EFCore包"><span class="toc-text">4.1.1、引入针对PostgreSQL的EFCore包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2、添加DB操作上下文"><span class="toc-text">4.1.2、添加DB操作上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3、安装Microsoft-EntityFrameworkCore-Tools工具"><span class="toc-text">4.1.3、安装Microsoft.EntityFrameworkCore.Tools工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-4、创建Migration"><span class="toc-text">4.1.4、创建Migration</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-5、生成数据库脚本（生产阶段用，开发阶段可跳过）"><span class="toc-text">4.1.5、生成数据库脚本（生产阶段用，开发阶段可跳过）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-6、更新数据库（开发阶段用）"><span class="toc-text">4.1.6、更新数据库（开发阶段用）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2、使用DB上下文操作数据库"><span class="toc-text">4.2、使用DB上下文操作数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1、创建IRepository，DB操作基本接口"><span class="toc-text">4.2.1、创建IRepository，DB操作基本接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-2、创建UserRepository，User专用的DB操作类"><span class="toc-text">4.2.2、创建UserRepository，User专用的DB操作类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-3、Service层调用UserRepository就可以完成用户的操作。"><span class="toc-text">4.2.3、Service层调用UserRepository就可以完成用户的操作。</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-总结"><span class="toc-text">5. 总结</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

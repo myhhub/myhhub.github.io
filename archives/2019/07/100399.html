@@ -1,0 +1,515 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hive,dml">
+
+
+    <meta name="description" content="一、加载文件数据到表1.1 语法123LOAD DATA [LOCAL] INPATH 'filepath' [OVERWRITE] INTO TABLE tablename [PARTITIO...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Hive常用DML操作 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Hive常用DML操作">
+            
+	            Hive常用DML操作
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/dml/">dml</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hive/">hive</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/09</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1367</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、加载文件数据到表"><a href="#一、加载文件数据到表" class="headerlink" title="一、加载文件数据到表"></a>一、加载文件数据到表</h2><h3 id="1-1-语法"><a href="#1-1-语法" class="headerlink" title="1.1 语法"></a>1.1 语法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span> [<span class="keyword">LOCAL</span>] INPATH <span class="string">'filepath'</span> [OVERWRITE] </span><br><span class="line"><span class="keyword">INTO</span> <span class="keyword">TABLE</span> tablename [<span class="keyword">PARTITION</span> (partcol1=val1, partcol2=val2 ...)]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>LOCAL</code>关键字代表从本地文件系统加载文件，省略则代表从HDFS上加载文件：</li>
+</ul>
+<ul>
+<li><p>从本地文件系统加载文件时， <code>filepath</code>可以是绝对路径也可以是相对路径(建议使用绝对路径)；</p>
+</li>
+<li><p>从HDFS加载文件时候，<code>filepath</code>为文件完整的URL地址：如<code>hdfs://namenode:port/user/hive/project/ data1</code></p>
+</li>
+</ul>
+<ul>
+<li><p><code>filepath</code>可以是文件路径(在这种情况下Hive会将文件移动到表中)，也可以目录路径(在这种情况下，Hive会将该目录中的所有文件移动到表中)；</p>
+</li>
+<li><p>如果使用OVERWRITE关键字，则将删除目标表（或分区）的内容，使用新的数据填充；不使用此关键字，则数据以追加的方式加入；</p>
+</li>
+<li><p>加载的目标可以是表或分区。如果是分区表，则必须指定加载数据的分区；</p>
+</li>
+<li><p>加载文件的格式必须与建表时使用<code>STORED AS</code>指定的存储格式相同。</p>
+</li>
+</ul>
+<blockquote>
+<p>使用建议：</p>
+<p><strong>不论是本地路径还是URL都建议使用完整的</strong>。虽然可以使用不完整的URL地址，此时Hive将使用hadoop中的fs.default.name配置来推断地址，但是为避免不必要的错误，建议使用完整的本地路径或URL地址；</p>
+<p><strong>加载对象是分区表时建议显示指定分区</strong>。在Hive 3.0之后，内部将加载(LOAD)重写为INSERT AS SELECT，此时如果不指定分区，INSERT AS SELECT将假设最后一组列是分区列，如果该列不是表定义的分区，它将抛出错误。为避免错误，还是建议显示指定分区。</p>
+</blockquote>
+<h3 id="1-2-示例"><a href="#1-2-示例" class="headerlink" title="1.2 示例"></a>1.2 示例</h3><p>新建分区表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> emp_ptn(</span><br><span class="line">  empno <span class="built_in">INT</span>,</span><br><span class="line">  ename <span class="keyword">STRING</span>,</span><br><span class="line">  job <span class="keyword">STRING</span>,</span><br><span class="line">  mgr <span class="built_in">INT</span>,</span><br><span class="line">  hiredate <span class="built_in">TIMESTAMP</span>,</span><br><span class="line">  sal <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>),</span><br><span class="line">  comm <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>)</span><br><span class="line">  )</span><br><span class="line">  PARTITIONED <span class="keyword">BY</span> (deptno <span class="built_in">INT</span>)   <span class="comment">-- 按照部门编号进行分区</span></span><br><span class="line">  <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">"\t"</span>;</span><br></pre></td></tr></table></figure>
+<p>从HDFS上加载数据到分区表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> <span class="keyword">DATA</span>  INPATH <span class="string">"hdfs://hadoop001:8020/mydir/emp.txt"</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno=<span class="number">20</span>);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>emp.txt文件可在本仓库的resources目录中下载</p>
+</blockquote>
+<p>加载后表中数据如下,分区列deptno全部赋值成20：</p>
+<div align="center"> <img src="/img/bigdata/hive-emp-ptn.png"> </div>
+
+<h2 id="二、查询结果插入到表"><a href="#二、查询结果插入到表" class="headerlink" title="二、查询结果插入到表"></a>二、查询结果插入到表</h2><h3 id="2-1-语法"><a href="#2-1-语法" class="headerlink" title="2.1 语法"></a>2.1 语法</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">INSERT OVERWRITE TABLE tablename1 [PARTITION (<span class="attribute">partcol1</span>=val1, <span class="attribute">partcol2</span>=val2 <span class="built_in">..</span>.) [<span class="keyword">IF</span> <span class="keyword">NOT</span> EXISTS]]   </span><br><span class="line">select_statement1 <span class="keyword">FROM</span> from_statement;</span><br><span class="line"></span><br><span class="line">INSERT INTO TABLE tablename1 [PARTITION (<span class="attribute">partcol1</span>=val1, <span class="attribute">partcol2</span>=val2 <span class="built_in">..</span>.)] </span><br><span class="line">select_statement1 <span class="keyword">FROM</span> from_statement;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Hive 0.13.0开始，建表时可以通过使用TBLPROPERTIES（“immutable”=“true”）来创建不可变表(immutable table) ，如果不可以变表中存在数据，则INSERT INTO失败。（注：INSERT OVERWRITE的语句不受<code>immutable</code>属性的影响）;</p>
+</li>
+<li><p>可以对表或分区执行插入操作。如果表已分区，则必须通过指定所有分区列的值来指定表的特定分区；</p>
+</li>
+<li><p>从Hive 1.1.0开始，TABLE关键字是可选的；</p>
+</li>
+<li><p>从Hive 1.2.0开始 ，可以采用INSERT INTO tablename(z，x，c1)指明插入列；</p>
+</li>
+<li><p>可以将SELECT语句的查询结果插入多个表（或分区），称为多表插入。语法如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FROM from_statement</span><br><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> tablename1 </span><br><span class="line">[<span class="keyword">PARTITION</span> (partcol1=val1, partcol2=val2 ...) [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>]] select_statement1</span><br><span class="line">[<span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> tablename2 [<span class="keyword">PARTITION</span> ... [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>]] select_statement2]</span><br><span class="line">[<span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">TABLE</span> tablename2 [<span class="keyword">PARTITION</span> ...] select_statement2] ...;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="2-2-动态插入分区"><a href="#2-2-动态插入分区" class="headerlink" title="2.2 动态插入分区"></a>2.2 动态插入分区</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> tablename <span class="keyword">PARTITION</span> (partcol1[=val1], partcol2[=val2] ...) </span><br><span class="line">select_statement <span class="keyword">FROM</span> from_statement;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">TABLE</span> tablename <span class="keyword">PARTITION</span> (partcol1[=val1], partcol2[=val2] ...) </span><br><span class="line">select_statement <span class="keyword">FROM</span> from_statement;</span><br></pre></td></tr></table></figure>
+<p>在向分区表插入数据时候，分区列名是必须的，但是列值是可选的。如果给出了分区列值，我们将其称为静态分区，否则它是动态分区。动态分区列必须在SELECT语句的列中最后指定，并且与它们在PARTITION()子句中出现的顺序相同。</p>
+<p>注意：Hive 0.9.0之前的版本动态分区插入是默认禁用的，而0.9.0之后的版本则默认启用。以下是动态分区的相关配置：</p>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hive.exec.dynamic.partition</code></td>
+<td><code>true</code></td>
+<td>需要设置为true才能启用动态分区插入</td>
+</tr>
+<tr>
+<td><code>hive.exec.dynamic.partition.mode</code></td>
+<td><code>strict</code></td>
+<td>在严格模式(strict)下，用户必须至少指定一个静态分区，以防用户意外覆盖所有分区，在非严格模式下，允许所有分区都是动态的</td>
+</tr>
+<tr>
+<td><code>hive.exec.max.dynamic.partitions.pernode</code></td>
+<td>100</td>
+<td>允许在每个mapper/reducer节点中创建的最大动态分区数</td>
+</tr>
+<tr>
+<td><code>hive.exec.max.dynamic.partitions</code></td>
+<td>1000</td>
+<td>允许总共创建的最大动态分区数</td>
+</tr>
+<tr>
+<td><code>hive.exec.max.created.files</code></td>
+<td>100000</td>
+<td>作业中所有mapper/reducer创建的HDFS文件的最大数量</td>
+</tr>
+<tr>
+<td><code>hive.error.on.empty.partition</code></td>
+<td><code>false</code></td>
+<td>如果动态分区插入生成空结果，是否抛出异常</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-3-示例"><a href="#2-3-示例" class="headerlink" title="2.3 示例"></a>2.3 示例</h3><ol>
+<li>新建emp表，作为查询对象表</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> emp(</span><br><span class="line">    empno <span class="built_in">INT</span>,</span><br><span class="line">    ename <span class="keyword">STRING</span>,</span><br><span class="line">    job <span class="keyword">STRING</span>,</span><br><span class="line">    mgr <span class="built_in">INT</span>,</span><br><span class="line">    hiredate <span class="built_in">TIMESTAMP</span>,</span><br><span class="line">    sal <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>),</span><br><span class="line">    comm <span class="built_in">DECIMAL</span>(<span class="number">7</span>,<span class="number">2</span>),</span><br><span class="line">    deptno <span class="built_in">INT</span>)</span><br><span class="line">    <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">"\t"</span>;</span><br><span class="line">    </span><br><span class="line"> <span class="comment">-- 加载数据到emp表中 这里直接从本地加载</span></span><br><span class="line"><span class="keyword">load</span> <span class="keyword">data</span> <span class="keyword">local</span> inpath <span class="string">"/usr/file/emp.txt"</span> <span class="keyword">into</span> <span class="keyword">table</span> emp;</span><br></pre></td></tr></table></figure>
+<p>​    完成后<code>emp</code>表中数据如下：</p>
+<div align="center"> <img src="/img/bigdata/hive-emp.png"> </div>
+
+<ol start="2">
+<li>为清晰演示，先清空<code>emp_ptn</code>表中加载的数据：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">TRUNCATE</span> <span class="keyword">TABLE</span> emp_ptn;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>静态分区演示：从<code>emp</code>表中查询部门编号为20的员工数据，并插入<code>emp_ptn</code>表中，语句如下：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno=<span class="number">20</span>) </span><br><span class="line"><span class="keyword">SELECT</span> empno,ename,job,mgr,hiredate,sal,comm <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> deptno=<span class="number">20</span>;</span><br></pre></td></tr></table></figure>
+<p>​    完成后<code>emp_ptn</code>表中数据如下：</p>
+<div align="center"> <img src="/img/bigdata/hive-emp-deptno-20.png"> </div>
+
+<ol start="4">
+<li>接着演示动态分区：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 由于我们只有一个分区，且还是动态分区，所以需要关闭严格默认。因为在严格模式下，用户必须至少指定一个静态分区</span></span><br><span class="line"><span class="keyword">set</span> hive.exec.dynamic.partition.mode=nonstrict;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 动态分区   此时查询语句的最后一列为动态分区列，即deptno</span></span><br><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> emp_ptn <span class="keyword">PARTITION</span> (deptno) </span><br><span class="line"><span class="keyword">SELECT</span> empno,ename,job,mgr,hiredate,sal,comm,deptno <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> deptno=<span class="number">30</span>;</span><br></pre></td></tr></table></figure>
+<p>​    完成后<code>emp_ptn</code>表中数据如下：</p>
+<div align="center"> <img src="/img/bigdata/hive-emp-deptno-20-30.png"> </div>
+
+
+
+<h2 id="三、使用SQL语句插入值"><a href="#三、使用SQL语句插入值" class="headerlink" title="三、使用SQL语句插入值"></a>三、使用SQL语句插入值</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">TABLE</span> tablename [<span class="keyword">PARTITION</span> (partcol1[=val1], partcol2[=val2] ...)] </span><br><span class="line"><span class="keyword">VALUES</span> ( <span class="keyword">value</span> [, <span class="keyword">value</span> ...] )</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用时必须为表中的每个列都提供值。不支持只向部分列插入值（可以为缺省值的列提供空值来消除这个弊端）；</li>
+<li>如果目标表表支持ACID及其事务管理器，则插入后自动提交；</li>
+<li>不支持支持复杂类型(array, map, struct, union)的插入。</li>
+</ul>
+<h2 id="四、更新和删除数据"><a href="#四、更新和删除数据" class="headerlink" title="四、更新和删除数据"></a>四、更新和删除数据</h2><h3 id="4-1-语法"><a href="#4-1-语法" class="headerlink" title="4.1 语法"></a>4.1 语法</h3><p>更新和删除的语法比较简单，和关系型数据库一致。需要注意的是这两个操作都只能在支持ACID的表，也就是事务表上才能执行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 更新</span></span><br><span class="line"><span class="keyword">UPDATE</span> tablename <span class="keyword">SET</span> <span class="keyword">column</span> = <span class="keyword">value</span> [, <span class="keyword">column</span> = <span class="keyword">value</span> ...] [<span class="keyword">WHERE</span> expression]</span><br><span class="line"></span><br><span class="line"><span class="comment">--删除</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> tablename [<span class="keyword">WHERE</span> expression]</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-示例"><a href="#4-2-示例" class="headerlink" title="4.2 示例"></a>4.2 示例</h3><p><strong>1. 修改配置</strong></p>
+<p>首先需要更改<code>hive-site.xml</code>，添加如下配置，开启事务支持，配置完成后需要重启Hive服务。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.support.concurrency<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.enforce.bucketing<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.exec.dynamic.partition.mode<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>nonstrict<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.txn.manager<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>org.apache.hadoop.hive.ql.lockmgr.DbTxnManager<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.compactor.initiator.on<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.in.test<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>2. 创建测试表</strong></p>
+<p>创建用于测试的事务表，建表时候指定属性<code>transactional = true</code>则代表该表是事务表。需要注意的是，按照<a href="https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions" target="_blank" rel="noopener">官方文档</a>的说明，目前Hive中的事务表有以下限制：</p>
+<ul>
+<li>必须是buckets Table;</li>
+<li>仅支持ORC文件格式；</li>
+<li>不支持LOAD DATA …语句。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> emp_ts(  </span><br><span class="line">  empno <span class="built_in">int</span>,  </span><br><span class="line">  ename <span class="keyword">String</span></span><br><span class="line">)</span><br><span class="line">CLUSTERED <span class="keyword">BY</span> (empno) <span class="keyword">INTO</span> <span class="number">2</span> BUCKETS <span class="keyword">STORED</span> <span class="keyword">AS</span> ORC</span><br><span class="line">TBLPROPERTIES (<span class="string">"transactional"</span>=<span class="string">"true"</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>3. 插入测试数据</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">TABLE</span> emp_ts  <span class="keyword">VALUES</span> (<span class="number">1</span>,<span class="string">"ming"</span>),(<span class="number">2</span>,<span class="string">"hong"</span>);</span><br></pre></td></tr></table></figure>
+<p>插入数据依靠的是MapReduce作业，执行成功后数据如下：</p>
+<div align="center"> <img src="/img/bigdata/hive-emp-ts.png"> </div>
+
+<p><strong>4. 测试更新和删除</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--更新数据</span></span><br><span class="line"><span class="keyword">UPDATE</span> emp_ts <span class="keyword">SET</span> ename = <span class="string">"lan"</span>  <span class="keyword">WHERE</span>  empno=<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">--删除数据</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> emp_ts <span class="keyword">WHERE</span> empno=<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>更新和删除数据依靠的也是MapReduce作业，执行成功后数据如下：</p>
+<div align="center"> <img src="/img/bigdata/hive-emp-ts-2.png"> </div>
+
+
+<h2 id="五、查询结果写出到文件系统"><a href="#五、查询结果写出到文件系统" class="headerlink" title="五、查询结果写出到文件系统"></a>五、查询结果写出到文件系统</h2><h3 id="5-1-语法"><a href="#5-1-语法" class="headerlink" title="5.1 语法"></a>5.1 语法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> OVERWRITE [<span class="keyword">LOCAL</span>] <span class="keyword">DIRECTORY</span> directory1</span><br><span class="line">  [<span class="keyword">ROW</span> <span class="keyword">FORMAT</span> row_format] [<span class="keyword">STORED</span> <span class="keyword">AS</span> file_format] </span><br><span class="line">  <span class="keyword">SELECT</span> ... <span class="keyword">FROM</span> ...</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>OVERWRITE关键字表示输出文件存在时，先删除后再重新写入；</p>
+</li>
+<li><p>和Load语句一样，建议无论是本地路径还是URL地址都使用完整的；</p>
+</li>
+<li><p>写入文件系统的数据被序列化为文本，其中列默认由^A分隔，行由换行符分隔。如果列不是基本类型，则将其序列化为JSON格式。其中行分隔符不允许自定义，但列分隔符可以自定义，如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 定义列分隔符为'\t' </span></span><br><span class="line"><span class="keyword">insert</span> overwrite <span class="keyword">local</span> <span class="keyword">directory</span> <span class="string">'./test-04'</span> </span><br><span class="line"><span class="keyword">row</span> <span class="keyword">format</span> <span class="keyword">delimited</span> </span><br><span class="line"><span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'\t'</span></span><br><span class="line">COLLECTION ITEMS <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">','</span></span><br><span class="line"><span class="keyword">MAP</span> <span class="keyword">KEYS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">':'</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> src;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="5-2-示例"><a href="#5-2-示例" class="headerlink" title="5.2 示例"></a>5.2 示例</h3><p>这里我们将上面创建的<code>emp_ptn</code>表导出到本地文件系统，语句如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">LOCAL</span> <span class="keyword">DIRECTORY</span> <span class="string">'/usr/file/ouput'</span></span><br><span class="line"><span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span></span><br><span class="line"><span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'\t'</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp_ptn;</span><br></pre></td></tr></table></figure>
+<p>导出结果如下：</p>
+<div align="center"> <img src="/img/bigdata/hive-ouput.png"> </div>
+
+
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions" target="_blank" rel="noopener">Hive Transactions</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DML" target="_blank" rel="noopener">Hive Data Manipulation Language</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100400.html" class="pre-post btn btn-default" title='Hive数据查询详解'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Hive数据查询详解</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100398.html" class="next-post btn btn-default" title='Hive视图和索引'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Hive视图和索引</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、加载文件数据到表"><span class="toc-text">一、加载文件数据到表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-语法"><span class="toc-text">1.1 语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-示例"><span class="toc-text">1.2 示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、查询结果插入到表"><span class="toc-text">二、查询结果插入到表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-语法"><span class="toc-text">2.1 语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-动态插入分区"><span class="toc-text">2.2 动态插入分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-示例"><span class="toc-text">2.3 示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、使用SQL语句插入值"><span class="toc-text">三、使用SQL语句插入值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、更新和删除数据"><span class="toc-text">四、更新和删除数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-语法"><span class="toc-text">4.1 语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-示例"><span class="toc-text">4.2 示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、查询结果写出到文件系统"><span class="toc-text">五、查询结果写出到文件系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-语法"><span class="toc-text">5.1 语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-示例"><span class="toc-text">5.2 示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

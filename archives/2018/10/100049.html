@@ -1,0 +1,445 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hash,攻击">
+
+
+    <meta name="description" content="你可以在Github上获取hash_extender工具！
+（行政说明：我不再在Tenable了！我的条款很好，现在我是Leviathan Security Group的顾问。如果您需要更多信息...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>关于哈希长度扩展攻击你需要知道的一切 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="关于哈希长度扩展攻击你需要知道的一切">
+            
+	            关于哈希长度扩展攻击你需要知道的一切
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/penetration/">渗透</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hash/">hash</a> <a class="tag-link" href="/tags/attacks/">攻击</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/10/08</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1641</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p><strong>你可以在Github上获取<a href="https://github.com/iagox86/hash_extender" target="_blank" rel="noopener">hash_extender</a>工具！</strong></p>
+<p>（行政说明：我不再在Tenable了！我的条款很好，现在我是<a href="http://leviathansecurity.com/" target="_blank" rel="noopener">Leviathan Security Group</a>的顾问。如果您需要更多信息，请随时与我联系！）</p>
+<p><a href="http://twitter.com/mogigoma" target="_blank" rel="noopener">不久前</a>，我的朋友<a href="http://twitter.com/mogigoma" target="_blank" rel="noopener">@mogigoma</a>和我正在<a href="https://stripe-ctf.com/" target="_blank" rel="noopener">https://stripe-ctf.com上</a>进行一场捕获旗帜比赛。比赛的其中一个级别要求我们执行哈希长度扩展攻击。我当时从来没有听说过这次攻击，经过一些阅读后我意识到这不仅是一次超酷（并且在概念上很容易！）的攻击，还有完全缺乏执行攻击的好工具！在添加错误数量的空字节或错误地添加长度值数小时之后，我发誓要编写一个工具，以便让我和其他任何尝试这样做的人都很容易。所以，经过几周的工作，就在这里！</p>
+<p>现在我要发布这个工具，并希望我没有完全错过一个做同样事情的好工具！它被称为hash_extender，并针对我能想到的每个算法实现长度扩展攻击：</p>
+<ul>
+<li>MD4</li>
+<li>MD5</li>
+<li>RIPEMD-160</li>
+<li>SHA-0</li>
+<li>SHA-1</li>
+<li>SHA-256</li>
+<li>SHA-512</li>
+<li>惠而浦</li>
+</ul>
+<p>我非常乐意将其扩展到其他哈希算法，只要它们“易受”这种攻击 - MD2，SHA-224和SHA-384都没有。如果您有其他候选人，请与我联系，我会尽快添加！</p>
+<h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p>如果应用程序将字符串预先设置为字符串，使用易受攻击的算法对其进行哈希处理，并将攻击者委托给字符串和哈希值，而不是秘密，则应用程序很容易受到哈希长度扩展攻击。然后，服务器依赖该秘密来决定稍后返回的数据是否与原始数据相同。</p>
+<p>事实证明，即使攻击者不知道前置秘密的值，他仍然可以生成<em>{secret ||</em>的有效哈希值。<em>数据||</em> <em>attacker_controlled_data}</em>！这是通过简单地拾取散列算法停止的位置来完成的; 事实证明，继续哈希所需的状态的100％是大多数哈希算法的输出！我们只需将该状态加载到适当的哈希结构中并继续散列。</p>
+<p><strong>TL; DR：给定由具有未知前缀的字符串组成的散列，攻击者可以附加到字符串并生成仍具有未知前缀的新散列。</strong></p>
+<h2 id="例"><a href="#例" class="headerlink" title="例"></a>例</h2><p>让我们看一个循序渐进的例子。对于这个例子：</p>
+<ul>
+<li>让<em>秘密=“秘密”</em></li>
+<li>让<em>data =“data”</em></li>
+<li>让<em>H = md5（）</em></li>
+<li>let <em>signature = hash（secret || data）= 6036708eba0d11f6ef52ad44e8b74d5b</em></li>
+<li>让<em>append =“追加”</em></li>
+</ul>
+<p>服务器向攻击者发送<em>数据</em>和<em>签名</em>。攻击者猜测<em>H</em>是MD5的长度（它是最常见的128位哈希算法），基于源，应用程序的规范，或者他们能够做到的任何方式。</p>
+<p>只知道<em>数据</em>，<em>^ h</em>，并<em>签名</em>，攻击者的目标是追加<em>追加</em>到<em>数据</em>并生成新的数据的有效签名。这很容易做到！我们来看看如何。</p>
+<h3 id="填充"><a href="#填充" class="headerlink" title="填充"></a>填充</h3><p>在我们看看实际的攻击之前，我们不得不谈一谈填充。</p>
+<p>当计算<em>H</em>（<em>秘密</em> + <em>数据</em>）时，字符串（<em>秘密</em> + <em>数据</em>）用“1”位和一些“0”位填充，后跟字符串的长度。也就是说，在十六进制中，填充是0x80字节，后跟一些0x00字节，然后是长度。0x00字节的数量，为长度保留的字节数以及长度的编码方式取决于特定的算法和块大小。</p>
+<p>对于大多数算法（包括MD4，MD5，RIPEMD-160，SHA-0，SHA-1和SHA-256），字符串将被填充，直到其长度与56个字节（mod 64）一致。或者，换句话说，它被填充直到长度比完整（64字节）块少8个字节（8个字节是编码长度字段的大小）。在hash_extender中实现了两个不使用这些值的哈希：SHA-512使用128字节的块大小并为长度字段保留16个字节，而WHIRLPOOL使用64字节的块大小并为长度字段保留32个字节。</p>
+<p>长度字段的字节顺序也很重要。MD4，MD5和RIPEMD-160是little-endian，而SHA系列和WHIRLPOOL是big-endian。相信我，这种区别花了我几天的工作！</p>
+<p>在我们的示例中，<em>length（secret || data）= length（“secretdata”）</em>是10（0x0a）字节或80（0x50）位。因此，我们有10个字节的数据（<em>“secretdata”</em>），46个字节的填充（80 00 00 …）和一个8字节的小端长度字段（50 00 00 00 00 00 00 00）总共64个字节（或一个块）。放在一起，它看起来像这样：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">73</span> <span class="number">65</span> <span class="number">63</span> <span class="number">72</span> <span class="number">65</span> <span class="number">74</span> <span class="number">64</span> <span class="number">61</span> <span class="number">74</span> <span class="number">61</span> <span class="number">80</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> secretdata ...... </span><br><span class="line"><span class="number">0010</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ......... ....... </span><br><span class="line"><span class="number">0020</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................ </span><br><span class="line"><span class="number">0030</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">50</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ........ P .......</span><br></pre></td></tr></table></figure>
+<p>打破这个字符串，我们有：</p>
+<ul>
+<li><em>“秘密”=秘密</em></li>
+<li><em>“数据”=数据</em></li>
+<li>80 00 00 … - 填充的46个字节，从0x80开始</li>
+<li>50 00 00 00 00 00 00 00 - 小端的位长</li>
+</ul>
+<p>这是<em>H</em>在原始示例中散列的确切数据。</p>
+<h3 id="攻击-1"><a href="#攻击-1" class="headerlink" title="攻击"></a>攻击</h3><p>既然我们有<em>H</em>哈希的数据，那么让我们来看看如何执行实际的攻击。</p>
+<p>首先，让我们将<em>附加追加</em>到字符串中。够容易！这是它的样子：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">73</span> <span class="number">65</span> <span class="number">63</span> <span class="number">72</span> <span class="number">65</span> <span class="number">74</span> <span class="number">64</span> <span class="number">61</span> <span class="number">74</span> <span class="number">61</span> <span class="number">80</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> secretdata ...... </span><br><span class="line"><span class="number">0010</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ......... ....... </span><br><span class="line"><span class="number">0020</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................ </span><br><span class="line"><span class="number">0030</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">50</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ........ P ....... </span><br><span class="line"><span class="number">0040</span> <span class="number">61</span> <span class="number">70</span> <span class="number">70</span> <span class="number">65</span> <span class="number">6</span>e <span class="number">64</span>追加</span><br></pre></td></tr></table></figure>
+<p>该块的哈希是我们最终想要a）计算，以及b）让服务器计算。可以通过两种方式计算该数据块的值：</p>
+<ul>
+<li>通过将其粘贴在缓冲区中并执行<em>H（缓冲区）</em></li>
+<li>通过从第一个块结束开始，使用我们已经从<em>签名中</em>获知的状态，并从该状态开始<em>追加哈希</em></li>
+</ul>
+<p>第一种方法是服务器将执行的操作，第二种方法是攻击者将执行的操作。让我们先看一下服务器，因为它是一个更简单的例子。</p>
+<h4 id="服务器的计算"><a href="#服务器的计算" class="headerlink" title="服务器的计算"></a>服务器的计算</h4><p>我们知道服务器会在字符串前加上<em>秘密</em>，所以我们发送字符串减去<em>秘密</em>值：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">64</span> <span class="number">61</span> <span class="number">74</span> <span class="number">61</span> <span class="number">80</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>数据............ </span><br><span class="line"><span class="number">0010</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ... ............. </span><br><span class="line"><span class="number">0020</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ............... </span><br><span class="line"><span class="number">0030</span> <span class="number">00</span> <span class="number">00</span> <span class="number">50</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">61</span> <span class="number">70</span> <span class="number">70</span> <span class="number">65</span> <span class="number">6</span>e <span class="number">64</span> ..P .......追加</span><br></pre></td></tr></table></figure>
+<p>不要被这恰好是64字节（块大小）所欺骗 - 这只是因为<em>秘密</em>和<em>追加</em>是相同的长度而发生的。也许我不应该选择那个作为例子，但我不会重新开始！</p>
+<p>服务器将为该字符串添加<em>秘密</em>，创建：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">73</span> <span class="number">65</span> <span class="number">63</span> <span class="number">72</span> <span class="number">65</span> <span class="number">74</span> <span class="number">64</span> <span class="number">61</span> <span class="number">74</span> <span class="number">61</span> <span class="number">80</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> secretdata ...... </span><br><span class="line"><span class="number">0010</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ......... ....... </span><br><span class="line"><span class="number">0020</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................ </span><br><span class="line"><span class="number">0030</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">50</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ........ P ....... </span><br><span class="line"><span class="number">0040</span> <span class="number">61</span> <span class="number">70</span> <span class="number">70</span> <span class="number">65</span> <span class="number">6</span>e <span class="number">64</span>追加</span><br></pre></td></tr></table></figure>
+<p>并将其哈希值为以下值：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">6</span>ee<span class="number">582</span>a<span class="number">1669</span>ce<span class="number">442</span>f<span class="number">3719</span><span class="keyword">c</span><span class="number">47430</span>dadee</span><br></pre></td></tr></table></figure>
+<p>对于那些在家里玩的人，你可以通过将其复制并粘贴到终端来证明这是有效的：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">echo' </span><br><span class="line">#include &lt;stdio.h&gt; </span><br><span class="line">#include &lt;openssl / md<span class="number">5</span>.h&gt; </span><br><span class="line"></span><br><span class="line">int main（int argc，const char * argv []）</span><br><span class="line">&#123; </span><br><span class="line">  MD<span class="number">5</span>_CTX <span class="keyword">c</span><span class="comment">; </span></span><br><span class="line"><span class="comment">  unsigned char buffer [MD5_DIGEST_LENGTH]; </span></span><br><span class="line"><span class="comment">  int i; </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  MD5_Init（C）; </span></span><br><span class="line"><span class="comment">  MD5_Update（＆c，“secret”，6）; </span></span><br><span class="line"><span class="comment">  MD5_Update（＆c，“data” </span></span><br><span class="line"><span class="comment">                 “\ x80 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00” </span></span><br><span class="line"><span class="comment">                 “\ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00“ </span></span><br><span class="line"><span class="comment">                 ”\ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00“ </span></span><br><span class="line"><span class="comment">                 ”\ x00 \ x00 \ x00 \ x00“ </span></span><br><span class="line"><span class="comment">                 ”\ x50 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00 \ x00“</span></span><br><span class="line"><span class="comment">  MD5_Final（缓冲区，＆c）; </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  for（i = 0; i &lt;16; i ++）&#123; </span></span><br><span class="line"><span class="comment">    printf（“％02x”，buffer [i]）; </span></span><br><span class="line"><span class="comment">  &#125; </span></span><br><span class="line"><span class="comment">  printf（“\ n”）; </span></span><br><span class="line"><span class="comment">  返回0; </span></span><br><span class="line"><span class="comment">&#125;'&gt; hash_extension_1.c </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">gcc -o hash_extension_1 hash_extension_1.c -lssl -lcrypto </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">./hash_extension_1</span></span><br></pre></td></tr></table></figure>
+<p>好的，所以服务器将检查我们发送的针对签名<em>6ee582a1669ce442f3719c47430dadee</em>的数据。现在，作为攻击者，我们需要弄清楚如何生成该签名！</p>
+<h4 id="客户的计算"><a href="#客户的计算" class="headerlink" title="客户的计算"></a>客户的计算</h4><p>那么，我们如何在不实际访问<em>秘密的</em>情况下计算上面显示的数据的哈希值呢？</p>
+<p>嗯，首先，我们需要看一下我们要处理的内容：<em>data</em>，<em>append</em>，<em>H</em>和<em>H（secret || data）</em>。</p>
+<p>我们需要定义一个新函数<em>H’</em>，它使用与<em>H</em>相同的散列算法，但其起始状态是<em>H（secret || data）</em>的最终状态，即<em>签名</em>。一旦我们有了，我们只需计算<em>H’（追加）</em>，该函数的输出就是我们的哈希值。这听起来很容易（而且是！）; 看看这段代码：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">echo' </span><br><span class="line">#include &lt;stdio.h&gt; </span><br><span class="line">#include &lt;openssl / md5.h&gt; </span><br><span class="line"></span><br><span class="line">int main（int argc，const char * argv []）</span><br><span class="line">&#123; </span><br><span class="line">  int i; </span><br><span class="line">  unsigned char buffer [MD5_DIGEST_LENGTH]; </span><br><span class="line">  MD5_CTX c; </span><br><span class="line"></span><br><span class="line">  MD5_Init（C）; </span><br><span class="line">  MD5_Update（＆c，“AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA”，<span class="number">64</span>）; </span><br><span class="line"></span><br><span class="line">  cA = htonl（<span class="number">0x6036708e</span>）; / * &lt; - 这是我们已经拥有的哈希值* / </span><br><span class="line">  cB = htonl（<span class="number">0xba0d11f6</span>）; </span><br><span class="line">  cC = htonl（<span class="number">0xef52ad44</span>）; </span><br><span class="line">  cD = htonl（<span class="number">0xe8b74d5b</span>）; </span><br><span class="line"></span><br><span class="line">  MD5_Update（＆c，“append”，<span class="number">6</span>）; / *这是附加数据。* / </span><br><span class="line">  MD5_Final（缓冲区，＆c）; </span><br><span class="line">  for（i = <span class="number">0</span>; i &lt;<span class="number">16</span>; i ++）&#123; </span><br><span class="line">    printf（“％<span class="number">02</span>x”，缓冲液[I]）; </span><br><span class="line">  &#125;</span><br><span class="line">  的printf（ “\ n”）; </span><br><span class="line">  返回<span class="number">0</span>; </span><br><span class="line">&#125;'&gt; hash_extension_2.c </span><br><span class="line"></span><br><span class="line">gcc -o hash_extension_2 hash_extension_2.c -lssl -lcrypto </span><br><span class="line"></span><br><span class="line">./hash_extension_2</span><br></pre></td></tr></table></figure>
+<p>输出就像以前一样：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">6</span>ee<span class="number">582</span>a<span class="number">1669</span>ce<span class="number">442</span>f<span class="number">3719</span><span class="keyword">c</span><span class="number">47430</span>dadee</span><br></pre></td></tr></table></figure>
+<p>所以我们知道签名是正确的。不同的是，我们根本没有使用<em>秘密</em>！发生了什么！？</p>
+<p>好吧，我们从头开始创建<em>MD5_CTX</em>结构，就像正常一样。然后我们采用64’A的MD5。我们采用’A’的完整（64字节）块的MD5来确保除了散列本身的状态之外的任何内部值都设置为我们期望的值。</p>
+<p>然后，在完成之后，我们将<em>cA</em>，<em>cB</em>，<em>cC</em>和<em>cD</em>替换为<em>签名中</em>的值：<em>6036708eba0d11f6ef52ad44e8b74d5b</em>。这使得MD5_CTX结构处于与最初完成时相同的状态，并且意味着我们散列的任何其他内容（在本例中为<em>append</em>）将产生与我们以常规方式对其进行哈希处理时相同的输出。</p>
+<p>我们在设置状态变量之前对值使用<em>htonl（）</em>，因为MD5 - 是little-endian - 也以little-endian输出它的值。</p>
+<h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><p>所以，现在我们有了这个字符串：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000</span> <span class="number">64</span> <span class="number">61</span> <span class="number">74</span> <span class="number">61</span> <span class="number">80</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>数据............ </span><br><span class="line"><span class="number">0010</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ... ............. </span><br><span class="line"><span class="number">0020</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ............... </span><br><span class="line"><span class="number">0030</span> <span class="number">00</span> <span class="number">00</span> <span class="number">50</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">61</span> <span class="number">70</span> <span class="number">70</span> <span class="number">65</span> <span class="number">6</span>e <span class="number">64</span> ..P .......追加</span><br></pre></td></tr></table></figure>
+<p>这个签名为<em>H（secret || data || append）</em>：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">6</span>ee<span class="number">582</span>a<span class="number">1669</span>ce<span class="number">442</span>f<span class="number">3719</span><span class="keyword">c</span><span class="number">47430</span>dadee</span><br></pre></td></tr></table></figure>
+<p>我们可以在不知道秘密是什么的情况下生成签名！因此，我们将字符串与我们的新签名一起发送到服务器。服务器将在签名前添加哈希值，并提供与我们完全相同的哈希值（胜利！）。</p>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p>这个例子花了我几个小时写。为什么？因为我写了大约一千个错误代码。NUL字节太多，没有足够的NUL字节，错误的字节序，错误的算法，使用的字节而不是长度的位，以及各种其他愚蠢的问题。我第一次参加这种类型的攻击时，我花了2300h到0700h尝试让它工作，并且直到睡觉之后才得到它（并且在Mak的帮助下）。甚至不让我开始将这次攻击移植到MD5需要多长时间。Endianness可能会在火灾中死亡。</p>
+<p>为什么这么难？因为这是加密，并且加密<em>非常</em>复杂并且众所周知难以排除故障。有许多活动部件，需要记住许多侧面案例，而且从来都不清楚为什么出现问题，只是结果不对。太痛苦了！</p>
+<p>所以，我写了hash_extender。hash_extender是（我希望）第一个实现此类攻击的免费工具。它易于使用，并为我能想到的每种算法实现此攻击。</p>
+<p>以下是其使用示例：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="string">./hash_extender</span> <span class="params">--data</span> data <span class="params">--secret</span> 6  -  append append <span class="params">--signature</span> 6036708eba0d11f6ef52ad44e8b74d5b <span class="params">--format</span> md5 </span><br><span class="line">类型：md5 </span><br><span class="line">密钥长度：6 </span><br><span class="line">新签名：6ee582a1669ce442f3719c47430dadee </span><br><span class="line">新字符串：646174618000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000</span><br></pre></td></tr></table></figure>
+<p>如果您不确定哈希类型，可以通过省略–format参数让它尝试不同的类型。如果你正在尝试多种算法，我建议使用–table参数：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="string">./hash_extender</span> <span class="params">--data</span>数据<span class="params">--secret</span> 6 <span class="params">--append</span>追加<span class="params">--signature</span> 6036708eba0d11f6ef52ad44e8b74d5b <span class="params">--out</span>数据格式HTML <span class="params">--table</span> </span><br><span class="line">MD4 89df68618821<span class="keyword">cd</span>4c50dfccd57c79815b data80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000P00000000000000append </span><br><span class="line">MD5 6ee582a1669ce442f3719c47430dadee data80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000P00000000000000append</span><br></pre></td></tr></table></figure>
+<p>有很多选项可用于格式化输入和输出，包括HTML（使用<em>％NN</em>表示法），CString（使用<em>\ xNN</em>表示法，以及<em>\ r</em>，<em>\ n</em>，<em>\ t</em>等），hex （例如上面如何指定哈希）等。</p>
+<p>默认情况下，我试图选择我认为最合理的选择：</p>
+<ul>
+<li>输入数据：原始</li>
+<li>输入哈希：十六进制</li>
+<li>输出数据：十六进制</li>
+<li>输出哈希：十六进制</li>
+</ul>
+<p>这是帮助页面供参考：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">--------------------------------------------------</span> <span class="params">------------------------------</span> </span><br><span class="line">HASH EXTENDER </span><br><span class="line"><span class="params">------------------</span> <span class="params">--------------------------------------------------</span> <span class="params">------------</span> </span><br><span class="line"></span><br><span class="line">Ron Bowes</span><br><span class="line"></span><br><span class="line">有关许可证信息，请参阅LICENSE.txt。</span><br><span class="line"></span><br><span class="line">用法：<span class="string">./</span> hash_extender &lt; -  data =| <span class="params">--file</span> =&gt;  - 签名= <span class="params">--format</span> =[options] </span><br><span class="line"></span><br><span class="line">INPUT OPTIONS </span><br><span class="line">-d <span class="params">--data</span> =</span><br><span class="line">      我们要扩展的原始字符串。</span><br><span class="line"><span class="params">--data</span>格式=</span><br><span class="line">      字符串传入的格式为。默认值：raw。</span><br><span class="line">      有效格式：raw，hex，html，cstr </span><br><span class="line"><span class="params">--file</span> =</span><br><span class="line">      作为指定字符串的替代方法，它将原始字符串</span><br><span class="line">      作为文件读取。</span><br><span class="line">-s <span class="params">--signature</span> =</span><br><span class="line">      原始签名。</span><br><span class="line"><span class="params">--signature</span>格式=</span><br><span class="line">      签名传递的格式为。默认值：十六进制 </span><br><span class="line">      有效格式：raw，hex，html，</span><br><span class="line">cstr -a <span class="params">--append</span> =</span><br><span class="line">      要附加到字符串的数据。默认值：raw。</span><br><span class="line"><span class="params">--append</span>格式=</span><br><span class="line">      有效格式：raw，hex，html，cstr </span><br><span class="line">-f <span class="params">--format</span> =[必需] </span><br><span class="line">      签名的hash_type。如果您</span><br><span class="line">      想尝试多个签名，可以多次给出。'all'将</span><br><span class="line">      根据签名的大小选择所选类型，并使用有意义的哈希值。</span><br><span class="line">      有效类型：md4，md5，ripemd160，sha，sha1，sha256，sha512，whirlpool </span><br><span class="line">-l <span class="params">--secret</span> =</span><br><span class="line">      秘密的长度，如果知道的话。默认值：8. </span><br><span class="line">-secret-min =</span><br><span class="line"><span class="params">--secret-MAX</span> =</span><br><span class="line">      尝试不同的密钥长度（两个选项都是必需的）</span><br><span class="line"></span><br><span class="line">OUTPUT OPTIONS </span><br><span class="line"><span class="params">--table</span> </span><br><span class="line">      以表格格式输出字符串。</span><br><span class="line"><span class="params">--out</span>数据格式变换=</span><br><span class="line">      输出数据格式。</span><br><span class="line">      有效格式：none，raw，hex，html，html-pure，</span><br><span class="line">cstr ，cstr- pure，fancy <span class="params">--out-signature-format</span> =</span><br><span class="line">      输出签名格式。</span><br><span class="line">      有效格式：none，raw，hex，html，html-pure，cstr，cstr-pure，fancy </span><br><span class="line"></span><br><span class="line">OTHER OPTIONS </span><br><span class="line">-h <span class="params">--help</span> </span><br><span class="line">      显示用法（this）。</span><br><span class="line"><span class="params">--test</span> </span><br><span class="line">      运行测试套件。</span><br><span class="line">-q <span class="params">--quiet</span> </span><br><span class="line">      只输出绝对必要的内容（输出字符串和</span><br><span class="line">      签名）</span><br></pre></td></tr></table></figure>
+<h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>那么，作为一名程序员，你如何解决这个问题呢？它实际上非常简单。有两种方法：</p>
+<ul>
+<li>如果可以避免，请不要信任具有加密数据或签名的用户。</li>
+<li>如果你无法避免它，那么使用HMAC而不是试图自己做。HMAC就是为此而<em>设计</em>的。</li>
+</ul>
+<p>HMAC是真正的解决方案。HMAC设计用于使用密钥安全地散列数据。</p>
+<p>像往常一样，使用为你正在做的而不是自己做的构造。所有加密的关键！[双关语]</p>
+<hr>
+<p><strong>原文</strong><a href="https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks" target="_blank" rel="noopener">https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/10/100050.html" class="pre-post btn btn-default" title='几种最好的图片无损压缩工具'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">几种最好的图片无损压缩工具</span>
+        </a>
+    
+    
+        <a href="/archives/2018/10/100048.html" class="next-post btn btn-default" title='科普哈希长度扩展攻击(Hash Length Extension Attacks)'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">科普哈希长度扩展攻击(Hash Length Extension Attacks)</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#攻击"><span class="toc-text">攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例"><span class="toc-text">例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#填充"><span class="toc-text">填充</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#攻击-1"><span class="toc-text">攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#服务器的计算"><span class="toc-text">服务器的计算</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#客户的计算"><span class="toc-text">客户的计算</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#结果"><span class="toc-text">结果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工具"><span class="toc-text">工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#防御"><span class="toc-text">防御</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes">
+
+
+    <meta name="description" content="有很多团队在使用kubernetes的时候是将一个namespace当成一个租户的，所以对namespace的权限控制，资源控制就很重要了，你总是会担心你的某个租户使用的资源就超出了应有的配额。...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>了解kubernetes资源配额控制器 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="了解kubernetes资源配额控制器">
+            
+	            了解kubernetes资源配额控制器
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/11/26</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1592</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>有很多团队在使用<code>kubernetes</code>的时候是将一个<code>namespace</code>当成一个租户的，所以对<code>namespace</code>的权限控制，资源控制就很重要了，你总是会担心你的某个租户使用的资源就超出了应有的配额。幸运的是<code>kubernetes</code>本身就为我们提供了解决这一问题的工具：资源配额控制器(<code>ResourceQuotaController</code>)</p>
+<p>资源配额控制器确保了指定的资源对象始终不会超过配置的资源，能够有效的降低整个系统宕机的机率，增强系统的鲁棒性，对整个集群的稳定性有非常重要的作用。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><code>kubernetes</code>主要有3个层级的资源配额控制：</p>
+<ul>
+<li>容器：可以对 CPU 和 Memory 进行限制</li>
+<li>POD：可以对一个 POD 内所有容器的的资源进行限制</li>
+<li>Namespace：为一个命名空间下的资源进行限制</li>
+</ul>
+<p>其中容器层次主要利用容器本身的支持，比如 Docker 对 CPU、内存等的支持；POD 方面可以限制系统内创建 POD 的资源范围，比如最大或者最小的 CPU、memory 需求；Namespace 层次就是对用户级别的资源限额了，包括 CPU、内存，还可以限定 POD、RC、Service 的数量。</p>
+<p>要使用资源配额的话需要确保<code>apiserver</code>的<code>--admission-control</code>参数中包含<code>ResourceQuota</code>，当 namespace 中存在一个 <code>ResourceQuota</code>对象时，该 namespace 即开始实施资源配额的管理工作了，另外需要注意的是一个 namespace 中最多只应存在一个 ResourceQuota 对象。</p>
+<p><code>ResourceQuotaController</code>支持的配额控制资源主要包括：计算资源配额、存储资源配额、对象数量资源配额以及配额作用域，下面我们来分别看看这些资源的具体信息：</p>
+<h3 id="计算资源配额"><a href="#计算资源配额" class="headerlink" title="计算资源配额"></a>计算资源配额</h3><p>用户可以对给定 namespace 下的<strong>计算资源</strong>总量进行限制，<code>ResourceQuotaController</code>所支持的资源类型如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">资源名称</th>
+<th style="text-align:left">描述信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">cpu</td>
+<td style="text-align:left">所有非终止状态的 POD 中，其 CPU 需求总量不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">limits.cpu</td>
+<td style="text-align:left">所有非终止状态的 POD 中，其 CPU 限额总量不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">memory</td>
+<td style="text-align:left">所有非终止状态的 POD 中，其内存需求总量不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">limits.memory</td>
+<td style="text-align:left">所有非终止状态的 POD 中，其内存限额总量不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">requests.cpu</td>
+<td style="text-align:left">所有非终止状态的 POD 中，其 CPU 需求总量不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">requests.memory</td>
+<td style="text-align:left">所有非终止状态的 POD 中，其内存需求总量不能超过该值</td>
+</tr>
+</tbody>
+</table>
+<p>示例如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">&lt;&lt;EOF</span> <span class="string">&gt; compute-resources.yaml</span></span><br><span class="line"><span class="string"></span><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ResourceQuota</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">compute-resources</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">myspace</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  hard:</span></span><br><span class="line">    <span class="string">requests.cpu:</span> <span class="string">"1"</span></span><br><span class="line">    <span class="string">requests.memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line">    <span class="string">limits.cpu:</span> <span class="string">"2"</span></span><br><span class="line">    <span class="string">limits.memory:</span> <span class="number">2</span><span class="string">Gi</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"><span class="string">$</span> <span class="string">kubectl</span> <span class="string">create</span> <span class="bullet">-f</span> <span class="string">compute-resources.yaml</span></span><br></pre></td></tr></table></figure>
+<p>然后我们查看下上面我们创建的 <code>ResourceQuota</code>对象：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl describe quota compute-resources -n myspace</span></span><br><span class="line">Name:            compute-resources</span><br><span class="line">Namespace:       myspace</span><br><span class="line">Resource         Used  Hard</span><br><span class="line">--------         ----  ----</span><br><span class="line">limits.cpu       0     2</span><br><span class="line">limits.memory    0     2Gi</span><br><span class="line">requests.cpu     0     1</span><br><span class="line">requests.memory  0     1Gi</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>另外需要注意的是：如果 namespace 下的计算资源 （如 cpu 和 memory）的配额被启用，则用户必须为这些资源设定请求值（request） 和约束值（limit），否则配额系统将拒绝Pod的创建；或者也可以为资源设置默认的资源限制，如下 yaml 文件：（同样需要在<code>--admission-control</code>参数中设置值<strong>LimitRanger</strong>）</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">LimitRange</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">limits</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  limits:</span></span><br><span class="line"><span class="attr">  - default:</span></span><br><span class="line"><span class="attr">    cpu:</span> <span class="number">200</span><span class="string">m</span></span><br><span class="line"><span class="attr">    memory:</span> <span class="number">200</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">Container</span></span><br></pre></td></tr></table></figure>
+<h3 id="存储资源配额"><a href="#存储资源配额" class="headerlink" title="存储资源配额"></a>存储资源配额</h3><p>用户可以对给定 namespace 下的<strong>存储资源</strong>总量进行限制，此外，还可以根据相关的存储类（Storage Class）来限制存储资源的消耗。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">资源名称</th>
+<th style="text-align:left">描述信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">requests.storage</td>
+<td style="text-align:left">所有的 PVC 中，存储资源的需求不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">persistentvolumecliaims</td>
+<td style="text-align:left">namespace 中所允许的 PVC 总量</td>
+</tr>
+<tr>
+<td style="text-align:left">.storageclass.storage.k8s.io/requests.storage</td>
+<td style="text-align:left">所有该 storage-class-name 相关的 PVC 中， 存储资源的需求不能超过该值</td>
+</tr>
+<tr>
+<td style="text-align:left">.storageclass.storage.k8s.io/persistentvolumeclaims</td>
+<td style="text-align:left">namespace 中所允许的该 storage-class-name 相关的 PVC 的总量</td>
+</tr>
+</tbody>
+</table>
+<h3 id="对象数量配额"><a href="#对象数量配额" class="headerlink" title="对象数量配额"></a>对象数量配额</h3><p>给定类型的对象数量可以被限制。 支持以下类型：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">资源名称</th>
+<th style="text-align:left">描述信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">configmaps</td>
+<td style="text-align:left">namespace 下允许存在的 configmap 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">persistentvolumeclaims</td>
+<td style="text-align:left">namespace 下允许存在的 PVC 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">pods</td>
+<td style="text-align:left">namespace 下允许存在的非终止状态的 POD 数量，如果 POD 的 status.phase 为 Failed 或 Succeeded，那么其处于终止状态</td>
+</tr>
+<tr>
+<td style="text-align:left">replicationcontrollers</td>
+<td style="text-align:left">namespace 下允许存在的 replication controllers 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">resourcequotas</td>
+<td style="text-align:left">namespace 下允许存在的 resource quotas 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">services</td>
+<td style="text-align:left">namespace 下允许存在的service的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">services.loadbalancers</td>
+<td style="text-align:left">namespace 下允许存在的 load balancer 类型的 service 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">services.nodeports</td>
+<td style="text-align:left">namespace 下允许存在的 node port 类型的 service 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">secrets</td>
+<td style="text-align:left">namespace 下允许存在的 secret 的数量</td>
+</tr>
+</tbody>
+</table>
+<p>如下示例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">&lt;&lt;EOF</span> <span class="string">&gt; object-counts.yaml</span></span><br><span class="line"><span class="string"></span><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ResourceQuota</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">object-counts</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">myspace</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  hard:</span></span><br><span class="line"><span class="attr">    pods:</span> <span class="string">"40"</span></span><br><span class="line"><span class="attr">    configmaps:</span> <span class="string">"10"</span></span><br><span class="line"><span class="attr">    replicationcontrollers:</span> <span class="string">"20"</span></span><br><span class="line"><span class="attr">    secrets:</span> <span class="string">"10"</span></span><br><span class="line"><span class="attr">    services:</span> <span class="string">"10"</span></span><br><span class="line">    <span class="string">services.nodeports:</span> <span class="string">"2"</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"><span class="string">$</span> <span class="string">kubectl</span> <span class="string">create</span> <span class="bullet">-f</span> <span class="string">object-counts.yaml</span></span><br></pre></td></tr></table></figure>
+<p>同样可以查看上面创建的资源限额对象：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl describe quota object-counts -n myspace</span></span><br><span class="line">Name:                   object-counts</span><br><span class="line">Namespace:              myspace</span><br><span class="line">Resource                Used  Hard</span><br><span class="line">--------                ----  ----</span><br><span class="line">configmaps              0     10</span><br><span class="line">pods                    0     40</span><br><span class="line">replicationcontrollers  0     20</span><br><span class="line">secrets                 1     10</span><br><span class="line">services                0     10</span><br><span class="line">services.nodeports      0     2</span><br></pre></td></tr></table></figure>
+<h3 id="配额作用域"><a href="#配额作用域" class="headerlink" title="配额作用域"></a>配额作用域</h3><p>每个配额都有一组相关的作用域（scope），配额只会对作用域内的资源生效。当一个作用域被添加到配额中后，它会对作用域相关的资源数量作限制。 如配额中指定了允许（作用域）集合之外的资源，会导致验证错误。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">作用域</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Terminating</td>
+<td style="text-align:left">匹配 spec.activeDeadlineSeconds &gt;= 0 的 POD</td>
+</tr>
+<tr>
+<td style="text-align:left">NotTerminating</td>
+<td style="text-align:left">匹配 spec.activeDeadlineSeconds is nil 的 POD</td>
+</tr>
+<tr>
+<td style="text-align:left">BestEffort</td>
+<td style="text-align:left">匹配<code>尽力而为（best effort)</code>服务类型的 POD</td>
+</tr>
+<tr>
+<td style="text-align:left">NotBestEffort</td>
+<td style="text-align:left">匹配非<code>尽力而为（best effort)</code>服务类型的 POD</td>
+</tr>
+</tbody>
+</table>
+<p>其中<code>BestEffort</code> 作用域限制配额跟踪以下资源： PODS</p>
+<p><code>Terminating</code>、 <code>NotTerminating</code> 和 <code>NotBestEffort</code>限制配额跟踪以下资源：cpu、limits.cpu、limits.memory、memory、pods、requests.cpu、requests.memory。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>物理资源 CPU 和内存受到 namespace 资源配额管理器的控制，几乎所有使用到的资源都能够被简单的调整，我们可以结合我们自身的业务和物理资源实际情况来进行分配配额，所以这里没有一个完全通用的配额方案，需要根据实际情况来定，因为只有你自己最清楚你的集群的整体情况了。</p>
+<hr>
+<p><strong>参考资料</strong></p>
+<p><a href="https://kubernetes.io/docs/tasks/administer-cluster/quota-memory-cpu-namespace/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/administer-cluster/quota-memory-cpu-namespace/</a><br><a href="https://kubernetes.io/docs/tasks/administer-cluster/quota-api-object/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/administer-cluster/quota-api-object/</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/11/100099.html" class="pre-post btn btn-default" title='kubernetes常用对象操作之 一.RC(Replication-Controller)、RS(Replica-Set)'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">kubernetes常用对象操作之 一.RC(Replication-Controller)、RS(Replica-Set)</span>
+        </a>
+    
+    
+        <a href="/archives/2018/11/100095.html" class="next-post btn btn-default" title='Kubernetes调度器之 二.亲和性调度'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Kubernetes调度器之 二.亲和性调度</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#计算资源配额"><span class="toc-text">计算资源配额</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存储资源配额"><span class="toc-text">存储资源配额</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象数量配额"><span class="toc-text">对象数量配额</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配额作用域"><span class="toc-text">配额作用域</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,java">
+
+
+    <meta name="description" content="为什么有这个东西，一方面时AOP框架的需要，另一方面是增加软件逆向的难度
+动态生成类的技术目前大体上分为两类，一类是通过操作字节码框架如cglib/Javassist去实现，另一类就是JNI方式...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Java逆向基础之十四.动态生成类 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Java逆向基础之十四.动态生成类">
+            
+	            Java逆向基础之十四.动态生成类
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/09/14</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1665</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>为什么有这个东西，一方面时AOP框架的需要，另一方面是增加软件逆向的难度</p>
+<p>动态生成类的技术目前大体上分为两类，一类是通过操作字节码框架如cglib/Javassist去实现，另一类就是JNI方式，调用dll/so库，内存中动态还原。这两种方式都能实现隐藏类</p>
+<h2 id="1-看一个Javassist动态生成类的例子"><a href="#1-看一个Javassist动态生成类的例子" class="headerlink" title="1. 看一个Javassist动态生成类的例子"></a>1. 看一个Javassist动态生成类的例子</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.vvvtimes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Modifier;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javassist.ClassPool;</span><br><span class="line"><span class="keyword">import</span> javassist.CtClass;</span><br><span class="line"><span class="keyword">import</span> javassist.CtConstructor;</span><br><span class="line"><span class="keyword">import</span> javassist.CtField;</span><br><span class="line"><span class="keyword">import</span> javassist.CtMethod;</span><br><span class="line"><span class="keyword">import</span> javassist.CtNewMethod;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicGenerateClass</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// ClassPool：CtClass对象的容器</span></span><br><span class="line">		ClassPool pool = ClassPool.getDefault();</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 通过ClassPool生成一个public新类Employee.java</span></span><br><span class="line">		CtClass ctClass = pool.makeClass(<span class="string">"com.vvvtimes.bean.Employee"</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 添加字段</span></span><br><span class="line">		<span class="comment">// 首先添加字段private String ename</span></span><br><span class="line">		CtField enameField = <span class="keyword">new</span> CtField(pool.getCtClass(<span class="string">"java.lang.String"</span>), <span class="string">"ename"</span>, ctClass);</span><br><span class="line">		enameField.setModifiers(Modifier.PRIVATE);</span><br><span class="line">		ctClass.addField(enameField);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 其次添加字段privtae int eage</span></span><br><span class="line">		CtField eageField = <span class="keyword">new</span> CtField(pool.getCtClass(<span class="string">"int"</span>), <span class="string">"eage"</span>, ctClass);</span><br><span class="line">		eageField.setModifiers(Modifier.PRIVATE);</span><br><span class="line">		ctClass.addField(eageField);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 其次添加字段privtae int eage</span></span><br><span class="line">		CtField esexField = <span class="keyword">new</span> CtField(pool.getCtClass(<span class="string">"int"</span>), <span class="string">"esex"</span>, ctClass);</span><br><span class="line">		esexField.setModifiers(Modifier.PRIVATE);</span><br><span class="line">		ctClass.addField(esexField);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 为字段ename和eno添加getter和setter方法</span></span><br><span class="line">		ctClass.addMethod(CtNewMethod.getter(<span class="string">"getEname"</span>, enameField));</span><br><span class="line">		ctClass.addMethod(CtNewMethod.setter(<span class="string">"setEname"</span>, enameField));</span><br><span class="line">		ctClass.addMethod(CtNewMethod.getter(<span class="string">"getEage"</span>, eageField));</span><br><span class="line">		ctClass.addMethod(CtNewMethod.setter(<span class="string">"setEage"</span>, eageField));</span><br><span class="line">		ctClass.addMethod(CtNewMethod.getter(<span class="string">"getSex"</span>, esexField));</span><br><span class="line">		ctClass.addMethod(CtNewMethod.setter(<span class="string">"setSex"</span>, esexField));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 添加构造函数</span></span><br><span class="line">		CtConstructor ctConstructor = <span class="keyword">new</span> CtConstructor(<span class="keyword">new</span> CtClass[] &#123;&#125;, ctClass);</span><br><span class="line">		<span class="comment">// 为构造函数设置函数体</span></span><br><span class="line">		StringBuffer buffer = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">		buffer.append(<span class="string">"&#123;\n"</span>).append(<span class="string">"ename=\"gsls200808\";\n"</span>).append(<span class="string">"eage=25;\n"</span>).append(<span class="string">"esex=1;\n&#125;"</span>);</span><br><span class="line">		ctConstructor.setBody(buffer.toString());</span><br><span class="line">		<span class="comment">// 把构造函数添加到新的类中</span></span><br><span class="line">		ctClass.addConstructor(ctConstructor);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 添加自定义方法</span></span><br><span class="line">		CtMethod ctMethod = <span class="keyword">new</span> CtMethod(CtClass.voidType, <span class="string">"printInfo"</span>, <span class="keyword">new</span> CtClass[] &#123;&#125;, ctClass);</span><br><span class="line">		<span class="comment">// 为自定义方法设置修饰符</span></span><br><span class="line">		ctMethod.setModifiers(Modifier.PUBLIC);</span><br><span class="line">		<span class="comment">// 为自定义方法设置函数体</span></span><br><span class="line">		StringBuffer buffer2 = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">		buffer2.append(<span class="string">"&#123;\n"</span>).append(<span class="string">"System.out.println(\"begin!\");\n"</span>)</span><br><span class="line">				.append(<span class="string">"System.out.println(\"name=\"+ename);\n"</span>).append(<span class="string">"System.out.println(\"age=\"+eage);\n"</span>)</span><br><span class="line">				.append(<span class="string">"System.out.println(\"sex=\"+esex);\n"</span>).append(<span class="string">"System.out.println(\"end!\");\n"</span>).append(<span class="string">"&#125;"</span>);</span><br><span class="line">		ctMethod.setBody(buffer2.toString());</span><br><span class="line">		ctClass.addMethod(ctMethod);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 为了验证效果，下面使用反射执行方法printInfo</span></span><br><span class="line">		Class&lt;?&gt; clazz = ctClass.toClass();</span><br><span class="line">		Object obj = clazz.newInstance();</span><br><span class="line">		obj.getClass().getMethod(<span class="string">"printInfo"</span>, <span class="keyword">new</span> Class[] &#123;&#125;).invoke(obj, <span class="keyword">new</span> Object[] &#123;&#125;);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要引用的第三方jar：<a href="http://central.maven.org/maven2/org/javassist/javassist/3.20.0-GA/javassist-3.20.0-GA.jar" target="_blank" rel="noopener">javassist-3.20.0-GA.jar</a></p>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">begin!</span><br><span class="line">name=gsls200808</span><br><span class="line">age=25</span><br><span class="line">sex=1</span><br><span class="line">end!</span><br></pre></td></tr></table></figure>
+<p>代码的意思相当于在内存中创建了一个名为com.vvvtimes.bean.Employee的类，并通过反射方式调用了printInfo方法进行输出。</p>
+<p>这个类的内容大致如下，只不过我们在上面是动态生成的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.vvvtimes.bean;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String ename = <span class="string">"gsls200808"</span>;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> eage = <span class="number">25</span>;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> esex = <span class="number">1</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getEname</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.ename;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEname</span><span class="params">(String paramString)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.ename = paramString;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getEage</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.eage;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEage</span><span class="params">(<span class="keyword">int</span> paramInt)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.eage = paramInt;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSex</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.esex;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSex</span><span class="params">(<span class="keyword">int</span> paramInt)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.esex = paramInt;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printInfo</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"begin!"</span>);</span><br><span class="line">    System.out.println(<span class="string">"name="</span> + <span class="keyword">this</span>.ename);</span><br><span class="line">    System.out.println(<span class="string">"age="</span> + <span class="keyword">this</span>.eage);</span><br><span class="line">    System.out.println(<span class="string">"sex="</span> + <span class="keyword">this</span>.esex);</span><br><span class="line">    System.out.println(<span class="string">"end!"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在后续文章中我们会讲如何获取内存中的类</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/09/100028.html" class="pre-post btn btn-default" title='Java逆向基础之十五.初识javaagent'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Java逆向基础之十五.初识javaagent</span>
+        </a>
+    
+    
+        <a href="/archives/2018/09/100026.html" class="next-post btn btn-default" title='字节码操纵技术探秘'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">字节码操纵技术探秘</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-看一个Javassist动态生成类的例子"><span class="toc-text">1. 看一个Javassist动态生成类的例子</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

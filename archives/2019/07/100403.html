@@ -1,0 +1,556 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,spark,rdds">
+
+
+    <meta name="description" content="一、Transformationspark常用的Transformation算子如下表：
+
+
+
+Transformation算子
+Meaning（含义）
+
+
+
+
+map(func)
+对原RDD中...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark Transformation 和 Action 常用算子 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark Transformation 和 Action 常用算子">
+            
+	            Spark Transformation 和 Action 常用算子
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/rdds/">rdds</a> <a class="tag-link" href="/tags/spark/">spark</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/10</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1366</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、Transformation"><a href="#一、Transformation" class="headerlink" title="一、Transformation"></a>一、Transformation</h2><p>spark常用的Transformation算子如下表：</p>
+<table>
+<thead>
+<tr>
+<th>Transformation算子</th>
+<th>Meaning（含义）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>map</strong>(<em>func</em>)</td>
+<td>对原RDD中每个元素运用 <em>func</em> 函数，并生成新的RDD</td>
+</tr>
+<tr>
+<td><strong>filter</strong>(<em>func</em>)</td>
+<td>对原RDD中每个元素使用<em>func</em> 函数进行过滤，并生成新的RDD</td>
+</tr>
+<tr>
+<td><strong>flatMap</strong>(<em>func</em>)</td>
+<td>与 map 类似，但是每一个输入的 item 被映射成 0 个或多个输出的 items（ <em>func</em> 返回类型需要为 Seq ）。</td>
+</tr>
+<tr>
+<td><strong>mapPartitions</strong>(<em>func</em>)</td>
+<td>与 map 类似，但函数单独在RDD的每个分区上运行， <em>func</em>函数的类型为  Iterator\<t> =&gt; Iterator\<u> ，其中T是RDD的类型，即RDD[T]</u></t></td>
+</tr>
+<tr>
+<td><strong>mapPartitionsWithIndex</strong>(<em>func</em>)</td>
+<td>与 mapPartitions 类似，但 <em>func</em> 类型为 (Int, Iterator\<t>) =&gt; Iterator\<u> ，其中第一个参数为分区索引</u></t></td>
+</tr>
+<tr>
+<td><strong>sample</strong>(<em>withReplacement</em>, <em>fraction</em>, <em>seed</em>)</td>
+<td>数据采样，有三个可选参数：设置是否放回（withReplacement）、采样的百分比（<em>fraction</em>）、随机数生成器的种子（seed）；</td>
+</tr>
+<tr>
+<td><strong>union</strong>(<em>otherDataset</em>)</td>
+<td>合并两个RDD</td>
+</tr>
+<tr>
+<td><strong>intersection</strong>(<em>otherDataset</em>)</td>
+<td>求两个RDD的交集</td>
+</tr>
+<tr>
+<td><strong>distinct</strong>([<em>numTasks</em>]))</td>
+<td>去重</td>
+</tr>
+<tr>
+<td><strong>groupByKey</strong>([<em>numTasks</em>])</td>
+<td>按照key值进行分区，即在一个 (K, V) 对的 dataset 上调用时，返回一个 (K, Iterable\<v>) <br><strong>Note:</strong> 如果分组是为了在每一个 key 上执行聚合操作（例如，sum 或 average)，此时使用 <code>reduceByKey</code> 或 <code>aggregateByKey</code> 性能会更好<br><strong>Note:</strong> 默认情况下，并行度取决于父 RDD 的分区数。可以传入 <code>numTasks</code> 参数进行修改。</v></td>
+</tr>
+<tr>
+<td><strong>reduceByKey</strong>(<em>func</em>, [<em>numTasks</em>])</td>
+<td>按照key值进行分组，并对分组后的数据执行归约操作。</td>
+</tr>
+<tr>
+<td><strong>aggregateByKey</strong>(<em>zeroValue</em>,<em>numPartitions</em>)(<em>seqOp</em>, <em>combOp</em>, [<em>numTasks</em>])</td>
+<td>当调用（K，V）对的数据集时，返回（K，U）对的数据集，其中使用给定的组合函数和zeroValue聚合每个键的值。与groupByKey类似，reduce任务的数量可通过第二个参数进行配置。</td>
+</tr>
+<tr>
+<td><strong>sortByKey</strong>([<em>ascending</em>], [<em>numTasks</em>])</td>
+<td>按照key进行排序，其中的key需要实现Ordered特质，即可比较</td>
+</tr>
+<tr>
+<td><strong>join</strong>(<em>otherDataset</em>, [<em>numTasks</em>])</td>
+<td>在一个 (K, V) 和 (K, W) 类型的 dataset 上调用时，返回一个 (K, (V, W)) pairs 的 dataset，等价于内连接操作。如果想要执行外连接，可以使用<code>leftOuterJoin</code>, <code>rightOuterJoin</code> 和 <code>fullOuterJoin</code> 等算子。</td>
+</tr>
+<tr>
+<td><strong>cogroup</strong>(<em>otherDataset</em>, [<em>numTasks</em>])</td>
+<td>在一个 (K, V) 对的 dataset 上调用时，返回一个 (K, (Iterable\<v>, Iterable\<w>)) tuples 的 dataset。</w></v></td>
+</tr>
+<tr>
+<td><strong>cartesian</strong>(<em>otherDataset</em>)</td>
+<td>在一个 T 和 U 类型的 dataset 上调用时，返回一个 (T, U) 类型的 dataset（即笛卡尔积）。</td>
+</tr>
+<tr>
+<td><strong>coalesce</strong>(<em>numPartitions</em>)</td>
+<td>将RDD中的分区数减少为numPartitions。</td>
+</tr>
+<tr>
+<td><strong>repartition</strong>(<em>numPartitions</em>)</td>
+<td>随机重新调整RDD中的数据以创建更多或更少的分区，并在它们之间进行平衡。</td>
+</tr>
+<tr>
+<td><strong>repartitionAndSortWithinPartitions</strong>(<em>partitioner</em>)</td>
+<td>根据给定的 partitioner（分区器）对 RDD 进行重新分区，并对分区中的数据按照 key 值进行排序。这比调用 <code>repartition</code> 然后再 sorting（排序）效率更高，因为它可以将排序过程推送到 shuffle 操作所在的机器。</td>
+</tr>
+</tbody>
+</table>
+<p>下面分别给出这些算子的基本使用示例：</p>
+<h3 id="1-1-map"><a href="#1-1-map" class="headerlink" title="1.1 map"></a>1.1 map</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br><span class="line">sc.parallelize(<span class="type">list</span>).map(_ * <span class="number">10</span>).foreach(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出结果： 10 20 30 （这里为了节省篇幅去掉了换行,后文亦同）</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2-filter"><a href="#1-2-filter" class="headerlink" title="1.2 filter"></a>1.2 filter</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List(<span class="number">3</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">12</span>, <span class="number">21</span>)</span><br><span class="line">sc.parallelize(<span class="type">list</span>).filter(_ &gt;= <span class="number">10</span>).foreach(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出： 10 12 21</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-3-flatMap"><a href="#1-3-flatMap" class="headerlink" title="1.3 flatMap"></a>1.3 flatMap</h3><p><code>flatMap(func)</code>与<code>map</code>类似，但每一个输入的item会被映射成 0 个或多个输出的items（ <em>func</em> 返回类型需要为<code>Seq</code>）。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val <span class="keyword">list</span> = <span class="keyword">List</span>(<span class="keyword">List</span>(1, 2), <span class="keyword">List</span>(3), <span class="keyword">List</span>(), <span class="keyword">List</span>(4, 5))</span><br><span class="line"><span class="keyword">sc</span>.parallelize(<span class="keyword">list</span>).flatMap(_.toList).map(_ * 10).<span class="keyword">foreach</span>(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出结果 ： 10 20 30 40 50</span></span><br></pre></td></tr></table></figure>
+<p>flatMap 这个算子在日志分析中使用概率非常高，这里进行一下演示：拆分输入的每行数据为单个单词，并赋值为1，代表出现一次，之后按照单词分组并统计其出现总次数，代码如下：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">val <span class="keyword">lines</span> = List(<span class="string">"spark flume spark"</span>,</span><br><span class="line">                 <span class="string">"hadoop flume hive"</span>)</span><br><span class="line">sc.parallelize(<span class="keyword">lines</span>).flatMap(<span class="built_in">line</span> =&gt; <span class="built_in">line</span>.<span class="built_in">split</span>(<span class="string">" "</span>)).</span><br><span class="line">map(<span class="built_in">word</span>=&gt;(<span class="built_in">word</span>,<span class="number">1</span>)).reduceByKey(_+_).foreach(println)</span><br><span class="line"></span><br><span class="line">// 输出：</span><br><span class="line">(spark,<span class="number">2</span>)</span><br><span class="line">(hive,<span class="number">1</span>)</span><br><span class="line">(hadoop,<span class="number">1</span>)</span><br><span class="line">(flume,<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-mapPartitions"><a href="#1-4-mapPartitions" class="headerlink" title="1.4 mapPartitions"></a>1.4 mapPartitions</h3><p>与 map 类似，但函数单独在RDD的每个分区上运行， <em>func</em>函数的类型为<code>Iterator&lt;T&gt; =&gt; Iterator&lt;U&gt;</code> (其中T是RDD的类型)，即输入和输出都必须是可迭代类型。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">sc.parallelize(<span class="type">list</span>, <span class="number">3</span>).mapPartitions(iterator =&gt; &#123;</span><br><span class="line">  val buffer = new ListBuffer[Int]</span><br><span class="line">  while (iterator.hasNext) &#123;</span><br><span class="line">    buffer.append(iterator.next() * <span class="number">100</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  buffer.toIterator</span><br><span class="line">&#125;).foreach(println)</span><br><span class="line"><span class="comment">//输出结果</span></span><br><span class="line"><span class="number">100</span> <span class="number">200</span> <span class="number">300</span> <span class="number">400</span> <span class="number">500</span> <span class="number">600</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-5-mapPartitionsWithIndex"><a href="#1-5-mapPartitionsWithIndex" class="headerlink" title="1.5 mapPartitionsWithIndex"></a>1.5 mapPartitionsWithIndex</h3><p>  与 mapPartitions 类似，但 <em>func</em> 类型为<code>(Int, Iterator&lt;T&gt;) =&gt; Iterator&lt;U&gt;</code> ，其中第一个参数为分区索引。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">val <span class="keyword">list</span> = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">sc.parallelize(<span class="keyword">list</span>, <span class="number">3</span>).mapPartitionsWithIndex((<span class="built_in">index</span>, iterator) =&gt; &#123;</span><br><span class="line">  val <span class="keyword">buffer</span> = <span class="keyword">new</span> ListBuffer[String]</span><br><span class="line">  <span class="keyword">while</span> (iterator.hasNext) &#123;</span><br><span class="line">    <span class="keyword">buffer</span>.<span class="keyword">append</span>(<span class="built_in">index</span> + <span class="string">"分区:"</span> + iterator.<span class="keyword">next</span>() * <span class="number">100</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">buffer</span>.toIterator</span><br><span class="line">&#125;).foreach(println)</span><br><span class="line">//输出</span><br><span class="line"><span class="number">0</span>分区:<span class="number">100</span></span><br><span class="line"><span class="number">0</span>分区:<span class="number">200</span></span><br><span class="line"><span class="number">1</span>分区:<span class="number">300</span></span><br><span class="line"><span class="number">1</span>分区:<span class="number">400</span></span><br><span class="line"><span class="number">2</span>分区:<span class="number">500</span></span><br><span class="line"><span class="number">2</span>分区:<span class="number">600</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-6-sample"><a href="#1-6-sample" class="headerlink" title="1.6 sample"></a>1.6 sample</h3><p>  数据采样。有三个可选参数：设置是否放回(withReplacement)、采样的百分比(fraction)、随机数生成器的种子(seed) ：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">sc.parallelize(<span class="type">list</span>).sample(withReplacement = false, fraction = <span class="number">0.5</span>).foreach(println)</span><br></pre></td></tr></table></figure>
+<h3 id="1-7-union"><a href="#1-7-union" class="headerlink" title="1.7 union"></a>1.7 union</h3><p>合并两个RDD：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val list1 = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">val list2 = List(<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">sc.parallelize(list1).union(sc.parallelize(list2)).foreach(println)</span><br><span class="line"><span class="comment">// 输出: 1 2 3 4 5 6</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-8-intersection"><a href="#1-8-intersection" class="headerlink" title="1.8 intersection"></a>1.8 intersection</h3><p>求两个RDD的交集：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val list1 = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</span><br><span class="line">val list2 = List(<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</span><br><span class="line">sc.parallelize(list1).intersection(sc.parallelize(list2)).foreach(println)</span><br><span class="line"><span class="comment">// 输出:  4 5</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-9-distinct"><a href="#1-9-distinct" class="headerlink" title="1.9 distinct"></a>1.9 distinct</h3><p>去重：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">4</span>)</span><br><span class="line">sc.parallelize(<span class="type">list</span>).distinct().foreach(println)</span><br><span class="line"><span class="comment">// 输出: 4 1 2</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-10-groupByKey"><a href="#1-10-groupByKey" class="headerlink" title="1.10 groupByKey"></a>1.10 groupByKey</h3><p>按照键进行分组：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List((<span class="string">"hadoop"</span>, <span class="number">2</span>), (<span class="string">"spark"</span>, <span class="number">3</span>), (<span class="string">"spark"</span>, <span class="number">5</span>), (<span class="string">"storm"</span>, <span class="number">6</span>), (<span class="string">"hadoop"</span>, <span class="number">2</span>))</span><br><span class="line">sc.parallelize(<span class="type">list</span>).groupByKey().map(x =&gt; (x._1, x._2.toList)).foreach(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line">(spark,List(<span class="number">3</span>, <span class="number">5</span>))</span><br><span class="line">(hadoop,List(<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line">(storm,List(<span class="number">6</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="1-11-reduceByKey"><a href="#1-11-reduceByKey" class="headerlink" title="1.11 reduceByKey"></a>1.11 reduceByKey</h3><p>按照键进行归约操作：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List((<span class="string">"hadoop"</span>, <span class="number">2</span>), (<span class="string">"spark"</span>, <span class="number">3</span>), (<span class="string">"spark"</span>, <span class="number">5</span>), (<span class="string">"storm"</span>, <span class="number">6</span>), (<span class="string">"hadoop"</span>, <span class="number">2</span>))</span><br><span class="line">sc.parallelize(<span class="type">list</span>).reduceByKey(_ + _).foreach(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">(spark,<span class="number">8</span>)</span><br><span class="line">(hadoop,<span class="number">4</span>)</span><br><span class="line">(storm,<span class="number">6</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="1-12-sortBy-amp-sortByKey"><a href="#1-12-sortBy-amp-sortByKey" class="headerlink" title="1.12 sortBy &amp; sortByKey"></a>1.12 sortBy &amp; sortByKey</h3><p>按照键进行排序：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val list<span class="number">01</span> = List<span class="comment">((100, "hadoop")</span>, <span class="comment">(90, "spark")</span>, <span class="comment">(120, "storm")</span>)</span><br><span class="line">sc.parallelize<span class="comment">(list01)</span>.sortByKey<span class="comment">(ascending = false)</span>.foreach<span class="comment">(println)</span></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="comment">(120,storm)</span></span><br><span class="line"><span class="comment">(90,spark)</span></span><br><span class="line"><span class="comment">(100,hadoop)</span></span><br></pre></td></tr></table></figure>
+<p>按照指定元素进行排序：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val list<span class="number">02</span> = List<span class="comment">(("hadoop",100)</span>, <span class="comment">("spark",90)</span>, <span class="comment">("storm",120)</span>)</span><br><span class="line">sc.parallelize<span class="comment">(list02)</span>.sortBy<span class="comment">(x=&gt;x._2,ascending=false)</span>.foreach<span class="comment">(println)</span></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line"><span class="comment">(storm,120)</span></span><br><span class="line"><span class="comment">(hadoop,100)</span></span><br><span class="line"><span class="comment">(spark,90)</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-13-join"><a href="#1-13-join" class="headerlink" title="1.13 join"></a>1.13 join</h3><p>在一个 (K, V) 和 (K, W) 类型的 Dataset 上调用时，返回一个 (K, (V, W)) 的 Dataset，等价于内连接操作。如果想要执行外连接，可以使用<code>leftOuterJoin</code>, <code>rightOuterJoin</code> 和 <code>fullOuterJoin</code> 等算子。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">val list01 = List((<span class="number">1</span>, <span class="string">"student01"</span>), (<span class="number">2</span>, <span class="string">"student02"</span>), (<span class="number">3</span>, <span class="string">"student03"</span>))</span><br><span class="line">val list02 = List((<span class="number">1</span>, <span class="string">"teacher01"</span>), (<span class="number">2</span>, <span class="string">"teacher02"</span>), (<span class="number">3</span>, <span class="string">"teacher03"</span>))</span><br><span class="line">sc.parallelize(list01).join(sc.parallelize(list02)).foreach(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">(<span class="number">1</span>,(student01,teacher01))</span><br><span class="line">(<span class="number">3</span>,(student03,teacher03))</span><br><span class="line">(<span class="number">2</span>,(student02,teacher02))</span><br></pre></td></tr></table></figure>
+<h3 id="1-14-cogroup"><a href="#1-14-cogroup" class="headerlink" title="1.14 cogroup"></a>1.14 cogroup</h3><p>在一个 (K, V) 对的 Dataset 上调用时，返回多个类型为 (K, (Iterable\<v>, Iterable\<w>)) 的元组所组成的Dataset。</w></v></p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">val list<span class="number">01</span> = List<span class="comment">((1, "a")</span>,<span class="comment">(1, "a")</span>, <span class="comment">(2, "b")</span>, <span class="comment">(3, "e")</span>)</span><br><span class="line">val list<span class="number">02</span> = List<span class="comment">((1, "A")</span>, <span class="comment">(2, "B")</span>, <span class="comment">(3, "E")</span>)</span><br><span class="line">val list<span class="number">03</span> = List<span class="comment">((1, "[ab]")</span>, <span class="comment">(2, "[bB]")</span>, <span class="comment">(3, "eE")</span>,<span class="comment">(3, "eE")</span>)</span><br><span class="line">sc.parallelize<span class="comment">(list01)</span>.cogroup<span class="comment">(sc.parallelize(list02)</span>,sc.parallelize<span class="comment">(list03)</span>).foreach<span class="comment">(println)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出： 同一个RDD中的元素先按照key进行分组，然后再对不同RDD中的元素按照key进行分组</span></span><br><span class="line"><span class="comment">(1,(CompactBuffer(a, a)</span>,CompactBuffer<span class="comment">(A)</span>,CompactBuffer<span class="comment">([ab])</span>))</span><br><span class="line"><span class="comment">(3,(CompactBuffer(e)</span>,CompactBuffer<span class="comment">(E)</span>,CompactBuffer<span class="comment">(eE, eE)</span>))</span><br><span class="line"><span class="comment">(2,(CompactBuffer(b)</span>,CompactBuffer<span class="comment">(B)</span>,CompactBuffer<span class="comment">([bB])</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="1-15-cartesian"><a href="#1-15-cartesian" class="headerlink" title="1.15 cartesian"></a>1.15 cartesian</h3><p>计算笛卡尔积：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">val list1 = List(<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>)</span><br><span class="line">val list2 = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">sc.parallelize(list1).cartesian(sc.parallelize(list2)).foreach(println)</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出笛卡尔积</span></span><br><span class="line">(A,<span class="number">1</span>)</span><br><span class="line">(A,<span class="number">2</span>)</span><br><span class="line">(A,<span class="number">3</span>)</span><br><span class="line">(B,<span class="number">1</span>)</span><br><span class="line">(B,<span class="number">2</span>)</span><br><span class="line">(B,<span class="number">3</span>)</span><br><span class="line">(C,<span class="number">1</span>)</span><br><span class="line">(C,<span class="number">2</span>)</span><br><span class="line">(C,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="1-16-aggregateByKey"><a href="#1-16-aggregateByKey" class="headerlink" title="1.16 aggregateByKey"></a>1.16 aggregateByKey</h3><p>当调用（K，V）对的数据集时，返回（K，U）对的数据集，其中使用给定的组合函数和zeroValue聚合每个键的值。与<code>groupByKey</code>类似，reduce任务的数量可通过第二个参数<code>numPartitions</code>进行配置。示例如下：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为了清晰，以下所有参数均使用具名传参</span></span><br><span class="line">val <span class="type">list</span> = List((<span class="string">"hadoop"</span>, <span class="number">3</span>), (<span class="string">"hadoop"</span>, <span class="number">2</span>), (<span class="string">"spark"</span>, <span class="number">4</span>), (<span class="string">"spark"</span>, <span class="number">3</span>), (<span class="string">"storm"</span>, <span class="number">6</span>), (<span class="string">"storm"</span>, <span class="number">8</span>))</span><br><span class="line">sc.parallelize(<span class="type">list</span>,numSlices = <span class="number">2</span>).aggregateByKey(zeroValue = <span class="number">0</span>,numPartitions = <span class="number">3</span>)(</span><br><span class="line">      seqOp = math.max(_, _),</span><br><span class="line">      combOp = _ + _</span><br><span class="line">    ).collect.foreach(println)</span><br><span class="line"><span class="comment">//输出结果：</span></span><br><span class="line">(hadoop,<span class="number">3</span>)</span><br><span class="line">(storm,<span class="number">8</span>)</span><br><span class="line">(spark,<span class="number">7</span>)</span><br></pre></td></tr></table></figure>
+<p>这里使用了<code>numSlices = 2</code>指定aggregateByKey父操作parallelize的分区数量为2，其执行流程如下：</p>
+<div align="center"> <img src="/img/bigdata/spark-aggregateByKey.png"> </div>
+
+<p>基于同样的执行流程，如果<code>numSlices = 1</code>，则意味着只有输入一个分区，则其最后一步combOp相当于是无效的，执行结果为：</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">hadoop</span>,<span class="number">3</span>)</span><br><span class="line">(<span class="name">storm</span>,<span class="number">8</span>)</span><br><span class="line">(<span class="name">spark</span>,<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+<p>同样的，如果每个单词对一个分区，即<code>numSlices = 6</code>，此时相当于求和操作，执行结果为：</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">hadoop</span>,<span class="number">5</span>)</span><br><span class="line">(<span class="name">storm</span>,<span class="number">14</span>)</span><br><span class="line">(<span class="name">spark</span>,<span class="number">7</span>)</span><br></pre></td></tr></table></figure>
+<p><code>aggregateByKey(zeroValue = 0,numPartitions = 3)</code>的第二个参数<code>numPartitions</code>决定的是输出RDD的分区数量，想要验证这个问题，可以对上面代码进行改写，使用<code>getNumPartitions</code>方法获取分区数量：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sc.parallelize<span class="params">(list,<span class="attr">numSlices</span> = 6)</span><span class="string">.aggregateByKey</span><span class="params">(<span class="attr">zeroValue</span> = 0,<span class="attr">numPartitions</span> = 3)</span><span class="params">(</span></span><br><span class="line"><span class="params">  <span class="attr">seqOp</span> = math.max(_, _)</span>,</span><br><span class="line">  combOp = _ + _</span><br><span class="line">)<span class="string">.getNumPartitions</span></span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/spark-getpartnum.png"> </div>
+
+<h2 id="二、Action"><a href="#二、Action" class="headerlink" title="二、Action"></a>二、Action</h2><p>Spark常用的Action算子如下：</p>
+<table>
+<thead>
+<tr>
+<th>Action（动作）</th>
+<th>Meaning（含义）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>reduce</strong>(<em>func</em>)</td>
+<td>使用函数<em>func</em>执行归约操作</td>
+</tr>
+<tr>
+<td><strong>collect</strong>()</td>
+<td>以一个 array 数组的形式返回 dataset 的所有元素，适用于小结果集。</td>
+</tr>
+<tr>
+<td><strong>count</strong>()</td>
+<td>返回 dataset 中元素的个数。</td>
+</tr>
+<tr>
+<td><strong>first</strong>()</td>
+<td>返回 dataset 中的第一个元素，等价于 take(1)。</td>
+</tr>
+<tr>
+<td><strong>take</strong>(<em>n</em>)</td>
+<td>将数据集中的前 <em>n</em> 个元素作为一个 array 数组返回。</td>
+</tr>
+<tr>
+<td><strong>takeSample</strong>(<em>withReplacement</em>, <em>num</em>, [<em>seed</em>])</td>
+<td>对一个 dataset 进行随机抽样</td>
+</tr>
+<tr>
+<td><strong>takeOrdered</strong>(<em>n</em>, <em>[ordering]</em>)</td>
+<td>按自然顺序（natural order）或自定义比较器（custom comparator）排序后返回前 <em>n</em> 个元素。只适用于小结果集，因为所有数据都会被加载到驱动程序的内存中进行排序。</td>
+</tr>
+<tr>
+<td><strong>saveAsTextFile</strong>(<em>path</em>)</td>
+<td>将 dataset 中的元素以文本文件的形式写入本地文件系统、HDFS 或其它 Hadoop 支持的文件系统中。Spark 将对每个元素调用 toString 方法，将元素转换为文本文件中的一行记录。</td>
+</tr>
+<tr>
+<td><strong>saveAsSequenceFile</strong>(<em>path</em>)</td>
+<td>将 dataset 中的元素以Hadoop SequenceFile 的形式写入到本地文件系统、HDFS 或其它 Hadoop 支持的文件系统中。该操作要求RDD中的元素需要实现 Hadoop 的 Writable 接口。对于Scala语言而言，它可以将Spark中的基本数据类型自动隐式转换为对应Writable类型。(目前仅支持Java and Scala)</td>
+</tr>
+<tr>
+<td><strong>saveAsObjectFile</strong>(<em>path</em>)</td>
+<td>使用 Java 序列化后存储，可以使用 <code>SparkContext.objectFile()</code> 进行加载。(目前仅支持Java and Scala)</td>
+</tr>
+<tr>
+<td><strong>countByKey</strong>()</td>
+<td>计算每个键出现的次数。</td>
+</tr>
+<tr>
+<td><strong>foreach</strong>(<em>func</em>)</td>
+<td>遍历RDD中每个元素，并对其执行<em>fun</em>函数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-1-reduce"><a href="#2-1-reduce" class="headerlink" title="2.1 reduce"></a>2.1 reduce</h3><p>使用函数<em>func</em>执行归约操作：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> val <span class="type">list</span> = List(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</span><br><span class="line">sc.parallelize(<span class="type">list</span>).reduce((x, y) =&gt; x + y)</span><br><span class="line">sc.parallelize(<span class="type">list</span>).reduce(_ + _)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出 15</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-2-takeOrdered"><a href="#2-2-takeOrdered" class="headerlink" title="2.2 takeOrdered"></a>2.2 takeOrdered</h3><p>按自然顺序（natural order）或自定义比较器（custom comparator）排序后返回前 <em>n</em> 个元素。需要注意的是<code>takeOrdered</code>使用隐式参数进行隐式转换，以下为其源码。所以在使用自定义排序时，需要继承<code>Ordering[T]</code>实现自定义比较器，然后将其作为隐式参数引入。</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def takeOrdered(num: <span class="built_in">Int</span>)(<span class="keyword">implicit</span> ord: Ordering[T]): Array[T] = withScope &#123;</span><br><span class="line">  .........</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>自定义规则排序：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 继承Ordering[T],实现自定义比较器，按照value值的长度进行排序</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomOrdering</span> <span class="keyword">extends</span> <span class="title">Ordering</span>[(<span class="type">Int</span>, <span class="type">String</span>)] </span>&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">compare</span></span>(x: (<span class="type">Int</span>, <span class="type">String</span>), y: (<span class="type">Int</span>, <span class="type">String</span>)): <span class="type">Int</span></span><br><span class="line">    = <span class="keyword">if</span> (x._2.length &gt; y._2.length) <span class="number">1</span> <span class="keyword">else</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>((<span class="number">1</span>, <span class="string">"hadoop"</span>), (<span class="number">1</span>, <span class="string">"storm"</span>), (<span class="number">1</span>, <span class="string">"azkaban"</span>), (<span class="number">1</span>, <span class="string">"hive"</span>))</span><br><span class="line"><span class="comment">//  引入隐式默认值</span></span><br><span class="line"><span class="keyword">implicit</span> <span class="keyword">val</span> implicitOrdering = <span class="keyword">new</span> <span class="type">CustomOrdering</span></span><br><span class="line">sc.parallelize(list).takeOrdered(<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出： Array((1,hive), (1,storm), (1,hadoop), (1,azkaban)</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-countByKey"><a href="#2-3-countByKey" class="headerlink" title="2.3 countByKey"></a>2.3 countByKey</h3><p>计算每个键出现的次数：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List((<span class="string">"hadoop"</span>, <span class="number">10</span>), (<span class="string">"hadoop"</span>, <span class="number">10</span>), (<span class="string">"storm"</span>, <span class="number">3</span>), (<span class="string">"storm"</span>, <span class="number">3</span>), (<span class="string">"azkaban"</span>, <span class="number">1</span>))</span><br><span class="line">sc.parallelize(<span class="type">list</span>).countByKey()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出： Map(hadoop -&gt; 2, storm -&gt; 2, azkaban -&gt; 1)</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-4-saveAsTextFile"><a href="#2-4-saveAsTextFile" class="headerlink" title="2.4 saveAsTextFile"></a>2.4 saveAsTextFile</h3><p>将 dataset 中的元素以文本文件的形式写入本地文件系统、HDFS 或其它 Hadoop 支持的文件系统中。Spark 将对每个元素调用 toString 方法，将元素转换为文本文件中的一行记录。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val <span class="type">list</span> = List((<span class="string">"hadoop"</span>, <span class="number">10</span>), (<span class="string">"hadoop"</span>, <span class="number">10</span>), (<span class="string">"storm"</span>, <span class="number">3</span>), (<span class="string">"storm"</span>, <span class="number">3</span>), (<span class="string">"azkaban"</span>, <span class="number">1</span>))</span><br><span class="line">sc.parallelize(<span class="type">list</span>).saveAsTextFile(<span class="string">"/usr/file/temp"</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="http://spark.apache.org/docs/latest/rdd-programming-guide.html#rdd-programming-guide" target="_blank" rel="noopener">RDD Programming Guide</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100404.html" class="pre-post btn btn-default" title='Spark部署模式与作业提交'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark部署模式与作业提交</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100402.html" class="next-post btn btn-default" title='Spark弹性式数据集RDDs'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark弹性式数据集RDDs</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Transformation"><span class="toc-text">一、Transformation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-map"><span class="toc-text">1.1 map</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-filter"><span class="toc-text">1.2 filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-flatMap"><span class="toc-text">1.3 flatMap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-mapPartitions"><span class="toc-text">1.4 mapPartitions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-mapPartitionsWithIndex"><span class="toc-text">1.5 mapPartitionsWithIndex</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-sample"><span class="toc-text">1.6 sample</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-union"><span class="toc-text">1.7 union</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-8-intersection"><span class="toc-text">1.8 intersection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-9-distinct"><span class="toc-text">1.9 distinct</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-10-groupByKey"><span class="toc-text">1.10 groupByKey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-11-reduceByKey"><span class="toc-text">1.11 reduceByKey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-12-sortBy-amp-sortByKey"><span class="toc-text">1.12 sortBy &amp; sortByKey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-13-join"><span class="toc-text">1.13 join</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-14-cogroup"><span class="toc-text">1.14 cogroup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-15-cartesian"><span class="toc-text">1.15 cartesian</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-16-aggregateByKey"><span class="toc-text">1.16 aggregateByKey</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Action"><span class="toc-text">二、Action</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-reduce"><span class="toc-text">2.1 reduce</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-takeOrdered"><span class="toc-text">2.2 takeOrdered</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-countByKey"><span class="toc-text">2.3 countByKey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-saveAsTextFile"><span class="toc-text">2.4 saveAsTextFile</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

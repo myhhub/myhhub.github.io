@@ -1,0 +1,494 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,sqoop">
+
+
+    <meta name="description" content="sqoop主要特点
+可以将关系型数据库中的数据导入hdfs、hive或者hbase等hadoop组件中，也可将hadoop组件中的数据导入到关系型数据库中；
+
+sqoop在导入导出数据时，充分采...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 三十一.sqoop与datax性能对比 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 三十一.sqoop与datax性能对比">
+            
+	            大数据hadoop之 三十一.sqoop与datax性能对比
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/sqoop/">sqoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/21</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1385</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="sqoop主要特点"><a href="#sqoop主要特点" class="headerlink" title="sqoop主要特点"></a>sqoop主要特点</h2><ol>
+<li><p>可以将关系型数据库中的数据导入hdfs、hive或者hbase等hadoop组件中，也可将hadoop组件中的数据导入到关系型数据库中；</p>
+</li>
+<li><p>sqoop在导入导出数据时，充分采用了map-reduce计算框架，根据输入条件生成一个map-reduce作业，在hadoop集群中运行。采用map-reduce框架同时在多个节点进行import或者export操作，<br>速度比单节点运行多个并行导入导出效率高，同时提供了良好的并发性和容错性；</p>
+</li>
+<li><p>支持insert、update模式，可以选择参数，若内容存在就更新，若不存在就插入；</p>
+</li>
+<li><p>对国外的主流关系型数据库支持性更好。</p>
+</li>
+</ol>
+<h2 id="datax主要特点："><a href="#datax主要特点：" class="headerlink" title="datax主要特点："></a>datax主要特点：</h2><ol>
+<li><p>异构数据库和文件系统之间的数据交换；</p>
+</li>
+<li><p>采用Framework + plugin架构构建，Framework处理了缓冲，流控，并发，上下文加载等高速数据交换的大部分技术问题，提供了简单的接口与插件交互，<br>插件仅需实现对数据处理系统的访问；</p>
+</li>
+<li><p>数据传输过程在单进程内完成，全内存操作，不读写磁盘，也没有IPC；</p>
+</li>
+<li><p>开放式的框架，开发者可以在极短的时间开发一个新插件以快速支持新的数据库/文件系统。</p>
+</li>
+</ol>
+<h2 id="sqoop和datax的区别："><a href="#sqoop和datax的区别：" class="headerlink" title="sqoop和datax的区别："></a>sqoop和datax的区别：</h2><ol>
+<li><p>sqoop采用map-reduce计算框架进行导入导出，而datax仅仅在运行datax的单台机器上进行数据的抽取和加载，速度比sqoop慢了许多；</p>
+</li>
+<li><p>sqoop只可以在关系型数据库和hadoop组件之间进行数据迁移，而在hadoop相关组件之间，比如hive和hbase之间就无法使用sqoop互相导入导出数据，<br>同时在关系型数据库之间，比如mysql和oracle之间也无法通过sqoop导入导出数据。与之相反，datax能够分别实现关系型数据库和hadoop组件之间、关系型数据库<br>之间、hadoop组件之间的数据迁移；</p>
+</li>
+<li><p>sqoop是专门为hadoop而生，对hadoop支持度好，而datax可能会出现不支持高版本hadoop的现象；</p>
+</li>
+<li><p>sqoop只支持官方提供的指定几种关系型数据库和hadoop组件之间的数据交换，而在datax中，用户只需根据自身需求修改文件，生成相应rpm包，自行安装之后就可以使用自己定制的插件；</p>
+</li>
+</ol>
+<h2 id="性能比较"><a href="#性能比较" class="headerlink" title="性能比较"></a>性能比较</h2><h3 id="1-mysql-gt-hdfs"><a href="#1-mysql-gt-hdfs" class="headerlink" title="1. mysql-&gt;hdfs"></a>1. mysql-&gt;hdfs</h3><p>在mysql中生成50,000,000条数据，将这些数据分别使用datax和sqoop导入到hdfs中，分别比较它们的性能参数：<br>sqoop:</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU时间(ms)</td>
+<td>325500</td>
+</tr>
+<tr>
+<td>读取物理内存快照大小(byte)</td>
+<td>3045625856</td>
+</tr>
+<tr>
+<td>读取虚拟内存快照大小(byte)</td>
+<td>10975498240</td>
+</tr>
+<tr>
+<td>平均速率(MB/s)</td>
+<td>20.0809</td>
+</tr>
+<tr>
+<td>总时间(s)</td>
+<td>99.2047</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/img/hadoop/sqoop_mysql.png" alt></p>
+<p>datax:</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU平均占用率(%)</td>
+<td>21.99</td>
+</tr>
+<tr>
+<td>平均速率(MB/s)</td>
+<td>4.95</td>
+</tr>
+<tr>
+<td>总时间(s)</td>
+<td>202</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/img/hadoop/datax_mysql.png" alt></p>
+<h3 id="2-oracle-gt-hdfs"><a href="#2-oracle-gt-hdfs" class="headerlink" title="2. oracle-&gt;hdfs"></a>2. oracle-&gt;hdfs</h3><p>在oracle中生成50,000,000条数据，将这些数据分别使用datax和sqoop导入到hdfs中，分别比较它们的性能参数：</p>
+<p>sqoop：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU时间</td>
+<td>86510毫秒</td>
+</tr>
+<tr>
+<td>读取物理内存快照大小</td>
+<td>2865557504</td>
+</tr>
+<tr>
+<td>读取虚拟内存快照大小</td>
+<td>10937077760</td>
+</tr>
+<tr>
+<td>平均速率</td>
+<td>6.4137MB/s</td>
+</tr>
+<tr>
+<td>总时间</td>
+<td>94.9979s</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/img/hadoop/sqoop_oracle.png" alt></p>
+<p>datax:</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU平均占用率</td>
+<td>15.50%</td>
+</tr>
+<tr>
+<td>平均速率</td>
+<td>5.14MB/s</td>
+</tr>
+<tr>
+<td>总时间</td>
+<td>122s</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/img/hadoop/datax_oracle.png" alt></p>
+<h2 id="与TDH的兼容性"><a href="#与TDH的兼容性" class="headerlink" title="与TDH的兼容性"></a>与TDH的兼容性</h2><ol>
+<li><p>与TDH中的hadoop版本兼容，能够将关系型数据库中数据导入TDH中的hdfs中；</p>
+</li>
+<li><p>datax拥有一个sqoop没有的功能，就是将数据从hdfs导入到hbase，但是该功能目前仅仅支持的hbase版本为：0.94.x和1.1.x两个。而TDH中hyperbase的hbase版本为0.98.6，所以也不支持TDH的Hyperbase。</p>
+</li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100337.html" class="pre-post btn btn-default" title='大数据hadoop之 三十二.HBASE介绍'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十二.HBASE介绍</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100335.html" class="next-post btn btn-default" title='大数据hadoop之 三十.Sqooq2综合案例'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十.Sqooq2综合案例</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#sqoop主要特点"><span class="toc-text">sqoop主要特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#datax主要特点："><span class="toc-text">datax主要特点：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqoop和datax的区别："><span class="toc-text">sqoop和datax的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能比较"><span class="toc-text">性能比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-mysql-gt-hdfs"><span class="toc-text">1. mysql-&gt;hdfs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-oracle-gt-hdfs"><span class="toc-text">2. oracle-&gt;hdfs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#与TDH的兼容性"><span class="toc-text">与TDH的兼容性</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

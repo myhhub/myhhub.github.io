@@ -1,0 +1,397 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,yarn">
+
+
+    <meta name="description" content="一、hadoop yarn 简介Apache YARN (Yet Another Resource Negotiator)  是hadoop 2.0 引入的集群资源管理系统。用户可以将各种服务框...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>hadoop集群资源管理器——YARN | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="hadoop集群资源管理器——YARN">
+            
+	            hadoop集群资源管理器——YARN
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/yarn/">yarn</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/09</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1367</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、hadoop-yarn-简介"><a href="#一、hadoop-yarn-简介" class="headerlink" title="一、hadoop yarn 简介"></a>一、hadoop yarn 简介</h2><p><strong>Apache YARN</strong> (Yet Another Resource Negotiator)  是hadoop 2.0 引入的集群资源管理系统。用户可以将各种服务框架部署在YARN上，由YARN进行统一地管理和资源分配。</p>
+<div align="center"> <img width="600px" src="/img/bigdata/yarn-base.png"> </div>
+
+
+
+<h2 id="二、YARN架构"><a href="#二、YARN架构" class="headerlink" title="二、YARN架构"></a>二、YARN架构</h2><div align="center"> <img width="600px" src="/img/bigdata/Figure3Architecture-of-YARN.png"> </div>
+
+<h3 id="1-ResourceManager"><a href="#1-ResourceManager" class="headerlink" title="1. ResourceManager"></a>1. ResourceManager</h3><p><code>ResourceManager</code>通常在独立的机器上以后台进程的形式运行，它是整个集群资源的主要协调者和管理者。<code>ResourceManager</code>负责给用户提交的所有应用程序分配资源，它根据应用程序优先级、队列容量、ACLs、数据位置等信息，做出决策，然后以共享的、安全的、多租户的方式制定分配策略，调度集群资源。</p>
+<h3 id="2-NodeManager"><a href="#2-NodeManager" class="headerlink" title="2. NodeManager"></a>2. NodeManager</h3><p><code>NodeManager</code>是YARN集群中的每个具体节点的管理者。主要负责该节点内所有容器的生命周期的管理，监视资源和跟踪节点健康。具体如下：</p>
+<ul>
+<li>启动时向<code>ResourceManager</code>注册并定时发送心跳消息，等待<code>ResourceManager</code>的指令；</li>
+<li>维护<code>Container</code>的生命周期，监控<code>Container</code>的资源使用情况；</li>
+<li>管理任务运行时的相关依赖，根据<code>ApplicationMaster</code>的需要，在启动<code>Container</code>之前将需要的程序及其依赖拷贝到本地。</li>
+</ul>
+<h3 id="3-ApplicationMaster"><a href="#3-ApplicationMaster" class="headerlink" title="3. ApplicationMaster"></a>3. ApplicationMaster</h3><p>在用户提交一个应用程序时，YARN会启动一个轻量级的进程<code>ApplicationMaster</code>。<code>ApplicationMaster</code>负责协调来自 <code>ResourceManager</code>的资源，并通过<code>NodeManager</code> 监视容器内资源的使用情况，同时还负责任务的监控与容错。具体如下：</p>
+<ul>
+<li>根据应用的运行状态来决定动态计算资源需求；</li>
+<li>向<code>ResourceManager</code>申请资源，监控申请的资源的使用情况；</li>
+<li>跟踪任务状态和进度，报告资源的使用情况和应用的进度信息；</li>
+<li>负责任务的容错。</li>
+</ul>
+<h3 id="4-Contain"><a href="#4-Contain" class="headerlink" title="4. Contain"></a>4. Contain</h3><p><code>Container</code>是YARN中的资源抽象，它封装了某个节点上的多维度资源，如内存、CPU、磁盘、网络等。当AM向RM申请资源时，RM为AM返回的资源是用<code>Container</code>表示的。YARN会为每个任务分配一个<code>Container</code>，该任务只能使用该<code>Container</code>中描述的资源。<code>ApplicationMaster</code>可在<code>Container</code>内运行任何类型的任务。例如，<code>MapReduce ApplicationMaster</code>请求一个容器来启动 map 或 reduce 任务，而<code>Giraph ApplicationMaster</code>请求一个容器来运行 Giraph 任务。</p>
+<h2 id="三、YARN工作原理简述"><a href="#三、YARN工作原理简述" class="headerlink" title="三、YARN工作原理简述"></a>三、YARN工作原理简述</h2><div align="center"> <img src="/img/bigdata/yarngzyljt.png"> </div>
+
+<ol>
+<li><p><code>Client</code>提交作业到YARN上；</p>
+</li>
+<li><p><code>Resource Manager</code>选择一个<code>Node Manager</code>，启动一个<code>Container</code>并运行<code>Application Master</code>实例；</p>
+</li>
+<li><p><code>Application Master</code>根据实际需要向<code>Resource Manager</code>请求更多的<code>Container</code>资源（如果作业很小, 应用管理器会选择在其自己的JVM中运行任务）；</p>
+</li>
+<li><p><code>Application Master</code>通过获取到的<code>Container</code>资源执行分布式计算。</p>
+</li>
+</ol>
+<h2 id="四、YARN工作原理详述"><a href="#四、YARN工作原理详述" class="headerlink" title="四、YARN工作原理详述"></a>四、YARN工作原理详述</h2><div align="center"> <img width="600px" src="/img/bigdata/yarngzyl.png"> </div>
+
+
+
+<h4 id="1-作业提交"><a href="#1-作业提交" class="headerlink" title="1. 作业提交"></a>1. 作业提交</h4><p>client调用job.waitForCompletion方法，向整个集群提交MapReduce作业 (第1步) 。新的作业ID(应用ID)由资源管理器分配(第2步)。作业的client核实作业的输出, 计算输入的split, 将作业的资源(包括Jar包，配置文件, split信息)拷贝给HDFS(第3步)。 最后, 通过调用资源管理器的submitApplication()来提交作业(第4步)。</p>
+<h4 id="2-作业初始化"><a href="#2-作业初始化" class="headerlink" title="2. 作业初始化"></a>2. 作业初始化</h4><p>当资源管理器收到submitApplciation()的请求时, 就将该请求发给调度器(scheduler), 调度器分配container, 然后资源管理器在该container内启动应用管理器进程, 由节点管理器监控(第5步)。</p>
+<p>MapReduce作业的应用管理器是一个主类为MRAppMaster的Java应用，其通过创造一些bookkeeping对象来监控作业的进度,  得到任务的进度和完成报告(第6步)。然后其通过分布式文件系统得到由客户端计算好的输入split(第7步)，然后为每个输入split创建一个map任务, 根据mapreduce.job.reduces创建reduce任务对象。</p>
+<h4 id="3-任务分配"><a href="#3-任务分配" class="headerlink" title="3. 任务分配"></a>3. 任务分配</h4><p>如果作业很小, 应用管理器会选择在其自己的JVM中运行任务。</p>
+<p>如果不是小作业,  那么应用管理器向资源管理器请求container来运行所有的map和reduce任务(第8步)。这些请求是通过心跳来传输的,  包括每个map任务的数据位置，比如存放输入split的主机名和机架(rack)，调度器利用这些信息来调度任务，尽量将任务分配给存储数据的节点, 或者分配给和存放输入split的节点相同机架的节点。</p>
+<h4 id="4-任务运行"><a href="#4-任务运行" class="headerlink" title="4. 任务运行"></a>4. 任务运行</h4><p>当一个任务由资源管理器的调度器分配给一个container后，应用管理器通过联系节点管理器来启动container(第9步)。任务由一个主类为YarnChild的Java应用执行， 在运行任务之前首先本地化任务需要的资源，比如作业配置，JAR文件,  以及分布式缓存的所有文件(第10步。 最后, 运行map或reduce任务(第11步)。</p>
+<p>YarnChild运行在一个专用的JVM中, 但是YARN不支持JVM重用。</p>
+<h4 id="5-进度和状态更新"><a href="#5-进度和状态更新" class="headerlink" title="5. 进度和状态更新"></a>5. 进度和状态更新</h4><p>YARN中的任务将其进度和状态(包括counter)返回给应用管理器, 客户端每秒(通mapreduce.client.progressmonitor.pollinterval设置)向应用管理器请求进度更新, 展示给用户。</p>
+<h4 id="6-作业完成"><a href="#6-作业完成" class="headerlink" title="6. 作业完成"></a>6. 作业完成</h4><p>除了向应用管理器请求作业进度外,  客户端每5分钟都会通过调用waitForCompletion()来检查作业是否完成，时间间隔可以通过mapreduce.client.completion.pollinterval来设置。作业完成之后,  应用管理器和container会清理工作状态， OutputCommiter的作业清理方法也会被调用。作业的信息会被作业历史服务器存储以备之后用户核查。</p>
+<h2 id="五、提交作业到YARN上运行"><a href="#五、提交作业到YARN上运行" class="headerlink" title="五、提交作业到YARN上运行"></a>五、提交作业到YARN上运行</h2><p>这里以提交Hadoop Examples中计算Pi的MApReduce程序为例，相关Jar包在Hadoop安装目录的<code>share/hadoop/mapreduce</code>目录下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 提交格式: hadoop jar jar包路径 主类名称 主类参数</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> hadoop jar hadoop-mapreduce-examples-2.6.0-cdh5.15.2.jar pi 3 3</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><p><a href="https://www.cnblogs.com/codeOfLife/p/5492740.html" target="_blank" rel="noopener">初步掌握Yarn的架构及原理</a></p>
+</li>
+<li><p><a href="http://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-site/YARN.html" target="_blank" rel="noopener">Apache Hadoop 2.9.2 &gt; Apache Hadoop YARN</a></p>
+</li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100460.html" class="pre-post btn btn-default" title='hadoop HDFS常用Shell命令'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">hadoop HDFS常用Shell命令</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100392.html" class="next-post btn btn-default" title='Hadoop分布式计算框架——MapReduce'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Hadoop分布式计算框架——MapReduce</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、hadoop-yarn-简介"><span class="toc-text">一、hadoop yarn 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、YARN架构"><span class="toc-text">二、YARN架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-ResourceManager"><span class="toc-text">1. ResourceManager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-NodeManager"><span class="toc-text">2. NodeManager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-ApplicationMaster"><span class="toc-text">3. ApplicationMaster</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Contain"><span class="toc-text">4. Contain</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、YARN工作原理简述"><span class="toc-text">三、YARN工作原理简述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、YARN工作原理详述"><span class="toc-text">四、YARN工作原理详述</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-作业提交"><span class="toc-text">1. 作业提交</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-作业初始化"><span class="toc-text">2. 作业初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-任务分配"><span class="toc-text">3. 任务分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-任务运行"><span class="toc-text">4. 任务运行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-进度和状态更新"><span class="toc-text">5. 进度和状态更新</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-作业完成"><span class="toc-text">6. 作业完成</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、提交作业到YARN上运行"><span class="toc-text">五、提交作业到YARN上运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

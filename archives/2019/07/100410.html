@@ -1,0 +1,395 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,sql,spark">
+
+
+    <meta name="description" content="一、 数据准备本文主要介绍Spark SQL的多表连接，需要预先准备测试数据。分别创建员工和部门的Datafame，并注册为临时视图，代码如下：
+1234567val spark = Spark...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark SQL JOIN | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark SQL JOIN">
+            
+	            Spark SQL JOIN
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/sql/">sql</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1365</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、-数据准备"><a href="#一、-数据准备" class="headerlink" title="一、 数据准备"></a>一、 数据准备</h2><p>本文主要介绍Spark SQL的多表连接，需要预先准备测试数据。分别创建员工和部门的Datafame，并注册为临时视图，代码如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">val spark = SparkSession.builder().appName(<span class="string">"aggregations"</span>).master(<span class="string">"local[2]"</span>).getOrCreate()</span><br><span class="line"></span><br><span class="line">val empDF = spark<span class="selector-class">.read</span><span class="selector-class">.json</span>(<span class="string">"/usr/file/json/emp.json"</span>)</span><br><span class="line">empDF.createOrReplaceTempView(<span class="string">"emp"</span>)</span><br><span class="line"></span><br><span class="line">val deptDF = spark<span class="selector-class">.read</span><span class="selector-class">.json</span>(<span class="string">"/usr/file/json/dept.json"</span>)</span><br><span class="line">deptDF.createOrReplaceTempView(<span class="string">"dept"</span>)</span><br></pre></td></tr></table></figure>
+<p>两表的主要字段如下：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">emp员工表</span><br><span class="line"> <span class="string">|-- ENAME: 员工姓名</span></span><br><span class="line"> <span class="string">|-- DEPTNO: 部门编号</span></span><br><span class="line"> <span class="string">|-- EMPNO: 员工编号</span></span><br><span class="line"> <span class="string">|-- HIREDATE: 入职时间</span></span><br><span class="line"> <span class="string">|-- JOB: 职务</span></span><br><span class="line"> <span class="string">|-- MGR: 上级编号</span></span><br><span class="line"> <span class="string">|-- SAL: 薪资</span></span><br><span class="line"> <span class="string">|-- COMM: 奖金</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dept部门表</span><br><span class="line"> <span class="string">|-- DEPTNO: 部门编号</span></span><br><span class="line"> <span class="string">|-- DNAME:  部门名称</span></span><br><span class="line"> <span class="string">|-- LOC:    部门所在城市</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：emp.json，dept.json可以在本仓库的<a href="https://github.com/myhhub/BigData-Notes/tree/master/resources" target="_blank" rel="noopener">resources</a>目录进行下载。</p>
+</blockquote>
+<h2 id="二、连接类型"><a href="#二、连接类型" class="headerlink" title="二、连接类型"></a>二、连接类型</h2><p>Spark中支持多种连接类型：</p>
+<ul>
+<li><strong>Inner Join</strong> : 内连接；</li>
+<li><strong>Full Outer Join</strong> :  全外连接；</li>
+<li><strong>Left Outer Join</strong> :  左外连接；</li>
+<li><strong>Right Outer Join</strong> :  右外连接；</li>
+<li><strong>Left Semi Join</strong> :  左半连接；</li>
+<li><strong>Left Anti Join</strong> :  左反连接；</li>
+<li><strong>Natural Join</strong> :  自然连接；</li>
+<li><strong>Cross (or Cartesian) Join</strong> :  交叉(或笛卡尔)连接。</li>
+</ul>
+<p>其中内，外连接，笛卡尔积均与普通关系型数据库中的相同，如下图所示：</p>
+<div align="center"> <img src="/img/bigdata/sql-join.jpg"> </div>
+
+<p>这里解释一下左半连接和左反连接，这两个连接等价于关系型数据库中的<code>IN</code>和<code>NOT IN</code>字句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- LEFT SEMI JOIN</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">LEFT</span> <span class="keyword">SEMI</span> <span class="keyword">JOIN</span> dept <span class="keyword">ON</span> emp.deptno = dept.deptno</span><br><span class="line"><span class="comment">-- 等价于如下的IN语句</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> deptno <span class="keyword">IN</span> (<span class="keyword">SELECT</span> deptno <span class="keyword">FROM</span> dept)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- LEFT ANTI JOIN</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">LEFT</span> <span class="keyword">ANTI</span> <span class="keyword">JOIN</span> dept <span class="keyword">ON</span> emp.deptno = dept.deptno</span><br><span class="line"><span class="comment">-- 等价于如下的IN语句</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> deptno <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="keyword">SELECT</span> deptno <span class="keyword">FROM</span> dept)</span><br></pre></td></tr></table></figure>
+<p>所有连接类型的示例代码如下：</p>
+<h3 id="2-1-INNER-JOIN"><a href="#2-1-INNER-JOIN" class="headerlink" title="2.1 INNER JOIN"></a>2.1 INNER JOIN</h3><figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.定义连接表达式</span></span><br><span class="line">val joinExpression = empDF.col(<span class="string">"deptno"</span>) === deptDF.col(<span class="string">"deptno"</span>)</span><br><span class="line"><span class="comment">// 2.连接查询 </span></span><br><span class="line">empDF.join(deptDF,joinExpression).<span class="keyword">select</span>(<span class="string">"ename"</span>,<span class="string">"dname"</span>).<span class="built_in">show</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等价SQL如下：</span></span><br><span class="line">spark.sql(<span class="string">"SELECT ename,dname FROM emp JOIN dept ON emp.deptno = dept.deptno"</span>).<span class="built_in">show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-FULL-OUTER-JOIN"><a href="#2-2-FULL-OUTER-JOIN" class="headerlink" title="2.2 FULL OUTER JOIN"></a>2.2 FULL OUTER JOIN</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(deptDF, joinExpression, <span class="string">"outer"</span>)<span class="selector-class">.show</span>()</span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.sql</span>(<span class="string">"SELECT * FROM emp FULL OUTER JOIN dept ON emp.deptno = dept.deptno"</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-LEFT-OUTER-JOIN"><a href="#2-3-LEFT-OUTER-JOIN" class="headerlink" title="2.3 LEFT OUTER JOIN"></a>2.3 LEFT OUTER JOIN</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(deptDF, joinExpression, <span class="string">"left_outer"</span>)<span class="selector-class">.show</span>()</span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.sql</span>(<span class="string">"SELECT * FROM emp LEFT OUTER JOIN dept ON emp.deptno = dept.deptno"</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-RIGHT-OUTER-JOIN"><a href="#2-4-RIGHT-OUTER-JOIN" class="headerlink" title="2.4 RIGHT OUTER JOIN"></a>2.4 RIGHT OUTER JOIN</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(deptDF, joinExpression, <span class="string">"right_outer"</span>)<span class="selector-class">.show</span>()</span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.sql</span>(<span class="string">"SELECT * FROM emp RIGHT OUTER JOIN dept ON emp.deptno = dept.deptno"</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-LEFT-SEMI-JOIN"><a href="#2-5-LEFT-SEMI-JOIN" class="headerlink" title="2.5 LEFT SEMI JOIN"></a>2.5 LEFT SEMI JOIN</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(deptDF, joinExpression, <span class="string">"left_semi"</span>)<span class="selector-class">.show</span>()</span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.sql</span>(<span class="string">"SELECT * FROM emp LEFT SEMI JOIN dept ON emp.deptno = dept.deptno"</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-LEFT-ANTI-JOIN"><a href="#2-6-LEFT-ANTI-JOIN" class="headerlink" title="2.6 LEFT ANTI JOIN"></a>2.6 LEFT ANTI JOIN</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(deptDF, joinExpression, <span class="string">"left_anti"</span>)<span class="selector-class">.show</span>()</span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.sql</span>(<span class="string">"SELECT * FROM emp LEFT ANTI JOIN dept ON emp.deptno = dept.deptno"</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-7-CROSS-JOIN"><a href="#2-7-CROSS-JOIN" class="headerlink" title="2.7 CROSS JOIN"></a>2.7 CROSS JOIN</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(deptDF, joinExpression, <span class="string">"cross"</span>)<span class="selector-class">.show</span>()</span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.sql</span>(<span class="string">"SELECT * FROM emp CROSS JOIN dept ON emp.deptno = dept.deptno"</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="2-8-NATURAL-JOIN"><a href="#2-8-NATURAL-JOIN" class="headerlink" title="2.8 NATURAL JOIN"></a>2.8 NATURAL JOIN</h3><p>自然连接是在两张表中寻找那些数据类型和列名都相同的字段，然后自动地将他们连接起来，并返回所有符合条件的结果。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark.sql("<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">NATURAL</span> <span class="keyword">JOIN</span> dept<span class="string">").show()</span></span><br></pre></td></tr></table></figure>
+<p>以下是一个自然连接的查询结果，程序自动推断出使用两张表都存在的dept列进行连接，其实际等价于：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark.sql("<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> emp <span class="keyword">JOIN</span> dept <span class="keyword">ON</span> emp.deptno = dept.deptno<span class="string">").show()</span></span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/spark-sql-NATURAL-JOIN.png"> </div>
+
+<p>由于自然连接常常会产生不可预期的结果，所以并不推荐使用。</p>
+<h2 id="三、连接的执行"><a href="#三、连接的执行" class="headerlink" title="三、连接的执行"></a>三、连接的执行</h2><p>在对大表与大表之间进行连接操作时，通常都会触发<code>Shuffle Join</code>，两表的所有分区节点会进行<code>All-to-All</code>的通讯，这种查询通常比较昂贵，会对网络IO会造成比较大的负担。</p>
+<div align="center"> <img width="600px" src="/img/bigdata/spark-Big-table–to–big-table.png"> </div>
+
+
+
+<p>而对于大表和小表的连接操作，Spark会在一定程度上进行优化，如果小表的数据量小于Worker Node的内存空间，Spark会考虑将小表的数据广播到每一个Worker Node，在每个工作节点内部执行连接计算，这可以降低网络的IO，但会加大每个Worker Node的CPU负担。</p>
+<div align="center"> <img width="600px" src="/img/bigdata/spark-Big-table–to–small-table.png"> </div>
+
+<p>是否采用广播方式进行<code>Join</code>取决于程序内部对小表的判断，如果想明确使用广播方式进行<code>Join</code>，则可以在DataFrame API 中使用<code>broadcast</code>方法指定需要广播的小表：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.join</span>(<span class="selector-tag">broadcast</span>(<span class="selector-tag">deptDF</span>), <span class="selector-tag">joinExpression</span>)<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Matei Zaharia, Bill Chambers . Spark: The Definitive Guide[M] . 2018-02 </li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100411.html" class="pre-post btn btn-default" title='Spark Streaming与流处理'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark Streaming与流处理</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100409.html" class="next-post btn btn-default" title='Spark聚合函数Aggregations'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark聚合函数Aggregations</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、-数据准备"><span class="toc-text">一、 数据准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、连接类型"><span class="toc-text">二、连接类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-INNER-JOIN"><span class="toc-text">2.1 INNER JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-FULL-OUTER-JOIN"><span class="toc-text">2.2 FULL OUTER JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-LEFT-OUTER-JOIN"><span class="toc-text">2.3 LEFT OUTER JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-RIGHT-OUTER-JOIN"><span class="toc-text">2.4 RIGHT OUTER JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-LEFT-SEMI-JOIN"><span class="toc-text">2.5 LEFT SEMI JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-LEFT-ANTI-JOIN"><span class="toc-text">2.6 LEFT ANTI JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-CROSS-JOIN"><span class="toc-text">2.7 CROSS JOIN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-8-NATURAL-JOIN"><span class="toc-text">2.8 NATURAL JOIN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、连接的执行"><span class="toc-text">三、连接的执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

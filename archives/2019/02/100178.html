@@ -1,0 +1,426 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="web,javascript">
+
+
+    <meta name="description" content="前言如果你是一名 JavaScript 开发者，或者想要成为一名 JavaScript 开发者，那么你必须知道 JavaScript 程序内部的执行机制。执行上下文和执行栈是JavaScript...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>全面阐析JavaScript执行上下文和执行栈 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="全面阐析JavaScript执行上下文和执行栈">
+            
+	            全面阐析JavaScript执行上下文和执行栈
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/front/">前端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/javascript/">javascript</a> <a class="tag-link" href="/tags/web/">web</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/02/04</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1523</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>如果你是一名 JavaScript 开发者，或者想要成为一名 JavaScript 开发者，那么你必须知道 JavaScript 程序内部的执行机制。执行上下文和执行栈是JavaScript中关键概念之一，是JavaScript难点之一。 理解执行上下文和执行栈同样有助于理解其他的 JavaScript 概念如提升机制、作用域和闭包等。本文尽可能用通俗易懂的方式来介绍这些概念。</p>
+<h2 id="一、执行上下文（Execution-Context）"><a href="#一、执行上下文（Execution-Context）" class="headerlink" title="一、执行上下文（Execution Context）"></a>一、执行上下文（Execution Context）</h2><h3 id="1-什么是执行上下文"><a href="#1-什么是执行上下文" class="headerlink" title="1.什么是执行上下文"></a>1.什么是执行上下文</h3><p>简而言之，执行上下文就是当前 JavaScript 代码被解析和执行时所在环境的抽象概念， JavaScript 中运行任何的代码都是在执行上下文中运行</p>
+<h3 id="2-执行上下文的类型"><a href="#2-执行上下文的类型" class="headerlink" title="2.执行上下文的类型"></a>2.执行上下文的类型</h3><p>执行上下文总共有三种类型：</p>
+<ul>
+<li>全局执行上下文： 这是默认的、最基础的执行上下文。不在任何函数中的代码都位于全局执行上下文中。它做了两件事：1. 创建一个全局对象，在浏览器中这个全局对象就是 window 对象。2. 将 this 指针指向这个全局对象。一个程序中只能存在一个全局执行上下文。</li>
+<li>函数执行上下文： 每次调用函数时，都会为该函数创建一个新的执行上下文。每个函数都拥有自己的执行上下文，但是只有在函数被调用的时候才会被创建。一个程序中可以存在任意数量的函数执行上下文。每当一个新的执行上下文被创建，它都会按照特定的顺序执行一系列步骤，具体过程将在本文后面讨论。</li>
+<li>Eval 函数执行上下文： 运行在 eval 函数中的代码也获得了自己的执行上下文，但由于 Javascript 开发人员不常用 eval 函数，所以在这里不再讨论。</li>
+</ul>
+<h2 id="二、执行上下文的生命周期"><a href="#二、执行上下文的生命周期" class="headerlink" title="二、执行上下文的生命周期"></a>二、执行上下文的生命周期</h2><p>执行上下文的生命周期包括三个阶段：<strong>创建阶段→执行阶段→回收阶段</strong>，本文重点介绍创建阶段。</p>
+<h3 id="1-创建阶段"><a href="#1-创建阶段" class="headerlink" title="1.创建阶段"></a>1.创建阶段</h3><p>当函数被调用，但未执行任何其内部代码之前，会做以下三件事：</p>
+<ul>
+<li>创建变量对象：首先初始化函数的参数arguments，提升函数声明和变量声明。下文会详细说明。</li>
+<li>创建作用域链（Scope Chain）：在执行期上下文的创建阶段，作用域链是在变量对象之后创建的。作用域链本身包含变量对象。作用域链用于解析变量。当被要求解析变量时，JavaScript 始终从代码嵌套的最内层开始，如果最内层没有找到变量，就会跳转到上一层父作用域中查找，直到找到该变量。</li>
+<li>确定this指向：包括多种情况，下文会详细说明</li>
+</ul>
+<p>在一段 JS 脚本执行之前，要先解析代码（所以说 JS 是解释执行的脚本语言），解析的时候会先创建一个全局执行上下文环境，先把代码中即将执行的变量、函数声明都拿出来。变量先暂时赋值为undefined，函数则先声明好可使用。这一步做完了，然后再开始正式执行程序。</p>
+<p>另外，一个函数在执行之前，也会创建一个函数执行上下文环境，跟全局上下文差不多，不过 函数执行上下文中会多出this arguments和函数的参数。</p>
+<h3 id="2-执行阶段"><a href="#2-执行阶段" class="headerlink" title="2.执行阶段"></a>2.执行阶段</h3><p>执行变量赋值、代码执行</p>
+<h3 id="3-回收阶段"><a href="#3-回收阶段" class="headerlink" title="3.回收阶段"></a>3.回收阶段</h3><p>执行上下文出栈等待虚拟机回收执行上下文</p>
+<h2 id="三、变量提升和this指向的细节"><a href="#三、变量提升和this指向的细节" class="headerlink" title="三、变量提升和this指向的细节"></a>三、变量提升和this指向的细节</h2><h3 id="1-变量声明提升"><a href="#1-变量声明提升" class="headerlink" title="1.变量声明提升"></a>1.变量声明提升</h3><p>大部分编程语言都是先声明变量再使用，但在JS中，事情有些不一样：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(a)<span class="comment">// undefined</span></span><br><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> = <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p>上述代码正常输出<code>undefined</code>而不是报错<code>Uncaught ReferenceError: a is not defined</code>,这是因为声明提升（hoisting），相当于如下代码：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var a<span class="comment">; //声明 默认值是undefined “准备工作”</span></span><br><span class="line">console.log(a)<span class="comment">;</span></span><br><span class="line"><span class="attribute">a</span>=<span class="number">10</span><span class="comment">; //赋值</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-函数声明提升"><a href="#2-函数声明提升" class="headerlink" title="2.函数声明提升"></a>2.函数声明提升</h3><p>我们都知道，创建一个函数的方法有两种，一种是通过函数声明<code>function foo(){}</code><br>另一种是通过函数表达式<code>var foo = function(){}</code> ,那这两种在函数提升有什么区别呢？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(f1) <span class="comment">// function f1()&#123;&#125;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>) </span>&#123;&#125; <span class="comment">// 函数声明</span></span><br><span class="line"><span class="built_in">console</span>.log(f2) <span class="comment">// undefined</span></span><br><span class="line"><span class="keyword">var</span> f2 = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125; <span class="comment">// 函数表达式</span></span><br></pre></td></tr></table></figure>
+<p>接下来我们通过一个例子来说明这个问题：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    foo(); <span class="comment">// Uncaught TypeError "foo is not a function"</span></span><br><span class="line">    bar(); <span class="comment">// "this will run!"</span></span><br><span class="line">    <span class="keyword">var</span> foo = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123; <span class="comment">// function expression assigned to local variable 'foo'</span></span><br><span class="line">        alert(<span class="string">"this won't run!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bar</span><span class="params">()</span> </span>&#123; <span class="comment">// function declaration, given the name 'bar'</span></span><br><span class="line">        alert(<span class="string">"this will run!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">test();</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，foo()调用的时候报错了，而bar能够正常调用。</p>
+<p>我们前面说过变量和函数都会上升，遇到函数表达式 <code>var foo = function(){}</code>时，首先会将<code>var foo</code>上升到函数体顶部，然而此时的foo的值为undefined,所以执行<code>foo()</code>报错。</p>
+<p>而对于函数<code>bar()</code>, 则是提升了整个函数，所以<code>bar()</code>才能够顺利执行。</p>
+<p>有个细节必须注意：<strong>当遇到函数和变量同名且都会被提升的情况，函数声明优先级比较高，因此变量声明会被函数声明所覆盖，但是可以重新赋值。</strong></p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">alert(a);<span class="comment">//输出：function a()&#123; alert('我是函数') &#125;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span><span class="params">()</span></span>&#123; alert(<span class="string">'我是函数'</span>) &#125;<span class="comment">//</span></span><br><span class="line"><span class="keyword">var</span> a = <span class="string">'我是变量'</span>;</span><br><span class="line">alert(a);   <span class="comment">//输出：'我是变量'</span></span><br></pre></td></tr></table></figure>
+<p>function声明的优先级比var声明高，也就意味着当两个同名变量同时被function和var声明时，function声明会覆盖var声明</p>
+<p>这代码等效于：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>()&#123;<span class="title">alert</span>(<span class="string">'我是函数'</span>)&#125; </span></span><br><span class="line">var <span class="keyword">a</span>;   <span class="comment"> //hoisting</span></span><br><span class="line">alert(<span class="keyword">a</span>);   <span class="comment"> //输出：function a()&#123; alert('我是函数') &#125;</span></span><br><span class="line"><span class="keyword">a</span> = <span class="string">'我是变量'</span><span class="comment">;//赋值</span></span><br><span class="line">alert(<span class="keyword">a</span>);  <span class="comment"> //输出：'我是变量'</span></span><br></pre></td></tr></table></figure>
+<p>最后我们看个复杂点的例子：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">(arg)</span></span>&#123;</span><br><span class="line">    // <span class="number">1.</span> 形参 <span class="built_in">arg</span> 是 <span class="string">"hi"</span></span><br><span class="line">    // <span class="number">2.</span> 因为函数声明比变量声明优先级高，所以此时 <span class="built_in">arg</span> 是 <span class="function"><span class="keyword">function</span></span></span><br><span class="line"><span class="function">    <span class="title">console.log</span><span class="params">(arg)</span></span>;  </span><br><span class="line">    var <span class="built_in">arg</span> = <span class="string">'hello'</span>; // <span class="number">3.</span>var <span class="built_in">arg</span> 变量声明被忽略， <span class="built_in">arg</span> = <span class="string">'hello'</span>被执行</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">arg</span><span class="params">()</span></span>&#123;</span><br><span class="line">	console.<span class="built_in">log</span>(<span class="string">'hello world'</span>) </span><br><span class="line">    &#125;</span><br><span class="line">    console.<span class="built_in">log</span>(<span class="built_in">arg</span>);  </span><br><span class="line">&#125;</span><br><span class="line">test(<span class="string">'hi'</span>);</span><br><span class="line">/* 输出：</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">arg</span><span class="params">()</span></span>&#123;</span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'hello world'</span>) </span><br><span class="line">    &#125;</span><br><span class="line">hello </span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+<p>这是因为当函数执行的时候,首先会形成一个新的私有的作用域，然后依次按照如下的步骤执行：</p>
+<ul>
+<li>如果有形参，先给形参赋值</li>
+<li>进行私有作用域中的预解释，函数声明优先级比变量声明高，最后后者会被前者所覆盖，<strong>但是可以重新赋值</strong></li>
+<li>私有作用域中的代码从上到下执行</li>
+</ul>
+<h3 id="3-确定this的指向"><a href="#3-确定this的指向" class="headerlink" title="3.确定this的指向"></a>3.确定this的指向</h3><p>先搞明白一个很重要的概念 —— <strong>this的值是在执行的时候才能确认，定义的时候不能确认！</strong> 为什么呢 —— 因为this是执行上下文环境的一部分，而执行上下文需要在代码执行之前确定，而不是定义的时候。看如下例子：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 情况1</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  console.log(<span class="keyword">this</span>.a) <span class="comment">//1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> a = <span class="number">1</span></span><br><span class="line">foo()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 情况2</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span><span class="params">()</span></span>&#123;</span><br><span class="line">  console.log(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> obj=&#123;fn:fn&#125;;</span><br><span class="line">obj.fn(); <span class="comment">//this-&gt;obj</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 情况3</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">CreateJsPerson</span><span class="params">(name,age)</span></span>&#123;</span><br><span class="line"><span class="comment">//this是当前类的一个实例p1</span></span><br><span class="line"><span class="keyword">this</span>.name=name; <span class="comment">//=&gt;p1.name=name</span></span><br><span class="line"><span class="keyword">this</span>.age=age; <span class="comment">//=&gt;p1.age=age</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> p1=<span class="keyword">new</span> CreateJsPerson(<span class="string">"尹华芝"</span>,<span class="number">48</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 情况4</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">add</span><span class="params">(c, d)</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.a + <span class="keyword">this</span>.b + c + d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> o = &#123;a:<span class="number">1</span>, b:<span class="number">3</span>&#125;;</span><br><span class="line">add.call(o, <span class="number">5</span>, <span class="number">7</span>); <span class="comment">// 1 + 3 + 5 + 7 = 16</span></span><br><span class="line">add.apply(o, [<span class="number">10</span>, <span class="number">20</span>]); <span class="comment">// 1 + 3 + 10 + 20 = 34</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 情况5</span></span><br><span class="line">&lt;button id=<span class="string">"btn1"</span>&gt;箭头函数<span class="keyword">this</span>&lt;/button&gt;</span><br><span class="line">&lt;script type=<span class="string">"text/javascript"</span>&gt;   </span><br><span class="line">    let btn1 = document.getElementById(<span class="string">'btn1'</span>);</span><br><span class="line">    let obj = &#123;</span><br><span class="line">        name: <span class="string">'kobe'</span>,</span><br><span class="line">        age: <span class="number">39</span>,</span><br><span class="line">        getName: <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">            btn1.onclick = () =&gt; &#123;</span><br><span class="line">                console.log(<span class="keyword">this</span>);<span class="comment">//obj</span></span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    obj.getName();</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>接下来我们逐一解释上面几种情况</p>
+<ul>
+<li>对于直接调用 foo 来说，不管 foo 函数被放在了什么地方，this 一定是 window</li>
+<li>对于 obj.foo() 来说，我们只需要记住，谁调用了函数，谁就是 this，所以在这个场景下 foo 函数中的 this 就是 obj 对象</li>
+<li>在构造函数模式中，类中(函数体中)出现的this.xxx=xxx中的this是当前类的一个实例</li>
+<li>call、apply和bind：this 是第一个参数</li>
+<li>箭头函数this指向:箭头函数没有自己的this，看其外层的是否有函数，如果有，外层函数的this就是内部箭头函数的this，如果没有，则this是window。</li>
+</ul>
+<p><img src="/img/fronts/6e6726733d3535383437.png" alt="img"></p>
+<h2 id="四、执行上下文栈（Execution-Context-Stack）"><a href="#四、执行上下文栈（Execution-Context-Stack）" class="headerlink" title="四、执行上下文栈（Execution Context Stack）"></a>四、执行上下文栈（Execution Context Stack）</h2><p>函数多了，就有多个函数执行上下文，每次调用函数创建一个新的执行上下文，那如何管理创建的那么多执行上下文呢？</p>
+<p>JavaScript 引擎创建了执行上下文栈来管理执行上下文。<strong>可以把执行上下文栈认为是一个存储函数调用的栈结构，遵循先进后出的原则</strong>。</p>
+<p><img src="/img/fronts/733d313138303833.gif" alt="img"></p>
+<p>从上面的流程图，我们需要记住几个关键点：</p>
+<ul>
+<li>JavaScript执行在单线程上，所有的代码都是排队执行。</li>
+<li>一开始浏览器执行全局的代码时，首先创建全局的执行上下文，压入执行栈的顶部。</li>
+<li>每当进入一个函数的执行就会创建函数的执行上下文，并且把它压入执行栈的顶部。当前函数执行完成后，当前函数的执行上下文出栈，并等待垃圾回收。</li>
+<li>浏览器的JS执行引擎总是访问栈顶的执行上下文。</li>
+<li>全局上下文只有唯一的一个，它在浏览器关闭时出栈。</li>
+</ul>
+<p>我们再来看个例子：</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="built_in">color</span> = <span class="string">'blue'</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">changeColor</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> anotherColor = <span class="string">'red'</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">swapColors</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> tempColor = anotherColor;</span><br><span class="line">        anotherColor = <span class="built_in">color</span>;</span><br><span class="line">        <span class="built_in">color</span> = tempColor;</span><br><span class="line">    &#125;</span><br><span class="line">    swapColors();</span><br><span class="line">&#125;</span><br><span class="line">changeColor();</span><br></pre></td></tr></table></figure>
+<p>上述代码运行按照如下步骤：</p>
+<ul>
+<li>当上述代码在浏览器中加载时，JavaScript 引擎会创建一个全局执行上下文并且将它推入当前的执行栈</li>
+<li>调用 changeColor函数时，此时changeColor函数内部代码还未执行，js执行引擎立即创建一个changeColor的执行上下文（简称EC），然后把这执行上下文压入到执行栈（简称ECStack）中。</li>
+<li>执行changeColor函数过程中，调用swapColors函数，同样地，swapColors函数执行之前也创建了一个swapColors的执行上下文，并压入到执行栈中。</li>
+<li>swapColors函数执行完成，swapColors函数的执行上下文出栈，并且被销毁。</li>
+<li>changeColor函数执行完成，changeColor函数的执行上下文出栈，并且被销毁。<br><img src="/img/fronts/706e6726733d3330313839.png" alt="img"></li>
+</ul>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://yanhaijing.com/javascript/2014/04/29/what-is-the-execution-context-in-javascript/" target="_blank" rel="noopener">了解JavaScript的执行上下文</a></li>
+<li><a href="https://juejin.im/book/5bdc715fe51d454e755f75ef/section/5be04a8e6fb9a04a072fd2cd" target="_blank" rel="noopener">前端面试之道</a></li>
+<li><a href="http://www.cnblogs.com/wangfupeng1988/p/4001284.html" target="_blank" rel="noopener">深入理解javascript原型和闭包系列</a></li>
+<li><a href="https://juejin.im/post/5bdfd3e151882516c6432c32" target="_blank" rel="noopener">【译】理解 Javascript 执行上下文和执行栈</a></li>
+<li><a href="https://www.html.cn/archives/7255" target="_blank" rel="noopener">深入理解JavaScript中的作用域和上下文</a></li>
+<li><a href="https://segmentfault.com/a/1190000012646203" target="_blank" rel="noopener">前端基础进阶（二）：执行上下文详细图解</a></li>
+<li><a href="https://github.com/creeperyang/blog/issues/16" target="_blank" rel="noopener">深入理解JS中声明提升、作用域（链）和<code>this</code>关键字</a></li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/02/100179.html" class="pre-post btn btn-default" title='全面阐析JavaScript常见六种继承方式'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">全面阐析JavaScript常见六种继承方式</span>
+        </a>
+    
+    
+        <a href="/archives/2019/02/100177.html" class="next-post btn btn-default" title='全面阐析JavaScript作用域和作用域链'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">全面阐析JavaScript作用域和作用域链</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、执行上下文（Execution-Context）"><span class="toc-text">一、执行上下文（Execution Context）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-什么是执行上下文"><span class="toc-text">1.什么是执行上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-执行上下文的类型"><span class="toc-text">2.执行上下文的类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、执行上下文的生命周期"><span class="toc-text">二、执行上下文的生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-创建阶段"><span class="toc-text">1.创建阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-执行阶段"><span class="toc-text">2.执行阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-回收阶段"><span class="toc-text">3.回收阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、变量提升和this指向的细节"><span class="toc-text">三、变量提升和this指向的细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-变量声明提升"><span class="toc-text">1.变量声明提升</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-函数声明提升"><span class="toc-text">2.函数声明提升</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-确定this的指向"><span class="toc-text">3.确定this的指向</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、执行上下文栈（Execution-Context-Stack）"><span class="toc-text">四、执行上下文栈（Execution Context Stack）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章"><span class="toc-text">参考文章</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

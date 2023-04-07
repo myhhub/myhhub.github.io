@@ -1,0 +1,518 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,java">
+
+
+    <meta name="description" content="AspectJ是一个面向切面编程的框架，它扩展了Java语言。AspectJ定义了AOP语法所以它有一个专门的编译器用来生成遵守Java字节编码规范的Class文件。
+AspectJ目前支持以下...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Java逆向基础之二十一.AspectJ | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Java逆向基础之二十一.AspectJ">
+            
+	            Java逆向基础之二十一.AspectJ
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/09/21</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1658</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>AspectJ是一个面向切面编程的框架，它扩展了Java语言。AspectJ定义了AOP语法所以它有一个专门的编译器用来生成遵守Java字节编码规范的Class文件。</p>
+<p><strong>AspectJ目前支持以下三种编织的方式</strong></p>
+<ol>
+<li><p>编译时编织：把aspect类（aop的切面）和目标类（被aop的类）放在一起用ajc编译。</p>
+</li>
+<li><p>后编译时编织：目标类可能已经被打成了一个jar包，这时候也可以用ajc命令将jar再编织一次</p>
+</li>
+<li><p>加载时编织Load-time weaving (LTW)：在jvm加载类的时候，做字节码修改或替换</p>
+</li>
+</ol>
+<p>逆向工程中可以用到后两个：后编译时编织和加载时编织。</p>
+<h2 id="1-安装AspectJ"><a href="#1-安装AspectJ" class="headerlink" title="1. 安装AspectJ"></a>1. 安装AspectJ</h2><p>下载地址：<a href="http://www.eclipse.org/aspectj/downloads.php" target="_blank" rel="noopener">http://www.eclipse.org/aspectj/downloads.php</a></p>
+<p>选择里面的1.9版本下载，下载完成之后是个jar包</p>
+<p>安装命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar aspectj-1.9.1.jar</span><br></pre></td></tr></table></figure>
+<p>根据提示设置好java主目录和aspectj的安装目录，这里采用默认的C:\aspectj1.9</p>
+<p>安装完成后，设置如下环境变量</p>
+<p>设置ASPECTJ_HOME</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ASPECTJ_HOME = C:\aspectj1.9</span><br></pre></td></tr></table></figure>
+<p>添加/修改CLASSPATH，把aspectjrt.jar添加进去</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CLASSPATH = .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar;%JAVA_HOME%\lib\dt.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar</span><br></pre></td></tr></table></figure>
+<p>PATH变量新增值</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%ASPECTJ_HOME%\bin</span><br></pre></td></tr></table></figure>
+<p>环境变量设置完成之后，验证命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ajc -version</span><br></pre></td></tr></table></figure>
+<p>出现如下结果说明环境变量配置成功</p>
+<p><img src="/img/posts/1524910889566146.png" alt="QQ截图20180428182104.png"></p>
+<h2 id="2-看两个简单的例子"><a href="#2-看两个简单的例子" class="headerlink" title="2. 看两个简单的例子"></a>2. 看两个简单的例子</h2><h3 id="1-第一个项目helloworld"><a href="#1-第一个项目helloworld" class="headerlink" title="1. 第一个项目helloworld"></a>1. 第一个项目helloworld</h3><p>Java文件HelloWorld.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//HelloWorld.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"Hello, world!"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> </span>&#123;</span><br><span class="line">		HelloWorld hw = <span class="keyword">new</span> HelloWorld();</span><br><span class="line">		hw.sayHello();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Aspectj文件MyAspect.aj</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//MyAspect.aj</span></span><br><span class="line"><span class="keyword">public</span> aspect MyAspect &#123;</span><br><span class="line">	<span class="function">pointcut <span class="title">say</span><span class="params">()</span>:<span class="title">call</span><span class="params">(<span class="keyword">void</span> HelloWorld.sayHello()</span>)</span>;</span><br><span class="line"></span><br><span class="line">	before():say() &#123;</span><br><span class="line">		System.out.println(<span class="string">"before say hello...."</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	after():say() &#123;</span><br><span class="line">		System.out.println(<span class="string">"after say hello...."</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Load-time weaving (LTW) 加载时编织命令</p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar myjar.jar HelloWorld.java</span><br><span class="line">ajc -outjar MyAspect.jar -outxml MyAspect.aj  -classpath <span class="string">"myjar.jar;%CLASSPATH%"</span></span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"MyAspect.jar;myjar.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<p><img src="/img/posts/1524911341856177.png" alt="QQ截图20180428182845.png"></p>
+<p>可以看到在helloworld字符串上有上下两行文字</p>
+<h3 id="2-第二个项目，输出参数和返回值"><a href="#2-第二个项目，输出参数和返回值" class="headerlink" title="2. 第二个项目，输出参数和返回值"></a>2. 第二个项目，输出参数和返回值</h3><p>java文件Main.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Main.java</span></span><br><span class="line"><span class="keyword">package</span> com.vvvtimes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> x + y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> z)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> x + y + z;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		Main m = <span class="keyword">new</span> Main();</span><br><span class="line">		System.out.println(m.add(<span class="number">1</span>, <span class="number">2</span>));</span><br><span class="line">		System.out.println(m.add(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Aspectj文件Tracing.aj</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Tracing.aj</span></span><br><span class="line"><span class="keyword">public</span> aspect Tracing &#123;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> pointcut <span class="title">mainMethod</span><span class="params">()</span>:</span></span><br><span class="line"><span class="function">            <span class="title">execution</span><span class="params">(<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[])</span>)</span>;</span><br><span class="line"></span><br><span class="line">	before(): mainMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	after(): mainMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&lt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> pointcut <span class="title">addMethod</span><span class="params">()</span>:</span></span><br><span class="line"><span class="function">            <span class="title">execution</span><span class="params">(<span class="keyword">public</span> <span class="keyword">int</span> add(..)</span>)</span>;</span><br><span class="line"></span><br><span class="line">	before(): addMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">		Object[] args = thisJoinPoint.getArgs();</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; args.length; i++) &#123;</span><br><span class="line">			System.out.println(<span class="string">"args["</span> + i + <span class="string">"]: "</span> + thisJoinPoint.getArgs()[i].toString());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	after(): addMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&lt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	after() returning(Object o) :addMethod()&#123;</span><br><span class="line">		System.out.println(<span class="string">"Return value: "</span> + o.toString());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar myjar.jar com/vvvtimes/Main.java</span><br><span class="line">ajc -outjar Tracing.jar -outxml Tracing.aj  -classpath <span class="string">"myjar.jar;%CLASSPATH%"</span></span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"Tracing.jar;myjar.jar;%CLASSPATH%"</span> com.vvvtimes.Main</span><br></pre></td></tr></table></figure>
+<p>运行结果</p>
+<p><img src="/img/posts/1524911970796725.png" alt="QQ截图20180428183817.png"></p>
+<p>可以看到，add方法的参数和返回值都打印出来了</p>
+<p>顺便说一下三个编织期的区别，从命令行角度比较如下:</p>
+<ol>
+<li>Compile-time weaving 编译时编织</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar mytarget.jar HelloWorld.java MyAspect.aj</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"mytarget.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>Post-compile weaving 后编译时编织</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar myjar.jar HelloWorld.java</span><br><span class="line">ajc -inpath myjar.jar MyAspect.aj -outjar mytarget.jar</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"mytarget.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>Load-time weaving (LTW) 加载时编织</li>
+</ol>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar myjar.jar HelloWorld.java</span><br><span class="line">ajc -outjar MyAspect.jar -outxml MyAspect.aj  -classpath <span class="string">"myjar.jar;%CLASSPATH%"</span></span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"MyAspect.jar;myjar.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<h2 id="3-ajc与aj5命令"><a href="#3-ajc与aj5命令" class="headerlink" title="3. ajc与aj5命令"></a>3. ajc与aj5命令</h2><p>acj命令是用于编译java文件和aj文件的编译器，相当于eclipse的编译器(ECJ)+aspectj运行时扩展</p>
+<p>aj5命令在jdk1.5上使用-javaagent:pathto/aspectjweaver.jar加载aspectj程序，达到修改字节码的目的</p>
+<p>这两个命令可以用java命令和javac来替代，我们以上文的命令为例</p>
+<p><strong>1. Load-time weaving (LTW) 加载时编织</strong></p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar myjar.jar HelloWorld.java</span><br><span class="line">ajc -outjar MyAspect.jar -outxml MyAspect.aj  -classpath <span class="string">"myjar.jar;%CLASSPATH%"</span></span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"MyAspect.jar;myjar.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p>命令翻译</p>
+<p>若已经在classpath环境变量里设置过aspectjrt.jar，可在 -classpath里省略%ASPECTJ_HOME%\lib\aspectjrt.jar;下同</p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">javac HelloWorld.java</span><br><span class="line">jar cvf myjar.jar HelloWorld.class</span><br><span class="line">java -classpath <span class="string">"myjar.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar;%ASPECTJ_HOME%\lib\aspectjtools.jar;%CLASSPATH%"</span> org.aspectj.tools.ajc.Main -outxml MyAspect.aj -outjar MyAspect.jar</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -javaagent:%ASPECTJ_HOME%\lib\aspectjweaver.jar -classpath <span class="string">"MyAspect.jar;myjar.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p><strong>2. Compile-time weaving 编译时编织</strong></p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar mytarget.jar HelloWorld.java MyAspect.aj</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"mytarget.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p>命令翻译</p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -classpath <span class="string">"myjar.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar;%ASPECTJ_HOME%\lib\aspectjtools.jar;%CLASSPATH%"</span> org.aspectj.tools.ajc.Main -outjar mytarget.jar HelloWorld.java MyAspect.aj</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -classpath <span class="string">"mytarget.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p><strong>3. Post-compile weaving 后编译时编织</strong></p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajc -outjar myjar.jar HelloWorld.java</span><br><span class="line">ajc -inpath myjar.jar MyAspect.aj -outjar mytarget.jar</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aj5 -classpath <span class="string">"mytarget.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p>命令翻译</p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">javac HelloWorld.java</span><br><span class="line">jar cvf myjar.jar HelloWorld.class</span><br><span class="line">java -classpath <span class="string">"myjar.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar;%ASPECTJ_HOME%\lib\aspectjtools.jar;%CLASSPATH%"</span> org.aspectj.tools.ajc.Main -inpath myjar.jar MyAspect.aj -outjar mytarget.jar</span><br></pre></td></tr></table></figure>
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -classpath <span class="string">"mytarget.jar;%ASPECTJ_HOME%\lib\aspectjrt.jar;%CLASSPATH%"</span> HelloWorld</span><br></pre></td></tr></table></figure>
+<p>翻译成java命令的好处是，可以在Load-time weaving (LTW) 加载时编织直接指定多个-javaagent</p>
+<p>如</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -javaagent:aspectjweaver.jar -javaagent:ZKMAgent.jar -cp Tracing.jar;ZKM.jar com.zelix.ZKM</span><br></pre></td></tr></table></figure>
+<h2 id="4-Eclipse插件AJDT"><a href="#4-Eclipse插件AJDT" class="headerlink" title="4. Eclipse插件AJDT"></a>4. Eclipse插件AJDT</h2><p>AJDT即Eclipse AspectJ Development Tools.是一个Eclipse插件，可以编写AspectJ项目</p>
+<p>安装</p>
+<p>help–&gt;Install New Software</p>
+<p>填写在线安装地址：<a href="http://download.eclipse.org/tools/ajdt/47_aj9/dev/update" target="_blank" rel="noopener">http://download.eclipse.org/tools/ajdt/47_aj9/dev/update</a></p>
+<p>安装完成之后，新建Aspectj项目</p>
+<p><img src="/img/posts/1525009576681420.png" alt="QQ截图20180429214612.png"></p>
+<p>项目结构如下</p>
+<p><img src="/img/posts/1525009639666428.png" alt="QQ截图20180429214703.png"></p>
+<p>把前面博文的aj文件和java文件内容复制过来</p>
+<p>其中aj文件的新建方法</p>
+<p>File–&gt;New–&gt;Project选择AspectJ Project</p>
+<p><img src="/img/posts/1525009746246275.png" alt="QQ截图20180429214855.png"></p>
+<p>运行的时候，选中java文件，右键Run As–&gt;AspectJ/Java Application</p>
+<p><img src="/img/posts/1525009817845823.png" alt="image.png"></p>
+<p>运行结果</p>
+<p><img src="/img/posts/1525009889793930.png" alt="QQ截图20180429215113.png"></p>
+<p>下面看运行时加载项目的配置</p>
+<p>新建项目结构如图</p>
+<p><img src="/img/posts/1525010011795018.png" alt="QQ截图20180429215259.png"></p>
+<p>其中aj文件内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Tracing.aj</span></span><br><span class="line"><span class="keyword">public</span> aspect Tracing &#123;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> pointcut <span class="title">mainMethod</span><span class="params">()</span>:</span></span><br><span class="line"><span class="function">            <span class="title">execution</span><span class="params">(<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[])</span>)</span>;</span><br><span class="line"></span><br><span class="line">	before(): mainMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	after(): mainMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&lt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Run–&gt;Run configurations</p>
+<p>运行项目类型选:Aspect Load-Time Weaving Application(默认的是下面的那个Aspect/Java Application 注意别选错了)</p>
+<p>Project:AspectJDemo3</p>
+<p>Main class:com.zelix.ZKM</p>
+<p>LTW Aspect path:添加j外部jar选择ZKM.jar</p>
+<p><img src="/img/posts/1525010121335861.png" alt="QQ截图20180429215513.png"></p>
+<p><img src="/img/posts/1525010229193961.png" alt="QQ截图20180429215701.png"></p>
+<p>最后点击配置里的Run命令，运行结果如下</p>
+<p><img src="/img/posts/1525010332499202.png" alt="QQ截图20180429215841.png"></p>
+<p>这里面的导出jar没啥用，都是导出编译期的，不能导出加载期的，也许是不会用。。。</p>
+<h2 id="5-获取成员变量的值"><a href="#5-获取成员变量的值" class="headerlink" title="5. 获取成员变量的值"></a>5. 获取成员变量的值</h2><p><strong>注意：由于JVM优化的原因，方法里面的局部变量是不能通过AspectJ拦截并获取其中的值的，但是成员变量可以</strong></p>
+<p>在逆向中，我们经常要跟踪某些类的成员变量的值，这里以获取ZKM9中的qs类的成员变量g为例进行说明</p>
+<p>在StackOverFlow上有这么一篇提问：<a href="https://stackoverflow.com/questions/29561306/aspectj-how-to-get-accessed-fields-value-in-a-get-pointcut" target="_blank" rel="noopener">AspectJ: How to get accessed field’s value in a get() pointcut</a></p>
+<p>将其中内容改写为qs类的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> pointcut <span class="title">qsfiledMethod</span><span class="params">()</span> :</span></span><br><span class="line"><span class="function">	<span class="title">get</span><span class="params">(* com.zelix.qs.*)</span></span>;</span><br><span class="line"></span><br><span class="line">after() returning(Object field) :qsfiledMethod()&#123;</span><br><span class="line">	System.out.println(thisJoinPoint.toLongString());</span><br><span class="line">	System.out.println(<span class="string">"  "</span> + thisJoinPoint.getSignature().getName());</span><br><span class="line">	System.out.println(<span class="string">"  "</span> + field);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是这个方法有缺陷，只能获取公共变量，运行之后获取到的都是qs的成员变量j和k</p>
+<p>运行结果如下</p>
+<p><img src="/img/posts/1525941475324095.png" alt="QQ截图20180510163734.png"></p>
+<p>所以此路不通，那么就需要再找一条路：反射</p>
+<p>qs类中的某个方法调用了jj.a方法，所以用call找出调用者，然后通过反射方式获取filed，talk is cheap,show you code?</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> pointcut <span class="title">jjaMethod</span><span class="params">()</span> :</span></span><br><span class="line"><span class="function">	<span class="title">call</span><span class="params">(String com.zelix.jj.a(String, String, String, Object, <span class="keyword">int</span>)</span>)</span>;</span><br><span class="line"></span><br><span class="line">before() : jjaMethod() &#123;</span><br><span class="line">	System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">	<span class="keyword">if</span> (thisJoinPoint.getThis() != <span class="keyword">null</span>) &#123;</span><br><span class="line">           System.out.println(<span class="string">"this "</span>+thisJoinPoint.getThis().getClass().getName()  +  <span class="string">"   "</span> + thisJoinPoint.getSourceLocation());</span><br><span class="line">           Object obj  = thisJoinPoint.getThis();</span><br><span class="line">           Class clazz =  obj.getClass();</span><br><span class="line">           </span><br><span class="line">           <span class="comment">//遍历成员</span></span><br><span class="line">   		Field[] fileds = clazz.getDeclaredFields();</span><br><span class="line">   		<span class="keyword">for</span> (Field field : fileds) &#123;</span><br><span class="line">   			System.out.println(field);</span><br><span class="line">   		&#125;</span><br><span class="line">   		<span class="keyword">try</span> &#123;</span><br><span class="line">   			<span class="comment">//获取单个成员private final java.lang.String[] com.zelix.qs.g</span></span><br><span class="line">   			<span class="comment">//并输出它的值</span></span><br><span class="line">			Field filed = clazz.getDeclaredField(<span class="string">"g"</span>);</span><br><span class="line">			System.out.println(filed);</span><br><span class="line">			filed.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">			String[] g= (String[]) filed.get(obj);</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; g.length; i++) &#123;</span><br><span class="line">				System.out.println(<span class="string">"g["</span>+i+<span class="string">"] ="</span>+g[i]);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">       &#125;<span class="keyword">else</span> <span class="keyword">if</span> (thisJoinPoint.getTarget() != <span class="keyword">null</span>) &#123;</span><br><span class="line">           System.out.println(<span class="string">"target "</span>+thisJoinPoint.getTarget().getClass().getName()  +  <span class="string">"   "</span> + thisJoinPoint.getSourceLocation());</span><br><span class="line">       &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下</p>
+<p><img src="/img/posts/1525941797472921.png" alt="QQ截图20180510164305.png"></p>
+<p>before方法里的功能如下</p>
+<ol>
+<li><p>打印出调用者的名称和位置</p>
+</li>
+<li><p>遍历打印qs类的所有成员名称</p>
+</li>
+<li><p>获取成员g的值，由于这个成员是数组类型，遍历这个数组打印值</p>
+</li>
+</ol>
+<h2 id="6-Around方法修改方法体"><a href="#6-Around方法修改方法体" class="headerlink" title="6. Around方法修改方法体"></a>6. Around方法修改方法体</h2><p>在逆向中，我们往往通过修改某个方法达到目的，在javaassist中有insertBefore，insertAfter，setBody，在AspectJ中也可以通过Around实现类似的功能。</p>
+<p>看一个简单的例子</p>
+<p>java文件Main.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Main.java</span></span><br><span class="line"><span class="keyword">package</span> com.vvvtimes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> x + y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> z)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> x + y + z;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		Main m = <span class="keyword">new</span> Main();</span><br><span class="line">		System.out.println(m.add(<span class="number">1</span>, <span class="number">2</span>));</span><br><span class="line">		System.out.println(m.add(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>aj文件Tracing.aj</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Tracing.aj</span></span><br><span class="line"><span class="keyword">public</span> aspect Tracing &#123;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> pointcut <span class="title">mainMethod</span><span class="params">()</span>:</span></span><br><span class="line"><span class="function">            <span class="title">execution</span><span class="params">(<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[])</span>)</span>;</span><br><span class="line"></span><br><span class="line">	before(): mainMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	after(): mainMethod() &#123;</span><br><span class="line">		System.out.println(<span class="string">"&lt; "</span> + thisJoinPoint);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function">pointcut <span class="title">addMethodOne</span><span class="params">()</span> : <span class="title">call</span> <span class="params">(<span class="keyword">public</span> <span class="keyword">int</span> add(<span class="keyword">int</span>,<span class="keyword">int</span>)</span>)</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">around</span><span class="params">()</span> : <span class="title">addMethodOne</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">		Object[] args = thisJoinPoint.getArgs();</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; args.length; i++) &#123; <span class="comment">//输出参数</span></span><br><span class="line">			<span class="keyword">if</span>( args[i]!=<span class="keyword">null</span>) &#123;</span><br><span class="line">				System.out.println(<span class="string">"args["</span> + i + <span class="string">"]: "</span> + args[i].toString());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">int</span> result = proceed();<span class="comment">//这里执行原有方法体</span></span><br><span class="line">		System.out.println(<span class="string">"original return value: "</span> + result);<span class="comment">//输出原有返回值</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">777</span>; <span class="comment">//指定新值返回</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="function">pointcut <span class="title">addMethodTwo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b, <span class="keyword">int</span> c)</span> : <span class="title">call</span> <span class="params">(<span class="keyword">public</span> <span class="keyword">int</span> add(<span class="keyword">int</span>,<span class="keyword">int</span>,<span class="keyword">int</span>)</span>) &amp;&amp; <span class="title">args</span> <span class="params">(a, b, c)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">around</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b, <span class="keyword">int</span> c)</span> : <span class="title">addMethodTwo</span> <span class="params">(a, b, c)</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"&gt; "</span> + thisJoinPoint);</span><br><span class="line">		System.out.println(<span class="string">"1st passed value: "</span> + a);</span><br><span class="line">		System.out.println(<span class="string">"2nd passed value: "</span> + b);</span><br><span class="line">		System.out.println(<span class="string">"3rd passed value: "</span> + c);</span><br><span class="line">		a = <span class="number">6</span>;</span><br><span class="line">		b = <span class="number">6</span>;</span><br><span class="line">		c = <span class="number">6</span>;</span><br><span class="line">		<span class="keyword">int</span> result = proceed(a, b, c);<span class="comment">//修改传入的参数值</span></span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行后的结果如下</p>
+<p><img src="/img/posts/1526110662766584.png" alt="QQ截图20180512153730.png"></p>
+<p>proceed用于执行原有方法体，return方法用于改变返回值</p>
+<ul>
+<li><p>在第一个修改中我们输出了其中的参数，执行了原有方法之后，直接指定了一个返回值777</p>
+</li>
+<li><p>在第二个修改中，我们通过&amp;&amp; args 指定了参数，修改其参数之后执行原有方法体并返回。</p>
+</li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/09/100035.html" class="pre-post btn btn-default" title='Java逆向基础之二十二.Byteman'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Java逆向基础之二十二.Byteman</span>
+        </a>
+    
+    
+        <a href="/archives/2018/09/100033.html" class="next-post btn btn-default" title='Java逆向基础之二十.ODB动态调试'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Java逆向基础之二十.ODB动态调试</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-安装AspectJ"><span class="toc-text">1. 安装AspectJ</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-看两个简单的例子"><span class="toc-text">2. 看两个简单的例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-第一个项目helloworld"><span class="toc-text">1. 第一个项目helloworld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-第二个项目，输出参数和返回值"><span class="toc-text">2. 第二个项目，输出参数和返回值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-ajc与aj5命令"><span class="toc-text">3. ajc与aj5命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Eclipse插件AJDT"><span class="toc-text">4. Eclipse插件AJDT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-获取成员变量的值"><span class="toc-text">5. 获取成员变量的值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Around方法修改方法体"><span class="toc-text">6. Around方法修改方法体</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

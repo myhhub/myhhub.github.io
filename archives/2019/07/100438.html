@@ -1,0 +1,363 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flume,kafka">
+
+
+    <meta name="description" content="一、背景先说一下，为什么要使用 Flume + Kafka？
+以实时流处理项目为例，由于采集的数据量可能存在峰值和峰谷，假设是一个电商项目，那么峰值通常出现在秒杀时，这时如果直接将Flume聚合...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flume整合Kafka | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flume整合Kafka">
+            
+	            Flume整合Kafka
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flume/">flume</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/kafka/">kafka</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/15</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1361</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>先说一下，为什么要使用 Flume + Kafka？</p>
+<p>以实时流处理项目为例，由于采集的数据量可能存在峰值和峰谷，假设是一个电商项目，那么峰值通常出现在秒杀时，这时如果直接将Flume聚合后的数据输入到Storm等分布式计算框架中，可能就会超过集群的处理能力，这时采用Kafka就可以起到削峰的作用。Kafka天生为�数据场景而设计，具有高吞吐的特性，能很好地抗住峰值数据的冲击。</p>
+<div align="center"> <img src="/img/bigdata/flume-kafka.png"> </div>
+
+
+
+<h2 id="二、整合流程"><a href="#二、整合流程" class="headerlink" title="二、整合流程"></a>二、整合流程</h2><p>Flume发送数据到Kafka上主要是通过<code>KafkaSink</code>来实现的，主要步骤如下：</p>
+<h3 id="1-启动Zookeeper和Kafka"><a href="#1-启动Zookeeper和Kafka" class="headerlink" title="1. 启动Zookeeper和Kafka"></a>1. 启动Zookeeper和Kafka</h3><p>这里启动一个单节点的Kafka作为测试：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动Zookeeper</span></span><br><span class="line">zkServer.sh start</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动kafka</span></span><br><span class="line">bin/kafka-server-start.sh config/server.properties</span><br></pre></td></tr></table></figure>
+<h3 id="2-创建主题"><a href="#2-创建主题" class="headerlink" title="2. 创建主题"></a>2. 创建主题</h3><p>创建一个主题<code>flume-kafka</code>，之后Flume收集到的数据都会发到这个主题上：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建主题</span></span><br><span class="line">bin/kafka-topics.sh --create \</span><br><span class="line">--zookeeper hadoop001:2181 \</span><br><span class="line">--replication-factor 1   \</span><br><span class="line">--partitions 1 --topic flume-kafka</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看创建的主题</span></span><br><span class="line">bin/kafka-topics.sh --zookeeper hadoop001:2181 --list</span><br></pre></td></tr></table></figure>
+<h3 id="3-启动kafka消费者"><a href="#3-启动kafka消费者" class="headerlink" title="3. 启动kafka消费者"></a>3. 启动kafka消费者</h3><p>启动一个消费者，监听我们刚才创建的<code>flume-kafka</code>主题：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> bin/kafka-console-consumer.sh --bootstrap-server hadoop001:9092 --topic flume-kafka</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-配置Flume"><a href="#4-配置Flume" class="headerlink" title="4. 配置Flume"></a>4. 配置Flume</h3><p>新建配置文件<code>exec-memory-kafka.properties</code>，文件内容如下。这里我们监听一个名为<code>kafka.log</code>的文件，当文件内容有变化时，将新增加的内容发送到Kafka的<code>flume-kafka</code>主题上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">a1.sources = s1</span><br><span class="line">a1.channels = c1</span><br><span class="line">a1.sinks = k1                                                                                         </span><br><span class="line"></span><br><span class="line">a1.sources.s1.type=exec</span><br><span class="line">a1.sources.s1.command=tail -F /tmp/kafka.log</span><br><span class="line">a1.sources.s1.channels=c1 </span><br><span class="line"></span><br><span class="line">#设置Kafka接收器</span><br><span class="line">a1.sinks.k1.type= org.apache.flume.sink.kafka.KafkaSink</span><br><span class="line">#设置Kafka地址</span><br><span class="line">a1.sinks.k1.brokerList=hadoop001:9092</span><br><span class="line">#设置发送到Kafka上的主题</span><br><span class="line">a1.sinks.k1.topic=flume-kafka</span><br><span class="line">#设置序列化方式</span><br><span class="line">a1.sinks.k1.serializer.class=kafka.serializer.StringEncoder</span><br><span class="line">a1.sinks.k1.channel=c1     </span><br><span class="line"></span><br><span class="line">a1.channels.c1.type=memory</span><br><span class="line">a1.channels.c1.capacity=10000</span><br><span class="line">a1.channels.c1.transactionCapacity=100</span><br></pre></td></tr></table></figure>
+<h3 id="5-启动Flume"><a href="#5-启动Flume" class="headerlink" title="5. 启动Flume"></a>5. 启动Flume</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flume-ng agent \</span><br><span class="line">--conf conf \</span><br><span class="line">--conf-file /usr/app/apache-flume-1.6.0-cdh5.15.2-bin/examples/exec-memory-kafka.properties \</span><br><span class="line">--name a1 -Dflume.root.logger=INFO,console</span><br></pre></td></tr></table></figure>
+<h3 id="6-测试"><a href="#6-测试" class="headerlink" title="6. 测试"></a>6. 测试</h3><p>向监听的<code>/tmp/kafka.log</code>文件中追加内容，查看Kafka消费者的输出：</p>
+<div align="center"> <img src="/img/bigdata/flume-kafka-01.png"> </div>
+
+<p>可以看到<code>flume-kafka</code>主题的消费端已经收到了对应的消息：</p>
+<div align="center"> <img src="/img/bigdata/flume-kafka-2.png"> </div>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100439.html" class="pre-post btn btn-default" title='Sqoop简介与安装'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Sqoop简介与安装</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100437.html" class="next-post btn btn-default" title='Flume简介及基本使用'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flume简介及基本使用</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、背景"><span class="toc-text">一、背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、整合流程"><span class="toc-text">二、整合流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-启动Zookeeper和Kafka"><span class="toc-text">1. 启动Zookeeper和Kafka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-创建主题"><span class="toc-text">2. 创建主题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-启动kafka消费者"><span class="toc-text">3. 启动kafka消费者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-配置Flume"><span class="toc-text">4. 配置Flume</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-启动Flume"><span class="toc-text">5. 启动Flume</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-测试"><span class="toc-text">6. 测试</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

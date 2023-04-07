@@ -1,0 +1,403 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="linux,nfs">
+
+
+    <meta name="description" content="NFS（Network File System，网络文件系统）是一种在企业内部网络使用比较广泛的文件共享服务，主要用于Linux以及类UNIX系统之间的文件共享。它采用C/S工作模式，在NFS服...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>实现NFS服务用户身份映射 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="实现NFS服务用户身份映射">
+            
+	            实现NFS服务用户身份映射
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/devops/">运维</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/linux/">linux</a> <a class="tag-link" href="/tags/nfs/">nfs</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/01/21</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1537</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>NFS（Network File System，网络文件系统）是一种在企业内部网络使用比较广泛的文件共享服务，主要用于Linux以及类UNIX系统之间的文件共享。它采用C/S工作模式，在NFS服务器上将某个目录设置为共享目录，然后在客户端可以将这个目录挂载到本地使用。NFS服务诞生于上世纪80年代，虽然在CentOS7.6系统中采用的是目前最新的NFSv4版本，但由于NFS服务本身比较简单，尤其是在权限设置方面功能比较弱，所以如果对NFS服务设置不当，将会在企业网络中产生比较严重的安全隐患。本文就NFS服务的用户身份映射问题进行了分析，并给出了推荐的配置和使用方法。文中准备了两台Linux虚拟机来搭建实验环境，虚拟机所使用的操作系统版本为CentOS7.6。其中名为Server的虚拟机IP地址是192.168.80.10，名为Client的虚拟机IP地址是192.168.80.101。</p>
+<h1 id="1-NFS的基本配置"><a href="#1-NFS的基本配置" class="headerlink" title="1. NFS的基本配置"></a>1. NFS的基本配置</h1><p>NFS服务在CentOS7系统中默认已经安装，但并未运行，因而首先需要在虚拟机Server中执行“systemctl start nfs”命令启动服务，然后再执行“systemctl enable nfs”命令将服务设置为开机自动运行。<br>在服务器端新建一个/var/share目录，并在其中创建一个测试文件test.txt。</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@server</span> ~]<span class="meta"># mkdir /var/share</span></span><br><span class="line">[root<span class="symbol">@server</span> ~]<span class="meta"># echo <span class="string">'hello,world!'</span> &gt; /var/share/test.txt</span></span><br></pre></td></tr></table></figure>
+<p>下面将/var/share目录设置为NFS共享，并允许所有客户端访问。<br>NFS服务的主配置文件是/etc/exports，在/etc/exports文件中，每一行定义一个共享目录。利用vi编辑器打开配置文件/etc/exports，在其中增加下面的一行：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">root@server ~</span>]<span class="meta"># vim /etc/exports</span></span><br><span class="line">/<span class="keyword">var</span>/share  *(ro,sync)</span><br></pre></td></tr></table></figure>
+<p>在设置项中，“/var/share”表示要共享的目录，“”表示所有客户端都可以访问该共享目录，选项“ro”用于定义客户端的权限为read-only（只读），选项“sync”表示启用同步模式，可以将内存中的数据实时写入到磁盘中。<br>修改完配置文件之后，重启NFS服务生效。<br><code>[root@server ~]# systemctl restart nfs</code><br>然后在客户端就可以将共享目录挂载到本地使用。</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@client</span> ~]<span class="meta"># mkdir /mnt/nfs                                 #创建挂载点目录</span></span><br><span class="line">[root<span class="symbol">@client</span> ~]<span class="meta"># mount -t nfs 192.168.80.10:/common /mnt/nfs        #挂载共享目录</span></span><br><span class="line">[root<span class="symbol">@client</span> ~]<span class="meta"># ls /mnt/nfs                                    #查看共享目录中的文件</span></span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+<p>由于NFS服务本身并不具备用户身份验证的功能，而仅支持基于客户端IP进行认证。也就是说，我们在对NFS服务进行权限设置时，不能针对用户来分配权限，而只能针对客户端IP进行权限分配。所以如果希望IP地址为192.168.80.101的客户端可以对共享目录执行写入操作，那么可以在服务器端对配置文件进行如下修改，添加客户端的IP，并设置权限选项为“rw（read-write）”：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="meta">@server</span> ~]# vim /etc/exports</span><br><span class="line">/<span class="keyword">var</span>/share  *(ro,<span class="keyword">sync</span>)   <span class="number">192.168</span><span class="number">.80</span><span class="number">.101</span>(rw,<span class="keyword">sync</span>)</span><br></pre></td></tr></table></figure>
+<p>修改完成后，需要重启NFS服务生效。但是如果NFS共享正在被某些服务器使用的话，那么NFS服务是不允许随便重启的，所以在CentOS系统中提供了exportfs命令，可以在不重启NFS服务的情况下，重新加载/etc/exports文件，使得新的设置项生效。exportfs命令的常用选项有：-a（全部挂载或全部卸载）、-r（重新挂载）、-v（显示详细信息），通常都是将这三个选项组合使用。下面通过exportfs命令使得我们刚才所做的设置生效。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@server</span> ~]<span class="comment"># exportfs -arv</span></span><br><span class="line">exporting <span class="number">192.168</span>.<span class="number">80.101</span><span class="symbol">:/var/share</span></span><br><span class="line">exporting *<span class="symbol">:/var/share</span></span><br></pre></td></tr></table></figure>
+<p>在客户端先将共享目录卸载，然后再重新挂载，以使得服务器端的设置生效。但在对共享目录进行写入测试时失败。</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@Client ~]<span class="comment"># umount /mnt/share                          #卸载共享目录</span></span><br><span class="line">[root@Client ~]<span class="comment"># mount 192.168.80.10:/var/share /mnt/share      #重新挂载共享目录</span></span><br><span class="line">[root@Client ~]<span class="comment"># touch /mnt/share/a.txt                     #写入测试失败</span></span><br><span class="line">touch: 无法创建<span class="string">"/mnt/share/a.txt"</span>: 只读文件系统</span><br></pre></td></tr></table></figure>
+<p>这是由于虽然在服务器端的配置文件/etc/exports中设置了允许用户对/var/share目录具有读写权限，但在操作系统层面，用户对/var/share目录却不具备写入权限。因而要实现对共享目录的写入操作，必须要保证在NFS服务和操作系统两个层面全部都具有写入权限才可以。<br>如何使得客户端可以在操作系统层面对共享目录具有写入权限，这就要涉及到用户身份映射问题。</p>
+<h1 id="2-用户身份映射的原理"><a href="#2-用户身份映射的原理" class="headerlink" title="2. 用户身份映射的原理"></a>2. 用户身份映射的原理</h1><p>NFS服务虽然不具备用户身份验证的功能，但是NFS提供了一种身份映射的机制来对用户身份进行管理。当客户端访问NFS服务时，服务器会根据情况将客户端用户的身份映射成NFS匿名用户nfsnobody。nfsnobody是由NFS服务在系统中自动创建的一个程序用户账号，该账号不能用于登录系统，专门用作NFS服务的匿名用户账号。</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> [root@Server ~]<span class="comment"># grep nfsnobody /etc/passwd        #查看nfsnobody用户的信息。</span></span><br><span class="line"><span class="symbol">nfsnobody:</span><span class="symbol">x:</span><span class="number">65534</span>:<span class="number">65534</span>:Anonymous NFS <span class="symbol">User:</span>/var/<span class="class"><span class="keyword">lib</span>/<span class="title">nfs</span>:/<span class="title">sbin</span>/<span class="title">nologin</span></span></span><br></pre></td></tr></table></figure>
+<p>所谓用户身份映射，是指当客户端访问NFS服务器时，会自动被视作服务器中的nfsnobody用户，并按照该用户的权限设置去执行操作。但是并非所有的客户端都会被映射为nfsnobody用户，在/etc/exports配置文件中提供了以下选项，以决定是否将NFS客户端映射为nfsnobody用户：</p>
+<ul>
+<li><p>root_squash，当NFS客户端以root用户身份访问时，映射为NFS服务器的nfsnobody用户。</p>
+</li>
+<li><p>no_root_squash，当NFS客户端以root身份访问时，映射为NFS服务器的root用户，也就是要为超级用户保留权限。这个选项会留下严重的安全隐患，一般不建议采用。</p>
+</li>
+<li><p>all_squash，无论NFS客户端以哪种用户身份访问，均映射为NFS服务器的nfsnobody用户。</p>
+<p>其中默认值是root_squash，即当客户端以root用户的身份访问NFS共享时，在服务器端会自动被映射为匿名账号nfsnobody。</p>
+<p>下面将分几种情况分别予以说明。</p>
+<h1 id="3-root用户的身份映射"><a href="#3-root用户的身份映射" class="headerlink" title="3. root用户的身份映射"></a>3. root用户的身份映射</h1><p>我们之前之所以无法在客户端执行写入操作，是因为还没有在系统层面赋予nfsnobody用户对共享目录/var/share具有写入权限。这里通过设置ACL规则赋予nfsnobody用户rwx权限。<br><code>[root@Server ~]# setfacl -m u:nfsnobody:rwx /var/share`</code><br>然后在客户端重新挂载共享目录，并测试能否写入。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># umount /mnt/share</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># mount -t nfs 192.168.80.10:/var/share /mnt/share</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># touch /mnt/share/b.txt</span></span><br></pre></td></tr></table></figure>
+<p>可以看到此时客户端可以写入，并且所创建文件的所有者正是nfsnobody。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@Client ~]<span class="comment"># ll /mnt/share/b.txt</span></span><br><span class="line">-rw-r--r--.<span class="number"> 1 </span>nfsnobody nfsnobody<span class="number"> 0 </span>3月 <span class="number"> 21 </span>07:39 /mnt/share/b.txt</span><br></pre></td></tr></table></figure>
+<p>由于客户端当前所使用的用户身份是root，默认情况下，当客户端访问NFS服务器时，在服务器端会将其用户身份映射为nfsnobody，所以在服务器端只要赋予nfsnobody用户对共享目录具有写入权限，那么客户端自然就可以写入了。<br>下面我们再验证一下no_root_squash设置项，即root用户不进行身份映射。<br>首先在服务器端修改配置文件/etc/exports，为/var/share共享目录添加no_root_squash选项。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@server</span> ~]<span class="comment"># vim /etc/exports           #修改配置文件</span></span><br><span class="line">/var/share *(rw,no_root_squash,sync)</span><br><span class="line">[root<span class="variable">@Server</span> ~]<span class="comment"># exportfs  -arv             #重新加载服务</span></span><br><span class="line">exporting *<span class="symbol">:/var/share</span></span><br></pre></td></tr></table></figure>
+<p>然后去掉对共享目录/var/share所设置的ACL规则，取消nfsnobody用户对该目录的写入权限。<br><code>[root@Server ~]# setfacl -b /var/share</code><br>最后在客户端重新挂载共享目录，并测试能否写入。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># umount /mnt/share</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># mount -t nfs 192.168.80.10:/var/share /mnt/share</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># touch /mnt/share/c.txt</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># ll /mnt/share/c.txt </span></span><br><span class="line">-rw-r--r--. <span class="number">1</span> root root <span class="number">0</span> <span class="number">4</span>月  <span class="number">14</span> <span class="number">17</span>:<span class="number">08</span> /mnt/share/c.txt</span><br></pre></td></tr></table></figure>
+<p>可以发现，此时客户端仍然是可以写入的。因为对于NFS服务器而言，访问共享目录的客户端就是服务器中的root用户，对共享目录具有完全权限。所以no_root_squash选项会产生很大的安全隐患，一般情况下都不建议采用。</p>
+<h1 id="4-普通用户的身份映射"><a href="#4-普通用户的身份映射" class="headerlink" title="4. 普通用户的身份映射"></a>4. 普通用户的身份映射</h1><p>如果客户端所使用的用户身份不是root，而是一个普通用户，那么默认情况下在服务器端会将其视作其它用户（other）。下面在客户端以普通用户的身份继续进行测试。<br>首先在服务器端修改配置文件/etc/exports，将共享目录/var/share中的no_root_squash选项去掉，重新加载服务之后，再次通过设置ACL规则的方式赋予nfsnobody用户读写执行权限。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@server</span> ~]<span class="comment"># vim /etc/exports       #修改配置文件</span></span><br><span class="line">/var/share *(rw,sync)</span><br><span class="line">[root<span class="variable">@Server</span> ~]<span class="comment"># exportfs  -arv         #重新加载服务</span></span><br><span class="line">exporting *<span class="symbol">:/var/share</span></span><br><span class="line"><span class="comment">#通过设置ACL赋予nfsnobody用户rwx权限</span></span><br><span class="line">[root<span class="variable">@Server</span> ~]<span class="comment"># setfacl -m u:nfsnobody:rwx /var/share</span></span><br></pre></td></tr></table></figure>
+<p>在客户端重新挂载共享，并测试以root用户身份可以正常写入。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># umount /mnt/share</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># mount 192.168.80.10:/var/share /mnt/share</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># touch /mnt/share/d.txt</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># ll /mnt/share/d.txt </span></span><br><span class="line">-rw-r--r--. <span class="number">1</span> nfsnobody nfsnobody <span class="number">0</span> <span class="number">4</span>月  <span class="number">14</span> <span class="number">17</span>:<span class="number">29</span> /mnt/share/d.txt</span><br></pre></td></tr></table></figure>
+<p>下面在客户端创建一个admin用户，并设置密码。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># useradd admin</span></span><br><span class="line">[root@<span class="built_in">Client</span> ~]<span class="meta"># echo 123 | passwd --stdin admin</span></span><br></pre></td></tr></table></figure>
+<p>切换到admin用户身份，尝试向共享目录中写入文件，写入失败，但是可以读取目录中的内容。因而如果客户端是以普通用户的身份访问NFS共享，那么默认情况下在服务器端并不将其映射为nfsnobody，而是视作其他用户（other）。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@Client</span> ~]<span class="comment"># su - admin</span></span><br><span class="line">[admin<span class="variable">@Client</span> ~]<span class="variable">$ </span>touch /mnt/share/e.txt</span><br><span class="line"><span class="symbol">touch:</span> 无法创建<span class="string">"/mnt/share/e.txt"</span>: 权限不够</span><br><span class="line">[admin<span class="variable">@Client</span> ~]<span class="variable">$ </span>cat /mnt/share/e.txt</span><br></pre></td></tr></table></figure>
+<p>下面在服务器端继续修改配置文件/etc/exports，在共享设置中添加“all_squash”选项，将所有客户端用户均映射为nfsnobody。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@server</span> ~]<span class="comment"># vim /etc/exports           #修改配置文件</span></span><br><span class="line">/var/share *(rw,sync,all_squash)</span><br><span class="line">[root<span class="variable">@Server</span> ~]<span class="comment"># exportfs  -arv             #重新加载服务</span></span><br><span class="line">exporting *<span class="symbol">:/var/share</span></span><br></pre></td></tr></table></figure>
+<p>然后在客户端再次重新挂载共享（具体操作从略），此时以admin用户身份就可以写入了，并且可以发现所创建文件的所有者同样是nfsnobody。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[admin<span class="meta">@Client</span> ~]$ touch <span class="regexp">/mnt/</span>share/e.txt</span><br><span class="line">[admin<span class="meta">@Client</span> ~]$ ll <span class="regexp">/mnt/</span>share/e.txt </span><br><span class="line">-rw-rw-r--. <span class="number">1</span> nfsnobody nfsnobody <span class="number">0</span> <span class="number">4</span>月  <span class="number">14</span> <span class="number">17</span>:<span class="number">37</span> <span class="regexp">/mnt/</span>share/e.txt</span><br></pre></td></tr></table></figure>
+<h1 id="5-用户身份重叠"><a href="#5-用户身份重叠" class="headerlink" title="5. 用户身份重叠"></a>5. 用户身份重叠</h1><p>在使用NFS共享的过程中，有时还可能会遇到用户身份重叠的问题。所谓用户身份重叠，是指在NFS服务采用默认设置（用户身份映射选项为root_squash）时，如果在服务器端赋予某个用户对共享目录具有相应权限，而且在客户端恰好也有一个具有相同uid的用户，那么当在客户端以该用户身份访问共享时，将自动具有服务器端对应用户的权限。下面举例予以说明。<br>首先在服务器端将/var/share共享还原为默认设置，并且取消/var/share目录针对nfsnobody用户的ACL规则，具体操作从略。<br>假设服务器端存在一个名为teacher的用户账号，uid为1246，将该用户设置为共享目录的所有者。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">root@Server ~</span>]<span class="meta"># id teacher                 #查看teacher用户的身份信息`</span></span><br><span class="line">uid=<span class="number">1246</span>(teacher) gid=<span class="number">1246</span>(teacher) 组=<span class="number">1246</span>(teacher</span><br><span class="line"><span class="meta">#将teacher用户设置为/var/share目录的所有者</span></span><br><span class="line">[<span class="meta">root@Server ~</span>]<span class="meta"># chown teacher /var/share</span></span><br><span class="line">[<span class="meta">root@Server ~</span>]<span class="meta"># ll -d /var/share</span></span><br><span class="line">drwxr-xr-x. <span class="number">2</span> teacher root <span class="number">45</span> <span class="number">4</span>月  <span class="number">14</span> <span class="number">17</span>:<span class="number">37</span> /<span class="keyword">var</span>/share</span><br></pre></td></tr></table></figure>
+<p>下面在客户端进行操作。首先仍是重新挂载共享目录，然后将原先admin用户的uid也改为1246。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[root@Client ~]</span><span class="comment"># usermod -u 1246 admin</span></span><br><span class="line"><span class="section">[root@Client ~]</span><span class="comment"># id admin</span></span><br><span class="line"><span class="attr">uid</span>=<span class="number">1246</span>(admin) gid=<span class="number">1002</span>(admin) 组=<span class="number">1002</span>(admin)</span><br></pre></td></tr></table></figure>
+<p>然后以admin用户身份测试能否对共享目录执行写入操作，发现可以正常写入，并且所创建文件的所有者是admin。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@Client</span> ~]<span class="comment"># su - admin</span></span><br><span class="line">[admin<span class="variable">@Client</span> ~]<span class="variable">$ </span>touch /mnt/share/f.txt</span><br><span class="line">[admin<span class="variable">@Client</span> ~]<span class="variable">$ </span>ll /mnt/share/f.txt</span><br><span class="line">-rw-rw-r--. <span class="number">1</span> admin admin <span class="number">0</span> <span class="number">4</span>月  <span class="number">14</span> <span class="number">17</span><span class="symbol">:</span><span class="number">47</span> /mnt/share/f.txt</span><br></pre></td></tr></table></figure>
+<p>在服务器端查看admin用户所创建的文件，发现所有者则是teacher。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@Server ~]<span class="comment"># ll /var/share/f.txt </span></span><br><span class="line">-rw-rw-r--.<span class="number"> 1 </span>teacher<span class="number"> 1002 </span>0 4月 <span class="number"> 14 </span>17:47 /var/share/f.txt</span><br></pre></td></tr></table></figure>
+<p>这是因为对于Linux系统而言，区分不同用户的唯一标识就是uid，至于用户名只是为了方便人类理解。所以在系统层面，无论是teacher用户还是admin用户，只要他们的uid一样，就认为是同一个用户。但也正是因为这个原因，才会导致出现用户身份重叠的问题，对于NFS服务而言，这也是一个比较严重的安全隐患。<br>如何避免用户身份重叠呢？可以从以下两个方面着手：</p>
+</li>
+<li><p>一是在设置NFS共享时，建议采用“all_squash”选项，将所有客户端用户均映射为nfsnobody。这样就可以有效避免用户身份重叠的问题。</p>
+</li>
+<li><p>二是应严格控制NFS共享目录的系统权限，尽量不用为普通用户赋予权限。</p>
+</li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/01/100167.html" class="pre-post btn btn-default" title='前端工程之 一.大公司如何开发和部署前端代码'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">前端工程之 一.大公司如何开发和部署前端代码</span>
+        </a>
+    
+    
+        <a href="/archives/2019/01/100165.html" class="next-post btn btn-default" title='SpringBoot集成ElasticSearch实现增删查改(附源码)'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">SpringBoot集成ElasticSearch实现增删查改(附源码)</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-NFS的基本配置"><span class="toc-text">1. NFS的基本配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-用户身份映射的原理"><span class="toc-text">2. 用户身份映射的原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-root用户的身份映射"><span class="toc-text">3. root用户的身份映射</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-普通用户的身份映射"><span class="toc-text">4. 普通用户的身份映射</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-用户身份重叠"><span class="toc-text">5. 用户身份重叠</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

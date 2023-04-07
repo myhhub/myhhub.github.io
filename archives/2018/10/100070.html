@@ -1,0 +1,373 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="redis,高并发,缓存">
+
+
+    <meta name="description" content="1.为何需要缓存？在高并发请求时，为何我们频繁提到缓存技术？最直接的原因是，目前磁盘IO和网络IO相对于内存IO的成百上千倍的性能劣势。做个简单计算，如果我们需要某个数据，该数据从数据库磁盘读出...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>浅析高并发缓存设计 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="浅析高并发缓存设计">
+            
+	            浅析高并发缓存设计
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/redis/">redis</a> <a class="tag-link" href="/tags/cache/">缓存</a> <a class="tag-link" href="/tags/concurrency/">高并发</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/10/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1620</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="1-为何需要缓存？"><a href="#1-为何需要缓存？" class="headerlink" title="1.为何需要缓存？"></a>1.为何需要缓存？</h2><p>在高并发请求时，为何我们频繁提到缓存技术？最直接的原因是，目前磁盘IO和网络IO相对于内存IO的成百上千倍的性能劣势。<br>做个简单计算，如果我们需要某个数据，该数据从数据库磁盘读出来需要0.1s，从交换机传过来需要0.05s，那么每个请求完成最少0.15s（当然，事实上磁盘和网络IO也没有这么慢，这里只是举例），该数据库服务器每秒只能响应67个请求；而如果该数据存在于本机内存里，读出来只需要10us，那么每秒钟能够响应100，000个请求。</p>
+<p>通过将高频使用的数据存在离cpu更近的位置，以减少数据传输时间，从而提高处理效率，这就是缓存的意义。</p>
+<h2 id="2-在哪里用缓存？"><a href="#2-在哪里用缓存？" class="headerlink" title="2.在哪里用缓存？"></a>2.在哪里用缓存？</h2><p>一切地方。例如：</p>
+<ul>
+<li>我们从硬盘读数据的时候，其实操作系统还额外把附近的数据都读到了内存里</li>
+<li>例如，CPU在从内存里读数据的时候，也额外读了许多数据到各级cache里</li>
+<li>各个输入输出之间用buffer保存一批数据统一发送和接受，而不是一个byte一个byte的处理</li>
+</ul>
+<p>上面这是系统层面，在软件系统设计层面，很多地方也用了缓存：</p>
+<ul>
+<li>浏览器会缓存页面的元素，这样在重复访问网页时，就避开了要从互联网上下载数据（例如大图片）</li>
+<li>web服务会把静态的东西提前部署在CDN上，这也是一种缓存</li>
+<li>数据库会缓存查询，所以同一条查询第二次就是要比第一次快</li>
+<li>内存数据库（如redis）选择把大量数据存在内存而非硬盘里，这可以看作是一个大型缓存，只是把整个数据库缓存了起来</li>
+<li>应用程序把最近几次计算的结果放在本地内存里，如果下次到来的请求还是原请求，就跳过计算直接返回结果</li>
+</ul>
+<h2 id="3-本次事故分析"><a href="#3-本次事故分析" class="headerlink" title="3.本次事故分析"></a>3.本次事故分析</h2><p>回到本文开始的问题上，该系统是怎么设计的呢？底层是数据库，中间放了一层redis，前面的业务系统所需的数据都直接从redis里取，然后计算出结果返回给app；数据库和redis的同步另外有程序保证，避免redis的穿透，防止了程序里出现大量请求从redis里找不到，于是又一窝蜂的去查数据库，直接压垮数据库的情况。从这个角度讲，其实这一步是做的还可以的。</p>
+<p>但是这个系统有两个问题：<br>1.业务系统需要的数据虽然都在redis里，但是是分开存放的。什么意思呢，比如我前台发起一个请求，后台先去redis里取一下标题，然后再取一下作者，然后再取一下内容，再取一下评论，再取一下转发数等等……结果前台一次请求，后台要请求redis十几次。高并发的时候，压力一下被放大十几倍，redis响应、网络响应必然会变慢。<br>2.其实做业务的那波人也意识到了这个情况可能发生，所以做了熔断机制，另起了一个缓存池，里面放了一些备用数据，如果主业务超时，直接从缓存池里取数据返回。但是他们设计的时候没想周全，这个备选池的数据过期时间设计的太长了，里面居然还有三天前更新进去的数据，最终导致了一大波用户刷出来三天前的野外生态小视频……</p>
+<p>说到这，不知道读者有没有意识到他们最致命的一个问题：这个业务系统完全没有考虑本地缓存（也就是在业务服务器内存里做缓存）。比如像我们这种app，一旦大量用户同一时间涌进来，必定都是奔着少数几个内容去的，这种特别集中的高频次极少量数据访问，又不需要对每个用户做特化的，简直就是在脸上写上“<strong>请缓存我</strong>”。<br>这时候，如果能在业务端做一层本地缓存，直接把算好的数据本地存一份，那么就会极大减少网络和redis的压力，不至于当场触发熔断了。</p>
+<h2 id="4-浅谈缓存的那些坑"><a href="#4-浅谈缓存的那些坑" class="headerlink" title="4.浅谈缓存的那些坑"></a>4.浅谈缓存的那些坑</h2><p>缓存很有用，但是缓存用不好也会埋很多坑：</p>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>缓存穿透是说收到了一个请求，但是该请求缓存里没有，只能去数据库里查询，然后放进缓存。这里面有两个风险，一个是同时有好多请求访问同一个数据，然后业务系统把这些请求全发到了数据库；第二个是有人恶意构造一个逻辑上不存在的数据，然后大量发送这个请求，这样每次请求都会被发送到数据库，可能导致数据挂掉。</p>
+<p>怎么应对这种情况呢？对于恶意访问，一个思路是事先做校验，对恶意数据直接过滤掉，不要发到数据库层；第二个思路是缓存空结果，就是对查询不存在的数据仍然记录一条该数据不存在在缓存里，这样能有效的减少查询数据库的次数。</p>
+<p>那么非恶意访问呢？这个要结合缓存击穿来讲。</p>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><p>上面提到的某个数据没有，然后好多请求都被发到数据库其实可以归为缓存击穿的范畴：对于热点数据，当数据失效的一瞬间，所有请求都被下放到数据库去请求更新缓存，数据库被压垮。</p>
+<p>怎么防范这种问题呢？一个思路是全局锁，就是所有访问某个数据的请求都共享一个锁，获得锁的那个才有资格去访问数据库，其他线程必须等待。但是现在的业务都是分布式的，本地锁没法控制其他服务器也等待，所以要用到全局锁，比如用redis的setnx实现全局锁。</p>
+<p>另一个思路是对即将过期的数据主动刷新，做法可以有很多，比如起一个线程轮询数据，比如把所有数据划分为不同的缓存区间，定期分区间刷新数据等等。这第二个思路又和我们接下来要讲的缓存雪崩有关系。</p>
+<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>缓存雪崩是指比如我们给所有的数据设置了同样的过期时间，然后在某一个历史性时刻，整个缓存的数据全部过期了，然后瞬间所有的请求都被打到了数据库，数据库就崩了。</p>
+<p>解决思路要么是分治，划分更小的缓存区间，按区间过期；要么是给每个key的过期时间加个随机值，避免同时过期，达到错峰刷新缓存的目的。</p>
+<h3 id="缓存刷新"><a href="#缓存刷新" class="headerlink" title="缓存刷新"></a>缓存刷新</h3><p>说到刷新缓存，其实也有坑的。比如我之前的一份工作里，有一次大活动，正是如火如荼的时候，所有的广告位突然都变空白了。后来追查原因，所有的广告素材都在缓存里，然后起了个程序，专门负责刷新缓存，每次把当前的素材<strong>全量</strong>刷新。</p>
+<p>坏就坏在这个全量上。因为大活动的时候流量极大，广告更新压力也很大，把负责提供更新素材的程序压崩了。刷新缓存的程序在请求时，收到了一个返回结果<code>Null</code>。接下来就喜闻乐见了，刷新程序根据这个null，清空了整个缓存，所有广告素材都失效了。</p>
+<p>总之，想要做好高并发系统的缓存，就要考虑到各种边角情况，小心设计，任何细小的疏忽都可能导致系统崩溃。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/11/100071.html" class="pre-post btn btn-default" title='浅析分布式数据库和缓存双写一致性'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">浅析分布式数据库和缓存双写一致性</span>
+        </a>
+    
+    
+        <a href="/archives/2018/10/100069.html" class="next-post btn btn-default" title='使用Java8的新特性lambda表达式'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">使用Java8的新特性lambda表达式</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-为何需要缓存？"><span class="toc-text">1.为何需要缓存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-在哪里用缓存？"><span class="toc-text">2.在哪里用缓存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-本次事故分析"><span class="toc-text">3.本次事故分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-浅谈缓存的那些坑"><span class="toc-text">4.浅谈缓存的那些坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存穿透"><span class="toc-text">缓存穿透</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存击穿"><span class="toc-text">缓存击穿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存雪崩"><span class="toc-text">缓存雪崩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存刷新"><span class="toc-text">缓存刷新</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

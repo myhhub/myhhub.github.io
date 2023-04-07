@@ -1,0 +1,434 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,spark,streaming">
+
+
+    <meta name="description" content="一、案例引入这里先引入一个基本的案例来演示流的创建：获取指定端口上的数据并进行词频统计。项目依赖和代码实现如下：
+12345&lt;dependency&gt;    &lt;groupId&g...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark Streaming 基本操作 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark Streaming 基本操作">
+            
+	            Spark Streaming 基本操作
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/streaming/">streaming</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1365</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、案例引入"><a href="#一、案例引入" class="headerlink" title="一、案例引入"></a>一、案例引入</h2><p>这里先引入一个基本的案例来演示流的创建：获取指定端口上的数据并进行词频统计。项目依赖和代码实现如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-streaming_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.<span class="type">SparkConf</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.streaming.&#123;<span class="type">Seconds</span>, <span class="type">StreamingContext</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">NetworkWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*指定时间间隔为5s*/</span></span><br><span class="line">    <span class="keyword">val</span> sparkConf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"NetworkWordCount"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    <span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(sparkConf, <span class="type">Seconds</span>(<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*创建文本输入流,并进行词频统计*/</span></span><br><span class="line">    <span class="keyword">val</span> lines = ssc.socketTextStream(<span class="string">"hadoop001"</span>, <span class="number">9999</span>)</span><br><span class="line">    lines.flatMap(_.split(<span class="string">" "</span>)).map(x =&gt; (x, <span class="number">1</span>)).reduceByKey(_ + _).print()</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*启动服务*/</span></span><br><span class="line">    ssc.start()</span><br><span class="line">    <span class="comment">/*等待服务结束*/</span></span><br><span class="line">    ssc.awaitTermination()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用本地模式启动Spark程序，然后使用<code>nc -lk 9999</code>打开端口并输入测试数据：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@hadoop001</span> ~]<span class="meta">#  nc -lk 9999</span></span><br><span class="line">hello world hello spark hive hive hadoop</span><br><span class="line">storm storm flink azkaban</span><br></pre></td></tr></table></figure>
+<p>此时控制台输出如下，可以看到已经接收到数据并按行进行了词频统计。</p>
+<div align="center"> <img src="/img/bigdata/spark-streaming-word-count-v1.png"> </div>
+
+<p><br></p>
+<p>下面针对示例代码进行讲解：</p>
+<h3 id="3-1-StreamingContext"><a href="#3-1-StreamingContext" class="headerlink" title="3.1 StreamingContext"></a>3.1 StreamingContext</h3><p>Spark Streaming编程的入口类是StreamingContext，在创建时候需要指明<code>sparkConf</code>和<code>batchDuration</code>(批次时间)，Spark流处理本质是将流数据拆分为一个个批次，然后进行微批处理，<code>batchDuration</code>就是批次拆分的时间间隔。这个时间可以根据业务需求和服务器性能进行指定，如果业务要求低延迟并且服务器性能也允许，则这个时间可以指定得很短。</p>
+<p>这里需要注意的是：示例代码使用的是本地模式，配置为<code>local[2]</code>，这里不能配置为<code>local[1]</code>。这是因为对于流数据的处理，Spark必须有一个独立的Executor来接收数据，然后再由其他的Executors来处理，所以为了保证数据能够被处理，至少要有2个Executors。这里我们的程序只有一个数据流，在并行读取多个数据流的时候，也需要保证有足够的Executors来接收和处理数据。</p>
+<h3 id="3-2-数据源"><a href="#3-2-数据源" class="headerlink" title="3.2 数据源"></a>3.2 数据源</h3><p>在示例代码中使用的是<code>socketTextStream</code>来创建基于Socket的数据流，实际上Spark还支持多种数据源，分为以下两类：</p>
+<ul>
+<li><strong>基本数据源</strong>：包括文件系统、Socket连接等；</li>
+<li><strong>高级数据源</strong>：包括Kafka，Flume，Kinesis等。</li>
+</ul>
+<p>在基本数据源中，Spark支持监听HDFS上指定目录，当有新文件加入时，会获取其文件内容作为输入流。创建方式如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 对于文本文件，指明监听目录即可</span><br><span class="line">streamingContext.textFileStream(dataDirectory)</span><br><span class="line">// 对于其他文件，需要指明目录，以及键的类型、值的类型、和输入格式</span><br><span class="line">streamingContext.fileStream[<span class="string">KeyClass, ValueClass, InputFormatClass</span>](<span class="link">dataDirectory</span>)</span><br></pre></td></tr></table></figure>
+<p>被监听的目录可以是具体目录，如<code>hdfs://host:8040/logs/</code>；也可以使用通配符，如<code>hdfs://host:8040/logs/2017/*</code>。</p>
+<blockquote>
+<p>关于高级数据源的整合单独整理至：<a href="https://github.com/myhhub/BigData-Notes/blob/master/notes/Spark_Streaming整合Flume.md" target="_blank" rel="noopener">Spark Streaming整合Flume</a> 和 <a href="https://github.com/myhhub/BigData-Notes/blob/master/notes/Spark_Streaming整合Kafka.md" target="_blank" rel="noopener">Spark Streaming整合Kafka</a></p>
+</blockquote>
+<h3 id="3-3-服务的启动与停止"><a href="#3-3-服务的启动与停止" class="headerlink" title="3.3 服务的启动与停止"></a>3.3 服务的启动与停止</h3><p>在示例代码中，使用<code>streamingContext.start()</code>代表启动服务，此时还要使用<code>streamingContext.awaitTermination()</code>使服务处于等待和可用的状态，直到发生异常或者手动使用<code>streamingContext.stop()</code>进行终止。</p>
+<h2 id="二、Transformation"><a href="#二、Transformation" class="headerlink" title="二、Transformation"></a>二、Transformation</h2><h3 id="2-1-DStream与RDDs"><a href="#2-1-DStream与RDDs" class="headerlink" title="2.1 DStream与RDDs"></a>2.1 DStream与RDDs</h3><p>DStream是Spark Streaming提供的基本抽象。它表示连续的数据流。在内部，DStream由一系列连续的RDD表示。所以从本质上而言，应用于DStream的任何操作都会转换为底层RDD上的操作。例如，在示例代码中flatMap算子的操作实际上是作用在每个RDDs上(如下图)。因为这个原因，所以DStream能够支持RDD大部分的<em>transformation</em>算子。</p>
+<div align="center"> <img src="/img/bigdata/spark-streaming-dstream-ops.png"> </div>
+
+<h3 id="2-2-updateStateByKey"><a href="#2-2-updateStateByKey" class="headerlink" title="2.2 updateStateByKey"></a>2.2 updateStateByKey</h3><p>除了能够支持RDD的算子外，DStream还有部分独有的<em>transformation</em>算子，这当中比较常用的是<code>updateStateByKey</code>。文章开头的词频统计程序，只能统计每一次输入文本中单词出现的数量，想要统计所有历史输入中单词出现的数量，可以使用<code>updateStateByKey</code>算子。代码如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">NetworkWordCountV2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 本地测试时最好指定hadoop用户名,否则会默认使用本地电脑的用户名,</span></span><br><span class="line"><span class="comment">     * 此时在HDFS上创建目录时可能会抛出权限不足的异常</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">System</span>.setProperty(<span class="string">"HADOOP_USER_NAME"</span>, <span class="string">"root"</span>)</span><br><span class="line">      </span><br><span class="line">    <span class="keyword">val</span> sparkConf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"NetworkWordCountV2"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    <span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(sparkConf, <span class="type">Seconds</span>(<span class="number">5</span>))</span><br><span class="line">    <span class="comment">/*必须要设置检查点*/</span></span><br><span class="line">    ssc.checkpoint(<span class="string">"hdfs://hadoop001:8020/spark-streaming"</span>)</span><br><span class="line">    <span class="keyword">val</span> lines = ssc.socketTextStream(<span class="string">"hadoop001"</span>, <span class="number">9999</span>)</span><br><span class="line">    lines.flatMap(_.split(<span class="string">" "</span>)).map(x =&gt; (x, <span class="number">1</span>))</span><br><span class="line">      .updateStateByKey[<span class="type">Int</span>](updateFunction _)   <span class="comment">//updateStateByKey算子</span></span><br><span class="line">      .print()</span><br><span class="line"></span><br><span class="line">    ssc.start()</span><br><span class="line">    ssc.awaitTermination()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 累计求和</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * @param currentValues 当前的数据</span></span><br><span class="line"><span class="comment">    * @param preValues     之前的数据</span></span><br><span class="line"><span class="comment">    * @return 相加后的数据</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">updateFunction</span></span>(currentValues: <span class="type">Seq</span>[<span class="type">Int</span>], preValues: <span class="type">Option</span>[<span class="type">Int</span>]): <span class="type">Option</span>[<span class="type">Int</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> current = currentValues.sum</span><br><span class="line">    <span class="keyword">val</span> pre = preValues.getOrElse(<span class="number">0</span>)</span><br><span class="line">    <span class="type">Some</span>(current + pre)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用<code>updateStateByKey</code>算子，你必须使用<code>ssc.checkpoint()</code>设置检查点，这样当使用<code>updateStateByKey</code>算子时，它会去检查点中取出上一次保存的信息，并使用自定义的<code>updateFunction</code>函数将上一次的数据和本次数据进行相加，然后返回。</p>
+<h3 id="2-3-启动测试"><a href="#2-3-启动测试" class="headerlink" title="2.3 启动测试"></a>2.3 启动测试</h3><p>在监听端口输入如下测试数据：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@hadoop001</span> ~]<span class="meta">#  nc -lk 9999</span></span><br><span class="line">hello world hello spark hive hive hadoop</span><br><span class="line">storm storm flink azkaban</span><br><span class="line">hello world hello spark hive hive hadoop</span><br><span class="line">storm storm flink azkaban</span><br></pre></td></tr></table></figure>
+<p>此时控制台输出如下，所有输入都被进行了词频累计：</p>
+<div align="center"> <img src="/img/bigdata/spark-streaming-word-count-v2.png"> </div>
+
+<p>同时在输出日志中还可以看到检查点操作的相关信息：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存检查点信息</span></span><br><span class="line"><span class="number">19</span><span class="regexp">/05/</span><span class="number">27</span> <span class="number">16</span>:<span class="number">21</span>:<span class="number">05</span> INFO CheckpointWriter: Saving checkpoint <span class="keyword">for</span> time <span class="number">1558945265000</span> ms </span><br><span class="line">to file <span class="string">'hdfs://hadoop001:8020/spark-streaming/checkpoint-1558945265000'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除已经无用的检查点信息</span></span><br><span class="line"><span class="number">19</span><span class="regexp">/05/</span><span class="number">27</span> <span class="number">16</span>:<span class="number">21</span>:<span class="number">30</span> INFO CheckpointWriter: </span><br><span class="line">Deleting hdfs:<span class="regexp">//</span>hadoop001:<span class="number">8020</span><span class="regexp">/spark-streaming/</span>checkpoint-<span class="number">1558945265000</span></span><br></pre></td></tr></table></figure>
+<h2 id="三、输出操作"><a href="#三、输出操作" class="headerlink" title="三、输出操作"></a>三、输出操作</h2><h3 id="3-1-输出API"><a href="#3-1-输出API" class="headerlink" title="3.1 输出API"></a>3.1 输出API</h3><p>Spark Streaming支持以下输出操作：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Output Operation</th>
+<th style="text-align:left">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>print</strong>()</td>
+<td style="text-align:left">在运行流应用程序的driver节点上打印DStream中每个批次的前十个元素。用于开发调试。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>saveAsTextFiles</strong>(<em>prefix</em>, [<em>suffix</em>])</td>
+<td style="text-align:left">将DStream的内容保存为文本文件。每个批处理间隔的文件名基于前缀和后缀生成：“prefix-TIME_IN_MS [.suffix]”。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>saveAsObjectFiles</strong>(<em>prefix</em>, [<em>suffix</em>])</td>
+<td style="text-align:left">将DStream的内容序列化为Java对象，并保存到SequenceFiles。每个批处理间隔的文件名基于前缀和后缀生成：“prefix-TIME_IN_MS [.suffix]”。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>saveAsHadoopFiles</strong>(<em>prefix</em>, [<em>suffix</em>])</td>
+<td style="text-align:left">将DStream的内容保存为Hadoop文件。每个批处理间隔的文件名基于前缀和后缀生成：“prefix-TIME_IN_MS [.suffix]”。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>foreachRDD</strong>(<em>func</em>)</td>
+<td style="text-align:left">最通用的输出方式，它将函数func应用于从流生成的每个RDD。此函数应将每个RDD中的数据推送到外部系统，例如将RDD保存到文件，或通过网络将其写入数据库。</td>
+</tr>
+</tbody>
+</table>
+<p>前面的四个API都是直接调用即可，下面主要讲解通用的输出方式<code>foreachRDD(func)</code>，通过该API你可以将数据保存到任何你需要的数据源。</p>
+<h3 id="3-1-foreachRDD"><a href="#3-1-foreachRDD" class="headerlink" title="3.1 foreachRDD"></a>3.1 foreachRDD</h3><p>这里我们使用Redis作为客户端，对文章开头示例程序进行改变，把每一次词频统计的结果写入到Redis，并利用Redis的<code>HINCRBY</code>命令来进行词频统计。这里需要导入Jedis依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>redis.clients<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jedis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>具体实现代码如下:</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.SparkConf</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.streaming.dstream.DStream</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.streaming.&#123;Seconds, StreamingContext&#125;</span><br><span class="line"><span class="keyword">import</span> redis.clients.jedis.Jedis</span><br><span class="line"></span><br><span class="line">object NetworkWordCountToRedis &#123;</span><br><span class="line">  </span><br><span class="line">    def main(args: <span class="built_in">Array</span>[<span class="built_in">String</span>]) &#123;</span><br><span class="line"></span><br><span class="line">    val sparkConf = <span class="keyword">new</span> SparkConf().setAppName(<span class="string">"NetworkWordCountToRedis"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    val ssc = <span class="keyword">new</span> StreamingContext(sparkConf, Seconds(<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*创建文本输入流,并进行词频统计*/</span></span><br><span class="line">    val lines = ssc.socketTextStream(<span class="string">"hadoop001"</span>, <span class="number">9999</span>)</span><br><span class="line">    val pairs: DStream[(<span class="built_in">String</span>, Int)] = lines.flatMap(_.split(<span class="string">" "</span>)).map(<span class="function"><span class="params">x</span> =&gt;</span> (x, <span class="number">1</span>)).reduceByKey(_ + _)</span><br><span class="line">     <span class="comment">/*保存数据到Redis*/</span></span><br><span class="line">    pairs.foreachRDD &#123; <span class="function"><span class="params">rdd</span> =&gt;</span></span><br><span class="line">      rdd.foreachPartition &#123; <span class="function"><span class="params">partitionOfRecords</span> =&gt;</span></span><br><span class="line">        <span class="keyword">var</span> jedis: Jedis = <span class="literal">null</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          jedis = JedisPoolUtil.getConnection</span><br><span class="line">          partitionOfRecords.foreach(<span class="function"><span class="params">record</span> =&gt;</span> jedis.hincrBy(<span class="string">"wordCount"</span>, record._1, record._2))</span><br><span class="line">        &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> ex: <span class="function"><span class="params">Exception</span> =&gt;</span></span><br><span class="line">            ex.printStackTrace()</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">          <span class="keyword">if</span> (jedis != <span class="literal">null</span>) jedis.close()</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ssc.start()</span><br><span class="line">    ssc.awaitTermination()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中<code>JedisPoolUtil</code>的代码如下：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> redis.clients.jedis.Jedis;</span><br><span class="line"><span class="keyword">import</span> redis.clients.jedis.JedisPool;</span><br><span class="line"><span class="keyword">import</span> redis.clients.jedis.JedisPoolConfig;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JedisPoolUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 声明为volatile防止指令重排序 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> JedisPool jedisPool = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String HOST = <span class="string">"localhost"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PORT = <span class="number">6379</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 双重检查锁实现懒汉式单例 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Jedis <span class="title">getConnection</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (jedisPool == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (JedisPoolUtil.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (jedisPool == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    JedisPoolConfig config = <span class="keyword">new</span> JedisPoolConfig();</span><br><span class="line">                    config.setMaxTotal(<span class="number">30</span>);</span><br><span class="line">                    config.setMaxIdle(<span class="number">10</span>);</span><br><span class="line">                    jedisPool = <span class="keyword">new</span> JedisPool(config, HOST, PORT);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">return</span> jedisPool.<span class="title">getResource</span><span class="params">()</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-代码说明"><a href="#3-3-代码说明" class="headerlink" title="3.3 代码说明"></a>3.3 代码说明</h3><p>这里将上面保存到Redis的代码单独抽取出来，并去除异常判断的部分。精简后的代码如下：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pairs.<span class="keyword">foreachRDD</span> &#123; <span class="attr">rdd</span> =&gt;</span><br><span class="line">  rdd.foreachPartition &#123; <span class="attr">partitionOfRecords</span> =&gt;</span><br><span class="line">    val jedis = JedisPoolUtil.getConnection</span><br><span class="line">    partitionOfRecords.foreach(<span class="attr">record</span> =&gt; jedis.hincrBy(<span class="string">"wordCount"</span>, record._1, record._2))</span><br><span class="line">    jedis.close()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以看到一共使用了三次循环，分别是循环RDD，循环分区，循环每条记录，上面我们的代码是在循环分区的时候获取连接，也就是为每一个分区获取一个连接。但是这里大家可能会有疑问：为什么不在循环RDD的时候，为每一个RDD获取一个连接，这样所需要的连接数会更少。实际上这是不可行的，如果按照这种情况进行改写，如下：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pairs.<span class="keyword">foreachRDD</span> &#123; <span class="attr">rdd</span> =&gt;</span><br><span class="line">    val jedis = JedisPoolUtil.getConnection</span><br><span class="line">    rdd.foreachPartition &#123; <span class="attr">partitionOfRecords</span> =&gt;</span><br><span class="line">        partitionOfRecords.foreach(<span class="attr">record</span> =&gt; jedis.hincrBy(<span class="string">"wordCount"</span>, record._1, record._2))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">jedis</span>.close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时在执行时候就会抛出<code>Caused by: java.io.NotSerializableException: redis.clients.jedis.Jedis</code>，这是因为在实际计算时，Spark会将对RDD操作分解为多个Task，Task运行在具体的Worker Node上。在执行之前，Spark会对任务进行闭包，之后闭包被序列化并发送给每个Executor，而<code>Jedis</code>显然是不能被序列化的，所以会抛出异常。</p>
+<p>第二个需要注意的是ConnectionPool最好是一个静态，惰性初始化连接池 。这是因为Spark的转换操作本身就是惰性的，且没有数据流时不会触发写出操作，所以出于性能考虑，连接池应该是惰性的，因此上面<code>JedisPool</code>在初始化时采用了懒汉式单例进行惰性初始化。</p>
+<h3 id="3-4-启动测试"><a href="#3-4-启动测试" class="headerlink" title="3.4 启动测试"></a>3.4 启动测试</h3><p>在监听端口输入如下测试数据：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@hadoop001</span> ~]<span class="meta">#  nc -lk 9999</span></span><br><span class="line">hello world hello spark hive hive hadoop</span><br><span class="line">storm storm flink azkaban</span><br><span class="line">hello world hello spark hive hive hadoop</span><br><span class="line">storm storm flink azkaban</span><br></pre></td></tr></table></figure>
+<p>使用Redis Manager查看写入结果(如下图),可以看到与使用<code>updateStateByKey</code>算子得到的计算结果相同。</p>
+<div align="center"> <img src="/img/bigdata/spark-streaming-word-count-v3.png"> </div>  
+
+<p><br></p>
+<blockquote>
+<p>本片文章所有源码见本仓库：<a href="https://github.com/myhhub/BigData-Notes/tree/master/code/spark/spark-streaming-basis" target="_blank" rel="noopener">spark-streaming-basis</a></p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>Spark官方文档：<a href="http://spark.apache.org/docs/latest/streaming-programming-guide.html" target="_blank" rel="noopener">http://spark.apache.org/docs/latest/streaming-programming-guide.html</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100413.html" class="pre-post btn btn-default" title='Spark Streaming 整合 Flume'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark Streaming 整合 Flume</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100411.html" class="next-post btn btn-default" title='Spark Streaming与流处理'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark Streaming与流处理</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、案例引入"><span class="toc-text">一、案例引入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-StreamingContext"><span class="toc-text">3.1 StreamingContext</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-数据源"><span class="toc-text">3.2 数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-服务的启动与停止"><span class="toc-text">3.3 服务的启动与停止</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Transformation"><span class="toc-text">二、Transformation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-DStream与RDDs"><span class="toc-text">2.1 DStream与RDDs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-updateStateByKey"><span class="toc-text">2.2 updateStateByKey</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-启动测试"><span class="toc-text">2.3 启动测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、输出操作"><span class="toc-text">三、输出操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-输出API"><span class="toc-text">3.1 输出API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-foreachRDD"><span class="toc-text">3.1 foreachRDD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-代码说明"><span class="toc-text">3.3 代码说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-启动测试"><span class="toc-text">3.4 启动测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

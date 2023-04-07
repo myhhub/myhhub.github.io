@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hive">
+
+
+    <meta name="description" content="一. 概述Hive看上去以及实际行为都像一个关系型数据库.用户对如表和列这类术语比较熟悉,而且Hive提供的查询语言和用户之前使用过的SQL方言非常相似.不过Hive实现和使用的方式和传统的关系...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 二十.Hive的模式设计和事务性 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 二十.Hive的模式设计和事务性">
+            
+	            大数据hadoop之 二十.Hive的模式设计和事务性
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hive/">hive</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/18</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1389</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-概述"><a href="#一-概述" class="headerlink" title="一. 概述"></a>一. 概述</h2><p>Hive看上去以及实际行为都像一个关系型数据库.用户对如表和列这类术语比较熟悉,而且Hive提供的查询语言和用户之前使用过的SQL方言非常相似.不过Hive实现和使用的方式和传统的关系型数据库是非常不同的.通常,用户视图移植关系型数据库中的模式,而事实上Hive是反模式</p>
+<h3 id="1-按天划分的表"><a href="#1-按天划分的表" class="headerlink" title="1. 按天划分的表"></a>1. 按天划分的表</h3><p>按天划分表就是一种模式,其通常会在表中加入一个时间戳,例如表名为upply_2011_01_01等等.这种每天一张表的方式在数据库领域是反模式的一种方式,但是因为实际情况下数据集增长得很快,这种方式应用还是比较广泛的.</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: <span class="symbol">jdbc:</span><span class="symbol">hive2:</span>/<span class="regexp">/hadoopmaster:10000/</span>&gt; CREATE TABLE supply_2011_01_02(id int,part string,quantity int);</span><br><span class="line">OK</span><br><span class="line">No rows affected (<span class="number">1.279</span> seconds)</span><br><span class="line"><span class="number">0</span>: <span class="symbol">jdbc:</span><span class="symbol">hive2:</span>/<span class="regexp">/hadoopmaster:10000/</span>&gt; CREATE TABLE supply_2011_01_03(id int,part string,quantity int);</span><br><span class="line">OK</span><br><span class="line">No rows affected (<span class="number">0.055</span> seconds)</span><br><span class="line"><span class="number">0</span>: <span class="symbol">jdbc:</span><span class="symbol">hive2:</span>/<span class="regexp">/hadoopmaster:10000/</span>&gt; CREATE TABLE supply_2011_01_04(id int,part string,quantity int);</span><br><span class="line">OK</span><br><span class="line">No rows affected (<span class="number">0.056</span> seconds)</span><br><span class="line"><span class="number">0</span>: <span class="symbol">jdbc:</span><span class="symbol">hive2:</span>/<span class="regexp">/hadoopmaster:10000/</span>&gt; </span><br><span class="line"></span><br><span class="line"><span class="number">0</span>: <span class="symbol">jdbc:</span><span class="symbol">hive2:</span>/<span class="regexp">/hadoopmaster:10000/</span>&gt; <span class="keyword">select</span> part,quantity supply_2011_01_02 from supply_2011_01_02</span><br><span class="line">. . . . . . . . . . . . . . . . . .&gt; <span class="class"><span class="keyword">union</span> <span class="title">all</span></span></span><br><span class="line">. . . . . . . . . . . . . . . . . .&gt; <span class="keyword">select</span> part,quantity supply_2011_01_02 from supply_2011_01_03</span><br><span class="line">. . . . . . . . . . . . . . . . . .&gt; where quantity&lt;<span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+<p>对于Hive,这种情况下应该使用分区表.Hive通过Where子句中的表达式来选择查询所需要的指定分区,这样的查询执行效率高,而且看起来清晰明了:</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">0: jdbc:hive2://hadoopmaster:10000/&gt; CREATE TABLE supplybypartition (id int,part string,quantity int)</span><br><span class="line"><span class="bullet">. </span>. . . . . . . . . . . . . . . . .&gt; partitioned by (day int);</span><br><span class="line"></span><br><span class="line">0: jdbc:hive2://hadoopmaster:10000/&gt; alter table supplybypartition add partition(day=20110102);</span><br><span class="line">OK</span><br><span class="line">No rows affected (0.088 seconds)</span><br><span class="line">0: jdbc:hive2://hadoopmaster:10000/&gt; alter table supplybypartition add partition(day=20110103);</span><br><span class="line">OK</span><br><span class="line">No rows affected (0.067 seconds)</span><br><span class="line">0: jdbc:hive2://hadoopmaster:10000/&gt; alter table supplybypartition add partition(day=20110104);</span><br><span class="line">OK</span><br><span class="line">No rows affected (0.083 seconds)</span><br><span class="line"></span><br><span class="line">0: jdbc:hive2://hadoopmaster:10000/&gt; select * from supplybypartition</span><br><span class="line"><span class="bullet">. </span>. . . . . . . . . . . . . . . . .&gt; where day&gt;=20110102 and day&lt;20110103 and quantity&lt;4;</span><br><span class="line">OK</span><br><span class="line"><span class="code">+-----------------------+</span>-------------------------<span class="code">+-----------------------------+</span>------------------------<span class="code">+--+</span></span><br><span class="line">| supplybypartition.id  | supplybypartition.part  | supplybypartition.quantity  | supplybypartition.day  |</span><br><span class="line"><span class="code">+-----------------------+</span>-------------------------<span class="code">+-----------------------------+</span>------------------------<span class="code">+--+</span></span><br><span class="line"><span class="code">+-----------------------+</span>-------------------------<span class="code">+-----------------------------+</span>------------------------<span class="code">+--+</span></span><br><span class="line">No rows selected (0.162 seconds)</span><br><span class="line">0: jdbc:hive2://hadoopmaster:10000/&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2-关于分区"><a href="#2-关于分区" class="headerlink" title="2. 关于分区"></a>2. 关于分区</h3><p>Hive中分区的功能是非常有用的,这是因为Hive通常要对输入进行全盘扫描,来满足查询条件,通过创建很多的分区确定可以优化一些查询,但是同时可能会对其他一些重要的查询不利:</p>
+<p>HDFS用于设计存储数百万的大文件,而非数十亿的小文件.使用过多分区可能导致的一个问题就是会创建大量的非必须的hadoop文件和文件夹.一个分区就对应着一个包含有多个文件的文件夹.如果指定的表存在数百个分区,那么可能每天都会创建好几万个文件.如果保持这样的表很多年,那么最终就会超出NameNode对系统云数据信息的处理能力.因为NameNode必须将所有系统文件的元数据保存在内存中.虽然每个文件只需要少量字节大小的元数据(大约是150字节/文件),但是这样也会限制一个HDFS实例所能管理的文件总数的上限.而其他的文件系统,比如MapR和Amazon S3就没有这个限制.</p>
+<p>MapReduce会将一个任务(job)转换成多个任务(task).默认情况下,每个task都是一个新的JVM实例,都需要开启和销毁的开销.对于小文件,每个文件都会对应一个task.在一些情况下,JVM开启和销毁的时间中销毁可能会比实际处理数据的时间消耗要长</p>
+<p>因此,一个理想的分区方案不应该导致产生太多的分区和文件夹目录,并且每个目录下的文件应该足够大,应该是文件系统中块大小的若干倍.</p>
+<p>接时间范围进行分区的一个好的策略就是按照不同的时间颗粒度来确定合适大小的数据积累量,而且安装这个时间颗粒.随着时间的推移,分区数量的增长是均匀的,而且每个分区下包含的文件大小至少是文件系统中块或块大小的数倍.</p>
+<p><strong>如果用户找不到好的,大小相对合适的分区方式的话,我们可以考虑使用分桶表来解决问题</strong></p>
+<h3 id="3-关于分桶表数据存储"><a href="#3-关于分桶表数据存储" class="headerlink" title="3. 关于分桶表数据存储"></a>3. 关于分桶表数据存储</h3><h4 id="数据分桶的适用场景："><a href="#数据分桶的适用场景：" class="headerlink" title="数据分桶的适用场景："></a>数据分桶的适用场景：</h4><p>分区提供了一个隔离数据和优化查询的便利方式，不过并非所有的数据都可形成合理的分区，</p>
+<p>尤其是需要确定合适大小的分区划分方式，（不合理的数据分区划分方式可能导致有的分区数据过多，而某些分区没有什么数据的尴尬情况）</p>
+<p>试试分桶是将数据集分解为更容易管理的若干部分的另一种技术。</p>
+<h4 id="据分桶的原理"><a href="#据分桶的原理" class="headerlink" title="据分桶的原理:"></a>据分桶的原理:</h4><p> 跟MR中的HashPartitioner的原理一模一样<br> MR中：按照key的hash值去模除以reductTask的个数<br>Hive中：按照分桶字段的hash值去模除以分桶的个数<br>Hive也是 针对某一列进行桶的组织。Hive采用对列值哈希，然后除以桶的个数求余的方式决定该条记录存放在哪个桶当中。</p>
+<h4 id="数据分桶的作用"><a href="#数据分桶的作用" class="headerlink" title="数据分桶的作用:"></a>数据分桶的作用:</h4><p>好处：<br>1、方便抽样<br>2、提高join查询效率<br>（1）获得更高的查询处理效率。桶为表加上了额外的结构，Hive 在处理有些查询时能利用这个结构。具体而言，连接两个在（包含连接列的）相同列上划分了桶的表，可以使用 Map 端连接 （Map-side join）高效的实现。比如JOIN操作。对于JOIN操作两个表有一个相同的列，如果对这两个表都进行了桶操作。那么将保存相同列值的桶进行JOIN操作就可以，可以大大较少JOIN的数据量。<br>（2）使取样（sampling）更高效。在处理大规模数据集时，在开发和修改查询的阶段，如果能在数据集的一小部分数据上试运行查询，会带来很多方便。</p>
+<h4 id="创建数据分桶表"><a href="#创建数据分桶表" class="headerlink" title="创建数据分桶表:"></a>创建数据分桶表:</h4><p>创建数据分桶表与普通表的表区别并不太大，如下为一个创建数据分桶表的示例：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> clickcube;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EXTERNAL</span> <span class="keyword">TABLE</span> <span class="string">`clickcube_mid`</span>(             </span><br><span class="line">   <span class="string">`logtype`</span> <span class="built_in">bigint</span>,                                </span><br><span class="line">   <span class="string">`date`</span> <span class="keyword">string</span>,                                   </span><br><span class="line">   <span class="string">`hour`</span> <span class="built_in">bigint</span>,                                   </span><br><span class="line">   <span class="string">`projectid`</span> <span class="built_in">bigint</span>,                              </span><br><span class="line">   <span class="string">`campaignid`</span> <span class="built_in">bigint</span>,                             </span><br><span class="line">   <span class="string">`templateid`</span> <span class="built_in">bigint</span>,                             </span><br><span class="line">   <span class="string">`mediaid`</span> <span class="built_in">bigint</span>,                                </span><br><span class="line">   <span class="string">`slotid`</span> <span class="built_in">bigint</span>,                                 </span><br><span class="line">   <span class="string">`channeltype`</span> <span class="built_in">bigint</span>,                            </span><br><span class="line">   <span class="string">`regioncode`</span> <span class="keyword">string</span>,                             </span><br><span class="line">   <span class="string">`campclick`</span> <span class="built_in">bigint</span>,                              </span><br><span class="line">   <span class="string">`campimp`</span> <span class="built_in">bigint</span>,                                </span><br><span class="line">   <span class="string">`mediaclick`</span> <span class="built_in">bigint</span>,                             </span><br><span class="line">   <span class="string">`mediaimp`</span> <span class="built_in">bigint</span>,                               </span><br><span class="line">   <span class="string">`templateimp`</span> <span class="built_in">bigint</span>,                            </span><br><span class="line">   <span class="string">`templatecampimp`</span> <span class="built_in">bigint</span>,                        </span><br><span class="line">   <span class="string">`mediaclickcost`</span> <span class="keyword">double</span>,                         </span><br><span class="line">   <span class="string">`campclickcost`</span> <span class="keyword">double</span>)                          </span><br><span class="line">  PARTITIONED <span class="keyword">BY</span> (                                   </span><br><span class="line">   <span class="string">`day`</span> <span class="keyword">string</span>) </span><br><span class="line">  CLUSTERED <span class="keyword">BY</span> (</span><br><span class="line">   <span class="string">`campaignid`</span>,  <span class="string">`mediaid`</span> ) <span class="keyword">INTO</span> <span class="number">100</span> BUCKETS                                   </span><br><span class="line">  <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> SERDE                                   </span><br><span class="line">    <span class="string">'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'</span>  </span><br><span class="line">  <span class="keyword">STORED</span> <span class="keyword">AS</span> INPUTFORMAT                              </span><br><span class="line">    <span class="string">'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'</span>  </span><br><span class="line">  OUTPUTFORMAT                                       </span><br><span class="line">    <span class="string">'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'</span> </span><br><span class="line">  TBLPROPERTIES (                                    </span><br><span class="line">    <span class="string">'last_modified_by'</span>=<span class="string">'cloudera-scm'</span>,               </span><br><span class="line">    <span class="string">'last_modified_time'</span>=<span class="string">'1530676367'</span>,               </span><br><span class="line">    <span class="string">'transient_lastDdlTime'</span>=<span class="string">'1530676367'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>其实主要注意的地方就如下的点:<br>CLUSTERED BY (<code>campaignid</code>,  <code>mediaid</code> ) INTO 100 BUCKETS<br><img src="/img/hadoop/20180704163520403.png" alt></p>
+<h4 id="如何将数据插入分桶表"><a href="#如何将数据插入分桶表" class="headerlink" title="如何将数据插入分桶表"></a>如何将数据插入分桶表</h4><p>将数据导入分桶表主要通过以下步骤<br>第一步：<br>    从hdfs或本地磁盘中load数据，导入中间表<br>第二步：<br>    通过从中间表查询的方式的完成数据导入</p>
+<pre><code>分桶的实质就是对 分桶的字段做了hash 然后存放到对应文件中，所以说如果原有数据没有按key hash ,
+</code></pre><p>需要在插入分桶的时候hash, 也就是说向分桶表中插入数据的时候必然要执行一次MAPREDUCE,</p>
+<p>这也就是分桶表的数据基本只能通过从结果集查询插入的方式进行导入</p>
+<p>这里我们主要讲解第二步：</p>
+<p>主要的过程我们写为一个SQL<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> clickcube;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">set</span> hive.enforce.bucketing = <span class="literal">true</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> clickcube_mid_bucket </span><br><span class="line"><span class="keyword">PARTITION</span>( <span class="keyword">day</span> = <span class="string">'2018-07-03'</span> )</span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">	clickcube_mid.logtype,</span><br><span class="line">	clickcube_mid.<span class="string">`date`</span>,</span><br><span class="line">	clickcube_mid.<span class="string">`hour`</span>,</span><br><span class="line">	clickcube_mid.projectid,</span><br><span class="line">	clickcube_mid.campaignid,</span><br><span class="line">	clickcube_mid.templateid,</span><br><span class="line">	clickcube_mid.mediaid,</span><br><span class="line">	clickcube_mid.slotid,</span><br><span class="line">	clickcube_mid.channeltype,</span><br><span class="line">	clickcube_mid.regioncode,</span><br><span class="line">	clickcube_mid.campclick,</span><br><span class="line">	clickcube_mid.campimp,</span><br><span class="line">	clickcube_mid.mediaclick,</span><br><span class="line">	clickcube_mid.mediaimp,</span><br><span class="line">	clickcube_mid.templateimp,</span><br><span class="line">	clickcube_mid.templatecampimp,</span><br><span class="line">	clickcube_mid.mediaclickcost,</span><br><span class="line">	clickcube_mid.campclickcost </span><br><span class="line"><span class="keyword">FROM</span> clickcube_mid</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">day</span> = <span class="string">'2018-07-03'</span></span><br></pre></td></tr></table></figure></p>
+<p>这里我们需要注意几点<br>我们需要确保reduce 的数量与表中的bucket 数量一致，为此有两种做法<br>1.让hive强制分桶，自动按照分桶表的bucket 进行分桶。(推荐)<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>  hive.enforce.bucketing <span class="comment">= true</span>;</span><br></pre></td></tr></table></figure></p>
+<p>2.手动指定reduce数量<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> mapreduce.job.reduces <span class="comment">= num</span>;</span><br><span class="line">/</span><br><span class="line"><span class="keyword">set</span> mapreduce.reduce.tasks <span class="comment">= num</span>;</span><br></pre></td></tr></table></figure></p>
+<p>并在 SELECT 后增加CLUSTER BY 语句<br>下面展示下整体的数据导入脚本<br>主要分为3个文件：</p>
+<p>-rw-r–r–. 1 root root  637 7月   4 20:37 insert_into_bucket.hql<br>-rw-r–r–. 1 root root   37 7月   4 20:26 insert_into_bucket.init<br>-rwxr-xr-x. 1 root root 1788 7月   4 20:27 insert_into_bucket.sh</p>
+<p>insert_into_bucket.hql   数据导入HQL<br>insert_into_bucket.init   设置初始环境<br>insert_into_bucket.sh     主体执行脚本<br>insert_into_bucket.sh<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">set</span> -o errexit</span><br><span class="line"> </span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line"> </span><br><span class="line">ROOT_PATH=$(dirname $(readlink -f <span class="variable">$0</span>))</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$ROOT_PATH</span></span><br><span class="line"> </span><br><span class="line">date_pattern_old=<span class="string">'^[0-9]&#123;4&#125;-[0-9]&#123;1,2&#125;-[0-9]&#123;1,2&#125;$'</span></span><br><span class="line">date_pattern=<span class="string">'^[0-9]&#123;4&#125;-((0([1-9]&#123;1&#125;))|(1[1|2]))-(([0-2]([0-9]&#123;1&#125;))|(3[0|1]))$'</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#参数数量</span></span><br><span class="line">argsnum=<span class="variable">$#</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#一些默认值</span></span><br><span class="line">curDate=`date +%Y%m%d`</span><br><span class="line">partitionDate=`date -d <span class="string">'-1 day'</span> +%Y-%m-%d`</span><br><span class="line">fileLocDate=`date -d <span class="string">'-1 day'</span> +%Y-%m-%d`</span><br><span class="line"> </span><br><span class="line"><span class="comment">#日志存放位置</span></span><br><span class="line">logdir=insert_bucket_logs</span><br><span class="line"> </span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">tips</span></span>() &#123; </span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"Usage : insert_into_bucket.sh [date]"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"Args :"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"date"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"	date use this format yyyy-MM-dd , ex : 2018-06-02"</span></span><br><span class="line">    	<span class="built_in">echo</span> <span class="string">"============================================================"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"Example :"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"	example1 : sh insert_into_bucket.sh"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"	example2 : sh insert_into_bucket.sh 2018-06-02"</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$argsnum</span> -eq 0 ] ; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"No argument, use default value"</span></span><br><span class="line"><span class="keyword">elif</span> [ <span class="variable">$argsnum</span> -eq 1 ] ; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"One argument, check date pattern"</span></span><br><span class="line">	arg1=<span class="variable">$1</span></span><br><span class="line">	<span class="keyword">if</span> ! [[ <span class="string">"<span class="variable">$arg1</span>"</span> =~ <span class="variable">$date_pattern</span> ]] ; <span class="keyword">then</span></span><br><span class="line">       		<span class="built_in">echo</span> -e <span class="string">"\033[31m Please specify valid date in format like 2018-06-02"</span></span><br><span class="line">       		<span class="built_in">echo</span> -e <span class="string">"\033[0m"</span></span><br><span class="line">       		tips</span><br><span class="line">        	<span class="built_in">exit</span> 1</span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line">	dateArr=($(<span class="built_in">echo</span> <span class="variable">$arg1</span> |tr <span class="string">"-"</span> <span class="string">" "</span>))</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"dateArr length is "</span><span class="variable">$&#123;#dateArr[@]&#125;</span></span><br><span class="line">	partitionDate=<span class="variable">$&#123;dateArr[0]&#125;</span>-<span class="variable">$&#123;dateArr[1]&#125;</span>-<span class="variable">$&#123;dateArr[2]&#125;</span></span><br><span class="line"><span class="keyword">else</span> </span><br><span class="line">	<span class="built_in">echo</span> -e <span class="string">"\033[31m Not valid num of arguments"</span></span><br><span class="line">	<span class="built_in">echo</span> -e <span class="string">"\033[0m"</span></span><br><span class="line">	tips</span><br><span class="line">	<span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> [ ! -d <span class="string">"<span class="variable">$logdir</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    mkdir -p <span class="variable">$logdir</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$ROOT_PATH</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#nohup hive -hivevar p_date=$&#123;partitionDate&#125; -hivevar f_date=$&#123;fileLocDate&#125; -f  hdfs_add_partition_dmp_clearlog.hql  &gt;&gt; $logdir/load_$&#123;curDate&#125;.log</span></span><br><span class="line"> </span><br><span class="line">nohup beeline -u jdbc:hive2://master:10000 -n root --color=<span class="literal">true</span> --silent=<span class="literal">false</span>  --hivevar p_date=<span class="variable">$&#123;partitionDate&#125;</span> -i insert_into_bucket.init -f insert_into_bucket.hql  &gt;&gt; <span class="variable">$logdir</span>/insert_bucket_<span class="variable">$&#123;curDate&#125;</span>.<span class="built_in">log</span></span><br></pre></td></tr></table></figure></p>
+<p>insert_into_bucket.init<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> hive.enforce.bucketing <span class="comment">= true</span>;</span><br></pre></td></tr></table></figure></p>
+<p>insert_into_bucket.hql<br><figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">use clickcube;</span><br><span class="line"> </span><br><span class="line">INSERT OVERWRITE TABLE clickcube_mid_bucket </span><br><span class="line">PARTITION( day = '$&#123;<span class="attribute">hivevar</span>:p_date&#125;' )</span><br><span class="line">SELECT </span><br><span class="line">	clickcube_mid<span class="variable">.logtype</span>,</span><br><span class="line">	clickcube_mid.`date`,</span><br><span class="line">	clickcube_mid.`hour`,</span><br><span class="line">	clickcube_mid<span class="variable">.projectid</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.campaignid</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.templateid</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.mediaid</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.slotid</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.channeltype</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.regioncode</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.campclick</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.campimp</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.mediaclick</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.mediaimp</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.templateimp</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.templatecampimp</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.mediaclickcost</span>,</span><br><span class="line">	clickcube_mid<span class="variable">.campclickcost</span>  </span><br><span class="line">FROM clickcube_mid</span><br><span class="line">WHERE day = '$&#123;hivevar:p_date&#125;'</span><br></pre></td></tr></table></figure></p>
+<h4 id="针对于分桶表的数据抽样："><a href="#针对于分桶表的数据抽样：" class="headerlink" title="针对于分桶表的数据抽样："></a>针对于分桶表的数据抽样：</h4><p>分桶的一个主要优势就是数据抽样，<br>主要有两种方式：基于桶抽样、基于百分比抽样。</p>
+<p>1）基于桶抽样：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; SELECT * FROMbucketed_users </span><br><span class="line">&gt;   TABLESAMPLE(BUCKET 1 OUT OF 4 ON id); </span><br><span class="line">0<span class="built_in"> Nat </span></span><br><span class="line">4 Ann</span><br></pre></td></tr></table></figure></p>
+<p>桶的个数从1开始计数。因此，前面的查询从4个桶的第一个中获取所有的用户。 对于一个大规模的、均匀分布的数据集，这会返回表中约四分之一的数据行。我们 也可以用其他比例对若干个桶进行取样(因为取样并不是一个精确的操作，因此这个 比例不一定要是桶数的整数倍)。</p>
+<p>说法一：</p>
+<p>注：tablesample是抽样语句，语法：TABLESAMPLE(BUCKET x OUTOF y)</p>
+<ul>
+<li><p>y必须是table总bucket数的倍数或者因子。hive根据y的大小，决定抽样的比例。例如，table总共分了64份，当y=32时，抽取(64/32=)2个bucket的数据，当y=128时，抽取(64/128=)1/2个bucket的数据。</p>
+</li>
+<li><p>x表示从哪个bucket开始抽取。例如，table总bucket数为32，tablesample(bucket 3 out of 16)，表示总共抽取（32/16=）2个bucket的数据，分别为第3个bucket和第（3+16=）19个bucket的数据。</p>
+</li>
+</ul>
+<p>说法二：</p>
+<p>分桶语句中的分母表示的是数据将会被散列的桶的个数，</p>
+<p>分子表示将会选择的桶的个数。<br>示例：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(<span class="number">1</span>) </span><br><span class="line"><span class="keyword">FROM</span> clickcube_mid_bucket </span><br><span class="line"><span class="keyword">TABLESAMPLE</span>(<span class="keyword">BUCKET</span> <span class="number">10</span> <span class="keyword">OUT</span> <span class="keyword">OF</span> <span class="number">100</span> <span class="keyword">ON</span> <span class="keyword">rand</span>()) </span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">day</span>=<span class="string">'2018-07-03'</span>;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/img/hadoop/20180704222127311.png" alt><br>2）基于百分比抽样：</p>
+<pre><code>hive另外一种按照抽样百分比进行抽样的方式，该种方式基于行数，按照输入路径下的数据块的百分比进行抽样。
+
+这种抽样的最小单元是一个hdfs数据块，如果表的数据大小小于普通块大小128M,将返回所有行。
+</code></pre><p>基于百分比的抽样方式提供了一个变量，用于控制基于数据块的调优种子信息：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.sample.seednumber<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>0<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>A number userd for percentage sampling. By changing this number, user will change the subsets of data sampled.</p>
+<h4 id="数据分桶存在的一些缺陷："><a href="#数据分桶存在的一些缺陷：" class="headerlink" title="数据分桶存在的一些缺陷："></a>数据分桶存在的一些缺陷：</h4><ul>
+<li>如果通过数据文件LOAD 到分桶表中，会存在额外的MR负担。</li>
+<li>实际生产中分桶策略使用频率较低，更常见的还是使用数据分区。</li>
+</ul>
+<h2 id="二-事务"><a href="#二-事务" class="headerlink" title="二. 事务"></a>二. 事务</h2><h3 id="1-建表"><a href="#1-建表" class="headerlink" title="1. 建表"></a>1. 建表</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="keyword">create</span> table test_trancaction</span><br><span class="line">    &gt; (user_id Int,name <span class="keyword">String</span>)</span><br><span class="line">    &gt; clustered <span class="keyword">by</span> (user_id) <span class="keyword">into</span> <span class="number">3</span> buckets</span><br><span class="line">    &gt; stored <span class="keyword">as</span> orc TBLPROPERTIES (<span class="string">'transactional'</span>=<span class="string">'true'</span>);</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.813 seconds</span><br><span class="line">hive&gt; <span class="keyword">create</span> table test_insert_test(id int,name <span class="keyword">string</span>) row format delimited fields TERMINATED <span class="keyword">BY</span> <span class="string">','</span>;</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.11 seconds</span><br></pre></td></tr></table></figure>
+<h3 id="2-导入数据"><a href="#2-导入数据" class="headerlink" title="2. 导入数据"></a>2. 导入数据</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; <span class="keyword">insert</span> <span class="keyword">into</span> test_insert_test <span class="keyword">values</span>(<span class="number">3</span>,<span class="string">"ma"</span>);</span><br><span class="line"></span><br><span class="line">hive&gt; <span class="keyword">delete</span> <span class="keyword">from</span> test_insert_test <span class="keyword">where</span> id=<span class="number">1</span>;</span><br><span class="line">FAILED: SemanticException [Error 10294]: Attempt to do <span class="keyword">update</span> <span class="keyword">or</span> <span class="keyword">delete</span> <span class="keyword">using</span> <span class="keyword">transaction</span> manager that does <span class="keyword">not</span> support these operations.</span><br></pre></td></tr></table></figure>
+<p><strong>修改配置文件hive-site.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--start for trancaction --&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.support.concurrency<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.enforce.bucketing<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.exec.dynamic.partition.mode<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>nonstrict<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.txn.manager<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>org.apache.hadoop.hive.ql.lockmgr.DbTxnManager<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.compactor.initiator.on<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line">          <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.compactor.worker.threads<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>查看分桶</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">hadoop<span class="meta">@hadoopmaster</span>:<span class="regexp">/usr/</span>local<span class="regexp">/hive/</span>conf$ hdfs dfs -ls <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_insert_test</span><br><span class="line">Found <span class="number">3</span> items</span><br><span class="line">-rwxrwxr-x   <span class="number">2</span> hadoop supergroup          <span class="number">6</span> <span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">39</span> <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_insert_test/<span class="number">000000</span>_0</span><br><span class="line">-rwxrwxr-x   <span class="number">2</span> hadoop supergroup          <span class="number">5</span> <span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">40</span> <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_insert_test/<span class="number">000000</span>_0_copy_1</span><br><span class="line">-rwxrwxr-x   <span class="number">2</span> hadoop supergroup          <span class="number">5</span> <span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">40</span> <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_insert_test/<span class="number">000000</span>_0_copy_2</span><br><span class="line"></span><br><span class="line">hive&gt; hadoop<span class="meta">@hadoopmaster</span>:<span class="regexp">/usr/</span>local<span class="regexp">/hive/</span>conf$ hdfs dfs -ls <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_trancaction</span><br><span class="line">Found <span class="number">3</span> items</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          <span class="number">0</span> <span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">45</span> <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_trancaction/delta_0000001_0000001_0000</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          <span class="number">0</span> <span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">46</span> <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_trancaction/delta_0000002_0000002_0000</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          <span class="number">0</span> <span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">46</span> <span class="regexp">/user/</span>hive<span class="regexp">/warehouse/</span>test_trancaction/delta_0000003_0000003_0000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">hive&gt; delete from test_trancaction where user_id=<span class="number">1</span>;</span><br><span class="line"><span class="string">WARNING:</span> Hive-on-MR is deprecated <span class="keyword">in</span> Hive <span class="number">2</span> and may not be available <span class="keyword">in</span> the future versions. Consider using a different execution engine (i.e. tez, spark) or using Hive <span class="number">1.</span>X releases.</span><br><span class="line">Query ID = hadoop_20160810104829_0e78e0cd<span class="number">-2</span>bc9<span class="number">-4741</span><span class="number">-89</span>c1<span class="number">-7</span>a8d1f384682</span><br><span class="line">Total jobs = <span class="number">1</span></span><br><span class="line">Launching Job <span class="number">1</span> out of <span class="number">1</span></span><br><span class="line">Number of reduce tasks determined at compile <span class="string">time:</span> <span class="number">3</span></span><br><span class="line">In order to change the average load <span class="keyword">for</span> a reducer (<span class="keyword">in</span> bytes):</span><br><span class="line">  set hive.exec.reducers.bytes.per.reducer=&lt;number&gt;</span><br><span class="line">In order to limit the maximum number of <span class="string">reducers:</span></span><br><span class="line">  set hive.exec.reducers.max=&lt;number&gt;</span><br><span class="line">In order to set a constant number of <span class="string">reducers:</span></span><br><span class="line">  set mapreduce.job.reduces=&lt;number&gt;</span><br><span class="line">Starting Job = job_1470228460967_0010, Tracking URL = <span class="string">http:</span><span class="comment">//hadoopmaster:8088/proxy/application_1470228460967_0010/</span></span><br><span class="line">Kill Command = <span class="regexp">/usr/</span>local<span class="regexp">/hadoop/</span>bin/hadoop job  -kill job_1470228460967_0010</span><br><span class="line">Hadoop job information <span class="keyword">for</span> Stage<span class="number">-1</span>: number of <span class="string">mappers:</span> <span class="number">3</span>; number of <span class="string">reducers:</span> <span class="number">3</span></span><br><span class="line"><span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">48</span>:<span class="number">36</span>,<span class="number">463</span> Stage<span class="number">-1</span> map = <span class="number">0</span>%,  reduce = <span class="number">0</span>%</span><br><span class="line"><span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">48</span>:<span class="number">41</span>,<span class="number">784</span> Stage<span class="number">-1</span> map = <span class="number">33</span>%,  reduce = <span class="number">0</span>%, Cumulative CPU <span class="number">0.97</span> sec</span><br><span class="line"><span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">48</span>:<span class="number">46</span>,<span class="number">913</span> Stage<span class="number">-1</span> map = <span class="number">67</span>%,  reduce = <span class="number">0</span>%, Cumulative CPU <span class="number">2.0</span> sec</span><br><span class="line"><span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">48</span>:<span class="number">48</span>,<span class="number">970</span> Stage<span class="number">-1</span> map = <span class="number">100</span>%,  reduce = <span class="number">0</span>%, Cumulative CPU <span class="number">3.0</span> sec</span><br><span class="line"><span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">48</span>:<span class="number">50</span>,<span class="number">020</span> Stage<span class="number">-1</span> map = <span class="number">100</span>%,  reduce = <span class="number">33</span>%, Cumulative CPU <span class="number">4.1</span> sec</span><br><span class="line"><span class="number">2016</span><span class="number">-08</span><span class="number">-10</span> <span class="number">10</span>:<span class="number">48</span>:<span class="number">54</span>,<span class="number">117</span> Stage<span class="number">-1</span> map = <span class="number">100</span>%,  reduce = <span class="number">100</span>%, Cumulative CPU <span class="number">5.76</span> sec</span><br><span class="line">MapReduce Total cumulative CPU <span class="string">time:</span> <span class="number">5</span> seconds <span class="number">760</span> msec</span><br><span class="line">Ended Job = job_1470228460967_0010</span><br><span class="line">Loading data to table <span class="keyword">default</span>.test_trancaction</span><br><span class="line">MapReduce Jobs <span class="string">Launched:</span></span><br><span class="line">Stage-Stage<span class="number">-1</span>: <span class="string">Map:</span> <span class="number">3</span>  <span class="string">Reduce:</span> <span class="number">3</span>   Cumulative <span class="string">CPU:</span> <span class="number">5.76</span> sec   HDFS <span class="string">Read:</span> <span class="number">32745</span> HDFS <span class="string">Write:</span> <span class="number">701</span> SUCCESS</span><br><span class="line">Total MapReduce CPU Time <span class="string">Spent:</span> <span class="number">5</span> seconds <span class="number">760</span> msec</span><br><span class="line">OK</span><br><span class="line">Time <span class="string">taken:</span> <span class="number">26.074</span> seconds</span><br></pre></td></tr></table></figure>
+<p><strong>最后总结一下,做Hive的Transaction其实不合适,资源耗用量大,意义不大,本身hive做离线查询还是可以的.ACID支持你饶了我吧….二点:1)需要分桶表 2)需要修改hive-site.xml文件,剩余的还是很简单的.</strong></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://cwiki.apache.org/confluence/display/Hive/Hive+Transactions#HiveTransactions-NewConfigurationParametersforTransactions" target="_blank" rel="noopener">ACID and Transactions in Hive</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100082.html" class="pre-post btn btn-default" title='大数据hadoop之 二十一.Hive优化'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 二十一.Hive优化</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100325.html" class="next-post btn btn-default" title='大数据hadoop之 十九.Hive的存储架构与HQL语法'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 十九.Hive的存储架构与HQL语法</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-概述"><span class="toc-text">一. 概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-按天划分的表"><span class="toc-text">1. 按天划分的表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-关于分区"><span class="toc-text">2. 关于分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-关于分桶表数据存储"><span class="toc-text">3. 关于分桶表数据存储</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数据分桶的适用场景："><span class="toc-text">数据分桶的适用场景：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#据分桶的原理"><span class="toc-text">据分桶的原理:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据分桶的作用"><span class="toc-text">数据分桶的作用:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#创建数据分桶表"><span class="toc-text">创建数据分桶表:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何将数据插入分桶表"><span class="toc-text">如何将数据插入分桶表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#针对于分桶表的数据抽样："><span class="toc-text">针对于分桶表的数据抽样：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据分桶存在的一些缺陷："><span class="toc-text">数据分桶存在的一些缺陷：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-事务"><span class="toc-text">二. 事务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-建表"><span class="toc-text">1. 建表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-导入数据"><span class="toc-text">2. 导入数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考链接"><span class="toc-text">参考链接</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

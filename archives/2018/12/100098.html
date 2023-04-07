@@ -1,0 +1,388 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,pod">
+
+
+    <meta name="description" content="接上文: 深入理解kubernetes Pod之 四.Pod健康检查
+
+Init Container就是用来做初始化工作的容器，可以是一个或者多个，如果有多个的话，这些容器会按定义的顺序依次执行...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>深入理解kubernetes Pod之 五.Pod容器初始化 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="深入理解kubernetes Pod之 五.Pod容器初始化">
+            
+	            深入理解kubernetes Pod之 五.Pod容器初始化
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/pod/">pod</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1575</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100118.html">深入理解kubernetes Pod之 四.Pod健康检查</a></p>
+<hr>
+<p><code>Init Container</code>就是用来做初始化工作的容器，可以是一个或者多个，如果有多个的话，这些容器会按定义的顺序依次执行，只有所有的<code>Init Container</code>执行完后，主容器才会被启动。我们知道一个<code>Pod</code>里面的所有容器是共享数据卷和网络命名空间的，所以<code>Init Container</code>里面产生的数据可以被主容器使用到的。</p>
+<p>是不是感觉<code>Init Container</code>和之前的钩子函数有点类似啊，只是是在容器执行前来做一些工作，是吧？从直观的角度看上去的话，初始化容器的确有点像<code>PreStart</code>，但是钩子函数和我们的<code>Init Container</code>是处在不同的阶段的，我们可以通过下面的图来了解下：</p>
+<div align="center"><img src="/img/posts/loap.jpg" alt="loap"></div>
+
+<p>从上面这张图我们可以直观的看到<code>PostStart</code>和<code>PreStop</code>包括<code>liveness</code>和<code>readiness</code>是属于主容器的生命周期范围内的，而<code>Init Container</code>是独立于主容器之外的，当然他们都属于<code>Pod</code>的生命周期范畴之内的，现在我们应该明白<code>Init Container</code>和钩子函数之类的区别了吧。</p>
+<p>另外我们可以看到上面我们的<code>Pod</code>右边还有一个<code>infra</code>的容器，这是一个什么容器呢？我们可以在集群环境中去查看下人任意一个<code>Pod</code>对应的运行的<code>Docker</code>容器，我们可以发现每一个<code>Pod</code>下面都包含了一个<code>pause-amd64</code>的镜像，这个就是我们的<code>infra</code>镜像，我们知道<code>Pod</code>下面的所有容器是共享同一个网络命名空间的，这个镜像就是来做这个事情的，所以每一个<code>Pod</code>当中都会包含一个这个镜像。</p>
+<blockquote>
+<p>很多同学最开始Pod 启动不起来就是因为这个 infra 镜像没有被拉下来，因为默认该镜像是需要到谷歌服务器上拉取的，所以需要提前拉取到节点上面。</p>
+</blockquote>
+<p>我们说<code>Init Container</code>主要是来做初始化容器工作的，那么他有哪些应用场景呢？</p>
+<ul>
+<li>等待其他模块Ready：这个可以用来解决服务之间的依赖问题，比如我们有一个 Web 服务，该服务又依赖于另外一个数据库服务，但是在我们启动这个 Web 服务的时候我们并不能保证依赖的这个数据库服务就已经启动起来了，所以可能会出现一段时间内 Web 服务连接数据库异常。要解决这个问题的话我们就可以在 Web 服务的 Pod 中使用一个<code>InitContainer</code>，在这个初始化容器中去检查数据库是否已经准备好了，准备好了过后初始化容器就结束退出，然后我们的主容器 Web 服务被启动起来，这个时候去连接数据库就不会有问题了。</li>
+<li>做初始化配置：比如集群里检测所有已经存在的成员节点，为主容器准备好集群的配置信息，这样主容器起来后就能用这个配置信息加入集群。</li>
+<li>其它场景：如将<code>Pod</code>注册到一个中央数据库、配置中心等。</li>
+</ul>
+<p>我们先来给大家演示下服务依赖的场景下初始化容器的使用方法，如下<code>Pod</code>的定义方法</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">init-pod1</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">init</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">init-container</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">['sh',</span> <span class="string">'-c'</span><span class="string">,</span> <span class="string">'echo The app is running! &amp;&amp; sleep 3600'</span><span class="string">]</span></span><br><span class="line"><span class="attr">  initContainers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">init-myservice</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">['sh',</span> <span class="string">'-c'</span><span class="string">,</span> <span class="string">'until nslookup myservice; do echo waiting for myservice; sleep 2; done;'</span><span class="string">]</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">init-mydb</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">['sh',</span> <span class="string">'-c'</span><span class="string">,</span> <span class="string">'until nslookup mydb; do echo waiting for mydb; sleep 2; done;'</span><span class="string">]</span></span><br></pre></td></tr></table></figure>
+<p>然和我们先来创建上面的<code>Pod</code>:(保存为<strong>init-pod.yaml</strong>)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl create -f init-pod.yaml</span></span><br><span class="line">pod "init-pod" created</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pod</span></span><br><span class="line">NAME                 READY     STATUS             RESTARTS   AGE</span><br><span class="line">init-pod             0/1       Init:0/2           0          26s</span><br></pre></td></tr></table></figure>
+<p>然后我们可以看到<code>STATUS</code>一栏是<code>Init:0/2</code>，我们可以 describe 下看看详细信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl describe pod init-pod</span></span><br><span class="line">Name:         init-pod</span><br><span class="line">Namespace:    default</span><br><span class="line">Node:         node01/10.151.30.62</span><br><span class="line">Start Time:   Wed, 30 May 2018 06:39:51 +0800</span><br><span class="line">Labels:       app=init</span><br><span class="line">Annotations:  &lt;none&gt;</span><br><span class="line">Status:       Pending</span><br><span class="line">IP:           10.244.1.23</span><br><span class="line">Init Containers:</span><br><span class="line">  init-myservice:</span><br><span class="line">    Container ID:  docker://99cf46f0fab3841fe7725b386567d03dbd2f427cff5098116a7e3dafb9830b44</span><br><span class="line">    Image:         busybox</span><br><span class="line">    Image ID:      docker-pullable://busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47</span><br><span class="line">    Port:          &lt;none&gt;</span><br><span class="line">    Host Port:     &lt;none&gt;</span><br><span class="line">    Command:</span><br><span class="line">      sh</span><br><span class="line">      -c</span><br><span class="line">      until nslookup myservice; do echo waiting for myservice; sleep 2; done;</span><br><span class="line">    State:          Running</span><br><span class="line">      Started:      Wed, 30 May 2018 06:40:03 +0800</span><br><span class="line">    Ready:          False</span><br><span class="line">    Restart Count:  0</span><br><span class="line">    Environment:    &lt;none&gt;</span><br><span class="line">    Mounts:</span><br><span class="line">      /var/run/secrets/kubernetes.io/serviceaccount from default-token-n9w2d (ro)</span><br><span class="line">  init-mydb:</span><br><span class="line">    Container ID:</span><br><span class="line">    Image:         busybox</span><br><span class="line">    Image ID:</span><br><span class="line">    Port:          &lt;none&gt;</span><br><span class="line">    Host Port:     &lt;none&gt;</span><br><span class="line">    Command:</span><br><span class="line">      sh</span><br><span class="line">      -c</span><br><span class="line">      until nslookup mydb; do echo waiting for mydb; sleep 2; done;</span><br><span class="line">    State:          Waiting</span><br><span class="line">      Reason:       PodInitializing</span><br><span class="line">    Ready:          False</span><br><span class="line">    Restart Count:  0</span><br><span class="line">    Environment:    &lt;none&gt;</span><br><span class="line">    Mounts:</span><br><span class="line">      /var/run/secrets/kubernetes.io/serviceaccount from default-token-n9w2d (ro)</span><br><span class="line">Containers:</span><br><span class="line">  main-container:</span><br><span class="line">    Container ID:</span><br><span class="line">    Image:         busybox</span><br><span class="line">    Image ID:</span><br><span class="line">    Port:          &lt;none&gt;</span><br><span class="line">    Host Port:     &lt;none&gt;</span><br><span class="line">    Command:</span><br><span class="line">      sh</span><br><span class="line">      -c</span><br><span class="line">      echo The app is running! &amp;&amp; sleep 3600</span><br><span class="line">    State:          Waiting</span><br><span class="line">      Reason:       PodInitializing</span><br><span class="line">    Ready:          False</span><br><span class="line">    Restart Count:  0</span><br><span class="line">    Environment:    &lt;none&gt;</span><br><span class="line">    Mounts:</span><br><span class="line">      /var/run/secrets/kubernetes.io/serviceaccount from default-token-n9w2d (ro)</span><br><span class="line">Conditions:</span><br><span class="line">  Type           Status</span><br><span class="line">  Initialized    False</span><br><span class="line">  Ready          False</span><br><span class="line">  PodScheduled   True</span><br><span class="line">Volumes:</span><br><span class="line">  default-token-n9w2d:</span><br><span class="line">    Type:        Secret (a volume populated by a Secret)</span><br><span class="line">    SecretName:  default-token-n9w2d</span><br><span class="line">    Optional:    false</span><br><span class="line">QoS Class:       BestEffort</span><br><span class="line">Node-Selectors:  &lt;none&gt;</span><br><span class="line">Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s</span><br><span class="line">                 node.kubernetes.io/unreachable:NoExecute for 300s</span><br><span class="line">Events:</span><br><span class="line">  Type    Reason                 Age   From               Message</span><br><span class="line">  ----    ------                 ----  ----               -------</span><br><span class="line">  Normal  Scheduled              1m    default-scheduler  Successfully assigned init-pod to node01</span><br><span class="line">  Normal  SuccessfulMountVolume  1m    kubelet, node01    MountVolume.SetUp succeeded for volume "default-token-n9w2d"</span><br><span class="line">  Normal  Pulling                1m    kubelet, node01    pulling image "busybox"</span><br><span class="line">  Normal  Pulled                 1m    kubelet, node01    Successfully pulled image "busybox"</span><br><span class="line">  Normal  Created                1m    kubelet, node01    Created container</span><br><span class="line">  Normal  Started                1m    kubelet, node01    Started container</span><br></pre></td></tr></table></figure>
+<p>因为现在<code>myservice</code>还没有创建，所以<code>init-mydb</code>和<code>main-container</code>都还处于<code>PodInitializing</code>状态，我们可以先创建下面的<code>myservice</code>服务，然后观察下<code>init-mydb</code>和<code>main-container</code>的状态变化，然后在创建<code>init-mydb</code>服务，观察<code>main-container</code>容器的状态变化</p>
+<p><code>Service</code>的对应<code>YAML</code>内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">myservice</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">6376</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">mydb</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">6377</span></span><br></pre></td></tr></table></figure>
+<p>我们在<code>Pod</code>启动过程中，初始化容器会按顺序在网络和数据卷初始化之后启动。每个容器必须在下一个容器启动之前成功退出。如果由于运行时或失败退出，导致容器启动失败，它会根据<code>Pod</code>的<code>restartPolicy</code>指定的策略进行重试。 然而，如果 Pod 的 restartPolicy 设置为 Always，Init 容器失败时会使用 RestartPolicy 策略。</p>
+<p>在所有的初始化容器没有成功之前，<code>Pod</code>将不会变成 <code>Ready</code>状态。正在初始化中的<code>Pod</code>处于<code>Pending</code>状态，但应该会将条件<code>Initializing</code>设置为 true。</p>
+<p>接下来我们再来尝试创建一个做初始化配置工作的<code>Pod</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">init-demo</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="attr">    - containerPort:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">    volumeMounts:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">workdir</span></span><br><span class="line"><span class="attr">      mountPath:</span> <span class="string">/usr/share/nginx/html</span></span><br><span class="line"><span class="attr">  initContainers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">install</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">    command:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">wget</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">"-O"</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">"/work-dir/index.html"</span></span><br><span class="line"><span class="attr">    - http:</span><span class="string">//www.baidu.com</span></span><br><span class="line"><span class="attr">    volumeMounts:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">workdir</span></span><br><span class="line"><span class="attr">      mountPath:</span> <span class="string">"/work-dir"</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">workdir</span></span><br><span class="line"><span class="attr">    emptyDir:</span> <span class="string">&#123;&#125;</span></span><br></pre></td></tr></table></figure>
+<p>我们可以看到这里又出现了<code>volumes</code>，<code>spec.volumes</code>指的是<code>Pod</code>中的卷，<code>spec.containers.volumeMounts</code>，是将指定的卷 mount 到容器指定的位置，相当于<code>Docker</code>里面的<code>-v 宿主机目录：容器目录</code>，我们前面用到过<code>hostPath</code>，我们这里使用的是<code>emptyDir{}</code>，这个就相当于一个共享卷，是一个临时的目录，生命周期等同于<code>Pod</code>的生命周期。</p>
+<p>初始化容器执行完，会下载一个 html 文件映射到<code>emptyDir{}</code>，而主容器也是和 spec.volumes 里的 emptyDir{} 进行映射，所以<code>nginx</code>容器的<code>/usr/share/nginx/html</code>目录下会映射 index.html 文件。</p>
+<p>我们来创建下该<code>Pod</code>，然后验证nginx容器是否运行:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl crate -f init-demo.yaml</span></span><br><span class="line">pod "init-demo" created</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pod init-demo</span></span><br></pre></td></tr></table></figure>
+<p>输出显示了nginx容器正在运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NAME      READY     STATUS    RESTARTS   AGE</span><br><span class="line">nginx     1/1       Running   0          43m</span><br></pre></td></tr></table></figure>
+<p>在 init-demo 容器里的 nginx 容器打开一个 shell：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl <span class="built_in">exec</span> -it init-demo -- /bin/bash</span></span><br></pre></td></tr></table></figure>
+<p>在Shell里，直接查看下 index.html 的内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@nginx:~# cat /usr/share/nginx/html/index.html</span><br></pre></td></tr></table></figure>
+<p>如果我们看到有<strong>百度</strong>相关的信息那么证明我们上面的初始化的工作就完成了。</p>
+<p>这就是我们初始化容器的使用方法，到这里我们就把<code>Pod</code>的整个生命周期当中的几个主要阶段讲完了，第一个是容器的两个钩子函数：<code>PostStart</code>和<code>PreStop</code>，还有就是容器健康检查的两个探针：<code>liveness probe</code>和<code>readiness probe</code>，以及这节课的<code>Init Container</code>。下节课开始我们来讲解一些常用的控制器和<code>Pod</code>的结合。</p>
+<hr>
+<p>接下文: <a href="100097.html">深入理解kubernetes Pod之 六.Pod工作流</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100097.html" class="pre-post btn btn-default" title='深入理解kubernetes Pod之 六.Pod工作流'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">深入理解kubernetes Pod之 六.Pod工作流</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100118.html" class="next-post btn btn-default" title='深入理解kubernetes Pod之 四.Pod健康检查'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">深入理解kubernetes Pod之 四.Pod健康检查</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <p>暂无目录</p>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

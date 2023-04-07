@@ -1,0 +1,443 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="sql,mysql">
+
+
+    <meta name="description" content="一、什么是分区、分表、分库分区就是把一张表的数据分成N个区块，在逻辑上看最终只是一张表，但底层是由N个物理区块组成的。
+分表就是把一张表按一定的规则分解成N个具有独立存储空间的实体表。系统读写时...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>什么情况下需要对数据库进行分库分表分区 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="什么情况下需要对数据库进行分库分表分区">
+            
+	            什么情况下需要对数据库进行分库分表分区
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/mysql/">mysql</a> <a class="tag-link" href="/tags/sql/">sql</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2022/06/10</span>
+        </span>
+        
+    
+</div>
+            
+            
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一、什么是分区、分表、分库"><a href="#一、什么是分区、分表、分库" class="headerlink" title="一、什么是分区、分表、分库"></a>一、什么是分区、分表、分库</h1><h2 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h2><p>就是把一张表的数据分成N个区块，在逻辑上看最终只是一张表，但底层是由N个物理区块组成的。</p>
+<h2 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h2><p>就是把一张表按一定的规则分解成N个具有独立存储空间的实体表。系统读写时需要根据定义好的规则得到对应的字表明，然后操作它。</p>
+<h2 id="分库"><a href="#分库" class="headerlink" title="分库"></a>分库</h2><p>一旦分表，一个库中的表会越来越多</p>
+<blockquote>
+<p>将整个数据库比作图书馆，一张表就是一本书。当要在一本书中查找某项内容时，如果不<strong>分章节</strong>，查找的效率将会下降。而同理，在数据库中就是<strong>分区</strong>。</p>
+</blockquote>
+<h1 id="二-什么时候分库？"><a href="#二-什么时候分库？" class="headerlink" title="二 . 什么时候分库？"></a>二 . 什么时候分库？</h1><p>其实，<strong>分库主要解决的是并发量大的问题</strong>。因为并发量一旦上来了，那么数据库就可能会成为瓶颈，因为数据库的连接数是有限的，虽然可以调整，但是也不是无限调整的。</p>
+<p>所以，当当你的数据库的读或者写的QPS过高，导致你的数据库连接数不足了的时候，就需要考虑分库了，<strong>通过增加数据库实例的方式来提供更多的可用数据库链接，从而提升系统的并发度。</strong></p>
+<p>比较典型的分库的场景就是我们在做微服务拆分的时候，就会按照业务边界，把各个业务的数据从一个单一的数据库中拆分开，分表把订单、物流、商品、会员等单独放到单独的数据库中。</p>
+<p>还有就是有的时候可能会需要把历史订单挪到历史库里面去。这也是分库的一种具体做法。</p>
+<h1 id="三-什么时候分表？"><a href="#三-什么时候分表？" class="headerlink" title="三 . 什么时候分表？"></a>三 . 什么时候分表？</h1><p>分库主要解决的是并发量大的问题，那<strong>分表其实主要解决的是数据量大的问题。</strong></p>
+<p>假如你的单表数据量非常大，因为并发不高，数据量连接可能还够，但是存储和查询的性能遇到了瓶颈了，你做了很多优化之后还是无法提升效率的时候，就需要考虑做分表了。</p>
+<p><strong>通过将数据拆分到多张表中，来减少单表的数据量，从而提升查询速度。</strong></p>
+<p>一般我们认为，单表行数超过 500 万行或者单表容量超过 2GB之后，才需要考虑做分库分表了，小于这个数据量，遇到性能问题先建议大家通过其他优化来解决。</p>
+<h2 id="oracle"><a href="#oracle" class="headerlink" title="oracle"></a>oracle</h2><p>当oracle单表的数据量大于2000万行时，建议进行水平分拆。</p>
+<h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><p>当mysql单表的数据量大于1000万行时，建议进行水平分拆。</p>
+<h2 id="sqlserver"><a href="#sqlserver" class="headerlink" title="sqlserver"></a>sqlserver</h2><p>一般如下条件就可以选择分区分表操作了</p>
+<p>1)、表的大小超过2GB。<br>2)、表中包含历史数据，新的数据被增加都新的分区中。</p>
+<h1 id="四-什么时候分区？"><a href="#四-什么时候分区？" class="headerlink" title="四 . 什么时候分区？"></a>四 . 什么时候分区？</h1><p>当访问量不大，但单表数据量比较多时，表中的数据是分段的，对数据的操作往往只涉及一部分数据，而不是所有的数据，可以只进行分区。分区和分表的目的都是减少数据库的负担，提高表的增删改查效率，两种方式可以互相配合使用。</p>
+<h1 id="五-什么时候既分库又分表？"><a href="#五-什么时候既分库又分表？" class="headerlink" title="五  . 什么时候既分库又分表？"></a>五  . 什么时候既分库又分表？</h1><p>那么什么时候分库又分表呢，那就是既需要解决并发量大的问题，又需要解决数据量大的问题时候。通常情况下，高并发和数据量大的问题都是同时发生的，所以，我们会经常遇到分库分表需要同时进行的情况。</p>
+<p>所以，当你的数据库链接也不够了，并且单表数据量也很大导致查询比较慢的时候，就需要做既分库又分表了。</p>
+<h1 id="六-怎样分库分表？"><a href="#六-怎样分库分表？" class="headerlink" title="六 . 怎样分库分表？"></a>六 . 怎样分库分表？</h1><h2 id="1-横向拆分和纵向拆分"><a href="#1-横向拆分和纵向拆分" class="headerlink" title="1. 横向拆分和纵向拆分"></a>1. 横向拆分和纵向拆分</h2><p>谈及到分库分表，那就要涉及到该如何做拆分的问题。</p>
+<p><strong>通常在做拆分的时候有两种分法，分别是横向拆分（水平拆分）和纵向拆分(垂直拆分)。</strong>假如我们有一张表，如果把这张表中某一条记录的多个字段，拆分到多张表中，这种就是纵向拆分。那如果把一张表中的不同的记录分别放到不同的表中，这种就是横向拆分。</p>
+<p>横向拆分的结果是数据库表中的数据会分散到多张分表中，使得每一个单表中的数据的条数都有所下降。比如我们可以把不同的用户的订单分表拆分放到不同的表中。</p>
+<p>纵向拆分的结果是数据库表中的数据的字段数会变少，使得每一个单表中的数据的存储有所下降。比如我可以把商品详情信息、价格信息、库存信息等等分别拆分到不同的表中。</p>
+<p>还有我们谈到的针对不同的业务做拆分成多个数据库的这种情况，其实也是纵向拆分的一种。</p>
+<h2 id="2-分表字段的选择"><a href="#2-分表字段的选择" class="headerlink" title="2. 分表字段的选择"></a>2. 分表字段的选择</h2><p>在分库分表的过程中，我们需要有一个字段用来进行分表，比如按照用户分表、按照时间分表、按照地区分表。这里面的用户、时间、地区就是所谓的分表字段。</p>
+<p>那么，<strong>在选择这个分表字段的时候，一定要注意，要根据实际的业务情况来做慎重的选择。</strong></p>
+<p>比如说我们要对交易订单进行分表的时候，我们可以选择的信息有很多，比如买家Id、卖家Id、订单号、时间、地区等等，具体应该如何选择呢？</p>
+<p>通常，如果有特殊的诉求，比如按照月度汇总、地区汇总等以外，我们通常建议大家按照买家Id进行分表。因为这样可以避免一个关键的问题那就是——数据倾斜（热点数据）。</p>
+<h3 id="买家还是卖家？"><a href="#买家还是卖家？" class="headerlink" title="买家还是卖家？"></a>买家还是卖家？</h3><p>首先，我们先说为什么不按照卖家分表？</p>
+<p>因为我们知道，电商网站上面是有很多买家和卖家的，但是，一个大的卖家可能会产生很多订单，比如像苏宁易购、当当等这种店铺，他每天在天猫产生的订单量就非常的大。如果按照卖家Id分表的话，那同一个卖家的很多订单都会分到同一张表。</p>
+<p>那就会使得有一些表的数据量非常的大，但是有些表的数据量又很小，这就是发生了<strong>数据倾斜</strong>。这个卖家的数据就变成了热点数据，随着时间的增长，就会使得这个卖家的所有操作都变得异常缓慢。</p>
+<p>但是，买家ID做分表字段就不会出现这类问题，因为一个不太容易出现一个买家能把数据买倾斜了。</p>
+<p>但是需要注意的是，<strong>我们说按照买家Id做分表，保证的是同一个买家的所有订单都在同一张表 ，并不是要给每个买家都单独分配一张表。</strong></p>
+<p>我们在做分表路由的时候，是可以设定一定的规则的，比如我们想要分1024张表，那么我们可以用买家ID或者买家ID的hashcode对1024取模，结果是0000-1023，那么就存储到对应的编号的分表中就行了。</p>
+<h3 id="卖家查询怎么办？"><a href="#卖家查询怎么办？" class="headerlink" title="卖家查询怎么办？"></a>卖家查询怎么办？</h3><p>如果按照买家Id进行了分表，那卖家的查询怎么办，这不就意味着要跨表查询了吗？</p>
+<p>首先，业务问题我们要建立在业务背景下讨论。电商网站订单查询有几种场景？</p>
+<p>1、买家查自己的订单</p>
+<p>2、卖家查自己的订单</p>
+<p>3、平台的小二查用户的订单。</p>
+<p>首先，我们用买家ID做了分表，那么买家来查询的时候，是一定可以把买家ID带过来的，我们直接去对应的表里面查询就行了。</p>
+<p>那如果是卖家查呢？卖家查询的话，同样可以带卖家id过来，那么，我们可以有一个基于binlog、flink等准实时的同步一张卖家维度的分表，这张表只用来查询，来解决卖家查询的问题。</p>
+<p>本质上就是用空间换时间的做法。</p>
+<p>不知道大家看到这里会不会有这样的疑问：同步一张卖家表，这不又带来了大卖家的热点问题了吗？</p>
+<p>首先，我们说同步一张卖家维度的表来，但是其实所有的写操作还是要写到买家表的，只不过需要准实时同步的方案同步到卖家表中。也就是说，我们的这个卖家表理论上是没有业务的写操作，只有读操作的。</p>
+<p>所以，这个卖家库只需要有高性能的读就行了，那这样的话就可以有很多选择了，比如可以部署到一些配置不用那么高的机器、或者其实可以干脆就不用MYSQL，而是采用HBASE、PolarDB、Lindorm等数据库就可以了。这些数据库都是可以海量数据，并提供高性能查询的。</p>
+<p>还有呢就是，大卖家一般都是可以识别的，提前针对大卖家，把他的订单，再按照一定的规则拆分到多张表中。因为只有读，没有写操作，所以拆分多张表也不用考虑事务的问题。</p>
+<h3 id="按照订单查询怎么办？"><a href="#按照订单查询怎么办？" class="headerlink" title="按照订单查询怎么办？"></a>按照订单查询怎么办？</h3><p>上面说的都是有买卖家ID的情况，那没有买卖家ID呢？用订单号直接查怎么办呢？</p>
+<p>这种问题的解决方案是，在生成订单号的时候，我们一般会把分表解决编码到订单号中去，因为订单生成的时候是一定可以知道买家ID的，那么我们就把买家ID的路由结果比如1023，作为一段固定的值放到订单号中就行了。这就是所谓的”<strong>基因法</strong>“。</p>
+<p>这样按照订单号查询的时候，解析出这段数字，直接去对应分表查询就好了。</p>
+<p>至于还有人问其他的查询，没有买卖家ID，也没订单号的，那其实就属于是低频查询或者非核心功能查询了，那就可以用ES等搜索引擎的方案来解决了。就不赘述了。</p>
+<h2 id="3-分表算法"><a href="#3-分表算法" class="headerlink" title="3. 分表算法"></a>3. 分表算法</h2><p>选定了分表字段之后，如何基于这个分表字段来准确的把数据分表到某一张表中呢？</p>
+<p>这就是分表算法要做的事情了，<strong>但是不管什么算法，我们都需要确保一个前提，那就是同一个分表字段，经过这个算法处理后，得到的结果一定是一致的，不可变的。</strong></p>
+<p>通常情况下，当我们对order表进行分表的时候，比如我们要分成128张表的话，那么得到的128表应该是:order_0000、order_0001、order_0002…..order_0126、order_0127</p>
+<p>通常的分表算法有以下几种：</p>
+<h3 id="直接取模"><a href="#直接取模" class="headerlink" title="直接取模"></a>直接取模</h3><p>在分库分表时，我们是事先可以知道要分成多少个库和多少张表的，所以，比较简单的就是取模的方式。</p>
+<p>比如我们要分成128张表的话，就用一个整数来对128取模就行了，得到的结果如果是0002，那么就把数据放到order_0002这张表中。</p>
+<h3 id="Hash取模"><a href="#Hash取模" class="headerlink" title="Hash取模"></a>Hash取模</h3><p>那如果分表字段不是数字类型，而是字符串类型怎么办呢？有一个办法就是哈希取模，就是先对这个分表字段取Hash，然后在再取模。</p>
+<p>但是需要注意的是，<strong>Java中的hash方法得到的结果有可能是负数</strong>，需要考虑这种负数的情况。</p>
+<h3 id="一致性Hash"><a href="#一致性Hash" class="headerlink" title="一致性Hash"></a>一致性Hash</h3><p>前面两种取模方式都比较不错，可以使我们的数据比较均匀的分布到多张分表中。但是还是存在一个缺点。</p>
+<p>那就是如果需要扩容二次分表，表的总数量发生变化时，就需要重新计算hash值，就需要涉及到数据迁移了。</p>
+<p>为了解决扩容的问题，我们可以采用一致性哈希的方式来做分表。</p>
+<p><strong>一致性哈希可以按照常用的hash算法来将对应的key哈希到一个具有2^32次方个节点的空间中，形成成一个顺时针首尾相接的闭合的环形。所以当添加一台新的数据库服务器时，只有增加服务器的位置和逆时针方向第一台服务器之间的键会受影响。</strong></p>
+<h2 id="4-全局ID的生成"><a href="#4-全局ID的生成" class="headerlink" title="4. 全局ID的生成"></a>4. 全局ID的生成</h2><p>涉及到分库分表，就会引申出分布式系统中唯一主键ID的生成问题，因为在单表中我们可以用数据库主键来做唯一ID，但是如果做了分库分表，多张单表中的自增主键就一定会发生冲突。那就不具备全局唯一性了。</p>
+<p>那么，如何生成一个全局唯一的ID呢？有以下几种方式：</p>
+<h3 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h3><p>很多人对UUID都不陌生，它是可以做到全局唯一的，而且生成方式也简单，但是我们通常不推荐使用他做唯一ID，首先<strong>UUID太长了，其次字符串的查询效率也比较慢，而且没有业务含义，根本看不懂。</strong></p>
+<h3 id="基于某个单表做自增主键"><a href="#基于某个单表做自增主键" class="headerlink" title="基于某个单表做自增主键"></a>基于某个单表做自增主键</h3><p>多张单表生成的自增主键会冲突，但是如果所有的表中的主键都从同一张表生成是不是就可以了。</p>
+<p>所有的表在需要主键的时候，都到这张表中获取一个自增的ID。</p>
+<p>这样做是可以做到唯一，也能实现自增，但是问题是这个单表就变成整个系统的瓶颈，而且也存在单点问题，一旦他挂了，那整个数据库就都无法写入了。</p>
+<h3 id="基于多个单表-步长做自增主键"><a href="#基于多个单表-步长做自增主键" class="headerlink" title="基于多个单表+步长做自增主键"></a>基于多个单表+步长做自增主键</h3><p>为了解决单个数据库做自曾主键的瓶颈及单点故障问题，我们可以引入多个表来一起生成就行了。</p>
+<p>但是如何保证多张表里面生成的Id不重复呢？如果我们能实现以下的生成方式就行了：</p>
+<p>实例1生成的ID从1000开始，到1999结束。</p>
+<p>实例2生成的ID从2000开始，到2999结束。</p>
+<p>实例3生成的ID从3000开始，到3999结束。</p>
+<p>实例4生成的ID从4000开始，到4999结束。</p>
+<p>这样就能避免ID重复了，那如果第一个实例的ID已经用到1999了怎么办？那就生成一个新的起始值：</p>
+<p>实例1生成的ID从5000开始，到5999结束。</p>
+<p>实例2生成的ID从6000开始，到6999结束。</p>
+<p>实例3生成的ID从7000开始，到7999结束。</p>
+<p>实例4生成的ID从8000开始，到8999结束。</p>
+<p>我们把步长设置为1000，确保每一个单表中的主键起始值都不一样，并且比当前的最大值相差1000就行了。</p>
+<h3 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h3><p><strong>雪花算法也是比较常用的一种分布式ID的生成方式，它具有全局唯一、递增、高可用的特点。</strong></p>
+<p>雪花算法生成的主键主要由 4 部分组成，1bit符号位、41bit时间戳位、10bit工作进程位以及 12bit 序列号位。</p>
+<p>时间戳占用41bit，精确到毫秒，总共可以容纳约69年的时间。</p>
+<p>工作进程位占用10bit，其中高位5bit是数据中心ID，低位5bit是工作节点ID，做多可以容纳1024个节点。</p>
+<p>序列号占用12bit，每个节点每毫秒0开始不断累加，最多可以累加到4095，一共可以产生4096个ID。</p>
+<p>所以，一个雪花算法可以在同一毫秒内最多可以生成1024 X 4096 = 4194304个唯一的ID</p>
+<h2 id="5-分库分表的工具"><a href="#5-分库分表的工具" class="headerlink" title="5. 分库分表的工具"></a>5. 分库分表的工具</h2><p>在选定了分表字段和分表算法之后，那么，如何把这些功能给实现出来，需要怎么做呢？</p>
+<p>我们如何可以做到像处理单表一样处理分库分表的数据呢？这就需要用到一个分库分表的工具了。</p>
+<p>目前市面上比较不错的分库分表的开源框架主要有三个，分别是sharding-jdbc、TDDL和Mycat</p>
+<h3 id="Sharding-JDBC"><a href="#Sharding-JDBC" class="headerlink" title="Sharding-JDBC"></a>Sharding-JDBC</h3><p>现在叫ShardingSphere（Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成）。它定位为轻量级Java框架，在Java的JDBC层提供的额外服务。它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。</p>
+<p>开原地址：<a href="https://shardingsphere.apache.org" target="_blank" rel="noopener">https://shardingsphere.apache.org</a></p>
+<h3 id="TDDL"><a href="#TDDL" class="headerlink" title="TDDL"></a>TDDL</h3><p>TDDL 是淘宝开源的一个用于访问数据库的中间件， 它集成了分库分表， 读写分离，权重调配，动态数据源配置等功能。封装 jdbc 的 DataSource给用户提供统一的基于客户端的使用。</p>
+<p>开源地址：<a href="https://github.com/alibaba/tb_tddl" target="_blank" rel="noopener">https://github.com/alibaba/tb_tddl</a></p>
+<h3 id="Mycat"><a href="#Mycat" class="headerlink" title="Mycat"></a>Mycat</h3><p>Mycat是一款分布式关系型数据库中间件。它支持分布式SQL查询，兼容MySQL通信协议，以Java生态支持多种后端数据库，通过数据分片提高数据查询处理能力。</p>
+<p>开源地址：<a href="https://github.com/MyCATApache/Mycat2" target="_blank" rel="noopener">https://github.com/MyCATApache/Mycat2</a></p>
+<h1 id="七-分库分表带来的问题"><a href="#七-分库分表带来的问题" class="headerlink" title="七. 分库分表带来的问题"></a>七. 分库分表带来的问题</h1><p>分库分表之后，会带来很多问题。</p>
+<p>首先，做了分库分表之后，所有的读和写操作，都需要带着分表字段，这样才能知道具体去哪个库、哪张表中去查询数据。如果不带的话，就得支持全表扫描。</p>
+<p>但是，单表的时候全表扫描比较容易，但是做了分库分表之后，就没办法做扫表的操作了，如果要扫表的话就要把所有的物理表都要扫一遍。</p>
+<p>还有，一旦我们要从多个数据库中查询或者写入数据，就有很多事情都不能做了，比如<strong>跨库事务就是不支持的。</strong></p>
+<p>所以，分库分表之后就会带来因为不支持事务而导致的数据一致性的问题。</p>
+<p>其次，做了分库分表之后，以前单表中很方便的分页查询、排序等等操作就都失效了。因为我们不能跨多表进行分页、排序。</p>
+<p>总之，分库分表虽然能解决一些大数据量、高并发的问题，但是同时也会带来一些新的问题。<strong>所以，在做数据库优化的时候，还是建议大家优先选择其他的优化方式，最后再考虑分库分表。</strong></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2022/07/100684.html" class="pre-post btn btn-default" title='设计模式（Design pattern）'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">设计模式（Design pattern）</span>
+        </a>
+    
+    
+        <a href="/archives/2022/05/100682.html" class="next-post btn btn-default" title='MySQL性能优化'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">MySQL性能优化</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、什么是分区、分表、分库"><span class="toc-text">一、什么是分区、分表、分库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分区"><span class="toc-text">分区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分表"><span class="toc-text">分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分库"><span class="toc-text">分库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-什么时候分库？"><span class="toc-text">二 . 什么时候分库？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-什么时候分表？"><span class="toc-text">三 . 什么时候分表？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#oracle"><span class="toc-text">oracle</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql"><span class="toc-text">mysql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlserver"><span class="toc-text">sqlserver</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四-什么时候分区？"><span class="toc-text">四 . 什么时候分区？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#五-什么时候既分库又分表？"><span class="toc-text">五  . 什么时候既分库又分表？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#六-怎样分库分表？"><span class="toc-text">六 . 怎样分库分表？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-横向拆分和纵向拆分"><span class="toc-text">1. 横向拆分和纵向拆分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-分表字段的选择"><span class="toc-text">2. 分表字段的选择</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#买家还是卖家？"><span class="toc-text">买家还是卖家？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卖家查询怎么办？"><span class="toc-text">卖家查询怎么办？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按照订单查询怎么办？"><span class="toc-text">按照订单查询怎么办？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-分表算法"><span class="toc-text">3. 分表算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#直接取模"><span class="toc-text">直接取模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hash取模"><span class="toc-text">Hash取模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一致性Hash"><span class="toc-text">一致性Hash</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-全局ID的生成"><span class="toc-text">4. 全局ID的生成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UUID"><span class="toc-text">UUID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于某个单表做自增主键"><span class="toc-text">基于某个单表做自增主键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于多个单表-步长做自增主键"><span class="toc-text">基于多个单表+步长做自增主键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#雪花算法"><span class="toc-text">雪花算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-分库分表的工具"><span class="toc-text">5. 分库分表的工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Sharding-JDBC"><span class="toc-text">Sharding-JDBC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TDDL"><span class="toc-text">TDDL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mycat"><span class="toc-text">Mycat</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#七-分库分表带来的问题"><span class="toc-text">七. 分库分表带来的问题</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

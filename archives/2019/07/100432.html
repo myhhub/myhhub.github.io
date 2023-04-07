@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase,phoenix,spring,mybatis">
+
+
+    <meta name="description" content="一、前言使用Spring+Mybatis操作Phoenix和操作其他的关系型数据库（如Mysql，Oracle）在配置上是基本相同的，下面会分别给出Spring/Spring Boot 整合步骤...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spring/Spring Boot 整合 Mybatis + Phoenix | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spring/Spring Boot 整合 Mybatis + Phoenix">
+            
+	            Spring/Spring Boot 整合 Mybatis + Phoenix
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a> <a class="tag-link" href="/tags/mybatis/">mybatis</a> <a class="tag-link" href="/tags/phoenix/">phoenix</a> <a class="tag-link" href="/tags/spring/">spring</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/14</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1362</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>使用Spring+Mybatis操作Phoenix和操作其他的关系型数据库（如Mysql，Oracle）在配置上是基本相同的，下面会分别给出Spring/Spring Boot 整合步骤，完整代码见本仓库：</p>
+<ul>
+<li><a href="https://github.com/myhhub/BigData-Notes/tree/master/code/Phoenix/spring-mybatis-phoenix" target="_blank" rel="noopener">Spring + Mybatis + Phoenix</a></li>
+<li><a href="https://github.com/myhhub/BigData-Notes/tree/master/code/Phoenix/spring-boot-mybatis-phoenix" target="_blank" rel="noopener">SpringBoot + Mybatis + Phoenix</a></li>
+</ul>
+<h2 id="二、Spring-Mybatis-Phoenix"><a href="#二、Spring-Mybatis-Phoenix" class="headerlink" title="二、Spring + Mybatis + Phoenix"></a>二、Spring + Mybatis + Phoenix</h2><h3 id="2-1-项目结构"><a href="#2-1-项目结构" class="headerlink" title="2.1 项目结构"></a>2.1 项目结构</h3><div align="center"> <img src="/img/bigdata/spring-mybatis-phoenix.png"> </div>
+
+<h3 id="2-2-主要依赖"><a href="#2-2-主要依赖" class="headerlink" title="2.2 主要依赖"></a>2.2 主要依赖</h3><p>除了Spring相关依赖外，还需要导入<code>phoenix-core</code>和对应的Mybatis依赖包</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--mybatis 依赖包--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--phoenix core--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.phoenix<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>phoenix-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.14.0-cdh5.14.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-数据库配置文件"><a href="#2-3-数据库配置文件" class="headerlink" title="2.3  数据库配置文件"></a>2.3  数据库配置文件</h3><p>在数据库配置文件 <code>jdbc.properties</code>  中配置数据库驱动和zookeeper地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 数据库驱动</span><br><span class="line">phoenix.driverClassName=org.apache.phoenix.jdbc.PhoenixDriver</span><br><span class="line"># zookeeper地址</span><br><span class="line">phoenix.url=jdbc:phoenix:192.168.0.105:2181</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-配置数据源和会话工厂"><a href="#2-4-配置数据源和会话工厂" class="headerlink" title="2.4  配置数据源和会话工厂"></a>2.4  配置数据源和会话工厂</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span> <span class="attr">xmlns:tx</span>=<span class="string">"http://www.springframework.org/schema/tx"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 开启注解包扫描--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.myhhub.*"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--指定配置文件的位置--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:property-placeholder</span> <span class="attr">location</span>=<span class="string">"classpath:jdbc.properties"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置数据源--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSource"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DriverManagerDataSource"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--Phoenix配置--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"driverClassName"</span> <span class="attr">value</span>=<span class="string">"$&#123;phoenix.driverClassName&#125;"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"url"</span> <span class="attr">value</span>=<span class="string">"$&#123;phoenix.url&#125;"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置 mybatis 会话工厂 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlSessionFactory"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.SqlSessionFactoryBean"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--指定mapper文件所在的位置--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"mapperLocations"</span> <span class="attr">value</span>=<span class="string">"classpath*:/mappers/**/*.xml"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"classpath:mybatisConfig.xml"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--扫描注册接口 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--作用:从接口的基础包开始递归搜索，并将它们注册为 MapperFactoryBean(只有至少一种方法的接口才会被注册;, 具体类将被忽略)--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.mapper.MapperScannerConfigurer"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--指定会话工厂 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"sqlSessionFactoryBeanName"</span> <span class="attr">value</span>=<span class="string">"sqlSessionFactory"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 指定mybatis接口所在的包 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"basePackage"</span> <span class="attr">value</span>=<span class="string">"com.myhhub.dao"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-5-Mybtais参数配置"><a href="#2-5-Mybtais参数配置" class="headerlink" title="2.5 Mybtais参数配置"></a>2.5 Mybtais参数配置</h3><p>新建mybtais配置文件，按照需求配置额外参数， 更多settings配置项可以参考<a href="http://www.mybatis.org/mybatis-3/zh/configuration.html" target="_blank" rel="noopener">官方文档</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE configuration</span></span><br><span class="line"><span class="meta">        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"</span></span><br><span class="line"><span class="meta">        "http://mybatis.org/dtd/mybatis-3-config.dtd"&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- mybatis 配置文件 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">settings</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 开启驼峰命名 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">setting</span> <span class="attr">name</span>=<span class="string">"mapUnderscoreToCamelCase"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 打印查询sql --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">setting</span> <span class="attr">name</span>=<span class="string">"logImpl"</span> <span class="attr">value</span>=<span class="string">"STDOUT_LOGGING"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-6-查询接口"><a href="#2-6-查询接口" class="headerlink" title="2.6 查询接口"></a>2.6 查询接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PopulationDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">List&lt;USPopulation&gt; <span class="title">queryAll</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(USPopulation USPopulation)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">USPopulation <span class="title">queryByStateAndCity</span><span class="params">(@Param(<span class="string">"state"</span>)</span> String state, @<span class="title">Param</span><span class="params">(<span class="string">"city"</span>)</span> String city)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">deleteByStateAndCity</span><span class="params">(@Param(<span class="string">"state"</span>)</span> String state, @<span class="title">Param</span><span class="params">(<span class="string">"city"</span>)</span> String city)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE mapper</span></span><br><span class="line"><span class="meta">        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"</span></span><br><span class="line"><span class="meta">        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">"com.myhhub.dao.PopulationDao"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"queryAll"</span> <span class="attr">resultType</span>=<span class="string">"com.myhhub.bean.USPopulation"</span>&gt;</span></span><br><span class="line">        SELECT * FROM us_population</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">"save"</span>&gt;</span></span><br><span class="line">        UPSERT INTO us_population VALUES( #&#123;state&#125;, #&#123;city&#125;, #&#123;population&#125; )</span><br><span class="line">    <span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"queryByStateAndCity"</span> <span class="attr">resultType</span>=<span class="string">"com.myhhub.bean.USPopulation"</span>&gt;</span></span><br><span class="line">        SELECT * FROM us_population WHERE state=#&#123;state&#125; AND city = #&#123;city&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">id</span>=<span class="string">"deleteByStateAndCity"</span>&gt;</span></span><br><span class="line">        DELETE FROM us_population WHERE state=#&#123;state&#125; AND city = #&#123;city&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-7-单元测试"><a href="#2-7-单元测试" class="headerlink" title="2.7 单元测试"></a>2.7 单元测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(&#123;<span class="string">"classpath:springApplication.xml"</span>&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PopulationDaoTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PopulationDao populationDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">queryAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;USPopulation&gt; USPopulationList = populationDao.queryAll();</span><br><span class="line">        <span class="keyword">if</span> (USPopulationList != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (USPopulation USPopulation : USPopulationList) &#123;</span><br><span class="line">                System.out.println(USPopulation.getCity() + <span class="string">" "</span> + USPopulation.getPopulation());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        populationDao.save(<span class="keyword">new</span> USPopulation(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>, <span class="number">66666</span>));</span><br><span class="line">        USPopulation usPopulation = populationDao.queryByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        System.out.println(usPopulation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        populationDao.save(<span class="keyword">new</span> USPopulation(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>, <span class="number">99999</span>));</span><br><span class="line">        USPopulation usPopulation = populationDao.queryByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        System.out.println(usPopulation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        populationDao.deleteByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        USPopulation usPopulation = populationDao.queryByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        System.out.println(usPopulation);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三、SpringBoot-Mybatis-Phoenix"><a href="#三、SpringBoot-Mybatis-Phoenix" class="headerlink" title="三、SpringBoot + Mybatis + Phoenix"></a>三、SpringBoot + Mybatis + Phoenix</h2><h3 id="3-1-项目结构"><a href="#3-1-项目结构" class="headerlink" title="3.1 项目结构"></a>3.1 项目结构</h3><div align="center"> <img src="/img/bigdata/spring-boot-mybatis-phoenix.png"> </div>
+
+<h3 id="3-2-主要依赖"><a href="#3-2-主要依赖" class="headerlink" title="3.2 主要依赖"></a>3.2 主要依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--spring 1.5 x 以上版本对应 mybatis 1.3.x (1.3.1)</span></span><br><span class="line"><span class="comment">        关于更多spring-boot 与 mybatis 的版本对应可以参见 &lt;a href="http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/"&gt;--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis.spring.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--phoenix core--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.phoenix<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>phoenix-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.14.0-cdh5.14.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>spring boot 与 mybatis 版本的对应关系：</p>
+<table>
+<thead>
+<tr>
+<th>MyBatis-Spring-Boot-Starter 版本</th>
+<th>MyBatis-Spring 版本</th>
+<th>Spring Boot 版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1.3.x (1.3.1)</strong></td>
+<td>1.3 or higher</td>
+<td>1.5 or higher</td>
+</tr>
+<tr>
+<td><strong>1.2.x (1.2.1)</strong></td>
+<td>1.3 or higher</td>
+<td>1.4 or higher</td>
+</tr>
+<tr>
+<td><strong>1.1.x (1.1.1)</strong></td>
+<td>1.3 or higher</td>
+<td>1.3 or higher</td>
+</tr>
+<tr>
+<td><strong>1.0.x (1.0.2)</strong></td>
+<td>1.2 or higher</td>
+<td>1.3 or higher</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-配置数据源"><a href="#3-3-配置数据源" class="headerlink" title="3.3 配置数据源"></a>3.3 配置数据源</h3><p>在application.yml 中配置数据源，spring boot 2.x 版本默认采用Hikari作为数据库连接池，Hikari是目前java平台性能最好的连接池，性能好于druid。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line">    <span class="comment">#zookeeper地址</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:phoenix:192.168.0.105:2181</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">org.apache.phoenix.jdbc.PhoenixDriver</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 如果不想配置对数据库连接池做特殊配置的话,以下关于连接池的配置就不是必须的</span></span><br><span class="line">    <span class="comment"># spring-boot 2.X 默认采用高性能的 Hikari 作为连接池 更多配置可以参考 https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">com.zaxxer.hikari.HikariDataSource</span></span><br><span class="line"><span class="attr">    hikari:</span></span><br><span class="line">      <span class="comment"># 池中维护的最小空闲连接数</span></span><br><span class="line"><span class="attr">      minimum-idle:</span> <span class="number">10</span></span><br><span class="line">      <span class="comment"># 池中最大连接数，包括闲置和使用中的连接</span></span><br><span class="line"><span class="attr">      maximum-pool-size:</span> <span class="number">20</span></span><br><span class="line">      <span class="comment"># 此属性控制从池返回的连接的默认自动提交行为。默认为true</span></span><br><span class="line"><span class="attr">      auto-commit:</span> <span class="literal">true</span></span><br><span class="line">      <span class="comment"># 允许最长空闲时间</span></span><br><span class="line"><span class="attr">      idle-timeout:</span> <span class="number">30000</span></span><br><span class="line">      <span class="comment"># 此属性表示连接池的用户定义名称，主要显示在日志记录和JMX管理控制台中，以标识池和池配置。 默认值：自动生成</span></span><br><span class="line"><span class="attr">      pool-name:</span> <span class="string">custom-hikari</span></span><br><span class="line">      <span class="comment">#此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟</span></span><br><span class="line"><span class="attr">      max-lifetime:</span> <span class="number">1800000</span></span><br><span class="line">      <span class="comment"># 数据库连接超时时间,默认30秒，即30000</span></span><br><span class="line"><span class="attr">      connection-timeout:</span> <span class="number">30000</span></span><br><span class="line">      <span class="comment"># 连接测试sql 这个地方需要根据数据库方言差异而配置 例如 oracle 就应该写成  select 1 from dual</span></span><br><span class="line"><span class="attr">      connection-test-query:</span> <span class="string">SELECT</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># mybatis 相关配置</span></span><br><span class="line"><span class="attr">mybatis:</span></span><br><span class="line"><span class="attr">  configuration:</span></span><br><span class="line">    <span class="comment"># 是否打印sql语句 调试的时候可以开启</span></span><br><span class="line"><span class="attr">    log-impl:</span> <span class="string">org.apache.ibatis.logging.stdout.StdOutImpl</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-4-新建查询接口"><a href="#3-4-新建查询接口" class="headerlink" title="3.4 新建查询接口"></a>3.4 新建查询接口</h3><p>上面Spring+Mybatis我们使用了XML的方式来写SQL，为了体现Mybatis支持多种方式，这里使用注解的方式来写SQL。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PopulationDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"SELECT * from us_population"</span>)</span><br><span class="line">    <span class="function">List&lt;USPopulation&gt; <span class="title">queryAll</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Insert</span>(<span class="string">"UPSERT INTO us_population VALUES( #&#123;state&#125;, #&#123;city&#125;, #&#123;population&#125; )"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(USPopulation USPopulation)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"SELECT * FROM us_population WHERE state=#&#123;state&#125; AND city = #&#123;city&#125;"</span>)</span><br><span class="line">    <span class="function">USPopulation <span class="title">queryByStateAndCity</span><span class="params">(String state, String city)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Delete</span>(<span class="string">"DELETE FROM us_population WHERE state=#&#123;state&#125; AND city = #&#123;city&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">deleteByStateAndCity</span><span class="params">(String state, String city)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-5-单元测试"><a href="#3-5-单元测试" class="headerlink" title="3.5 单元测试"></a>3.5 单元测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PopulationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PopulationDao populationDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">queryAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;USPopulation&gt; USPopulationList = populationDao.queryAll();</span><br><span class="line">        <span class="keyword">if</span> (USPopulationList != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (USPopulation USPopulation : USPopulationList) &#123;</span><br><span class="line">                System.out.println(USPopulation.getCity() + <span class="string">" "</span> + USPopulation.getPopulation());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        populationDao.save(<span class="keyword">new</span> USPopulation(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>, <span class="number">66666</span>));</span><br><span class="line">        USPopulation usPopulation = populationDao.queryByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        System.out.println(usPopulation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        populationDao.save(<span class="keyword">new</span> USPopulation(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>, <span class="number">99999</span>));</span><br><span class="line">        USPopulation usPopulation = populationDao.queryByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        System.out.println(usPopulation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        populationDao.deleteByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        USPopulation usPopulation = populationDao.queryByStateAndCity(<span class="string">"TX"</span>, <span class="string">"Dallas"</span>);</span><br><span class="line">        System.out.println(usPopulation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="附：建表语句"><a href="#附：建表语句" class="headerlink" title="附：建表语句"></a>附：建表语句</h2><p>上面单元测试涉及到的测试表的建表语句如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> us_population (</span><br><span class="line">      state <span class="built_in">CHAR</span>(<span class="number">2</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">      city <span class="built_in">VARCHAR</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">      population <span class="built_in">BIGINT</span></span><br><span class="line">      <span class="keyword">CONSTRAINT</span> my_pk PRIMARY <span class="keyword">KEY</span> (state, city));</span><br><span class="line">      </span><br><span class="line"><span class="comment">-- 测试数据</span></span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'NY'</span>,<span class="string">'New York'</span>,<span class="number">8143197</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'CA'</span>,<span class="string">'Los Angeles'</span>,<span class="number">3844829</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'IL'</span>,<span class="string">'Chicago'</span>,<span class="number">2842518</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'TX'</span>,<span class="string">'Houston'</span>,<span class="number">2016582</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'PA'</span>,<span class="string">'Philadelphia'</span>,<span class="number">1463281</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'AZ'</span>,<span class="string">'Phoenix'</span>,<span class="number">1461575</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'TX'</span>,<span class="string">'San Antonio'</span>,<span class="number">1256509</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'CA'</span>,<span class="string">'San Diego'</span>,<span class="number">1255540</span>);</span><br><span class="line">UPSERT INTO us_population <span class="keyword">VALUES</span>(<span class="string">'CA'</span>,<span class="string">'San Jose'</span>,<span class="number">912332</span>);</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100433.html" class="pre-post btn btn-default" title='Zookeeper简介及核心概念'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Zookeeper简介及核心概念</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100431.html" class="next-post btn btn-default" title='Hbase的SQL中间层——Phoenix'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Hbase的SQL中间层——Phoenix</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、前言"><span class="toc-text">一、前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Spring-Mybatis-Phoenix"><span class="toc-text">二、Spring + Mybatis + Phoenix</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-项目结构"><span class="toc-text">2.1 项目结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-主要依赖"><span class="toc-text">2.2 主要依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-数据库配置文件"><span class="toc-text">2.3  数据库配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-配置数据源和会话工厂"><span class="toc-text">2.4  配置数据源和会话工厂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-Mybtais参数配置"><span class="toc-text">2.5 Mybtais参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-查询接口"><span class="toc-text">2.6 查询接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-单元测试"><span class="toc-text">2.7 单元测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、SpringBoot-Mybatis-Phoenix"><span class="toc-text">三、SpringBoot + Mybatis + Phoenix</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-项目结构"><span class="toc-text">3.1 项目结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-主要依赖"><span class="toc-text">3.2 主要依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-配置数据源"><span class="toc-text">3.3 配置数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-新建查询接口"><span class="toc-text">3.4 新建查询接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-单元测试"><span class="toc-text">3.5 单元测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附：建表语句"><span class="toc-text">附：建表语句</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

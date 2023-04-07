@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="知识图谱,refo">
+
+
+    <meta name="description" content="一. 简介基于浙江大学在openKG上提供的基于REfO的KBQA实现及示例。代码部分浙大方面已经完成绝大部分，这里主要将其应用到自己的知识图谱上。在运行KBQA代码前，应按照前面的教程将电影类...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>从零开始学习知识图谱 之 三.电影知识图谱构建 3.基于REfO的简单知识问答 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="从零开始学习知识图谱 之 三.电影知识图谱构建 3.基于REfO的简单知识问答">
+            
+	            从零开始学习知识图谱 之 三.电影知识图谱构建 3.基于REfO的简单知识问答
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/refo/">refo</a> <a class="tag-link" href="/tags/knowledgegraph/">知识图谱</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/10/17</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1267</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h1><p>基于浙江大学在openKG上提供的<a href="http://www.openkg.cn/tool/refo-kbqa" target="_blank" rel="noopener">基于REfO的KBQA实现及示例</a>。代码部分浙大方面已经完成绝大部分，这里主要将其应用到自己的知识图谱上。在运行KBQA代码前，应按照前面的教程将电影类知识图谱导入到Jena的TDB数据库中，并运行fuseki服务器，这样我们才能进行访问查询。</p>
+<p>本教程的项目代码放在github上，下载地址为<a href="https://github.com/myhhub/zero_knowledge_graph" target="_blank" rel="noopener">《从零开始学习知识图谱》项目源代码</a> 。</p>
+<h1 id="二-环境准备"><a href="#二-环境准备" class="headerlink" title="二. 环境准备"></a>二. 环境准备</h1><h2 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h2><p>支持操作系统：windows、macOS、Linux。为了方便大家搭建开发环境，笔者尽可能在windows下构建，系列篇未特意说明时操作系统都是<strong>windows</strong>。Linux安装可以参考<a href="100590.html">VirtualBox虚拟机安装Ubuntu</a>或<a href="100589.html">VirtualBox虚拟机安装CentOS8</a>进行安装。</p>
+<h2 id="2-jdk"><a href="#2-jdk" class="headerlink" title="2. jdk"></a>2. jdk</h2><p>安装参见<a href="100604.html">windows系统安装JDK</a></p>
+<h2 id="3-Python3"><a href="#3-Python3" class="headerlink" title="3. Python3"></a>3. Python3</h2><p>安装参见<a href="100591.html#4-Python3">从零开始学习知识图谱 之 一</a></p>
+<h1 id="三-项目构建"><a href="#三-项目构建" class="headerlink" title="三. 项目构建"></a>三. 项目构建</h1><h2 id="1-代码结构"><a href="#1-代码结构" class="headerlink" title="1. 代码结构"></a>1. 代码结构</h2><p>代码结构为<br>.:<br>data/ get_dict.sh query.py utils/<br>./data:<br>actorName.txt get_dict.txt movieName.txt<br>./utils:<br>init.py init.pyc rules.py rules.pyc word_tagging.py word_tagging.pyc</p>
+<p>其中data 目录存放由数据库倒出生成的字典文件，用于扩展jieba分词，由 get_dict.sh 生成。<br>utils/ 内存放查询预处理的模块。word_tagging.py 用于将词的文本和词性打包，视为词对象，对应:class:Word(token, pos)。rules.py 内定义各种规则并将自然语言转换为SPARQL查询语言，最终以JSON返回结果。<br>query.py 为程序入口，运行它来进行简单的KBQA。</p>
+<h2 id="2-具体实现"><a href="#2-具体实现" class="headerlink" title="2. 具体实现"></a>2. 具体实现</h2><p>基于REfO的简单知识问答的原理很简单，就是通过REfo提供的匹配能力，在输入的自然语言问题中进行匹配查找。如果找到我们预先设定的词或词性组合，那么就认为该问题与这个词或词性组合匹配。而一个词或词性的组合又对应着一个SPARQL查询模板，这样我们就借助REfO完成了自然语言到查询模板的转换。得到查询模板后，我们就利用Jena fuseki 服务器提供的端口进行查询得到返回的结果。</p>
+<h3 id="1-模块一-word-tagging部分"><a href="#1-模块一-word-tagging部分" class="headerlink" title="1). 模块一 word_tagging部分"></a>1). 模块一 word_tagging部分</h3><p>该部分利用jieba分词对中文句子进行分词和词性标注。将词的文本和词性进行打包，视为词对象，对应 :class:Word(token, pos)。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tagger</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, dict_paths)</span>:</span></span><br><span class="line">        <span class="comment"># TODO 加载外部词典</span></span><br><span class="line">        <span class="keyword">for</span> p <span class="keyword">in</span> dict_paths:</span><br><span class="line">            jieba.load_userdict(p)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_word_objects</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Get :class:WOrd(token, pos)</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> [Word(bytes.decode(word.encode(<span class="string">'utf-8'</span>)), tag) <span class="keyword">for</span> word, tag <span class="keyword">in</span> pseg.cut(sentence)]</span><br></pre></td></tr></table></figure>
+<h3 id="2-模块二-rules-部分"><a href="#2-模块二-rules-部分" class="headerlink" title="2). 模块二 rules 部分"></a>2). 模块二 rules 部分</h3><p>该部分为程序核心，负责将自然语言转换为SPARQL模板。</p>
+<p>下面为rules的程序入口，customize_rules 函数：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">def customize_rules():</span><br><span class="line">    # some rules <span class="keyword">for</span> matching</span><br><span class="line">    # TODO: customize your own rules here</span><br><span class="line">    person = (W(<span class="attribute">pos</span>=<span class="string">"nr"</span>) | W(<span class="attribute">pos</span>=<span class="string">"x"</span>) | W(<span class="attribute">pos</span>=<span class="string">"nrt"</span>) | W(<span class="attribute">pos</span>=<span class="string">"nz"</span>))</span><br><span class="line">    movie = (W(<span class="attribute">pos</span>=<span class="string">"nz"</span>))</span><br><span class="line">    place = (W(<span class="string">"出生地"</span>) | W(<span class="string">"出生"</span>))</span><br><span class="line">    intro = (W(<span class="string">"简介"</span>) | W(<span class="attribute">pos</span>=<span class="string">"介绍"</span>))</span><br><span class="line">                                </span><br><span class="line">    rules = [                   </span><br><span class="line">                                </span><br><span class="line">        Rule(<span class="attribute">condition</span>=W(pos="r") + W(<span class="string">"是"</span>) + person | \</span><br><span class="line">                       person + W(<span class="string">"是"</span>) + W(<span class="attribute">pos</span>=<span class="string">"r"</span>),</span><br><span class="line">             <span class="attribute">action</span>=who_is_question),</span><br><span class="line">                          </span><br><span class="line">        Rule(<span class="attribute">condition</span>=person + Star(Any(), <span class="attribute">greedy</span>=<span class="literal">False</span>) + place + Star(Any(), <span class="attribute">greedy</span>=<span class="literal">False</span>),</span><br><span class="line">             <span class="attribute">action</span>=where_is_from_question),</span><br><span class="line">                          </span><br><span class="line">        Rule(<span class="attribute">condition</span>=movie + Star(Any(), <span class="attribute">greedy</span>=<span class="literal">False</span>) + intro + Star(Any(), <span class="attribute">greedy</span>=<span class="literal">False</span>) ,</span><br><span class="line">             <span class="attribute">action</span>=movie_intro_question)</span><br><span class="line">                          </span><br><span class="line">    ]</span><br><span class="line">    return rules</span><br></pre></td></tr></table></figure>
+<p>该函数中我们设置了一些简单的匹配规则，例如我们设置 ‘’’movie = (W(pos=”nz”))’’‘，即movie 的词性应该是nz。其中的W()是我们在继承REfO的Predicate方法的基础上扩展更新了match方法。您可以简单的把它理解为re中compile后的match，只不过多个W()间出现的顺序可以变化。这样通过多个定制的W()和Star(Any(), greedy=False)(相当于.*?)这种通配符的组合，我们就定义了一组匹配规则，当遇到符合该规则的句子时，就选取该规则后action对应的查询模板。</p>
+<p>例如当输入为“周星驰是谁”这样的问题时，会匹配到rules 中的 第一条规则。而后执行该规则后对应的action， who_is_question。而who_is_question对应的查询模板为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">who_is_question</span><span class="params">(x)</span>:</span></span><br><span class="line">    select = <span class="string">u"?x0"</span></span><br><span class="line">            </span><br><span class="line">    sparql = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">for</span> w <span class="keyword">in</span> x:</span><br><span class="line">        <span class="keyword">if</span> w.pos == <span class="string">"nr"</span> <span class="keyword">or</span> w.pos == <span class="string">"x"</span>:</span><br><span class="line">            e = <span class="string">u" ?a :actor_chName '&#123;person&#125;'. \n \</span></span><br><span class="line"><span class="string">            ?a :actor_bio ?x0"</span>.format(person=w.token)</span><br><span class="line">         </span><br><span class="line">            sparql = SPARQL_TEM.format(preamble=SPARQL_PREAMBLE,</span><br><span class="line">                                       select=select,</span><br><span class="line">                                       expression=INDENT + e)</span><br><span class="line">            <span class="keyword">break</span>   </span><br><span class="line">    <span class="keyword">return</span> sparql</span><br></pre></td></tr></table></figure>
+<p>有了查询模板后，我们通过SPARQLWrapper 模块的SPARQLWrapper 执行该查询，并对返回的结果进行转换得到回答。对应的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> SPARQLWrapper <span class="keyword">import</span> SPARQLWrapper, JSON</span><br><span class="line"><span class="keyword">from</span> utils.word_tagging <span class="keyword">import</span> Tagger</span><br><span class="line"><span class="keyword">from</span> utils.rules <span class="keyword">import</span> customize_rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    print(<span class="string">"init..........."</span>)</span><br><span class="line">    sparql_base = SPARQLWrapper(<span class="string">"http://localhost:3030/kg_movie/query"</span>)</span><br><span class="line">    tagger = Tagger([<span class="string">'data/actorName.txt'</span>, <span class="string">'data/movieName.txt'</span>])</span><br><span class="line">    rules = customize_rules()</span><br><span class="line">    print(<span class="string">"done \n"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        print(<span class="string">"Please input your question: "</span>)</span><br><span class="line">        default_question = input()</span><br><span class="line">        seg_list = tagger.get_word_objects(default_question)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> rule <span class="keyword">in</span> rules:</span><br><span class="line">            query = rule.apply(seg_list)</span><br><span class="line">            <span class="keyword">if</span> query:</span><br><span class="line">                sparql_base.setQuery(query)</span><br><span class="line">                sparql_base.setReturnFormat(JSON)</span><br><span class="line">                results = sparql_base.query().convert()</span><br><span class="line">    </span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> results[<span class="string">"results"</span>][<span class="string">"bindings"</span>]:</span><br><span class="line">                    print(<span class="string">"No answer found :("</span>)</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">for</span> result <span class="keyword">in</span> results[<span class="string">"results"</span>][<span class="string">"bindings"</span>]:</span><br><span class="line">                    print(<span class="string">"Result: "</span>, result[<span class="string">"x0"</span>][<span class="string">"value"</span>])</span><br></pre></td></tr></table></figure>
+<h2 id="3-项目运行"><a href="#3-项目运行" class="headerlink" title="3. 项目运行"></a>3. 项目运行</h2><p>运行，提问示例结果：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">C:\my\Python\python.exe C:/d/mmm/pycharm/patternREfO/query.py</span><br><span class="line">Building<span class="built_in"> prefix </span>dict <span class="keyword">from</span> the<span class="built_in"> default </span>dictionary <span class="built_in">..</span>.</span><br><span class="line">init<span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span>.</span><br><span class="line">Loading model <span class="keyword">from</span> cache C:\Users\mmm\AppData\Local\Temp\jieba.cache</span><br><span class="line">Loading model cost 0.816 seconds.</span><br><span class="line">Prefix dict has been built succesfully.</span><br><span class="line">done </span><br><span class="line"></span><br><span class="line">Please input your question: </span><br><span class="line">刘德华是哪个</span><br><span class="line">Result:   刘德华（Andy Lau），1961年9月27日出生于中国香港，中国香港男演员、歌手、作词人、制片人。1981年出演电影处女作《彩云曲》 [1]  。1983年主演的武侠剧《神雕侠侣》在香港获得62点的收视纪录 [2-3]  。1991年创办天幕电影公司 [4]  。1992年，凭借传记片《五亿探长雷洛传》获得第11届香港电影金像奖最佳男主角提名 [5]  。1994年担任剧情片《天与地》的制片人 [6]  。2000年凭借警匪片《暗战》获得第19届香港电影金像奖最佳男主角奖 [7]  。2004年凭借警匪片《无间道3：终极无间》获得第41届台湾金马奖最佳男主角奖 [8]  。2005年获得香港UA院线颁发的全港最高累积票房香港男演员”奖 [9]  。2006年获得釜山国际电影节亚洲最有贡献电影人奖 [10]  。2011年主演剧情片《桃姐》，并凭借该片先后获得台湾金马奖最佳男主角奖、香港电影金像奖最佳男主角奖 [11]  ；同年担任第49届台湾电影金马奖评审团主席 [12]  。2017年主演警匪动作片《拆弹专家》 [13]  。1985年发行首张个人专辑《只知道此刻爱你》 [14]  。1990年凭借专辑《可不可以》在歌坛获得关注 [15]  。1994年获得十大劲歌金曲最受欢迎男歌星奖 [16]  。1995年在央视春晚上演唱歌曲《忘情水》 [17]  。2000年被《吉尼斯世界纪录大全》评为“获奖最多的香港男歌手” [18]  。2004年第六次获得十大劲歌金曲最受欢迎男歌星奖。2016年参与填词的歌曲《原谅我》正式发行 [19]  。1994年创立刘德华慈善基金会 [20]  。2000年被评为世界十大杰出青年 [21]  。2005年发起亚洲新星导计划 [22]  。2008年被委任为香港非官守太平绅士 [23]  。2016年连任中国残疾人福利基金会副理事长。 [21]   </span><br><span class="line">Please input your question: </span><br><span class="line">刘德华出生地</span><br><span class="line">Result:  香港新界大埔镇泰亨村</span><br><span class="line">Please input your question: </span><br><span class="line">七小福简介</span><br><span class="line">Result:   《七小福》（Painted Faces）是由罗启锐导演，洪金宝、郑佩佩、林正英、岑建勋、午马等领衔主演的喜剧电影。影片讲述京剧大师于占元当年创办的“中国戏剧研究学院”，名字虽然取得唬人，但要论规模在香港众多戏校中也只算得中等，而且校舍破败，条件简陋，所幸师傅并未误人子弟，教得认真。“七小福“戏班最终名扬天下的故事。</span><br></pre></td></tr></table></figure>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/10/100594.html" class="pre-post btn btn-default" title='从零开始学习知识图谱 之 四.电影知识图谱构建 4.基于ElasticSearch的简单语义搜索'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 四.电影知识图谱构建 4.基于ElasticSearch的简单语义搜索</span>
+        </a>
+    
+    
+        <a href="/archives/2019/10/100592.html" class="next-post btn btn-default" title='从零开始学习知识图谱 之 二.电影知识图谱构建 2.结构化数据到RDF以及基于Apache jena交互'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 二.电影知识图谱构建 2.结构化数据到RDF以及基于Apache jena交互</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-简介"><span class="toc-text">一. 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-环境准备"><span class="toc-text">二. 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统"><span class="toc-text">1. 操作系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-jdk"><span class="toc-text">2. jdk</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Python3"><span class="toc-text">3. Python3</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-项目构建"><span class="toc-text">三. 项目构建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-代码结构"><span class="toc-text">1. 代码结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-具体实现"><span class="toc-text">2. 具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-模块一-word-tagging部分"><span class="toc-text">1). 模块一 word_tagging部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-模块二-rules-部分"><span class="toc-text">2). 模块二 rules 部分</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-项目运行"><span class="toc-text">3. 项目运行</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

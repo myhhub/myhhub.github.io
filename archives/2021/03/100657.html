@@ -1,0 +1,568 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="c++,cmake,qt">
+
+
+    <meta name="description" content="本章的主要内容如下：
+
+配置时生成源码
+使用Python在配置时生成源码
+构建时使用Python生成源码
+记录项目版本信息以便报告
+从文件中记录项目版本
+配置时记录Git Hash值
+构建时记录...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>CMake 完整使用教程 之七 生成源码 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="CMake 完整使用教程 之七 生成源码">
+            
+	            CMake 完整使用教程 之七 生成源码
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c++</a> <a class="tag-link" href="/tags/cmake/">cmake</a> <a class="tag-link" href="/tags/qt/">qt</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/03/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>738</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>本章的主要内容如下：</p>
+<ul>
+<li>配置时生成源码</li>
+<li>使用Python在配置时生成源码</li>
+<li>构建时使用Python生成源码</li>
+<li>记录项目版本信息以便报告</li>
+<li>从文件中记录项目版本</li>
+<li>配置时记录Git Hash值</li>
+<li>构建时记录Git Hash值</li>
+</ul>
+<p>大多数项目，使用版本控制跟踪源码。源代码通常作为构建系统的输入，将其转换为o文件、库或可执行程序。某些情况下，我们使用构建系统在配置或构建步骤时生成源代码。根据配置步骤中收集的信息，对源代码进行微调。另一个常用的方式，是记录有关配置或编译的信息，以保证代码行为可重现性。本章中，我们将演示使用CMake提供的源代码生成工具，以及各种相关的策略。</p>
+<h1 id="6-1-配置时生成源码"><a href="#6-1-配置时生成源码" class="headerlink" title="6.1 配置时生成源码"></a>6.1 配置时生成源码</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-01" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-01</a> 中找到，其中包含一个Fortran/C例子。该示例在CMake 3.10版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows(使用MSYS Makefiles)上进行过测试。</em></p>
+<p>代码生成在配置时发生，例如：CMake可以检测操作系统和可用库；基于这些信息，我们可以定制构建的源代码。本节和下面的章节中，我们将演示如何生成一个简单源文件，该文件定义了一个函数，用于报告构建系统配置。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>此示例的代码使用Fortran和C语言编写，第9章将讨论混合语言编程。主程序是一个简单的Fortran可执行程序，它调用一个C函数<code>print_info()</code>，该函数将打印配置信息。值得注意的是，在使用Fortran 2003时，编译器将处理命名问题(对于C函数的接口声明)，如示例所示。我们将使用的<code>example.f90</code>作为源文件:</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">program</span></span> hello_world</span><br><span class="line"></span><br><span class="line">  <span class="keyword">implicit</span> <span class="keyword">none</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">interface</span></span><br><span class="line">  	<span class="function"><span class="keyword">subroutine</span></span> print_info() <span class="keyword">bind</span>(c, <span class="keyword">name</span>=<span class="string">"print_info"</span>)</span><br><span class="line">  	<span class="keyword">end</span> <span class="function"><span class="keyword">subroutine</span></span></span><br><span class="line">  <span class="keyword">end</span> <span class="keyword">interface</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">call</span> print_info()</span><br><span class="line">  </span><br><span class="line"><span class="keyword">end</span> <span class="function"><span class="keyword">program</span></span></span><br></pre></td></tr></table></figure>
+<p>C函数<code>print_info()</code>在模板文件<code>print_info.c.in</code>中定义。在配置时，以<code>@</code>开头和结尾的变量将被替换为实际值:</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;unistd.h&gt;</span></span><br><span class="line"></span><br><span class="line">void print_info(void)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"Configuration and build information\n"</span>);</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"-----------------------------------\n"</span>);</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"Who compiled | %s\n"</span>, <span class="string">"@_user_name@");</span></span><br><span class="line"><span class="string">  printf("</span>Compilation hostname | %s\n<span class="string">", "</span>@_host_name@");</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"Fully qualified domain name | %s\n"</span>, <span class="string">"@_fqdn@");</span></span><br><span class="line"><span class="string">  printf("</span>Operating <span class="keyword">system</span> | %s\n<span class="string">",</span></span><br><span class="line"><span class="string">         "</span>@_os_name@, @_os_release@, @_os_version@");</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"Platform | %s\n"</span>, <span class="string">"@_os_platform@");</span></span><br><span class="line"><span class="string">  printf("</span>Processor info | %s\n<span class="string">",</span></span><br><span class="line"><span class="string">         "</span>@_processor_name@, @_processor_description@");</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"CMake version | %s\n"</span>, <span class="string">"@CMAKE_VERSION@");</span></span><br><span class="line"><span class="string">  printf("</span>CMake generator | %s\n<span class="string">", "</span>@CMAKE_GENERATOR@");</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"Configuration time | %s\n"</span>, <span class="string">"@_configuration_time@");</span></span><br><span class="line"><span class="string">  printf("</span>Fortran compiler | %s\n<span class="string">", "</span>@CMAKE_Fortran_COMPILER@");</span><br><span class="line">  <span class="keyword">printf</span>(<span class="string">"C compiler | %s\n"</span>, <span class="string">"@CMAKE_C_COMPILER@");</span></span><br><span class="line"><span class="string">  printf("</span>\n<span class="string">");</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  fflush(stdout);</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>在CMakeLists.txt中，我们首先必须对选项进行配置，并用它们的值替换<code>print_info.c.in</code>中相应的占位符。然后，将Fortran和C源代码编译成一个可执行文件:</p>
+<ol>
+<li><p>声明了一个Fortran-C混合项目:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.10</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">01</span> LANGUAGES Fortran C)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>execute_process</code>为项目获取当且使用者的信息:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">execute_process</span>(</span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">  	whoami</span><br><span class="line">  TIMEOUT</span><br><span class="line">  	<span class="number">1</span></span><br><span class="line">  OUTPUT_VARIABLE</span><br><span class="line">  	_user_name</span><br><span class="line">  OUTPUT_STRIP_TRAILING_WHITESPACE</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>cmake_host_system_information()</code>函数(已经在第2章第5节遇到过)，可以查询很多系统信息:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># host name information</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _host_name QUERY HOSTNAME)</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _fqdn QUERY FQDN)</span><br><span class="line"></span><br><span class="line"># processor information</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _processor_name QUERY PROCESSOR_NAME)</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _processor_description QUERY PROCESSOR_DESCRIPTION)</span><br><span class="line"></span><br><span class="line"># os information</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _os_name QUERY OS_NAME)</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _os_release QUERY OS_RELEASE)</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _os_version QUERY OS_VERSION)</span><br><span class="line">cmake_host_system_information(<span class="name">RESULT</span> _os_platform QUERY OS_PLATFORM)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>捕获配置时的时间戳，并通过使用字符串操作函数:</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string(TIMESTAMP _configuration_time <span class="string">"%Y-%m-%d %H:%M:%S [UTC]"</span> UTC)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在，准备好配置模板文件<code>print_info.c.in</code>。通过CMake的<code>configure_file</code>函数生成代码。注意，这里只要求以<code>@</code>开头和结尾的字符串被替换:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">configure_file</span>(print_info.c.in print_info.c <span class="variable">@ONLY</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，我们添加一个可执行目标，并定义目标源：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(example <span class="string">""</span>)</span></span></span><br><span class="line">target_sources(example</span><br><span class="line">  PRIVATE</span><br><span class="line">    example.f90</span><br><span class="line">    $&#123;CMAKE_CURRENT_BINARY_DIR&#125;/print_info.c</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>下面是一个输出示例：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake <span class="built_in">..</span></span><br><span class="line">$ cmake --build .</span><br><span class="line">$ ./example</span><br><span class="line"></span><br><span class="line">Configuration <span class="keyword">and</span> build information</span><br><span class="line">-----------------------------------</span><br><span class="line">Who compiled | somebody</span><br><span class="line">Compilation hostname | laptop</span><br><span class="line">Fully qualified domain name | laptop</span><br><span class="line">Operating<span class="built_in"> system </span>| Linux, 4.16.13-1-ARCH, #1 SMP PREEMPT Thu May 31 23:29:29 UTC 2018</span><br><span class="line">Platform | x86_64</span><br><span class="line">Processor <span class="builtin-name">info</span> | Unknown P6 family, 2 core Intel(R) Core(TM) i5-5200U CPU @ 2.20GHz</span><br><span class="line">CMake version | 3.11.3</span><br><span class="line">CMake generator | Unix Makefiles</span><br><span class="line">Configuration time | 2018-06-25 15:38:03 [UTC]</span><br><span class="line">Fortran compiler | /usr/bin/f95</span><br><span class="line">C compiler | /usr/bin/cc</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p><code>configure_file</code>命令可以复制文件，并用变量值替换它们的内容。示例中，使用<code>configure_file</code>修改模板文件的内容，并将其复制到一个位置，然后将其编译到可执行文件中。如何调用<code>configure_file</code>:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">configure_file</span>(print_info.c.in print_info.c <span class="variable">@ONLY</span>)</span><br></pre></td></tr></table></figure>
+<p>第一个参数是模板的名称为<code>print_info.c.in</code>。CMake假设输入文件的目录，与项目的根目录相对；也就是说，在<code>${CMAKE_CURRENT_SOURCE_DIR}/print_info.c.in</code>。我们选择<code>print_info.c</code>，作为第二个参数是配置文件的名称。假设输出文件位于相对于项目构建目录的位置：<code>${CMAKE_CURRENT_BINARY_DIR}/print_info.c</code>。</p>
+<p>输入和输出文件作为参数时，CMake不仅将配置<code>@VAR@</code>变量，还将配置<code>${VAR}</code>变量。如果<code>${VAR}</code>是语法的一部分，并且不应该修改(例如在shell脚本中)，那么就很不方便。为了在引导CMake，应该将选项<code>@ONLY</code>传递给<code>configure_file</code>的调用，如前所述。</p>
+<h2 id="更多信息"><a href="#更多信息" class="headerlink" title="更多信息"></a>更多信息</h2><p>注意，用值替换占位符时，CMake中的变量名应该与将要配置的文件中使用的变量名完全相同，并放在<code>@</code>之间。可以在调用<code>configure_file</code>时定义的任何CMake变量。我们的示例中，这包括所有内置的CMake变量，如<code>CMAKE_VERSION</code>或<code>CMAKE_GENERATOR</code>。此外，每当修改模板文件时，重新生成代码将触发生成系统的重新生成。这样，配置的文件将始终保持最新。</p>
+<p><strong>TIPS</strong>:<em>通过使用<code>CMake --help-variable-list</code>，可以从CMake手册中获得完整的内部CMake变量列表。</em></p>
+<p><strong>NOTE</strong>:<em><code>file(GENERATE…)</code>为提供了一个有趣的替代<code>configure_file</code>，这是因为<code>file</code>允许将生成器表达式作为配置文件的一部分进行计算。但是，每次运行CMake时，<code>file(GENERATE…)</code>都会更新输出文件，这将强制重新构建依赖于该输出的所有目标。详细可参见<a href="https://crascit.com/2017/04/18/generated-sources-in-cmake-build" target="_blank" rel="noopener">https://crascit.com/2017/04/18/generated-sources-in-cmake-build</a> 。</em></p>
+<h1 id="6-2-使用Python在配置时生成源码"><a href="#6-2-使用Python在配置时生成源码" class="headerlink" title="6.2 使用Python在配置时生成源码"></a>6.2 使用Python在配置时生成源码</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-02" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-02</a> 中找到，其中包含一个Fortran/C例子。该示例在CMake 3.10版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows(使用MSYS Makefile)上进行过测试。</em></p>
+<p>本示例中，我们将再次从模板<code>print_info.c.in</code>生成<code>print_info.c</code>。但这一次，将假设CMake函数<code>configure_file()</code>没有创建源文件，然后使用Python脚本模拟这个过程。当然，对于实际的项目，我们可能更倾向于使用<code>configure_file()</code>，但有时使用Python生成源代码的需要时，我们也应该知道如何应对。</p>
+<p>这个示例有严重的限制，不能完全模拟<code>configure_file()</code>。我们在这里介绍的方法，不能生成一个自动依赖项，该依赖项将在构建时重新生成<code>print_info.c</code>。换句话说，如果在配置之后删除生成的<code>print_info.c</code>，则不会重新生成该文件，构建也会失败。要正确地模拟<code>configure_file()</code>，需要使用<code>add_custom_command()</code>和<code>add_custom_target()</code>。我们将在第3节中使用它们，来克服这个限制。</p>
+<p>这个示例中，我们将使用一个简单的Python脚本。这个脚本将读取<code>print_info.c.in</code>。用从CMake传递给Python脚本的参数替换文件中的占位符。对于更复杂的模板，我们建议使用外部工具，比如Jinja(参见<a href="http://jinja.pocoo.org/" target="_blank" rel="noopener">http://jinja.pocoo.org</a> )。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def configure_file(input_file, output_file, vars_dict):</span><br><span class="line"></span><br><span class="line">  <span class="keyword">with</span> input_file.open(<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">  	<span class="keyword">template</span> = f.read()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> <span class="keyword">var</span> <span class="keyword">in</span> vars_dict: </span><br><span class="line">  	<span class="keyword">template</span> = template.replace(<span class="string">'@'</span> + <span class="keyword">var</span> + <span class="string">'@'</span>, vars_dict[<span class="keyword">var</span>])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">with</span> output_file.open(<span class="string">'w'</span>) <span class="keyword">as</span> f:</span><br><span class="line">  	f.write(<span class="keyword">template</span>)</span><br></pre></td></tr></table></figure>
+<p>这个函数读取一个输入文件，遍历<code>vars_dict</code>变量中的目录，并用对应的值替换<code>@key@</code>，再将结果写入输出文件。这里的键值对，将由CMake提供。</p>
+<h2 id="准备工作-1"><a href="#准备工作-1" class="headerlink" title="准备工作"></a>准备工作</h2><p><code>print_info.c.in</code>和<code>example.f90</code>与之前的示例相同。此外，我们将使用Python脚本<code>configurator.py</code>，它提供了一个函数:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def configure_file(input_file, output_file, vars_dict):</span><br><span class="line">  <span class="keyword">with</span> input_file.open(<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">  	<span class="keyword">template</span> = f.read()</span><br><span class="line">    </span><br><span class="line">  <span class="keyword">for</span> <span class="keyword">var</span> <span class="keyword">in</span> vars_dict:</span><br><span class="line">  	<span class="keyword">template</span> = template.replace(<span class="string">'@'</span> + <span class="keyword">var</span> + <span class="string">'@'</span>, vars_dict[<span class="keyword">var</span>])</span><br><span class="line">    </span><br><span class="line">  <span class="keyword">with</span> output_file.open(<span class="string">'w'</span>) <span class="keyword">as</span> f:</span><br><span class="line">  	f.write(<span class="keyword">template</span>)</span><br></pre></td></tr></table></figure>
+<p>该函数读取输入文件，遍历<code>vars_dict</code>字典的所有键，用对应的值替换模式<code>@key@</code>，并将结果写入输出文件(键值由CMake提供)。</p>
+<h2 id="具体实施-1"><a href="#具体实施-1" class="headerlink" title="具体实施"></a>具体实施</h2><p>与前面的示例类似，我们需要配置一个模板文件，但这一次，使用Python脚本模拟<code>configure_file()</code>函数。我们保持CMakeLists.txt基本不变，并提供一组命令进行替换操作<code>configure_file(print_info.c.in print_info.c @ONLY)</code>，接下来将逐步介绍这些命令:</p>
+<ol>
+<li><p>首先，构造一个变量<code>_config_script</code>，它将包含一个Python脚本，稍后我们将执行这个脚本:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>(_config_script</span><br><span class="line"><span class="comment">"</span></span><br><span class="line">from pathlib import Path</span><br><span class="line">source_dir = Path(<span class="string">'$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;'</span>)</span><br><span class="line">binary_dir = Path(<span class="string">'$&#123;CMAKE_CURRENT_BINARY_DIR&#125;'</span>)</span><br><span class="line">input_file = source_dir / <span class="string">'print_info.c.in'</span></span><br><span class="line">output_file = binary_dir / <span class="string">'print_info.c'</span></span><br><span class="line"></span><br><span class="line">import sys</span><br><span class="line">sys.path.<span class="keyword">insert</span>(<span class="number">0</span>, str(source_dir))</span><br><span class="line"></span><br><span class="line">from configurator import configure_file</span><br><span class="line">vars_dict = &#123;</span><br><span class="line">  <span class="string">'_user_name'</span>: <span class="string">'$&#123;_user_name&#125;'</span>,</span><br><span class="line">  <span class="string">'_host_name'</span>: <span class="string">'$&#123;_host_name&#125;'</span>,</span><br><span class="line">  <span class="string">'_fqdn'</span>: <span class="string">'$&#123;_fqdn&#125;'</span>,</span><br><span class="line">  <span class="string">'_processor_name'</span>: <span class="string">'$&#123;_processor_name&#125;'</span>,</span><br><span class="line">  <span class="string">'_processor_description'</span>: <span class="string">'$&#123;_processor_description&#125;'</span>,</span><br><span class="line">  <span class="string">'_os_name'</span>: <span class="string">'$&#123;_os_name&#125;'</span>,</span><br><span class="line">  <span class="string">'_os_release'</span>: <span class="string">'$&#123;_os_release&#125;'</span>,</span><br><span class="line">  <span class="string">'_os_version'</span>: <span class="string">'$&#123;_os_version&#125;'</span>,</span><br><span class="line">  <span class="string">'_os_platform'</span>: <span class="string">'$&#123;_os_platform&#125;'</span>,</span><br><span class="line">  <span class="string">'_configuration_time'</span>: <span class="string">'$&#123;_configuration_time&#125;'</span>,</span><br><span class="line">  <span class="string">'CMAKE_VERSION'</span>: <span class="string">'$&#123;CMAKE_VERSION&#125;'</span>,</span><br><span class="line">  <span class="string">'CMAKE_GENERATOR'</span>: <span class="string">'$&#123;CMAKE_GENERATOR&#125;'</span>,</span><br><span class="line">  <span class="string">'CMAKE_Fortran_COMPILER'</span>: <span class="string">'$&#123;CMAKE_Fortran_COMPILER&#125;'</span>,</span><br><span class="line">  <span class="string">'CMAKE_C_COMPILER'</span>: <span class="string">'$&#123;CMAKE_C_COMPILER&#125;'</span>,</span><br><span class="line">&#125;</span><br><span class="line">configure_file(input_file, output_file, vars_dict)</span><br><span class="line"><span class="comment">")</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>find_package</code>让CMake使用Python解释器:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(PythonInterp QUIET REQUIRED)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果找到Python解释器，则可以在CMake中执行<code>_config_script</code>，并生成<code>print_info.c</code>文件:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">execute_process</span>(</span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">  	<span class="variable">$&#123;PYTHON_EXECUTABLE&#125;</span> <span class="string">"-c"</span> <span class="variable">$&#123;_config_script&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>之后，定义可执行目标和依赖项，这与前一个示例相同。所以，得到的输出没有变化。</p>
+</li>
+</ol>
+<h2 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h2><p>回顾一下对CMakeLists.txt的更改。</p>
+<p>我们执行了一个Python脚本生成<code>print_info.c</code>。运行Python脚本前，首先检测Python解释器，并构造Python脚本。Python脚本导入<code>configure_file</code>函数，我们在<code>configurator.py</code>中定义了这个函数。为它提供用于读写的文件位置，并将其值作为键值对。</p>
+<p>此示例展示了生成配置的另一种方法，将生成任务委托给外部脚本，可以将配置报告编译成可执行文件，甚至库目标。我们在前面的配置中认为的第一种方法更简洁，但是使用本示例中提供的方法，我们可以灵活地使用Python(或其他语言)，实现任何在配置时间所需的步骤。使用当前方法，我们可以通过脚本的方式执行类似<code>cmake_host_system_information()</code>的操作。</p>
+<p>但要记住，这种方法也有其局限性，它不能在构建时重新生成<code>print_info.c</code>的自动依赖项。下一个示例中，我们应对这个挑战。</p>
+<h2 id="更多信息-1"><a href="#更多信息-1" class="headerlink" title="更多信息"></a>更多信息</h2><p>我们可以使用<code>get_cmake_property(_vars VARIABLES)</code>来获得所有变量的列表，而不是显式地构造<code>vars_dict</code>(这感觉有点重复)，并且可以遍历<code>_vars</code>的所有元素来访问它们的值:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">get_cmake_property</span><span class="params">(_vars VARIABLES)</span></span></span><br><span class="line"><span class="function"><span class="title">foreach</span><span class="params">(_var IN ITEMS $&#123;_vars&#125;)</span></span></span><br><span class="line">  message(<span class="string">"variable $&#123;_var&#125; has the value $&#123;$&#123;_var&#125;&#125;"</span>) </span><br><span class="line"><span class="function"><span class="title">endforeach</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<p>使用这种方法，可以隐式地构建<code>vars_dict</code>。但是，必须注意转义包含字符的值，例如:<code>;</code>， Python会将其解析为一条指令的末尾。</p>
+<h1 id="6-3-构建时使用Python生成源码"><a href="#6-3-构建时使用Python生成源码" class="headerlink" title="6.3 构建时使用Python生成源码"></a>6.3 构建时使用Python生成源码</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-03" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-03</a> 中找到，其中包含一个C++例子。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>构建时根据某些规则生成冗长和重复的代码，同时避免在源代码存储库中显式地跟踪生成的代码生成源代码，是开发人员工具箱中的一个重要工具，例如：根据检测到的平台或体系结构生成不同的源代码。或者，可以使用Python，根据配置时收集的输入，在构建时生成高效的C++代码。其他生成器解析器，比如：Flex (<a href="https://github.com/westes/flex" target="_blank" rel="noopener">https://github.com/westes/flex</a> )和Bison(<a href="https://www.gnu.org/software/bison/" target="_blank" rel="noopener">https://www.gnu.org/software/bison/</a> )；元对象编译器，如Qt的moc(<a href="http://doc.qt.io/qt5/moc.html" target="_blank" rel="noopener">http://doc.qt.io/qt5/moc.html</a> )；序列化框架，如谷歌的protobuf (<a href="https://developers.google.com/protocol-buffers/" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/</a> )。</p>
+<h2 id="准备工作-2"><a href="#准备工作-2" class="headerlink" title="准备工作"></a>准备工作</h2><p>为了提供一个具体的例子，我们需要编写代码来验证一个数字是否是质数。现在有很多算法，例如：可以用埃拉托色尼的筛子(sieve of Eratosthenes)来分离质数和非质数。如果有很多验证数字，我们不希望对每一个数字都进行Eratosthenes筛选。我们想要做的是将所有质数一次制表，直到数字的上限，然后使用一个表查的方式，找来验证大量的数字。</p>
+<p>本例中，将在编译时使用Python为查找表(质数向量)生成C++代码。当然，为了解决这个特殊的编程问题，我们还可以使用C++生成查询表，并且可以在运行时执行查询。</p>
+<p>让我们从<code>generate.py</code>脚本开始。这个脚本接受两个命令行参数——一个整数范围和一个输出文件名:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Generates C++ vector of prime numbers up to max_number</span></span><br><span class="line"><span class="string">using sieve of Eratosthenes.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> pathlib</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="comment"># for simplicity we do not verify argument list</span></span><br><span class="line">max_number = int(sys.argv[<span class="number">-2</span>])</span><br><span class="line">output_file_name = pathlib.Path(sys.argv[<span class="number">-1</span>])</span><br><span class="line"></span><br><span class="line">numbers = range(<span class="number">2</span>, max_number + <span class="number">1</span>)</span><br><span class="line">is_prime = &#123;number: <span class="literal">True</span> <span class="keyword">for</span> number <span class="keyword">in</span> numbers&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> number <span class="keyword">in</span> numbers:</span><br><span class="line">  current_position = number</span><br><span class="line">  <span class="keyword">if</span> is_prime[current_position]:</span><br><span class="line">    <span class="keyword">while</span> current_position &lt;= max_number:</span><br><span class="line">      current_position += number</span><br><span class="line">      is_prime[current_position] = <span class="literal">False</span></span><br><span class="line">      </span><br><span class="line">primes = (number <span class="keyword">for</span> number <span class="keyword">in</span> numbers <span class="keyword">if</span> is_prime[number])</span><br><span class="line"></span><br><span class="line">code = <span class="string">"""#pragma once</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#include &lt;vector&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">const std::size_t max_number = &#123;max_number&#125;;</span></span><br><span class="line"><span class="string">std::vector&lt;int&gt; &amp; primes() &#123;&#123;</span></span><br><span class="line"><span class="string">  static std::vector&lt;int&gt; primes;</span></span><br><span class="line"><span class="string">  &#123;push_back&#125;</span></span><br><span class="line"><span class="string">  return primes;</span></span><br><span class="line"><span class="string">&#125;&#125;</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line">push_back = <span class="string">'\n'</span>.join([<span class="string">' primes.push_back(&#123;:d&#125;);'</span>.format(x) <span class="keyword">for</span> x <span class="keyword">in</span> primes])</span><br><span class="line">output_file_name.write_text(</span><br><span class="line">code.format(max_number=max_number, push_back=push_back))</span><br></pre></td></tr></table></figure>
+<p>我们的目标是生成一个<code>primes.hpp</code>，并将其包含在下面的示例代码中:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"primes.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"all prime numbers up to "</span> &lt;&lt; max_number &lt;&lt; <span class="string">":"</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> prime : primes())</span><br><span class="line">  	<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">" "</span> &lt;&lt; prime;</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施-2"><a href="#具体实施-2" class="headerlink" title="具体实施"></a>具体实施</h2><p>下面是CMakeLists.txt命令的详解:</p>
+<ol>
+<li><p>首先，定义项目并检测Python解释器:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">03</span> LANGUAGES CXX)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(PythonInterp QUIET REQUIRED)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将生成的代码放在<code>${CMAKE_CURRENT_BINARY_DIR}/generate</code>下，需要告诉CMake创建这个目录:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">file</span>(<span class="keyword">MAKE_DIRECTORY</span> <span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/generated)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Python脚本要求质数的上限，使用下面的命令，我们可以设置一个默认值:</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span>(MAX_NUMBER <span class="string">"100"</span> <span class="keyword">CACHE</span> <span class="built_in">STRING</span> <span class="string">"Upper bound for primes"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来，定义一个自定义命令来生成头文件:</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">add_custom_command(</span><br><span class="line">  OUTPUT</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated/primes<span class="variable">.hpp</span></span><br><span class="line">  COMMAND</span><br><span class="line">  	$&#123;PYTHON_EXECUTABLE&#125; <span class="keyword">generate</span><span class="variable">.py</span> $&#123;MAX_NUMBER&#125; 	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated/primes<span class="variable">.hpp</span></span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">  	$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span><br><span class="line">  DEPENDS</span><br><span class="line">  	<span class="keyword">generate</span><span class="variable">.py</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，定义可执行文件及其目标，包括目录和依赖关系:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(example <span class="string">""</span>)</span></span></span><br><span class="line">target_sources(example</span><br><span class="line">  PRIVATE</span><br><span class="line">  	example.cpp</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated/primes.hpp</span><br><span class="line">  )</span><br><span class="line">target_include_directories(example</span><br><span class="line">  PRIVATE</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>准备测试:</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line">$ cmake --build .</span><br><span class="line">$ ./example</span><br><span class="line">all prime numbers up to 100:<span class="number"> 2 </span>3<span class="number"> 5 </span>7<span class="number"> 11 </span>13<span class="number"> 17 </span>19<span class="number"> 23 </span>29<span class="number"> 31 </span>37<span class="number"> 41 </span>43<span class="number"> 47 </span>53<span class="number"> 59 </span>61<span class="number"> 67 </span>71<span class="number"> 73 </span>79</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="具体实施-3"><a href="#具体实施-3" class="headerlink" title="具体实施"></a>具体实施</h2><p>为了生成头文件，我们定义了一个自定义命令，它执行<code>generate.py</code>脚本，并接受<code>${MAX_NUMBER}</code>和文件路径(<code>${CMAKE_CURRENT_BINARY_DIR}/generated/primes.hpp</code>)作为参数:</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">add_custom_command(</span><br><span class="line">  OUTPUT</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated/primes<span class="variable">.hpp</span></span><br><span class="line">  COMMAND</span><br><span class="line">  	$&#123;PYTHON_EXECUTABLE&#125; <span class="keyword">generate</span><span class="variable">.py</span> $&#123;MAX_NUMBER&#125; $&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated/primes<span class="variable">.hpp</span></span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">  	$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span><br><span class="line">  DEPENDS</span><br><span class="line">  	<span class="keyword">generate</span><span class="variable">.py</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>为了生成源代码，我们需要在可执行文件的定义中，使用<code>target_sources</code>很容易实现添加源代码作为依赖项:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target_sources(example</span><br><span class="line">  PRIVATE</span><br><span class="line">  	example.cpp</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated/primes.hpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>前面的代码中，我们不需要定义新的目标。头文件将作为示例的依赖项生成，并在每次<code>generate.py</code>脚本更改时重新生成。如果代码生成脚本生成多个源文件，那么要将所有生成的文件列出，做为某些目标的依赖项。</p>
+<h2 id="更多信息-2"><a href="#更多信息-2" class="headerlink" title="更多信息"></a>更多信息</h2><p>我们提到所有的生成文件，都应该作为某个目标的依赖项。但是，我们可能不知道这个文件列表，因为它是由生成文件的脚本决定的，这取决于我们提供给配置的输入。这种情况下，我们可能会尝试使用<code>file(GLOB…)</code>将生成的文件收集到一个列表中(参见<a href="https://cmake.org/cmake/help/v3.5/command/file.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/command/file.html</a> )。</p>
+<p><code>file(GLOB…)</code>在配置时执行，而代码生成是在构建时发生的。因此可能需要一个间接操作，将<code>file(GLOB…)</code>命令放在一个单独的CMake脚本中，使用<code>${CMAKE_COMMAND} -P</code>执行该脚本，以便在构建时获得生成的文件列表。</p>
+<h1 id="6-4-记录项目版本信息以便报告"><a href="#6-4-记录项目版本信息以便报告" class="headerlink" title="6.4 记录项目版本信息以便报告"></a>6.4 记录项目版本信息以便报告</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-04" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-04</a> 中找到，其中包含一个C和Fortran例子。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>代码版本很重要，不仅是为了可重复性，还为了记录API功能或简化支持请求和bug报告。源代码通常处于某种版本控制之下，例如：可以使用Git标记附加额外版本号(参见<a href="https://semver.org/" target="_blank" rel="noopener">https://semver.org</a> )。然而，不仅需要对源代码进行版本控制，而且可执行文件还需要记录项目版本，以便将其打印到代码输出或用户界面上。</p>
+<p>本例中，将在CMake源文件中定义版本号。我们的目标是在配置项目时将程序版本记录到头文件中。然后，生成的头文件可以包含在代码的正确位置和时间，以便将代码版本打印到输出文件或屏幕上。</p>
+<h2 id="准备工作-3"><a href="#准备工作-3" class="headerlink" title="准备工作"></a>准备工作</h2><p>将使用以下C文件(<code>example.c</code>)打印版本信息:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"version.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"This is output from code %s\n"</span>, PROJECT_VERSION);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"Major version number: %i\n"</span>, PROJECT_VERSION_MAJOR);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"Minor version number: %i\n"</span>, PROJECT_VERSION_MINOR);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"Hello CMake world!\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里，假设<code>PROJECT_VERSION_MAJOR</code>、<code>PROJECT_VERSION_MINOR</code>和<code>PROJECT_VERSION</code>是在<code>version.h</code>中定义的。目标是从以下模板中生成<code>version.h.in</code>:</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#pragma once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROJECT_VERSION_MAJOR <span class="comment">@PROJECT_VERSION_MAJOR@</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROJECT_VERSION_MINOR <span class="comment">@PROJECT_VERSION_MINOR@</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROJECT_VERSION_PATCH <span class="comment">@PROJECT_VERSION_PATCH@</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROJECT_VERSION "v<span class="comment">@PROJECT_VERSION@</span>"</span></span><br></pre></td></tr></table></figure>
+<p>这里使用预处理器定义，也可以使用字符串或整数常量来提高类型安全性(稍后我们将对此进行演示)。从CMake的角度来看，这两种方法是相同的。</p>
+<h2 id="如何实施"><a href="#如何实施" class="headerlink" title="如何实施"></a>如何实施</h2><p>我们将按照以下步骤，在模板头文件中对版本进行注册:</p>
+<ol>
+<li><p>要跟踪代码版本，我们可以在CMakeLists.txt中调用CMake的<code>project</code>时定义项目版本:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">04</span> VERSION <span class="number">2.0</span>.<span class="number">1</span> LANGUAGES C)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，基于<code>version.h.in</code>生成<code>version.h</code>:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">configure_file</span>(</span><br><span class="line">  version.h.in</span><br><span class="line">  generated/version.h</span><br><span class="line">  <span class="variable">@ONLY</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，我们定义了可执行文件，并提供了目标包含路径:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">add_executable(<span class="name">example</span> example.c)</span><br><span class="line">target_include_directories(<span class="name">example</span></span><br><span class="line">  PRIVATE</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-2"><a href="#工作原理-2" class="headerlink" title="工作原理"></a>工作原理</h2><p>当使用版本参数调用CMake的<code>project</code>时，CMake将为项目设置<code>PROJECT_VERSION_MAJOR</code>、<code>PROJECT_VERSION_MINOR</code>和<code>PROJECT_VERSION_PATCH</code>。此示例中的关键命令是<code>configure_file</code>，它接受一个输入文件(本例中是<code>version.h.in</code>)，通过将<code>@</code>之间的占位符替换成对应的CMake变量，生成一个输出文件(本例中是<code>generate/version.h</code>)。它将<code>@PROJECT_VERSION_MAJOR@</code>替换为2，以此类推。使用关键字<code>@ONLY</code>，我们将<code>configure_file</code>限制为只替换<code>@variables@</code>，而不修改<code>${variables}</code>。后一种形式在<code>version.h.in</code>中没有使用。但是，当使用CMake配置shell脚本时，会经常出现。</p>
+<p>生成的头文件可以包含在示例代码中，可以打印版本信息:</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line">$ cmake <span class="comment">--build .</span></span><br><span class="line">$ ./example</span><br><span class="line"></span><br><span class="line">This <span class="keyword">is</span> output <span class="keyword">from</span> code v2<span class="number">.0</span><span class="number">.1</span></span><br><span class="line">Major <span class="built_in">version</span> <span class="built_in">number</span>: <span class="number">2</span></span><br><span class="line">Minor <span class="built_in">version</span> <span class="built_in">number</span>: <span class="number">0</span></span><br><span class="line">Hello CMake world!</span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong>:<em>CMake以<code>x.y.z</code>格式给出的版本号，并将变量<code>PROJECT_VERSION</code>和<code>&lt;project-name&gt;_VERSION</code>设置为给定的值。此外,<code>PROJECT_VERSION_MAJOR</code>(<code>&lt;project-name&gt;_VERSION_MAJOR</code>),<code>PROJECT_VERSION_MINOR</code>(<code>&lt;project-name&gt;_VERSION_MINOR</code>) <code>PROJECT_VERSION_PATCH</code>(<code>&lt;project-name&gt;_VERSION_PATCH</code>)和<code>PROJECT_VERSION_TWEAK</code>(<code>&lt;project-name&gt;_VERSION_TWEAK</code>),将分别设置为<code>X</code>, <code>Y</code>, <code>Z</code>和<code>t</code>。</em></p>
+<h2 id="更多信息-3"><a href="#更多信息-3" class="headerlink" title="更多信息"></a>更多信息</h2><p>为了确保只有当CMake变量被认为是一个真正的常量时，才定义预处理器变量，可以使用<code>configure_file</code>，在配置的头文件中使用<code>#cmakedefin</code>而不是<code>#define</code>。</p>
+<p>根据是否定义了CMake变量并将其计算为一个真正的常量，<code>#cmakedefine YOUR_VARIABLE</code>将被替换为<code>#define YOUR_VARIABLE …</code>或者<code>/* #undef YOUR_VARIABLE */</code>。还有<code>#cmakedefine01</code>，将根据变量是否定义，将变量设置为<code>0</code>或<code>1</code>。</p>
+<h1 id="6-5-从文件中记录项目版本"><a href="#6-5-从文件中记录项目版本" class="headerlink" title="6.5 从文件中记录项目版本"></a>6.5 从文件中记录项目版本</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-05" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-05</a> 中找到，其中包含一个C++例子。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>这个示例的目的和前一个相似，但是出发点不同。我们计划是从文件中读取版本信息，而不是将其设置在CMakeLists.txt中。将版本保存在单独文件中的动机，是允许其他构建框架或开发工具使用独立于CMake的信息，而无需将信息复制到多个文件中。与CMake并行使用的构建框架的一个例子是Sphinx文档框架，它生成文档并将其部署到阅读文档服务中，以便在线提供代码文档。</p>
+<h2 id="准备工作-4"><a href="#准备工作-4" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们将从一个名为<code>VERSION</code>的文件开始，其中包含以下内容:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2.0</span><span class="number">.1</span>-rc<span class="number">-2</span></span><br></pre></td></tr></table></figure>
+<p>这一次，选择更安全的数据类型，并将<code>PROGRAM_VERSION</code>定义为<code>version.hpp.in</code>中的字符串常量:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> PROGRAM_VERSION = <span class="string">"@PROGRAM_VERSION@"</span>;</span><br></pre></td></tr></table></figure>
+<p>下面的源码(<code>example.cpp</code>)，将包含生成的<code>version.hpp</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// provides PROGRAM_VERSION</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"version.hpp"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"This is output from code v"</span> &lt;&lt; PROGRAM_VERSION</span><br><span class="line">  &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello CMake world!"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施-4"><a href="#具体实施-4" class="headerlink" title="具体实施"></a>具体实施</h2><p>逐步来完成我们的任务:</p>
+<ol>
+<li><p>CMakeLists.txt定义了最低版本、项目名称、语言和标准:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">05</span> LANGUAGES CXX)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从文件中读取版本信息如下:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if(<span class="name">EXISTS</span> <span class="string">"$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/VERSION"</span>)</span><br><span class="line">	file(<span class="name">READ</span> <span class="string">"$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/VERSION"</span> PROGRAM_VERSION)</span><br><span class="line">	string(<span class="name">STRIP</span> <span class="string">"$&#123;PROGRAM_VERSION&#125;"</span> PROGRAM_VERSION)</span><br><span class="line">else()</span><br><span class="line">	message(<span class="name">FATAL_ERROR</span> <span class="string">"File $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/VERSION not found"</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置头文件:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">configure_file</span>(</span><br><span class="line">  version.hpp.in</span><br><span class="line">  generated/version.hpp</span><br><span class="line">  <span class="variable">@ONLY</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，定义了可执行文件及其依赖关系:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">add_executable(<span class="name">example</span> example.cpp)</span><br><span class="line">target_include_directories(<span class="name">example</span></span><br><span class="line">  PRIVATE</span><br><span class="line">  	$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进行测试:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake --build .</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./example</span></span><br><span class="line"></span><br><span class="line">This is output from code v2.0.1-rc-2</span><br><span class="line">Hello CMake world!</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-3"><a href="#工作原理-3" class="headerlink" title="工作原理"></a>工作原理</h2><p>我们使用以下构造，从一个名为VERSION的文件中读取版本字符串:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if(<span class="name">EXISTS</span> <span class="string">"$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/VERSION"</span>)</span><br><span class="line">  file(<span class="name">READ</span> <span class="string">"$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/VERSION"</span> PROGRAM_VERSION)</span><br><span class="line">  string(<span class="name">STRIP</span> <span class="string">"$&#123;PROGRAM_VERSION&#125;"</span> PROGRAM_VERSION)</span><br><span class="line">else()</span><br><span class="line">	message(<span class="name">FATAL_ERROR</span> <span class="string">"File $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/VERSION not found"</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+<p>这里，首先检查该文件是否存在，如果不存在，则发出错误消息。如果存在，将内容读入<code>PROGRAM_VERSION</code>变量中，该变量会去掉尾部的空格。当设置了变量<code>PROGRAM_VERSION</code>，就可以使用它来配置<code>version.hpp.in</code>，生成<code>generated/version.hpp</code>:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">configure_file</span>(</span><br><span class="line">  version.hpp.in</span><br><span class="line">  generated/version.hpp</span><br><span class="line">  <span class="variable">@ONLY</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<h1 id="6-6-配置时记录Git-Hash值"><a href="#6-6-配置时记录Git-Hash值" class="headerlink" title="6.6 配置时记录Git Hash值"></a>6.6 配置时记录Git Hash值</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-06" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-06</a> 中找到，其中包含一个C++例子。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>大多数现代源代码存储库都使用Git作为版本控制系统进行跟踪，这可以归功于存储库托管平台GitHub的流行。因此，我们将在本示例中使用Git；然而，实际中会根据具体的动机和实现，可以转化为其他版本控制系统。我们以Git为例，提交的Git Hash决定了源代码的状态。因此，为了标记可执行文件，我们将尝试将Git Hash记录到可执行文件中，方法是将哈希字符串记录在一个头文件中，该头文件可以包含在代码中。</p>
+<h2 id="准备工作-5"><a href="#准备工作-5" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们需要两个源文件，类似于前面的示例。其中一个将配置记录的Hash(<code>version.hpp.in</code>)，详情如下:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> GIT_HASH = <span class="string">"@GIT_HASH@"</span>;</span><br></pre></td></tr></table></figure>
+<p>还需要一个示例源文件(<code>example.cpp</code>)，将Hash打印到屏幕上:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"version.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"This code has been configured from version "</span> &lt;&lt; GIT_HASH &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此示例还假定在Git存储库中至少有一个提交。因此，使用<code>git init</code>初始化这个示例，并使用<code>git add &lt;filename&gt;</code>，然后使用<code>git commit</code>创建提交，以便获得一个有意义的示例。</p>
+<h2 id="具体实施-5"><a href="#具体实施-5" class="headerlink" title="具体实施"></a>具体实施</h2><p>下面演示了从Git记录版本信息的步骤:</p>
+<ol>
+<li><p>定义项目和支持语言:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">06</span> LANGUAGES CXX)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定义<code>GIT_HASH</code>变量:</p>
+<figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">in</span> <span class="keyword">case</span> Git <span class="keyword">is</span> <span class="keyword">not</span> available, we <span class="keyword">default</span> <span class="keyword">to</span> <span class="string">"unknown"</span></span><br><span class="line"><span class="keyword">set</span>(GIT_HASH <span class="string">"unknown"</span>)</span><br><span class="line"></span><br><span class="line"># find Git <span class="keyword">and</span> <span class="keyword">if</span> available <span class="keyword">set</span> GIT_HASH variable</span><br><span class="line">find_package(Git QUIET)</span><br><span class="line"><span class="keyword">if</span>(GIT_FOUND)</span><br><span class="line">  execute_process(</span><br><span class="line">    COMMAND $&#123;GIT_EXECUTABLE&#125; <span class="built_in">log</span> <span class="number">-1</span> --pretty=format:%h</span><br><span class="line">    OUTPUT_VARIABLE GIT_HASH</span><br><span class="line">    OUTPUT_STRIP_TRAILING_WHITESPACE</span><br><span class="line">    ERROR_QUIET</span><br><span class="line">    WORKING_DIRECTORY</span><br><span class="line">    	$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span><br><span class="line">  )</span><br><span class="line">endif()</span><br><span class="line"></span><br><span class="line">message(STATUS <span class="string">"Git hash is $&#123;GIT_HASH&#125;"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CMakeLists.txt</code>剩余的部分，类似于之前的示例:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># <span class="selector-tag">generate</span> <span class="selector-tag">file</span> <span class="selector-tag">version</span><span class="selector-class">.hpp</span> <span class="selector-tag">based</span> <span class="selector-tag">on</span> <span class="selector-tag">version</span><span class="selector-class">.hpp</span><span class="selector-class">.in</span></span><br><span class="line"><span class="selector-tag">configure_file</span>(</span><br><span class="line">  version.hpp.in</span><br><span class="line">  generated/version.hpp</span><br><span class="line">  <span class="variable">@ONLY</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"># <span class="selector-tag">example</span> <span class="selector-tag">code</span></span><br><span class="line"><span class="selector-tag">add_executable</span>(example example.cpp)</span><br><span class="line"></span><br><span class="line"># <span class="selector-tag">needs</span> <span class="selector-tag">to</span> <span class="selector-tag">find</span> <span class="selector-tag">the</span> <span class="selector-tag">generated</span> <span class="selector-tag">header</span> <span class="selector-tag">file</span></span><br><span class="line"><span class="selector-tag">target_include_directories</span>(example</span><br><span class="line">  PRIVATE</span><br><span class="line">  	$&#123;<span class="selector-tag">CMAKE_CURRENT_BINARY_DIR</span>&#125;/<span class="selector-tag">generated</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>验证输出(Hash不同):</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake --build .</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./example</span></span><br><span class="line"></span><br><span class="line">This code has been configured from version d58c64f</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-4"><a href="#工作原理-4" class="headerlink" title="工作原理"></a>工作原理</h2><p>使用<code>find_package(Git QUIET)</code>来检测系统上是否有可用的Git。如果有(<code>GIT_FOUND</code>为<code>True</code>)，运行一个Git命令: <code>${GIT_EXECUTABLE} log -1 --pretty=format:%h</code>。这个命令给出了当前提交Hash的简短版本。当然，这里我们可以灵活地运行Git命令。我们要求<code>execute_process</code>命令将结果放入名为<code>GIT_HASH</code>的变量中，然后删除任何尾随的空格。使用<code>ERROR_QUIET</code>，如果Git命令由于某种原因失败，我们不会停止配置。</p>
+<p>由于Git命令可能会失败(源代码已经分发到Git存储库之外)，或者Git在系统上不可用，我们希望为这个变量设置一个默认值，如下所示:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(GIT_HASH <span class="string">"unknown"</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>此示例有一个问题，Git Hash是在配置时记录的，而不是在构建时记录。下一个示例中，我们将演示如何实现后一种方法。</p>
+<h1 id="6-7-构建时记录Git-Hash值"><a href="#6-7-构建时记录Git-Hash值" class="headerlink" title="6.7 构建时记录Git Hash值"></a>6.7 构建时记录Git Hash值</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-07" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-6/recipe-07</a> 中找到，其中包含一个C++例子。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>前面的示例中，在配置时记录了代码存储库(Git Hash)的状态。然而，前一种方法有一个令人不满意的地方，如果在配置代码之后更改分支或提交更改，则源代码中包含的版本记录可能指向错误的Git Hash值。在这个示例中，我们将演示如何在构建时记录Git Hash(或者，执行其他操作)，以确保每次构建代码时都运行这些操作，因为我们可能只配置一次，但是会构建多次。</p>
+<h2 id="准备工作-6"><a href="#准备工作-6" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们将使用与之前示例相同的<code>version.hpp.in</code>，只会对<code>example.cpp</code>文件进行修改，以确保它打印构建时Git提交Hash值:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"version.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"This code has been built from version "</span> &lt;&lt; GIT_HASH &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施-6"><a href="#具体实施-6" class="headerlink" title="具体实施"></a>具体实施</h2><p>将Git信息保存到<code>version.hpp</code>头文件在构建时需要进行以下操作:</p>
+<ol>
+<li><p>把前一个示例的<code>CMakeLists.txt</code>中的大部分代码移到一个单独的文件中，并将该文件命名为<code>git-hash.cmake</code>:</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">in</span> case Git is not available, we default to <span class="string">"unknown"</span></span><br><span class="line"><span class="keyword">set</span>(GIT_HASH <span class="string">"unknown"</span>)</span><br><span class="line"></span><br><span class="line"># find Git and <span class="keyword">if</span> available <span class="keyword">set</span> GIT_HASH variable</span><br><span class="line">find_package(Git QUIET)</span><br><span class="line"><span class="keyword">if</span>(GIT_FOUND)</span><br><span class="line">  execute_process(</span><br><span class="line">    COMMAND <span class="variable">$&#123;GIT_EXECUTABLE&#125;</span> <span class="keyword">log</span> -1 --pretty=<span class="keyword">format</span>:%<span class="built_in">h</span></span><br><span class="line">    OUTPUT_VARIABLE GIT_HASH</span><br><span class="line">    OUTPUT_STRIP_TRAILING_WHITESPACE</span><br><span class="line">    ERROR_QUIET</span><br><span class="line">    )</span><br><span class="line">endif()</span><br><span class="line"></span><br><span class="line">message(STATUS <span class="string">"Git hash is $&#123;GIT_HASH&#125;"</span>)</span><br><span class="line"></span><br><span class="line"># <span class="keyword">generate</span> <span class="keyword">file</span> <span class="keyword">version</span>.hpp based <span class="keyword">on</span> <span class="keyword">version</span>.hpp.<span class="keyword">in</span></span><br><span class="line">configure_file(</span><br><span class="line">  <span class="variable">$&#123;CMAKE_CURRENT_LIST_DIR&#125;</span>/<span class="keyword">version</span>.hpp.<span class="keyword">in</span></span><br><span class="line">  <span class="variable">$&#123;TARGET_DIR&#125;</span>/generated/<span class="keyword">version</span>.hpp</span><br><span class="line">  @ONLY</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CMakeLists.txt</code>熟悉的部分:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set minimum cmake version</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.5</span> FATAL_ERROR)</span><br><span class="line"><span class="comment"># project name and language</span></span><br><span class="line"><span class="keyword">project</span>(recipe-<span class="number">07</span> LANGUAGES CXX)</span><br><span class="line"><span class="comment"># require C++11</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_EXTENSIONS <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="keyword">ON</span>)</span><br><span class="line"><span class="comment"># example code</span></span><br><span class="line"><span class="keyword">add_executable</span>(example example.cpp)</span><br><span class="line"><span class="comment"># needs to find the generated header file</span></span><br><span class="line"><span class="keyword">target_include_directories</span>(example</span><br><span class="line">  PRIVATE</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/generated</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CMakeLists.txt</code>的剩余部分，记录了每次编译代码时的<code>Git Hash</code>:</p>
+</li>
+</ol>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_custom_command</span>(</span><br><span class="line">  OUTPUT</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/generated/version.hpp</span><br><span class="line">  ALL</span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">  	<span class="variable">$&#123;CMAKE_COMMAND&#125;</span> -D TARGET_DIR=<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span> -P <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/git-hash.cmake</span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="comment"># rebuild version.hpp every time</span></span><br><span class="line"><span class="keyword">add_custom_target</span>(</span><br><span class="line">  get_git_hash</span><br><span class="line">  ALL</span><br><span class="line">  DEPENDS</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/generated/version.hpp</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="comment"># version.hpp has to be generated</span></span><br><span class="line"><span class="comment"># before we start building example</span></span><br><span class="line"><span class="keyword">add_dependencies</span>(example get_git_hash)</span><br></pre></td></tr></table></figure>
+<h2 id="工作原理-5"><a href="#工作原理-5" class="headerlink" title="工作原理"></a>工作原理</h2><p>示例中，在构建时执行CMake代码。为此，定义了一个自定义命令:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_custom_command</span>(</span><br><span class="line">  OUTPUT</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/generated/version.hpp</span><br><span class="line">  ALL</span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">  	<span class="variable">$&#123;CMAKE_COMMAND&#125;</span> -D TARGET_DIR=<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span> -P <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/git-hash.cmake</span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>我们还定义了一个目标:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">add_custom_target(</span><br><span class="line">  get_git_hash</span><br><span class="line">  ALL</span><br><span class="line">  DEPENDS</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span><span class="regexp">/generated/</span>version.hpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>自定义命令调用CMake来执行<code>git-hash.cmake</code>脚本。这里使用CLI的<code>-P</code>开关，通过传入脚本的位置实现的。请注意，可以像往常一样使用CLI开关<code>-D</code>传递选项。<code>git-hash.cmake</code>脚本生成 <code>${TARGET_DIR}/generated/version.hpp</code>。自定义目标被添加到<code>ALL</code>目标中，并且依赖于自定义命令的输出。换句话说，当构建默认目标时，我们确保自定义命令已经运行。此外，自定义命令将<code>ALL</code>目标作为输出。这样，我们就能确保每次都会生成<code>version.hpp</code>了。</p>
+<h2 id="更多信息-4"><a href="#更多信息-4" class="headerlink" title="更多信息"></a>更多信息</h2><p>我们可以改进配置，以便在记录的<code>Git Hash</code>外，包含其他的信息。检测构建环境是否“污染”(即是否包含未提交的更改和未跟踪的文件)，或者“干净”。可以使用<code>git describe --abbrev=7 --long --always --dirty --tags</code>检测这些信息。根据可重现性，甚至可以将Git的状态，完整输出记录到头文件中，我们将这些功能作为课后习题留给读者自己完成。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/03/100658.html" class="pre-post btn btn-default" title='CMake 完整使用教程 之八 构建项目'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之八 构建项目</span>
+        </a>
+    
+    
+        <a href="/archives/2021/03/100656.html" class="next-post btn btn-default" title='CMake 完整使用教程 之六 配置时和构建时的操作'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之六 配置时和构建时的操作</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#6-1-配置时生成源码"><span class="toc-text">6.1 配置时生成源码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-2-使用Python在配置时生成源码"><span class="toc-text">6.2 使用Python在配置时生成源码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-1"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-1"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-1"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-1"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-3-构建时使用Python生成源码"><span class="toc-text">6.3 构建时使用Python生成源码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-2"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-2"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-3"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-2"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-4-记录项目版本信息以便报告"><span class="toc-text">6.4 记录项目版本信息以便报告</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-3"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何实施"><span class="toc-text">如何实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-2"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-3"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-5-从文件中记录项目版本"><span class="toc-text">6.5 从文件中记录项目版本</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-4"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-4"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-3"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-6-配置时记录Git-Hash值"><span class="toc-text">6.6 配置时记录Git Hash值</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-5"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-5"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-4"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-7-构建时记录Git-Hash值"><span class="toc-text">6.7 构建时记录Git Hash值</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-6"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-6"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-5"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-4"><span class="toc-text">更多信息</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="一. 监控为什么需要监控？为了保证系统的稳定性，可靠性，可运维性。
+
+掌控集群的核心性能指标，了解集群的性能表现。
+集群出现问题时及时报警，便于运维同学及时修复问题。
+集群重要指标值异常时进行预...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 四十四.HBase监控语诊断 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 四十四.HBase监控语诊断">
+            
+	            大数据hadoop之 四十四.HBase监控语诊断
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/30</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1376</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-监控"><a href="#一-监控" class="headerlink" title="一. 监控"></a>一. 监控</h1><h2 id="为什么需要监控？"><a href="#为什么需要监控？" class="headerlink" title="为什么需要监控？"></a>为什么需要监控？</h2><p>为了保证系统的稳定性，可靠性，可运维性。</p>
+<ol>
+<li>掌控集群的核心性能指标，了解集群的性能表现。</li>
+<li>集群出现问题时及时报警，便于运维同学及时修复问题。</li>
+<li>集群重要指标值异常时进行预警，将问题扼杀在摇篮中，不用等集群真正不可用时才采取行动。</li>
+<li>当集群出现问题时，监控系统可以帮助我们更快的定位问题和解决问题</li>
+</ol>
+<h2 id="如何构建-HBase-集群监控系统？"><a href="#如何构建-HBase-集群监控系统？" class="headerlink" title="如何构建 HBase 集群监控系统？"></a>如何构建 HBase 集群监控系统？</h2><p>公司有自己的监控系统，我们所要做的就是将 HBase 中我们关心的指标项发送到监控系统去，问题就转换为我们开发，采集并返回哪些 HBase 集群监控指标项。</p>
+<h2 id="HBase-集群监控指标"><a href="#HBase-集群监控指标" class="headerlink" title="HBase 集群监控指标"></a>HBase 集群监控指标</h2><p>采集的监控数据主要包括以下几个方面：某台机器 OS 层面上的数据，例如 CPU、内存、磁盘、网络、load、网络流量等；某台 regionserver（或master）机器 jvm 的状态，例如关于线程的信息，GC 的次数和时间，内存使用状况，以及 ERROR、WARN、Fatal 事件出现的次数；regionserver（或 master）进程中的统计信息。</p>
+<p>可以通过以下地址获取 HBase 提供的 JMX 信息的 web 页面</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//y</span>our_master:<span class="number">60010</span><span class="regexp">/jmx  /</span><span class="regexp">/所有的bean</span></span><br></pre></td></tr></table></figure>
+<p>JMX web 页面的数据格式是<code>json</code>格式，信息很多！</p>
+<h3 id="OS-监控数据"><a href="#OS-监控数据" class="headerlink" title="OS 监控数据"></a>OS 监控数据</h3><p>HBase 中对于 OS 的监控数据，主要是 OperatingSystem 的对象来进行的，如下就是我提取出来的 JSON 信息，</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span> : <span class="string">"java.lang:type=OperatingSystem"</span>,</span><br><span class="line">    <span class="attr">"modelerType"</span> : <span class="string">"com.sun.management.UnixOperatingSystem"</span>,</span><br><span class="line">    <span class="attr">"MaxFileDescriptorCount"</span> : <span class="number">1000000</span>,</span><br><span class="line">    <span class="attr">"OpenFileDescriptorCount"</span> : <span class="number">413</span>,</span><br><span class="line">    <span class="attr">"CommittedVirtualMemorySize"</span> : <span class="number">1892225024</span>,</span><br><span class="line">    <span class="attr">"FreePhysicalMemorySize"</span> : <span class="number">284946432</span>,</span><br><span class="line">    <span class="attr">"FreeSwapSpaceSize"</span> : <span class="number">535703552</span>,</span><br><span class="line">    <span class="attr">"ProcessCpuLoad"</span> : <span class="number">0.0016732901066722444</span>,</span><br><span class="line">    <span class="attr">"ProcessCpuTime"</span> : <span class="number">59306210000000</span>,</span><br><span class="line">    <span class="attr">"SystemCpuLoad"</span> : <span class="number">0.018197029910060655</span>,</span><br><span class="line">    <span class="attr">"TotalPhysicalMemorySize"</span> : <span class="number">16660848640</span>,</span><br><span class="line">    <span class="attr">"TotalSwapSpaceSize"</span> : <span class="number">536862720</span>,</span><br><span class="line">    <span class="attr">"AvailableProcessors"</span> : <span class="number">8</span>,</span><br><span class="line">    <span class="attr">"Arch"</span> : <span class="string">"amd64"</span>,</span><br><span class="line">    <span class="attr">"SystemLoadAverage"</span> : <span class="number">0.0</span>,</span><br><span class="line">    <span class="attr">"Name"</span> : <span class="string">"Linux"</span>,</span><br><span class="line">    <span class="attr">"Version"</span> : <span class="string">"2.6.32-431.11.7.el6.ucloud.x86_64"</span>,</span><br><span class="line">    <span class="attr">"ObjectName"</span> : <span class="string">"java.lang:type=OperatingSystem"</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>其中比较重要的指标有 <code>OpenFileDescriptorCount</code> ,  <code>FreePhysicalMemorySize</code> ,  <code>ProcessCpuLoad</code> , <code>SystemCpuLoad</code> ,  <code>AvailableProcessors</code> ,  <code>SystemLoadAverage</code></p>
+<h3 id="JVM-监控数据"><a href="#JVM-监控数据" class="headerlink" title="JVM 监控数据"></a>JVM 监控数据</h3><p>Hbase 中对于 JVM 的监控数据，主要是 JvmMetrics 的对象来进行的，如下就是我提取出来的 JSON 信息，</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span> : <span class="string">"Hadoop:service=HBase,name=JvmMetrics"</span>,</span><br><span class="line">    <span class="attr">"modelerType"</span> : <span class="string">"JvmMetrics"</span>,</span><br><span class="line">    <span class="attr">"tag.Context"</span> : <span class="string">"jvm"</span>,</span><br><span class="line">    <span class="attr">"tag.ProcessName"</span> : <span class="string">"Master"</span>,</span><br><span class="line">    <span class="attr">"tag.SessionId"</span> : <span class="string">""</span>,</span><br><span class="line">    <span class="attr">"tag.Hostname"</span> : <span class="string">"uhadoop-qrljqo-master2"</span>,</span><br><span class="line">    <span class="attr">"MemNonHeapUsedM"</span> : <span class="number">53.846107</span>,</span><br><span class="line">    <span class="attr">"MemNonHeapCommittedM"</span> : <span class="number">85.84375</span>,</span><br><span class="line">    <span class="attr">"MemNonHeapMaxM"</span> : <span class="number">130.0</span>,</span><br><span class="line">    <span class="attr">"MemHeapUsedM"</span> : <span class="number">79.05823</span>,</span><br><span class="line">    <span class="attr">"MemHeapCommittedM"</span> : <span class="number">240.125</span>,</span><br><span class="line">    <span class="attr">"MemHeapMaxM"</span> : <span class="number">989.875</span>,</span><br><span class="line">    <span class="attr">"MemMaxM"</span> : <span class="number">989.875</span>,</span><br><span class="line">    <span class="attr">"GcCountParNew"</span> : <span class="number">15190</span>,</span><br><span class="line">    <span class="attr">"GcTimeMillisParNew"</span> : <span class="number">72300</span>,</span><br><span class="line">    <span class="attr">"GcCountConcurrentMarkSweep"</span> : <span class="number">2</span>,</span><br><span class="line">    <span class="attr">"GcTimeMillisConcurrentMarkSweep"</span> : <span class="number">319</span>,</span><br><span class="line">    <span class="attr">"GcCount"</span> : <span class="number">15192</span>,</span><br><span class="line">    <span class="attr">"GcTimeMillis"</span> : <span class="number">72619</span>,</span><br><span class="line">    <span class="attr">"ThreadsNew"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"ThreadsRunnable"</span> : <span class="number">21</span>,</span><br><span class="line">    <span class="attr">"ThreadsBlocked"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"ThreadsWaiting"</span> : <span class="number">144</span>,</span><br><span class="line">    <span class="attr">"ThreadsTimedWaiting"</span> : <span class="number">18</span>,</span><br><span class="line">    <span class="attr">"ThreadsTerminated"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"LogFatal"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"LogError"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"LogWarn"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"LogInfo"</span> : <span class="number">0</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>JvmMetrics 主要统计的信息包括：内存的使用状态信息；GC的统计信息；线程的统计信息；以及事件的统计信息。</p>
+<p>内存的统计信息主要是：JVM 当前已经使用的 NonHeapMemory 的大小、以及配置的 NonHeapMemory 的大小；JVM 当前已经使用的 HeapMemory 的大小、以及配置的 HeapMemory 的大小； JVM 运行时的可以使用的最大的内存的大小。</p>
+<p>GC 的统计较为简单，仅统计了进程在固定间隔内 GC 的次数和花费的总时间。</p>
+<p>线程的统计，主要是统计进程内当前线程的处于 NEW 、RUNNABLE、BLOCKED、WAITING、TIMED_WAITING、TERMINATED 这六种状态下的线程数量。</p>
+<p>对于事件的统计，主要统计固定时间间隔内的 Fatal、Error、Warn 以及 Info 的数量。(这块好像不怎么重要)</p>
+<h3 id="Region-Servers-健康"><a href="#Region-Servers-健康" class="headerlink" title="Region Servers 健康"></a>Region Servers 健康</h3><p>你也可以通过如下地址：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">http:</span>//your_master:<span class="number">60010</span>/jmx?qry=Hadoop:service=HBase,name=Master,<span class="keyword">sub</span>=Server</span><br></pre></td></tr></table></figure>
+<p>获得到 Region Servers 健康值：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span> : <span class="string">"Hadoop:service=HBase,name=Master,sub=Server"</span>,</span><br><span class="line">    <span class="attr">"modelerType"</span> : <span class="string">"Master,sub=Server"</span>,</span><br><span class="line">    <span class="attr">"tag.liveRegionServers"</span> : <span class="string">"xxx"</span>,</span><br><span class="line">    <span class="attr">"tag.deadRegionServers"</span> : <span class="string">""</span>,</span><br><span class="line">    <span class="attr">"tag.zookeeperQuorum"</span> : <span class="string">"xxx"</span>,</span><br><span class="line">    <span class="attr">"tag.serverName"</span> : <span class="string">"xxx2,60000,1495683310213"</span>,</span><br><span class="line">    <span class="attr">"tag.clusterId"</span> : <span class="string">"e5e044a3-ef9f-48f7-ba63-637376f5fa90"</span>,</span><br><span class="line">    <span class="attr">"tag.isActiveMaster"</span> : <span class="string">"true"</span>,</span><br><span class="line">    <span class="attr">"tag.Context"</span> : <span class="string">"master"</span>,</span><br><span class="line">    <span class="attr">"tag.Hostname"</span> : <span class="string">"xxx"</span>,</span><br><span class="line">    <span class="attr">"masterActiveTime"</span> : <span class="number">1495683312239</span>,</span><br><span class="line">    <span class="attr">"masterStartTime"</span> : <span class="number">1495683310213</span>,</span><br><span class="line">    <span class="attr">"averageLoad"</span> : <span class="number">143.66666666666666</span>,</span><br><span class="line">    <span class="attr">"numRegionServers"</span> : <span class="number">3</span>,</span><br><span class="line">    <span class="attr">"numDeadRegionServers"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"clusterRequests"</span> : <span class="number">1297834323</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="MemoryPool"><a href="#MemoryPool" class="headerlink" title="MemoryPool"></a>MemoryPool</h3><p>从全部的 JSON 值中你会看到很多种 MemoryPool 值，比如 Par Eden Space 、CMS Perm Gen、Par Survivor Space、CMS Old Gen、Code Cache ，按需获取吧。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>任何一个服务的监控系统都是一个不断迭代，不断优化的过程，不可能一开始就做到最好。监控总是比问题发生来的更早一些，而每一次出问题，又进一步加强相应方面的监控，我们需要让监控系统从出问题时才报警到可能出现问题时就预警逐渐过渡，最终让监控系统成为我们保证系统稳定性的一个有力工具。</p>
+<h1 id="二-诊断"><a href="#二-诊断" class="headerlink" title="二. 诊断"></a>二. 诊断</h1><p>HBase数据写入通常会遇到两类问题，一类是写性能较差，另一类是数据根本写不进去。这两类问题的切入点也不尽相同，如下图所示：<br><img src="/img/hadoop/3149801-ebfb2952543e93bc.webp" alt="img"></p>
+<h3 id="写性能优化切入点"><a href="#写性能优化切入点" class="headerlink" title="写性能优化切入点"></a>写性能优化切入点</h3><ol>
+<li>是否需要写WAL？WAL是否需要同步写入？<br>优化原理：数据写入流程可以理解为一次顺序写WAL+一次写缓存，通常情况下写缓存延迟很低，因此提升写性能就只能从WAL入手。WAL机制一方面是为了确保数据即使写入缓存丢失也可以恢复，另一方面是为了集群之间异步复制。默认WAL机制开启且使用同步机制写入WAL。首先考虑业务是否需要写WAL，通常情况下大多数业务都会开启WAL机制（默认），但是对于部分业务可能并不特别关心异常情况下部分数据的丢失，而更关心数据写入吞吐量，比如某些推荐业务，这类业务即使丢失一部分用户行为数据可能对推荐结果并不构成很大影响，但是对于写入吞吐量要求很高，不能造成数据队列阻塞。这种场景下可以考虑关闭WAL写入，写入吞吐量可以提升2x~3x。退而求其次，有些业务不能接受不写WAL，但可以接受WAL异步写入，也是可以考虑优化的，通常也会带来1x～2x的性能提升。<br>优化推荐：根据业务关注点在WAL机制与写入吞吐量之间做出选择<br>其他注意点：对于使用Increment操作的业务，WAL可以设置关闭，也可以设置异步写入，方法同Put类似。相信大多数Increment操作业务对WAL可能都不是那么敏感～</li>
+<li>Put是否可以同步批量提交？<br>优化原理：HBase分别提供了单条put以及批量put的API接口，使用批量put接口可以减少客户端到RegionServer之间的RPC连接数，提高写入性能。另外需要注意的是，批量put请求要么全部成功返回，要么抛出异常。<br>优化建议：使用批量put进行写入请求</li>
+<li>Put是否可以异步批量提交？<br>优化原理：业务如果可以接受异常情况下少量数据丢失的话，还可以使用异步批量提交的方式提交请求。提交分为两阶段执行：用户提交写请求之后，数据会写入客户端缓存，并返回用户写入成功；当客户端缓存达到阈值（默认2M）之后批量提交给RegionServer。需要注意的是，在某些情况下客户端异常的情况下缓存数据有可能丢失。<br>优化建议：在业务可以接受的情况下开启异步批量提交<br>使用方式：setAutoFlush(false)</li>
+<li>Region是否太少？<br>优化原理：当前集群中表的Region个数如果小于RegionServer个数，即Num(Region of Table) &lt; Num(RegionServer)，可以考虑切分Region并尽可能分布到不同RegionServer来提高系统请求并发度，如果Num(Region of Table) &gt; Num(RegionServer)，再增加Region个数效果并不明显。<br>优化建议：在Num(Region of Table) &lt; Num(RegionServer)的场景下切分部分请求负载高的Region并迁移到其他RegionServer；</li>
+<li>写入请求是否不均衡？<br>优化原理：另一个需要考虑的问题是写入请求是否均衡，如果不均衡，一方面会导致系统并发度较低，另一方面也有可能造成部分节点负载很高，进而影响其他业务。分布式系统中特别害怕一个节点负载很高的情况，一个节点负载很高可能会拖慢整个集群，这是因为很多业务会使用Mutli批量提交读写请求，一旦其中一部分请求落到该节点无法得到及时响应，就会导致整个批量请求超时。因此不怕节点宕掉，就怕节点奄奄一息！<br>优化建议：检查RowKey设计以及预分区策略，保证写入请求均衡。</li>
+<li>写入KeyValue数据是否太大？<br>KeyValue大小对写入性能的影响巨大，一旦遇到写入性能比较差的情况，需要考虑是否由于写入KeyValue数据太大导致。KeyValue大小对写入性能影响曲线图如下：</li>
+</ol>
+<p><img src="/img/hadoop/3149801-0bb3bc9c87c54fb4.webp" alt="img"></p>
+<p>图中横坐标是写入的一行数据（每行数据10列）大小，左纵坐标是写入吞吐量，右坐标是写入平均延迟（ms）。可以看出随着单行数据大小不断变大，写入吞吐量急剧下降，写入延迟在100K之后急剧增大。<br>说到这里，有必要和大家分享两起在生产线环境因为业务KeyValue较大导致的严重问题，一起是因为大字段业务写入导致其他业务吞吐量急剧下降，另一起是因为大字段业务scan导致RegionServer宕机。</p>
+<h3 id="案件一：大字段写入导致其他业务吞吐量急剧下降"><a href="#案件一：大字段写入导致其他业务吞吐量急剧下降" class="headerlink" title="案件一：大字段写入导致其他业务吞吐量急剧下降"></a>案件一：大字段写入导致其他业务吞吐量急剧下降</h3><p>部分业务反馈集群写入忽然变慢、数据开始堆积的情况，查看集群表级别的数据读写QPS监控，发现问题的第一个关键点：业务A开始写入之后整个集群其他部分业务写入QPS都几乎断崖式下跌，初步怀疑黑手就是业务A。<br>下图是当时业务A的写入QPS（事后发现脑残忘了截取其他表QPS断崖式下跌的惨象），但是第一感觉是QPS并不高啊，凭什么去影响别人！</p>
+<p><img src="/img/hadoop/3149801-35db95badc3e19a4.webp" alt="img"></p>
+<p>于是就继续查看其他监控信息，首先确认系统资源（主要是IO）并没有到达瓶颈，其次确认了写入的均衡性，直至看到下图，才追踪到影响其他业务写入的第二个关键点：RegionServer的handler（配置150）被残暴耗尽：</p>
+<p><img src="/img/hadoop/3149801-06a43b22e67b02b6.webp" alt="img"></p>
+<p>对比上面两张图，是不是发现出奇的一致，那就可以基本确认是由于该业务写入导致这台RegionServer的handler被耗尽，进而其他业务拿不到handler，自然写不进去。那问题来了，为什么会这样？正常情况下handler在处理完客户端请求之后会立马释放，唯一的解释是这些请求的延迟实在太大。<br>试想，我们去汉堡店排队买汉堡，有150个窗口服务，正常情况下大家买一个很快，这样150个窗口可能只需要50个服务。假设忽然来了一批大汉，要定制超大汉堡，好了，所有的窗口都工作起来，而且因为大汉堡不好制作导致服务很慢，这样必然会导致其他排队的用户长时间等待，直至超时。<br>可回头一想这可是写请求啊，怎么会有这么大的请求延迟！和业务方沟通之后确认该表主要存储语料库文档信息，都是平均100K左右的数据，是不是已经猜到了结果，没错，就是因为这个业务KeyValue太大导致。KeyValue太大会导致HLog文件写入频繁切换、flush以及compaction频繁触发，写入性能急剧下降。<br>目前针对这种较大KeyValue写入性能较差的问题还没有直接的解决方案，好在社区已经意识到这个问题，在接下来即将发布的下一个大版本HBase 2.0.0版本会针对该问题进行深入优化，详见HBase MOB，优化后用户使用HBase存储文档、图片等二进制数据都会有极佳的性能体验。</p>
+<h3 id="案件二：大字段scan导致RegionServer宕机"><a href="#案件二：大字段scan导致RegionServer宕机" class="headerlink" title="案件二：大字段scan导致RegionServer宕机"></a>案件二：大字段scan导致RegionServer宕机</h3><p>案件现场：有段时间有个0.98集群的RegionServer经常频繁宕机，查看日志是由于”java.lang.OutOfMemoryError: Requested array size exceeds VM limit”，如下图所示：</p>
+<p><img src="/img/hadoop/3149801-7993fd03f768fd01.webp" alt="img"></p>
+<p>原因分析：通过查看源码以及相关文档，确认该异常发生在scan结果数据回传给客户端时由于数据量太大导致申请的array大小超过JVM规定的最大值（ Interge.Max_Value-2）。造成该异常的两种最常见原因分别是：</p>
+<p>表列太宽（几十万列或者上百万列），并且scan返回没有对列数量做任何限制，导致一行数据就可能因为包含大量列而数据超过array大小阈值<br>KeyValue太大，并且scan返回没有对返回结果大小做任何限制，导致返回数据结果大小超过array大小阈值</p>
+<p>有的童鞋就要提问啦，说如果已经对返回结果大小做了限制，在表列太宽的情况下是不是就可以不对列数量做限制呢。这里需要澄清一下，如果不对列数据做限制，数据总是一行一行返回的，即使一行数据大小大于设置的返回结果限制大小，也会返回完整的一行数据。在这种情况下，如果这一行数据已经超过array大小阈值，也会触发OOM异常。<br>解决方案：目前针对该异常有两种解决方案，其一是升级集群到1.0，问题都解决了。其二是要求客户端访问的时候对返回结果大小做限制(scan.setMaxResultSize(210241024))、并且对列数量做限制(scan.setBatch(100))，当然，0.98.13版本以后也可以对返回结果大小在服务器端进行限制，设置参数hbase.server.scanner.max.result.size即可</p>
+<h3 id="写异常问题检查点"><a href="#写异常问题检查点" class="headerlink" title="写异常问题检查点"></a>写异常问题检查点</h3><p>上述几点主要针对写性能优化进行了介绍，除此之外，在一些情况下还会出现写异常，一旦发生需要考虑下面两种情况（GC引起的不做介绍）：</p>
+<h4 id="Memstore设置是否会触发Region级别或者RegionServer级别flush操作？"><a href="#Memstore设置是否会触发Region级别或者RegionServer级别flush操作？" class="headerlink" title="Memstore设置是否会触发Region级别或者RegionServer级别flush操作？"></a>Memstore设置是否会触发Region级别或者RegionServer级别flush操作？</h4><p>问题解析：以RegionServer级别flush进行解析，HBase设定一旦整个RegionServer上所有Memstore占用内存大小总和大于配置文件中upperlimit时，系统就会执行RegionServer级别flush，flush算法会首先按照Region大小进行排序，再按照该顺序依次进行flush，直至总Memstore大小低至lowerlimit。这种flush通常会block较长时间，在日志中会发现“Memstore is above high water mark and block 7452 ms”，表示这次flush将会阻塞7s左右。<br>问题检查点：</p>
+<p>Region规模与Memstore总大小设置是否合理？如果RegionServer上Region较多，而Memstore总大小设置的很小（JVM设置较小或者upper.limit设置较小），就会触发RegionServer级别flush。集群规划相关内容可以参考文章《HBase最佳实践－集群规划》<br>列族是否设置过多，通常情况下表列族建议设置在1～3个之间，最好一个。如果设置过多，会导致一个Region中包含很多Memstore，导致更容易触到高水位upperlimit</p>
+<h4 id="Store中HFile数量是否大于配置参数blockingStoreFile"><a href="#Store中HFile数量是否大于配置参数blockingStoreFile" class="headerlink" title="Store中HFile数量是否大于配置参数blockingStoreFile?"></a>Store中HFile数量是否大于配置参数blockingStoreFile?</h4><p>问题解析：对于数据写入很快的集群，还需要特别关注一个参数：hbase.hstore.blockingStoreFiles，此参数表示如果当前hstore中文件数大于该值，系统将会强制执行compaction操作进行文件合并，合并的过程会阻塞整个hstore的写入。通常情况下该场景发生在数据写入很快的情况下，在日志中可以发现”Waited 3722ms on a compaction to clean up ‘too many store  files“<br>问题检查点：</p>
+<p>参数设置是否合理？hbase.hstore.compactionThreshold表示启动compaction的最低阈值，该值不能太大，否则会积累太多文件，一般建议设置为5～8左右。hbase.hstore.blockingStoreFiles默认设置为7，可以适当调大一些。</p>
+<h3 id="写性能还能再提高么？"><a href="#写性能还能再提高么？" class="headerlink" title="写性能还能再提高么？"></a>写性能还能再提高么？</h3><p>上文已经从写性能优化以及写异常诊断两个方面对HBase中数据写入可能的问题进行了详细的解释，相信在0.98版本的基础上对写入来说已经是最好的解决方案了。但是有些业务可能依然觉得不够快，毕竟”更快”是所有存储系统活着的动力，那还有提高空间吗？当然，接下来简单介绍HBase之后版本对写性能优化的两点核心改进：</p>
+<h4 id="Utilize-Flash-storage-for-WAL-HBASE-12848"><a href="#Utilize-Flash-storage-for-WAL-HBASE-12848" class="headerlink" title="Utilize Flash storage for WAL(HBASE-12848)"></a>Utilize Flash storage for WAL(HBASE-12848)</h4><p>这个特性意味着可以将WAL单独置于SSD上，这样即使在默认情况下（WALSync），写性能也会有很大的提升。需要注意的是，该特性建立在HDFS 2.6.0+的基础上，HDFS以前版本不支持该特性。具体可以参考官方jira：<a href="https://issues.apache.org/jira/browse/HBASE-12848" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/HBASE-12848</a></p>
+<h4 id="Multiple-WALs-HBASE-14457"><a href="#Multiple-WALs-HBASE-14457" class="headerlink" title="Multiple WALs(HBASE-14457)"></a>Multiple WALs(HBASE-14457)</h4><p>该特性也是对WAL进行改造，当前WAL设计为一个RegionServer上所有Region共享一个WAL，可以想象在写入吞吐量较高的时候必然存在资源竞争，降低整体性能。针对这个问题，社区小伙伴（阿里巴巴大神）提出Multiple WALs机制，管理员可以为每个Namespace下的所有表设置一个共享WAL，通过这种方式，写性能大约可以提升20%～40%左右。具体可以参考官方jira：<a href="https://issues.apache.org/jira/browse/HBASE-14457" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/HBASE-14457</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100351.html" class="pre-post btn btn-default" title='大数据hadoop之 四十五.Spark介绍'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十五.Spark介绍</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100348.html" class="next-post btn btn-default" title='大数据hadoop之 四十三.Hbase数据备份及恢复'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十三.Hbase数据备份及恢复</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-监控"><span class="toc-text">一. 监控</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么需要监控？"><span class="toc-text">为什么需要监控？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何构建-HBase-集群监控系统？"><span class="toc-text">如何构建 HBase 集群监控系统？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HBase-集群监控指标"><span class="toc-text">HBase 集群监控指标</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#OS-监控数据"><span class="toc-text">OS 监控数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM-监控数据"><span class="toc-text">JVM 监控数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Region-Servers-健康"><span class="toc-text">Region Servers 健康</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MemoryPool"><span class="toc-text">MemoryPool</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-诊断"><span class="toc-text">二. 诊断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#写性能优化切入点"><span class="toc-text">写性能优化切入点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#案件一：大字段写入导致其他业务吞吐量急剧下降"><span class="toc-text">案件一：大字段写入导致其他业务吞吐量急剧下降</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#案件二：大字段scan导致RegionServer宕机"><span class="toc-text">案件二：大字段scan导致RegionServer宕机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#写异常问题检查点"><span class="toc-text">写异常问题检查点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Memstore设置是否会触发Region级别或者RegionServer级别flush操作？"><span class="toc-text">Memstore设置是否会触发Region级别或者RegionServer级别flush操作？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Store中HFile数量是否大于配置参数blockingStoreFile"><span class="toc-text">Store中HFile数量是否大于配置参数blockingStoreFile?</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#写性能还能再提高么？"><span class="toc-text">写性能还能再提高么？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Utilize-Flash-storage-for-WAL-HBASE-12848"><span class="toc-text">Utilize Flash storage for WAL(HBASE-12848)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Multiple-WALs-HBASE-14457"><span class="toc-text">Multiple WALs(HBASE-14457)</span></a></li></ol></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

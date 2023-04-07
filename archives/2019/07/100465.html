@@ -1,0 +1,481 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink">
+
+
+    <meta name="description" content="一、组件堆栈作为软件堆栈，Flink是一个分层系统。堆栈的不同层构建在彼此之上，并提高它们接受的程序表示的抽象级别：
+
+在运行时层中的形式接收节目JobGraph。JobGraph是一个通用的并...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink内部原理 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink内部原理">
+            
+	            Flink内部原理
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1356</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一、组件堆栈"><a href="#一、组件堆栈" class="headerlink" title="一、组件堆栈"></a>一、组件堆栈</h1><p>作为软件堆栈，Flink是一个分层系统。堆栈的不同层构建在彼此之上，并提高它们接受的程序表示的抽象级别：</p>
+<ul>
+<li>在<strong>运行时</strong>层中的形式接收节目<em>JobGraph</em>。JobGraph是一个通用的并行数据流，具有消耗和生成数据流的任意任务。</li>
+<li>二者<strong>的数据流中的API</strong>和<strong>数据集API</strong>生成通过单独的编译过程JobGraphs。DataSet API使用优化器来确定程序的最佳计划，而DataStream API使用流构建器。</li>
+<li>JobGraph根据Flink中提供的各种部署选项执行（例如，本地，远程，YARN等）</li>
+<li>与Flink捆绑在一起的库和API生成DataSet或DataStream API程序。这些是用于逻辑表的查询的表，用于机器学习的FlinkML和用于图形处理的Gelly。</li>
+</ul>
+<p><img src="/img/flink/stack.png" alt="Apache Flink：Stack"></p>
+<h1 id="二、数据流容错"><a href="#二、数据流容错" class="headerlink" title="二、数据流容错"></a>二、数据流容错</h1><p>描述Flink的流数据流容错机制。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Apache Flink提供容错机制，以持续恢复数据流应用程序的状态。该机制确保即使存在故障，程序的状态最终也只能反映数据流中的每条记录<strong>一次</strong>。请注意，有一个开关<em>将</em>保证<em>降级**至少一次</em> （如下所述）。</p>
+<p>容错机制连续地绘制分布式流数据流的SNAPSHOT。对于状态较小的流应用程序，这些SNAPSHOT非常轻量级，可以经常绘制，而不会对性能产生太大影响。流应用程序的状态存储在可配置的位置（例如主节点或HDFS）。</p>
+<p>如果程序失败（由于机器，网络或软件故障），Flink将停止分布式流数据流。然后，系统重新启动算子并将其重置为最新的成功检查点。输入流将重置为状态SNAPSHOT的点。作为重新启动的并行数据流的一部分处理的任何记录都保证不会成为先前检查点状态的一部分。</p>
+<p><em>注意：</em>默认情况下，禁用检查点。</p>
+<p><em>注意：</em>要使此机制实现其完全保证，数据流源（例如消息队列或代理）需要能够将流回滚到定义的最近点。<a href="http://kafka.apache.org/" target="_blank" rel="noopener">Apache Kafka</a>具有这种能力，Flink与Kafka的连接器利用了这种能力。</p>
+<p><em>注意：</em>由于Flink的检查点是通过分布式SNAPSHOT实现的，因此我们可以互换使用<em>SNAPSHOT</em>和<em>检查点</em>。</p>
+<h2 id="检查点"><a href="#检查点" class="headerlink" title="检查点"></a>检查点</h2><p>Flink的容错机制的核心部分是绘制分布式数据流和算子状态的一致SNAPSHOT。这些SNAPSHOT充当一致的检查点，系统可以在发生故障时退回。Flink用于绘制这些SNAPSHOT的机制在“ <a href="http://arxiv.org/abs/1506.08603" target="_blank" rel="noopener">分布式数据流的轻量级异步SNAPSHOT</a> ”中进行了描述。它受到分布式SNAPSHOT的标准<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/chandy.pdf" target="_blank" rel="noopener">Chandy-Lamport算法的</a>启发，专门针对Flink的执行模型而定制。</p>
+<h3 id="障碍"><a href="#障碍" class="headerlink" title="障碍"></a>障碍</h3><p>Flink分布式SNAPSHOT的核心数据元是<em>流障碍</em>。这些障碍被注入数据流并与记录一起作为数据流的一部分流动。障碍永远不会超过记录，流量严格符合要求。屏障将数据流中的记录分为进入当前SNAPSHOT的记录集和进入下一个SNAPSHOT的记录。每个屏障都带有SNAPSHOT的ID，该SNAPSHOT的记录在其前面推送。障碍不会中断流的流动，因此非常轻。来自不同SNAPSHOT的多个障碍可以同时在流中，这意味着可以同时发生各种SNAPSHOT。</p>
+<p><img src="/img/flink/stream_barriers.svg" alt="数据流中的检查点障碍"></p>
+<p>流障碍被注入流源的并行数据流中。注入SNAPSHOT<em>n</em>的障碍（我们称之为<em>S n</em>）的点是源流中SNAPSHOT覆盖数据的位置。例如，在Apache Kafka中，此位置将是分区中最后一条记录的偏移量。该位置<em>S n</em>被报告给<em>检查点协调员</em>（Flink的JobManager）。</p>
+<p>然后障碍物向下游流动。当中间算子从其所有输入流中收到SNAPSHOT<em>n</em>的屏障时，它会为其所有输出流中的SNAPSHOT<em>n</em>发出屏障。一旦接收器算子（流式DAG的末端）从其所有输入流接收到障碍<em>n</em>，它就向SNAPSHOT<em>n</em>确认检查点协调器。在所有接收器确认SNAPSHOT之后，它被认为已完成。</p>
+<p>一旦完成SNAPSHOT<em>n</em>，作业将永远不再向源请求来自<em>S n</em>之前的记录，因为此时这些记录（及其后代记录）将通过整个数据流拓扑。</p>
+<p><img src="/img/flink/stream_aligning.svg" alt="在具有多个输入的 算子处对齐数据流"></p>
+<p>接收多个输入流的 算子需要在SNAPSHOT屏障上<em>对齐</em>输入流。上图说明了这一点：</p>
+<ul>
+<li>一旦算子从输入流接收到SNAPSHOT屏障<em>n</em>，它就不能处理来自该流的任何其他记录，直到它从其他输入接收到屏障<em>n</em>为止。否则，它会混合属于SNAPSHOT<em>n的</em>记录和属于SNAPSHOT<em>n + 1的记录</em>。</li>
+<li>报告障碍<em>n的</em>流暂时被搁置。从这些流接收的记录不会被处理，而是放入输入缓冲区。</li>
+<li>一旦最后一个流接收到屏障<em>n</em>，算子就会发出所有挂起的传出记录，然后自己发出SNAPSHOT<em>n个</em>屏障。</li>
+<li>之后，它恢复处理来自所有输入流的记录，在处理来自流的记录之前处理来自输入缓冲区的记录。</li>
+</ul>
+<h3 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h3><p>当 算子包含任何形式的<em>状态时</em>，此状态也必须是SNAPSHOT的一部分。算子状态有不同的形式：</p>
+<ul>
+<li><em>用户定义的状态</em>：这是由转换函数（如<code>map()</code>或<code>filter()</code>）直接创建和修改的状态。</li>
+<li><em>系统状态</em>：此状态是指作为 算子计算一部分的数据缓冲区。此状态的典型示例是<em>窗口缓冲区</em>，系统在其中收集（和聚合）窗口记录，直到窗口被评估和逐出。</li>
+</ul>
+<p>算子在他们从输入流接收到所有SNAPSHOT障碍时，以及在向其输出流发出障碍之前对其状态进行SNAPSHOT。此时，将根据障碍之前的记录对状态进行所有更新，并且在应用障碍之后不依赖于记录的更新。由于SNAPSHOT的状态可能很大，因此它存储在可配置的<em>状态后台中</em>。默认情况下，这是JobManager的内存，但对于生产使用，应配置分布式可靠存储（例如HDFS）。在存储状态之后，算子确认检查点，将SNAPSHOT屏障发送到输出流中，然后继续。</p>
+<p>生成的SNAPSHOT现在包含：</p>
+<ul>
+<li>对于每个并行流数据源，启动SNAPSHOT时流中的偏移/位置</li>
+<li>对于每个 算子，指向作为SNAPSHOT的一部分存储的状态的指针</li>
+</ul>
+<p><img src="/img/flink/checkpointing.svg" alt="检查点机制的例证"></p>
+<h3 id="完全一次与至少一次"><a href="#完全一次与至少一次" class="headerlink" title="完全一次与至少一次"></a>完全一次与至少一次</h3><p>对齐步骤可以增加流式传输程序的等待时间。通常，这种额外的延迟大约为几毫秒，但我们已经看到一些异常值的延迟显着增加的情况。对于要求所有记录始终具有超低延迟（几毫秒）的应用程序，Flink可以在检查点期间跳过流对齐。一旦算子看到每个输入的检查点障碍，仍然会绘制检查点SNAPSHOT。</p>
+<p>当跳过对齐时，即使在检查点<em>n的</em>某些检查点障碍到达之后，算子仍继续处理所有输入。这样，算子还可以在获取检查点<em>n</em>的状态SNAPSHOT之前处理属于检查点<em>n + 1的</em>数据元。在还原时，这些记录将作为重复记录出现，因为它们都包含在检查点<em>n</em>的状态SNAPSHOT中，并将在检查点<em>n</em>之后作为数据的一部分进行重放。</p>
+<p><em>注意</em>：对齐仅适用于具有多个前驱（连接）的 算子以及具有多个发送方的 算子（在流重新分区/随机播放之后）。正因为如此，数据流只有尴尬的并行流 算子操作（<code>map()</code>，<code>flatMap()</code>，<code>filter()</code>，…）实际上给<em>正好一次</em>保证了即使在<em>至少一次</em>模式。</p>
+<h3 id="异步状态SNAPSHOT"><a href="#异步状态SNAPSHOT" class="headerlink" title="异步状态SNAPSHOT"></a>异步状态SNAPSHOT</h3><p>注意，上述机制意味着算子在将<em>状态</em>的SNAPSHOT存储在<em>状态后台时</em>停止处理输入记录。每次拍摄SNAPSHOT时，此<em>同步</em>状态SNAPSHOT都会引入延迟。</p>
+<p>可以让算子在存储状态SNAPSHOT时继续处理，有效地让状态SNAPSHOT在后台<em>异步</em>发生。为此，算子必须能够生成一个状态对象，该状态对象应以某种方式存储，以便对算子状态的进一步修改不会影响该状态对象。例如，诸如RocksDB中使用<em>的写时复制</em>数据结构具有这种行为。</p>
+<p>在接收到输入的检查点障碍后，算子启动其状态的异步SNAPSHOT复制。它立即释放其输出的障碍，并继续进行常规流处理。后台复制过程完成后，它会向检查点协调员（JobManager）确认检查点。检查点现在仅在所有接收器都已收到障碍并且所有有状态算子已确认其完成备份（可能在障碍物到达接收器之后）之后才完成。</p>
+<h2 id="复苏"><a href="#复苏" class="headerlink" title="复苏"></a>复苏</h2><p>在这种机制下的恢复是直截了当的：当失败时，Flink选择最新完成的检查点<em>k</em>。然后，系统重新部署整个分布式数据流，并为每个算子提供作为检查点<em>k的</em>一部分进行SNAPSHOT的状态。设置源以开始从位置<em>S k</em>读取流。例如，在Apache Kafka中，这意味着告诉消费者从偏移量<em>S k</em>开始提取。</p>
+<p>如果状态以递增方式SNAPSHOT，则算子从最新完整SNAPSHOT的状态开始，然后对该状态应用一系列增量SNAPSHOT更新。</p>
+<h2 id="算子SNAPSHOT实施"><a href="#算子SNAPSHOT实施" class="headerlink" title="算子SNAPSHOT实施"></a>算子SNAPSHOT实施</h2><p>在执行算子SNAPSHOT时，有两部分：<strong>同步</strong>和<strong>异步</strong>部分。</p>
+<p>算子和状态后台将其SNAPSHOT作为Java提供<code>FutureTask</code>。该任务包含完成<em>同步</em>部分且<em>异步</em>部分处于挂起状态的状态。然后，异步部分由该检查点的后台线程执行。</p>
+<p>检查点纯粹同步返回已经完成的算子<code>FutureTask</code>。如果需要执行异步 算子操作，则以该<code>run()</code>方法执行<code>FutureTask</code>。</p>
+<p>任务是可取消的，因此可以释放流和其他资源消耗句柄。</p>
+<h1 id="三、工作和调度"><a href="#三、工作和调度" class="headerlink" title="三、工作和调度"></a>三、工作和调度</h1><p>简要介绍Flink如何调度作业及其如何表示和跟踪JobManager上的作业状态。</p>
+<h2 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h2><p>Flink中的执行资源通过<em>任务槽</em>定义。每个TaskManager都有一个或多个任务槽，每个槽都可以运行一个并行任务管道。流水线由多个连续的任务，如在 <em>第n</em>一MapFunction的连同并行实例<em>第n</em>一ReduceFunction的并行实例。请注意，Flink经常同时执行连续任务：对于流程序，无论如何都会发生，但对于批处理程序，它经常发生。</p>
+<p>下图说明了这一点。考虑一个带有数据源，<em>MapFunction</em>和<em>ReduceFunction的程序</em>。源和MapFunction以4的并行度执行，而ReduceFunction以3的并行度执行。管道由序列Source - Map - Reduce组成。在具有2个TaskManagers且每个具有3个插槽的群集上，程序将按如下所述执行。</p>
+<p><img src="/img/flink/slots.svg" alt="将任务管道分配给插槽"></p>
+<p>在内部，Flink限定通过<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/jobmanager/scheduler/SlotSharingGroup.java" target="_blank" rel="noopener">SlotSharingGroup</a> 和<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/jobmanager/scheduler/CoLocationGroup.java" target="_blank" rel="noopener">CoLocationGroup</a> 哪些任务可以共享的狭槽（许可），分别哪些任务必须严格放置到相同的时隙。</p>
+<h2 id="JobManager数据结构"><a href="#JobManager数据结构" class="headerlink" title="JobManager数据结构"></a>JobManager数据结构</h2><p>在作业执行期间，JobManager会跟踪分布式任务，决定何时安排下一个任务（或一组任务），并对已完成的任务或执行失败做出反应。</p>
+<p><a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/" target="_blank" rel="noopener">JobManager</a>接收<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/" target="_blank" rel="noopener">JobGraph</a>，它是由 算子（<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/JobVertex.java" target="_blank" rel="noopener">JobVertex</a>）和中间结果（<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/jobgraph/IntermediateDataSet.java" target="_blank" rel="noopener">IntermediateDataSet</a>）组成的数据流的表示。每个 算子都具有属性，例如并行性和它执行的代码。此外，JobGraph还有一组附加库，这些库是执行算子代码所必需的。</p>
+<p>JobManager将JobGraph转换为<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/" target="_blank" rel="noopener">ExecutionGraph</a>。ExecutionGraph是JobGraph的并行版本：对于每个JobVertex，它包含每个并行子任务的<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionVertex.java" target="_blank" rel="noopener">ExecutionVertex</a>。并行度为100的 算子将具有一个JobVertex和100个ExecutionVertices。ExecutionVertex跟踪特定子任务的执行状态。来自一个JobVertex所有ExecutionVertices都保存在 <a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/ExecutionJobVertex.java" target="_blank" rel="noopener">ExecutionJobVertex中</a>，它跟踪整个算子的状态。除了顶点之外，ExecutionGraph还包含<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/IntermediateResult.java" target="_blank" rel="noopener">IntermediateResult</a>和<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/IntermediateResultPartition.java" target="_blank" rel="noopener">IntermediateResultPartition</a>。前者跟踪<em>IntermediateDataSet</em>的状态，后者是每个分区的状态。</p>
+<p><img src="/img/flink/job_and_execution_graph.svg" alt="JobGraph和ExecutionGraph"></p>
+<p>每个ExecutionGraph都有一个与之关联的作业状态。此作业状态指示作业执行的当前状态。</p>
+<p>Flink作业首先处于<em>创建</em>状态，然后切换到<em>运行，</em>并在完成所有工作后切换到已<em>完成</em>。如果出现故障，作业将首先切换为取消所有正在运行的任务的<em>失败</em>。如果所有作业顶点都已达到最终状态且作业无法重新启动，则作业将转换为<em>失败</em>。如果可以重新启动作业，则它将进入<em>重新启动</em>状态。作业完全重新启动后，将达到<em>创建</em>状态。</p>
+<p>如果用户取消作业，它将进入<em>取消</em>状态。这还需要取消所有当前正在运行的任务。一旦所有正在运行的任务都达到最终状态，作业将转换为<em>已取消</em>的状态。</p>
+<p>与<em>完成</em>，<em>取消</em>和<em>失败</em>的状态不同，它表示全局终端状态，因此触发清理作业，<em>暂停</em>状态仅在本地终端。本地终端意味着作业的执行已在相应的JobManager上终止，但Flink集群的另一个JobManager可以从持久性HA存储中检索作业并重新启动它。因此，到达<em>暂停</em>状态的作业将不会被完全清除。</p>
+<p><img src="/img/flink/job_status.svg" alt="Flink工作的状态和转型"></p>
+<p>在执行ExecutionGraph期间，每个并行任务都经历多个阶段，从<em>创建</em>到<em>完成</em>或<em>失败</em>。下图说明了它们之间的状态和可能的转换。可以多次执行任务（例如，在故障恢复过程中）。因此，在Execution中跟踪<a href="https://github.com/apache/flink/blob/master//flink-runtime/src/main/java/org/apache/flink/runtime/executiongraph/Execution.java" target="_blank" rel="noopener">ExecutionVertex执行</a>。每个ExecutionVertex都有一个当前的Execution和先前的Executions。</p>
+<p><img src="/img/flink/state_machine.svg" alt></p>
+<h1 id="四、任务生命周期"><a href="#四、任务生命周期" class="headerlink" title="四、任务生命周期"></a>四、任务生命周期</h1><p>Flink中的任务是执行的基本单位。它是执行 算子的每个并行实例的位置。例如，并行度为<em>5</em>的 算子将使每个实例由单独的任务执行。</p>
+<p>它<code>StreamTask</code>是Flink流处理中所有不同任务子类型的基础。本文档<code>StreamTask</code>介绍了生命周期中的不同阶段，并描述了代表这些阶段的主要方法。</p>
+<h2 id="简而言之，算子生命周期"><a href="#简而言之，算子生命周期" class="headerlink" title="简而言之，算子生命周期"></a>简而言之，算子生命周期</h2><p>因为任务是执行 算子的并行实例的实体，所以它的生命周期与 算子的生命周期紧密集成。因此，我们将简要提及代表算子生命周期的基本方法，然后再深入了解算子的生命周期<code>StreamTask</code>。下面按照调用每个方法的顺序列出了该列表。假设 算子可以具有用户定义的函数（<em>UDF</em>），则在每个 算子方法下面，我们还会在它调用的UDF的生命周期中呈现（缩进）方法。如果 算子扩展了这些方法，则这些方法可用<code>AbstractUdfStreamOperator</code>，这是执行UDF的所有 算子的基本类。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// initialization phase</span></span><br><span class="line">OPERATOR::setup</span><br><span class="line">    UDF::setRuntimeContext</span><br><span class="line">OPERATOR::initializeState</span><br><span class="line">OPERATOR::open</span><br><span class="line">    UDF::open</span><br><span class="line"></span><br><span class="line"><span class="comment">// processing phase (called on every element/watermark)</span></span><br><span class="line">OPERATOR::processElement</span><br><span class="line">    UDF::run</span><br><span class="line">OPERATOR::processWatermark</span><br><span class="line"></span><br><span class="line"><span class="comment">// checkpointing phase (called asynchronously on every checkpoint)</span></span><br><span class="line">OPERATOR::snapshotState</span><br><span class="line">        </span><br><span class="line"><span class="comment">// termination phase</span></span><br><span class="line">OPERATOR::close</span><br><span class="line">    UDF::close</span><br><span class="line">OPERATOR::dispose</span><br></pre></td></tr></table></figure>
+<p>简而言之，<code>setup()</code>调用它来初始化一些特定于算子的机制，例如它<code>RuntimeContext</code>及其度量集合数据结构。在此之后，<code>initializeState()</code>为算子提供其初始状态，并且该 <code>open()</code>方法执行任何特定于算子的初始化，例如在该情况下打开用户定义的函数<code>AbstractUdfStreamOperator</code>。</p>
+<p><strong>注意</strong>的<code>initializeState()</code>同时包含它的初始执行过程中初始化 算子操作者的状态的逻辑（<em>例如</em>寄存器任何键入的状态），并且还从在发生故障后的检查点检索其状态的逻辑。有关此内容的更多信息，请参见本页的其余部</p>
+<p>现在一切都已设置，算子已准备好处理传入的数据。传入数据元可以是以下之一：输入数据元，水印和检查点障碍。它们中的每一个都有一个特殊的数据元来处理它。数据元由<code>processElement()</code>方法处理，水印由<code>processWatermark()</code>和检查点障碍触发一个检查点，该检查点调用（异步）<code>snapshotState()</code>方法，我们在下面描述。对于每个传入数据元，根据其类型调用上述方法之一。请注意，<code>processElement()</code>它也是调用UDF逻辑的位置，<em>例如</em><code>map()</code>您的方法<code>MapFunction</code>。</p>
+<p>最后，在算子正常，无故障终止的情况下（<em>例如，</em>如果流是有限的并且到达其结束），<code>close()</code>则调用该方法以执行算子逻辑所需的任何最终副本记录 算子操作（<em>例如，</em> 关闭任何连接）或者在算子执行期间打开的I / O流），<code>dispose()</code>之后调用它以释放算子持有的任何资源（<em>例如</em>算子数据所持有的本机内存）。</p>
+<p>在由于故障或由于手动取消而终止的情况下，执行直接跳转到<code>dispose()</code> 并且跳过算子在故障发生时所处的阶段与之间的任何中间阶段<code>dispose()</code>。</p>
+<p><strong>检查点：</strong><code>snapshotState()</code>只要收到检查点障碍，就会调用算子的方法与上述其他方法异步。检查点在处理阶段执行，<em>即</em>在算子打开之后和关闭之前执行。此方法的职责是将算子的当前状态存储到指定的状态后台，当作业在失败后恢复执行时将从该后台检索该状态。</p>
+<h2 id="任务生命周期"><a href="#任务生命周期" class="headerlink" title="任务生命周期"></a>任务生命周期</h2><p>在简要介绍了算子的主要阶段之后，本节将更详细地描述任务如何在群集上执行期间调用相应的方法。这里描述的阶段的顺序主要包括在该类的<code>invoke()</code>方法中<code>StreamTask</code>。本文档的其余部分分为两个小节，一个描述在任务的常规无故障执行期间的阶段，以及（更短的）一个描述在任务被取消时遵循的不同序列，手动或由于某些其他原因，<em>例如</em>执行期间抛出的异常。</p>
+<h3 id="正常执行"><a href="#正常执行" class="headerlink" title="正常执行"></a>正常执行</h3><p>执行任务直到完成而不被中断的步骤如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">TASK::setInitialState</span><br><span class="line">TASK::invoke</span><br><span class="line"> <span class="keyword">create</span> basic utils (config, etc) <span class="keyword">and</span> <span class="keyword">load</span> the <span class="keyword">chain</span> <span class="keyword">of</span> operators</span><br><span class="line"> setup-operators</span><br><span class="line"> task-specific-init</span><br><span class="line"> initialize-<span class="keyword">operator</span>-states</span><br><span class="line">    <span class="keyword">open</span>-operators</span><br><span class="line"> run</span><br><span class="line"> <span class="keyword">close</span>-operators</span><br><span class="line"> dispose-operators</span><br><span class="line"> task-specific-<span class="keyword">cleanup</span></span><br><span class="line"> common-<span class="keyword">cleanup</span></span><br></pre></td></tr></table></figure>
+<p>如上所示，在恢复任务配置并初始化一些重要的运行时参数之后，该任务的第一步是检索其初始的任务范围状态。这是在<code>setInitialState()</code>，这在两种情况下尤其重要：</p>
+<ol>
+<li>当任务从故障中恢复并从上一个成功检查点重新启动时</li>
+<li>从保存点恢复时。</li>
+</ol>
+<p>如果是第一次执行任务，则初始任务状态为空。</p>
+<p>恢复任何初始状态后，任务进入其<code>invoke()</code>方法。在那里，它首先通过调用<code>setup()</code>它们中的每一个的方法来初始化参与本地计算的 算子，然后通过调用本地<code>init()</code>方法来执行其任务特定的初始化。通过特定的任务，我们的意思是根据任务（类型<code>SourceTask</code>，<code>OneInputStreamTask</code>或<code>TwoInputStreamTask</code>等），这个步骤可能会有所不同，但在任何情况下，这里是必要的任务范围内获取资源。作为示例，<code>OneInputStreamTask</code>表示期望具有单个输入流的任务，将连接初始化为与本地任务相关的输入流的不同分区的位置。</p>
+<p>获得必要的资源后，不同的算子和用户定义的函数就可以从上面检索的任务范围状态获取其各自的状态。这是在<code>initializeState()</code>方法中完成的，该方法调用<code>initializeState()</code>每个单独的 算子。每个有状态 算子都应该覆盖此方法，并且应该包含状态初始化逻辑，这两者都是第一次执行作业，也适用于任务从故障中恢复或使用保存点时的情况。</p>
+<p>现在任务中的所有算子都已初始化，<code>open()</code>每个单独的算子的<code>openAllOperators()</code>方法都由该方法调用<code>StreamTask</code>。此方法执行所有 算子操作初始化，例如使用计时器服务注册任何检索到的计时器。单个任务可能正在执行多个 算子，其中一个 算子消耗其前任的输出。在这种情况下，<code>open()</code>从最后一个 算子（<em>即</em>其输出也是任务本身的输出的 算子）调用该方法到第一个 算子。这样做是为了当第一个算子开始处理任务的输入时，所有下游算子都准备好接收其输出。</p>
+<p><strong>注意</strong>任务中的连续算子从最后一个到第一个打开。</p>
+<p>现在任务可以恢复执行，算子可以开始处理新的输入数据。这<code>run()</code> 是调用特定于任务的方法的位置。此方法将一直运行，直到没有更多输入数据（有限流），或任务被取消（手动或不手动）。这是 调用 算子特定<code>processElement()</code>和<code>processWatermark()</code>方法的位置。</p>
+<p>在运行直到完成的情况下，<em>即</em>没有更多的输入数据要处理，在退出该<code>run()</code> 方法之后，任务进入其关闭过程。最初，定时器服务停止注册任何新的定时器（<em>例如，</em>从正在执行的触发定时器），清除所有尚未启动的定时器，并等待当前正在执行的定时器的完成。然后<code>closeAllOperators()</code>尝试通过调用<code>close()</code>每个 算子的方法来优雅地关闭计算中涉及的运算符。然后，刷新任何缓冲的输出数据，以便下游任务可以处理它们，最后任务尝试通过调用它来清除算子持有的所有资源。 <code>dispose()</code>每个人的方法。打开不同的算子时，我们提到订单是从最后一个到第一个。结束以相反的方式发生，从头到尾。</p>
+<p><strong>注意</strong>任务中的连续算子从第一个到最后一个关闭。</p>
+<p>最后，当所有算子都已关闭并释放所有资源时，任务会关闭其计时器服务，执行特定于任务的清理，<em>例如</em>清除其所有内部缓冲区，然后执行其通用任务清理，其中包括关闭所有 算子操作输出通道和清理任何输出缓冲区。</p>
+<p><strong>检查点：</strong>以前我们看到过，在<code>initializeState()</code>从故障中恢复的过程中，任务及其所有算子和函数检索在故障之前的最后一个成功检查点期间持久保存到稳定存储的状态。Flink中的检查点是根据用户指定的间隔定期执行的，并且由与主任务线程不同的线程执行。这就是为什么它们不包含在任务生命周期的主要阶段中。简而言之，调用的特殊数据元<code>CheckpointBarriers</code>由输入数据流中的作业的源任务定期注入，并随实际数据从源传递到接收器。源任务在运行模式后注入这些障碍，并假设为<code>CheckpointCoordinator</code>也在运行。每当任务接收到这样的障碍时，它就会调度由检查点线程执行的任务，该线程调用 <code>snapshotState()</code>任务中的 算子。在执行检查点时，任务仍然可以接收输入数据，但是数据被缓冲并且仅在检查点成功完成后处理并向下游发射。</p>
+<h3 id="执行中断"><a href="#执行中断" class="headerlink" title="执行中断"></a>执行中断</h3><p>在前面的部分中，我们描述了一直运行到完成的任务的生命周期。如果任务在任何时候被取消，则正常执行被中断，从那一点开始执行的唯一 算子操作是定时器服务关闭，特定于任务的清理，算子的处理以及一般任务清理，如如上所述。</p>
+<h1 id="五、文件系统"><a href="#五、文件系统" class="headerlink" title="五、文件系统"></a>五、文件系统</h1><p>Flink通过<code>org.apache.flink.core.fs.FileSystem</code>类有自己的文件系统抽象。这种抽象提供了一组通用的 算子操作，并且在各种类型的文件系统实现中提供了最小的保证。</p>
+<p>在<code>FileSystem</code>可用 算子操作的设置是非常有限的，为了支持多种文件系统。例如，不支持附加或更改现有文件。</p>
+<p>文件系统是由识别<em>的文件系统格式</em>，如<code>file://</code>，<code>hdfs://</code>等。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>Flink使用以下文件系统方案直接实现文件系统：</p>
+<ul>
+<li><code>file</code>，表示机器的本地文件系统。</li>
+</ul>
+<p>其他文件系统类型由桥接到<a href="https://hadoop.apache.org/" target="_blank" rel="noopener">Apache Hadoop</a>支持的文件系统套件的实现访问 。以下是不完整的示例列表：</p>
+<ul>
+<li><code>hdfs</code>：Hadoop分布式文件系统</li>
+<li><code>s3</code>，<code>s3n</code>和<code>s3a</code>：亚马逊S3文件系统</li>
+<li><code>gcs</code>：Google云端存储</li>
+<li><code>maprfs</code>：MapR分布式文件系统</li>
+<li>…</li>
+</ul>
+<p>如果在类路径中找到Hadoop文件系统类并找到有效的Hadoop配置，Flink将透明地加载Hadoop的文件系统。默认情况下，它在类路径中查找Hadoop配置。或者，可以通过配置条目指定自定义位置<code>fs.hdfs.hadoopconf</code>。</p>
+<h2 id="坚持保证"><a href="#坚持保证" class="headerlink" title="坚持保证"></a>坚持保证</h2><p>这些<code>FileSystem</code>及其<code>FsDataOutputStream</code>实例用于持久存储数据，既用于应用程序的结果，也用于容错和恢复。因此，必须明确定义这些流的持久性语义。</p>
+<h2 id="持久性保证的定义"><a href="#持久性保证的定义" class="headerlink" title="持久性保证的定义"></a>持久性保证的定义</h2><p>如果满足两个要求，则写入输出流的数据被认为是持久的：</p>
+<ol>
+<li><strong>可见性要求：</strong>必须保证能够访问该文件的所有其他进程，计算机，虚拟机，容器等在给定绝对文件路径时始终看到数据。此要求类似于 POSIX定义的<em>close-to-open</em>语义，但仅限于文件本身（通过其绝对路径）。</li>
+<li><strong>持久性要求：</strong>必须满足文件系统的特定持久性/持久性要求。这些特定于特定文件系统。例如，{@link LocalFileSystem}不为硬件和 算子操作系统的崩溃提供任何持久性保证，而复制的分布式文件系统（如HDFS）通常在出现<em>n个</em>并发节点故障时保证持久性，其中<em>n</em>是复制因子。</li>
+</ol>
+<p>不需要更新文件的父目录（以便在列出目录内容时显示文件），以使文件流中的数据被认为是持久的。对于目录内容的更新最终只是一致的文件系统来说，这种放松很重要。</p>
+<p>在<code>FSDataOutputStream</code>必须保证数据的持久性，一旦调用写入的字节 <code>FSDataOutputStream.close()</code>回报。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><ul>
+<li><p>对于<strong>容错的分布式文件系统</strong>，一旦数据被<strong>文件系统</strong>接收和确认，数据就被认为是持久的，通常是通过复制到法定数量的机器（<em>持久性要求</em>）。此外，绝对文件路径必须对可能访问该文件的所有其他计算机可见（<em>可见性要求</em>）。</p>
+<p>数据是否已达到存储节点上的非易失性存储取决于特定文件系统的特定保证。</p>
+<p>对文件的父目录的元数据更新不需要达到一致状态。允许某些机器在列出父目录的内容时看到该文件而其他机器没有，只要在所有节点上都可以通过其绝对路径访问该文件。</p>
+</li>
+<li><p>一个<strong>本地文件系统</strong>必须支持POSIX <em>贴近开放</em>语义。由于本地文件系统没有任何容错保证，因此不存在进一步的要求。</p>
+<p>以上特别暗示，当从本地文件系统的角度考虑持久性时，数据可能仍然在OS高速缓存中。导致 算子操作系统缓存丢失数据的崩溃对本地计算机来说是致命的，并且不受Flink定义的本地文件系统保证的影响。</p>
+<p>这意味着仅保证可以从本地计算机的故障中恢复仅写入本地文件系统的计算结果，检查点和保存点，从而使本地文件系统不适合生产设置。</p>
+</li>
+</ul>
+<h2 id="更新文件内容"><a href="#更新文件内容" class="headerlink" title="更新文件内容"></a>更新文件内容</h2><p>许多文件系统根本不支持覆盖现有文件的内容，或者在这种情况下不支持更新内容的一致可见性。因此，Flink的FileSystem不支持附加到现有文件，也不支持在输出流中搜索，以便可以在同一文件中更改以前写入的数据。</p>
+<h2 id="覆盖文件"><a href="#覆盖文件" class="headerlink" title="覆盖文件"></a>覆盖文件</h2><p>通常可以覆盖文件。通过删除文件并创建新文件来覆盖文件。但是，某些文件系统无法使有权访问该文件的所有各方同步显示该更改。例如，<a href="https://aws.amazon.com/documentation/s3/" target="_blank" rel="noopener">Amazon S3</a>仅保证文件替换可见性的<em>最终一致性</em>：某些计算机可能会看到旧文件，某些计算机可能会看到新文件。</p>
+<p>为了避免这些一致性问题，Flink中的故障/恢复机制的实现严格避免多次写入同一文件路径。</p>
+<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><p>实现<code>FileSystem</code>必须是线程安全的：相同的实例<code>FileSystem</code>经常在Flink中的多个线程之间共享，并且必须能够同时创建输入/输出流和列表文件元数据。</p>
+<p>这些<code>FSDataOutputStream</code>和<code>FSDataOutputStream</code>实现严格地说<strong>不是线程安全的</strong>。在读取或写入 算子操作之间的线程之间也不应传递流的实例，因为不能保证跨线程的 算子操作的可见性（许多 算子操作不会创建内存防护）。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100466.html" class="pre-post btn btn-default" title='Flink本地安装'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink本地安装</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100464.html" class="next-post btn btn-default" title='Flink概念'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink概念</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、组件堆栈"><span class="toc-text">一、组件堆栈</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、数据流容错"><span class="toc-text">二、数据流容错</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检查点"><span class="toc-text">检查点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#障碍"><span class="toc-text">障碍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#状态"><span class="toc-text">状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#完全一次与至少一次"><span class="toc-text">完全一次与至少一次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异步状态SNAPSHOT"><span class="toc-text">异步状态SNAPSHOT</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#复苏"><span class="toc-text">复苏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#算子SNAPSHOT实施"><span class="toc-text">算子SNAPSHOT实施</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三、工作和调度"><span class="toc-text">三、工作和调度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#调度"><span class="toc-text">调度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JobManager数据结构"><span class="toc-text">JobManager数据结构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四、任务生命周期"><span class="toc-text">四、任务生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#简而言之，算子生命周期"><span class="toc-text">简而言之，算子生命周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#任务生命周期"><span class="toc-text">任务生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#正常执行"><span class="toc-text">正常执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行中断"><span class="toc-text">执行中断</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#五、文件系统"><span class="toc-text">五、文件系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-text">实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#坚持保证"><span class="toc-text">坚持保证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#持久性保证的定义"><span class="toc-text">持久性保证的定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#例子"><span class="toc-text">例子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更新文件内容"><span class="toc-text">更新文件内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#覆盖文件"><span class="toc-text">覆盖文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程安全"><span class="toc-text">线程安全</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

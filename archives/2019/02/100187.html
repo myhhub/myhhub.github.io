@@ -1,0 +1,398 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="web,javascript">
+
+
+    <meta name="description" content="一、数据类型数据分为基本数据类型(String, Number, Boolean, Null, Undefined，Symbol)和对象数据类型。
+
+基本数据类型的特点：直接存储在栈(stack...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>全面阐析Javascript浅拷贝与深拷贝 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="全面阐析Javascript浅拷贝与深拷贝">
+            
+	            全面阐析Javascript浅拷贝与深拷贝
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/front/">前端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/javascript/">javascript</a> <a class="tag-link" href="/tags/web/">web</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/02/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1514</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、数据类型"><a href="#一、数据类型" class="headerlink" title="一、数据类型"></a>一、数据类型</h2><p>数据分为基本数据类型(String, Number, Boolean, Null, Undefined，Symbol)和对象数据类型。</p>
+<ul>
+<li>基本数据类型的特点：直接存储在栈(stack)中的数据</li>
+<li>引用数据类型的特点：<strong>存储的是该对象在栈中引用，真实的数据存放在堆内存里</strong></li>
+</ul>
+<p>引用数据类型在栈中存储了指针，该指针指向堆中该实体的起始地址。当解释器寻找引用值时，会首先检索其在栈中的地址，取得地址后从堆中获得实体。<br><img src="/img/fronts/6e6726733d3131363530.png" alt="img"></p>
+<h2 id="二、浅拷贝与深拷贝"><a href="#二、浅拷贝与深拷贝" class="headerlink" title="二、浅拷贝与深拷贝"></a>二、浅拷贝与深拷贝</h2><p><strong>深拷贝和浅拷贝是只针对Object和Array这样的引用数据类型的</strong>。</p>
+<p>深拷贝和浅拷贝的示意图大致如下：<br><img src="/img/fronts/26733d3439393539.png" alt="img"></p>
+<p><strong>浅拷贝只复制指向某个对象的指针，而不复制对象本身，新旧对象还是共享同一块内存。但深拷贝会另外创造一个一模一样的对象，新对象跟原对象不共享内存，修改新对象不会改到原对象。</strong></p>
+<h2 id="三、赋值和浅拷贝的区别"><a href="#三、赋值和浅拷贝的区别" class="headerlink" title="三、赋值和浅拷贝的区别"></a>三、赋值和浅拷贝的区别</h2><ul>
+<li>当我们把一个对象赋值给一个新的变量时，<strong>赋的其实是该对象的在栈中的地址，而不是堆中的数据</strong>。也就是两个对象指向的是同一个存储空间，无论哪个对象发生改变，其实都是改变的存储空间的内容，因此，两个对象是联动的。</li>
+<li>浅拷贝是按位拷贝对象，<strong>它会创建一个新对象</strong>，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本类型，拷贝的就是基本类型的值；如果属性是内存地址（引用类型），拷贝的就是内存地址 ，因此如果其中一个对象改变了这个地址，就会影响到另一个对象。即默认拷贝构造函数只是对对象进行浅拷贝复制(逐个成员依次拷贝)，即只复制对象空间而不复制资源。</li>
+</ul>
+<p>我们先来看两个例子，对比赋值与浅拷贝会对原对象带来哪些改变？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对象赋值</span></span><br><span class="line"> <span class="keyword">var</span> obj1 = &#123;</span><br><span class="line">    <span class="string">'name'</span> : <span class="string">'zhangsan'</span>,</span><br><span class="line">    <span class="string">'age'</span> :  <span class="string">'18'</span>,</span><br><span class="line">    <span class="string">'language'</span> : [<span class="number">1</span>,[<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>]],</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj2 = obj1;</span><br><span class="line">obj2.name = <span class="string">"lisi"</span>;</span><br><span class="line">obj2.language[<span class="number">1</span>] = [<span class="string">"二"</span>,<span class="string">"三"</span>];</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'obj1'</span>,obj1)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'obj2'</span>,obj2)</span><br></pre></td></tr></table></figure>
+<p><img src="/img/fronts/06e6726733d3330303337.png" alt="img"></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 浅拷贝</span></span><br><span class="line"> <span class="keyword">var</span> obj1 = &#123;</span><br><span class="line">    <span class="string">'name'</span> : <span class="string">'zhangsan'</span>,</span><br><span class="line">    <span class="string">'age'</span> :  <span class="string">'18'</span>,</span><br><span class="line">    <span class="string">'language'</span> : [<span class="number">1</span>,[<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>]],</span><br><span class="line">&#125;;</span><br><span class="line"> <span class="keyword">var</span> obj3 = shallowCopy(obj1);</span><br><span class="line"> obj3.name = <span class="string">"lisi"</span>;</span><br><span class="line"> obj3.language[<span class="number">1</span>] = [<span class="string">"二"</span>,<span class="string">"三"</span>];</span><br><span class="line"> <span class="function"><span class="keyword">function</span> <span class="title">shallowCopy</span>(<span class="params">src</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> dst = &#123;&#125;;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> prop <span class="keyword">in</span> src) &#123;</span><br><span class="line">        <span class="keyword">if</span> (src.hasOwnProperty(prop)) &#123;</span><br><span class="line">            dst[prop] = src[prop];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> dst;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'obj1'</span>,obj1)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'obj3'</span>,obj3)</span><br></pre></td></tr></table></figure>
+<p><img src="/img/fronts/e6726733d3331323930.png" alt="img"></p>
+<p>上面例子中，obj1是原始数据，obj2是赋值操作得到，而obj3浅拷贝得到。我们可以很清晰看到对原始数据的影响，具体请看下表：</p>
+<p><img src="/img/fronts/06e6726733d3134393030.png" alt="img"></p>
+<h2 id="四、浅拷贝的实现方式"><a href="#四、浅拷贝的实现方式" class="headerlink" title="四、浅拷贝的实现方式"></a>四、浅拷贝的实现方式</h2><h3 id="1-Object-assign"><a href="#1-Object-assign" class="headerlink" title="1.Object.assign()"></a>1.Object.assign()</h3><p>Object.assign() 方法可以把任意多个的源对象自身的可枚举属性拷贝给目标对象，然后返回目标对象。但是 Object.assign()进行的是浅拷贝，拷贝的是对象的属性的引用，而不是对象本身。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123; <span class="attr">a</span>: &#123;<span class="attr">a</span>: <span class="string">"kobe"</span>, <span class="attr">b</span>: <span class="number">39</span>&#125; &#125;;</span><br><span class="line"><span class="keyword">var</span> initalObj = <span class="built_in">Object</span>.assign(&#123;&#125;, obj);</span><br><span class="line">initalObj.a.a = <span class="string">"wade"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(obj.a.a); <span class="comment">//wade</span></span><br></pre></td></tr></table></figure>
+<p>注意：<strong>当object只有一层的时候，是深拷贝</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">    username: <span class="string">'kobe'</span></span><br><span class="line">    &#125;;</span><br><span class="line"><span class="keyword">let</span> obj2 = <span class="built_in">Object</span>.assign(&#123;&#125;,obj);</span><br><span class="line">obj2.username = <span class="string">'wade'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(obj);<span class="comment">//&#123;username: "kobe"&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-Array-prototype-concat"><a href="#2-Array-prototype-concat" class="headerlink" title="2.Array.prototype.concat()"></a>2.Array.prototype.concat()</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">3</span>, &#123;</span><br><span class="line">    username: <span class="string">'kobe'</span></span><br><span class="line">    &#125;];</span><br><span class="line"><span class="keyword">let</span> arr2=arr.concat();    </span><br><span class="line">arr2[<span class="number">2</span>].username = <span class="string">'wade'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(arr);</span><br></pre></td></tr></table></figure>
+<p>修改新对象会改到原对象:<br><img src="/img/fronts/663d706e6726733d36313433.png" alt="img"></p>
+<h3 id="3-Array-prototype-slice"><a href="#3-Array-prototype-slice" class="headerlink" title="3.Array.prototype.slice()"></a>3.Array.prototype.slice()</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">3</span>, &#123;</span><br><span class="line">    username: <span class="string">' kobe'</span></span><br><span class="line">    &#125;];</span><br><span class="line"><span class="keyword">let</span> arr3 = arr.slice();</span><br><span class="line">arr3[<span class="number">2</span>].username = <span class="string">'wade'</span></span><br><span class="line"><span class="built_in">console</span>.log(arr);</span><br></pre></td></tr></table></figure>
+<p>同样修改新对象会改到原对象:</p>
+<p><img src="/img/fronts/706e6726733d36303637.png" alt="img"></p>
+<p><strong>关于Array的slice和concat方法的补充说明</strong>：Array的slice和concat方法不修改原数组，只会返回一个浅复制了原数组中的元素的一个新数组。</p>
+<p>原数组的元素会按照下述规则拷贝：</p>
+<ul>
+<li>如果该元素是个对象引用(不是实际的对象)，slice 会拷贝这个对象引用到新的数组里。两个对象引用都引用了同一个对象。如果被引用的对象发生改变，则新的和原来的数组中的这个元素也会发生改变。</li>
+<li>对于字符串、数字及布尔值来说（不是 String、Number 或者 Boolean 对象），slice 会拷贝这些值到新的数组里。在别的数组里修改这些字符串或数字或是布尔值，将不会影响另一个数组。</li>
+</ul>
+<p>可能这段话晦涩难懂，我们举个例子，将上面的例子小作修改：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">3</span>, &#123;</span><br><span class="line">    username: <span class="string">' kobe'</span></span><br><span class="line">    &#125;];</span><br><span class="line"><span class="keyword">let</span> arr3 = arr.slice();</span><br><span class="line">arr3[<span class="number">1</span>] = <span class="number">2</span></span><br><span class="line"><span class="built_in">console</span>.log(arr,arr3);</span><br></pre></td></tr></table></figure>
+<p><img src="/img/fronts/06e6726733d3131313634.png" alt="img"></p>
+<h2 id="五、深拷贝的实现方式"><a href="#五、深拷贝的实现方式" class="headerlink" title="五、深拷贝的实现方式"></a>五、深拷贝的实现方式</h2><h3 id="1-JSON-parse-JSON-stringify"><a href="#1-JSON-parse-JSON-stringify" class="headerlink" title="1.JSON.parse(JSON.stringify())"></a>1.JSON.parse(JSON.stringify())</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">3</span>, &#123;</span><br><span class="line">    username: <span class="string">' kobe'</span></span><br><span class="line">&#125;];</span><br><span class="line"><span class="keyword">let</span> arr4 = <span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(arr));</span><br><span class="line">arr4[<span class="number">2</span>].username = <span class="string">'duncan'</span>; </span><br><span class="line"><span class="built_in">console</span>.log(arr, arr4)</span><br></pre></td></tr></table></figure>
+<p><img src="/img/fronts/26663d706e6726733d3130343932.png" alt="img"><br>原理： 用JSON.stringify将对象转成JSON字符串，再用JSON.parse()把字符串解析成对象，一去一来，新的对象产生了，而且对象会开辟新的栈，实现深拷贝。</p>
+<p><strong>这种方法虽然可以实现数组或对象深拷贝,但不能处理函数</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">3</span>, &#123;</span><br><span class="line">    username: <span class="string">' kobe'</span></span><br><span class="line">&#125;,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;];</span><br><span class="line"><span class="keyword">let</span> arr4 = <span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(arr));</span><br><span class="line">arr4[<span class="number">2</span>].username = <span class="string">'duncan'</span>; </span><br><span class="line"><span class="built_in">console</span>.log(arr, arr4)</span><br></pre></td></tr></table></figure>
+<p><img src="/img/fronts/d706e6726733d3132313535.png" alt="img"></p>
+<p>这是因为JSON.stringify() 方法是将一个JavaScript值(对象或者数组)转换为一个 JSON字符串，不能接受函数</p>
+<h3 id="2-手写递归方法"><a href="#2-手写递归方法" class="headerlink" title="2.手写递归方法"></a>2.手写递归方法</h3><p>递归方法实现深度克隆原理：<strong>遍历对象、数组直到里边都是基本数据类型，然后再去复制，就是深度拷贝</strong></p>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义检测数据类型的功能函数</span></span><br><span class="line"><span class="keyword">function</span> checkedType(target) &#123;</span><br><span class="line">  <span class="keyword">return</span> Object.prototype.toString.call(target).slice(<span class="number">8</span>, -<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//实现深度克隆---对象/数组</span></span><br><span class="line"><span class="keyword">function</span> clone(target) &#123;</span><br><span class="line">  <span class="comment">//判断拷贝的数据类型</span></span><br><span class="line">  <span class="comment">//初始化变量result 成为最终克隆的数据</span></span><br><span class="line">  <span class="keyword">let</span> result,</span><br><span class="line">    targetType = checkedType(target)</span><br><span class="line">  <span class="keyword">if</span> (targetType === <span class="string">'Object'</span>) &#123;</span><br><span class="line">    result = &#123;&#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (targetType === <span class="string">'Array'</span>) &#123;</span><br><span class="line">    result = []</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> target</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//遍历目标数据</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i <span class="keyword">in</span> target) &#123;</span><br><span class="line">    <span class="comment">//获取遍历数据结构的每一项值。</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">value</span> = target[i]</span><br><span class="line">    <span class="comment">//判断目标结构里的每一值是否存在对象/数组</span></span><br><span class="line">    <span class="keyword">if</span> (checkedType(<span class="keyword">value</span>) === <span class="string">'Object'</span> || checkedType(<span class="keyword">value</span>) === <span class="string">'Array'</span>) &#123;</span><br><span class="line">      <span class="comment">//对象/数组里嵌套了对象/数组</span></span><br><span class="line">      <span class="comment">//继续遍历获取到value值</span></span><br><span class="line">      result[i] = clone(<span class="keyword">value</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">//获取到value值是基本的数据类型或者是函数。</span></span><br><span class="line">      result[i] = <span class="keyword">value</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-函数库lodash"><a href="#3-函数库lodash" class="headerlink" title="3.函数库lodash"></a>3.函数库lodash</h3><p>该函数库也有提供_.cloneDeep用来做 Deep Copy</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="literal">_</span> = require(<span class="string">'lodash'</span>);</span><br><span class="line"><span class="keyword">var</span> obj1 = &#123;</span><br><span class="line">    a: <span class="type">1</span>,</span><br><span class="line">    b: <span class="type"></span>&#123; f: <span class="type"></span>&#123; g: <span class="type">1 </span>&#125; &#125;,</span><br><span class="line">    c: <span class="type"></span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> obj2 = <span class="literal">_</span>.cloneDeep(obj1);</span><br><span class="line">console.log(obj1.b.f === obj2.b.f);</span><br><span class="line"><span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://www.haorooms.com/post/js_copy_sq" target="_blank" rel="noopener">什么是js深拷贝和浅拷贝及其实现方式</a></li>
+<li><a href="https://www.kancloud.cn/ljw789478944/interview/397319" target="_blank" rel="noopener">JavaScript浅拷贝和深拷贝</a></li>
+<li><a href="https://juejin.im/post/59ac1c4ef265da248e75892b" target="_blank" rel="noopener">js 深拷贝 vs 浅拷贝</a></li>
+<li><a href="https://segmentfault.com/a/1190000016672263" target="_blank" rel="noopener">深拷贝的终极探索（99%的人都不知道)</a></li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/02/100188.html" class="pre-post btn btn-default" title='全面阐析JavaScript运行机制'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">全面阐析JavaScript运行机制</span>
+        </a>
+    
+    
+        <a href="/archives/2019/02/100186.html" class="next-post btn btn-default" title='全面阐析Javascript数组常用遍历的方法'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">全面阐析Javascript数组常用遍历的方法</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、数据类型"><span class="toc-text">一、数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、浅拷贝与深拷贝"><span class="toc-text">二、浅拷贝与深拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、赋值和浅拷贝的区别"><span class="toc-text">三、赋值和浅拷贝的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、浅拷贝的实现方式"><span class="toc-text">四、浅拷贝的实现方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Object-assign"><span class="toc-text">1.Object.assign()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Array-prototype-concat"><span class="toc-text">2.Array.prototype.concat()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Array-prototype-slice"><span class="toc-text">3.Array.prototype.slice()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、深拷贝的实现方式"><span class="toc-text">五、深拷贝的实现方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-JSON-parse-JSON-stringify"><span class="toc-text">1.JSON.parse(JSON.stringify())</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-手写递归方法"><span class="toc-text">2.手写递归方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-函数库lodash"><span class="toc-text">3.函数库lodash</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章"><span class="toc-text">参考文章</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

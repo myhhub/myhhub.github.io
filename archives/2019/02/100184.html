@@ -1,0 +1,390 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="web,javascript">
+
+
+    <meta name="description" content="一、引子闭包（closure）是 Javascript 语言的一个难点，面试时常被问及，也是它的特色，很多高级应用都要依靠闭包实现。本文尽可能用简单易懂的话，讲清楚闭包的概念、形成条件及其常见的...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>全面阐析Javascript闭包 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="全面阐析Javascript闭包">
+            
+	            全面阐析Javascript闭包
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/front/">前端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/javascript/">javascript</a> <a class="tag-link" href="/tags/web/">web</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/02/10</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1517</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、引子"><a href="#一、引子" class="headerlink" title="一、引子"></a>一、引子</h2><p>闭包（closure）是 Javascript 语言的一个难点，面试时常被问及，也是它的特色，很多高级应用都要依靠闭包实现。本文尽可能用简单易懂的话，讲清楚闭包的概念、形成条件及其常见的面试题。</p>
+<p><img src="/img/fronts/6e6726733d3430363233.png" alt="img"></p>
+<p>我们先来看一个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> n = <span class="number">999</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="built_in">console</span>.log(n);</span><br><span class="line">&#125;</span><br><span class="line">f1() <span class="comment">// 999</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中，函数f1可以读取全局变量n。但是，函数外部无法读取函数内部声明的变量。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="keyword">var</span> n = <span class="number">999</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(n)</span><br><span class="line"><span class="comment">// Uncaught ReferenceError: n is not defined</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中，函数f1内部声明的变量n，函数外是无法读取的。</p>
+<p>如果有时需要得到函数内的局部变量。正常情况下，这是办不到的，只有通过变通方法才能实现。那就是在函数的内部，再定义一个函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="keyword">var</span> n = <span class="number">999</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(n); <span class="comment">// 999</span></span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，函数f2就在函数f1内部，这时f1内部的所有局部变量，对f2都是可见的。既然f2可以读取f1的局部变量，那么只要把f2作为返回值，我们不就可以在f1外部读取它的内部变量了吗！</p>
+<h2 id="二、闭包是什么"><a href="#二、闭包是什么" class="headerlink" title="二、闭包是什么"></a>二、闭包是什么</h2><p>我们可以对上面代码进行如下修改：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"><span class="keyword">var</span> a = <span class="number">999</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"> <span class="built_in">console</span>.log(a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> f2; <span class="comment">// f1返回了f2的引用</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> result = f1(); <span class="comment">// result就是f2函数了</span></span><br><span class="line">result();  <span class="comment">// 执行result，全局作用域下没有a的定义，</span></span><br><span class="line">      <span class="comment">//但是函数闭包，能够把定义函数的时候的作用域一起记住，输出999</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中，函数f1的返回值就是函数f2，由于f2可以读取f1的内部变量，所以就可以在外部获得f1的内部变量了。</p>
+<p>闭包就是函数f2，即能够读取其他函数内部变量的函数。由于在JavaScript语言中，只有函数内部的子函数才能读取内部变量，因此可以把闭包简单理解成“定义在一个函数内部的函数”。<strong>闭包最大的特点，就是它可以“记住”诞生的环境，比如f2记住了它诞生的环境f1，所以从f2可以得到f1的内部变量</strong>。在本质上，闭包就是将函数内部和函数外部连接起来的一座桥梁。</p>
+<h3 id="那到底什么是闭包呢？"><a href="#那到底什么是闭包呢？" class="headerlink" title="那到底什么是闭包呢？"></a>那到底什么是闭包呢？</h3><p><strong>当函数可以记住并访问所在的词法作用域，即使函数是在当前词法作用域之外执行，这就产生了闭包。</strong> —-《你不知道的Javascript上卷》</p>
+<p>我个人理解，<strong>闭包就是函数中的函数(其他语言不能函数再套函数)</strong>,里面的函数可以访问外面函数的变量，外面的变量的是这个内部函数的一部分。</p>
+<h3 id="闭包形成的条件"><a href="#闭包形成的条件" class="headerlink" title="闭包形成的条件"></a>闭包形成的条件</h3><ul>
+<li>函数嵌套</li>
+<li>内部函数引用外部函数的局部变量</li>
+</ul>
+<h2 id="三、闭包的特性"><a href="#三、闭包的特性" class="headerlink" title="三、闭包的特性"></a>三、闭包的特性</h2><p><strong>每个函数都是闭包，每个函数天生都能够记忆自己定义时所处的作用域环境</strong>。把一个函数从它定义的那个作用域，挪走，运行。这个函数居然能够记忆住定义时的那个作用域。<strong>不管函数走到哪里，定义时的作用域就带到了哪里</strong>。接下来我们用两个例子来说明这个问题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//例题1</span></span><br><span class="line"><span class="keyword">var</span> inner;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">outer</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"><span class="keyword">var</span> a=<span class="number">250</span>;</span><br><span class="line">inner=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">alert(a);<span class="comment">//这个函数虽然在外面执行，但能够记忆住定义时的那个作用域，a是250</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">outer();</span><br><span class="line"><span class="keyword">var</span> a=<span class="number">300</span>;</span><br><span class="line">inner();<span class="comment">//一个函数在执行的时候，找闭包里面的变量，不会理会当前作用域。</span></span><br><span class="line"><span class="comment">//例题2</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">outer</span>(<span class="params">x</span>)</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">inner</span>(<span class="params">y</span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x+y);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">return</span> inner;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> inn=outer(<span class="number">3</span>);<span class="comment">//数字3传入outer函数后，inner函数中x便会记住这个值</span></span><br><span class="line">inn(<span class="number">5</span>);<span class="comment">//当inner函数再传入5的时候，只会对y赋值，所以最后弹出8</span></span><br></pre></td></tr></table></figure>
+<h2 id="四、闭包的内存泄漏"><a href="#四、闭包的内存泄漏" class="headerlink" title="四、闭包的内存泄漏"></a>四、闭包的内存泄漏</h2><p>栈内存提供一个执行环境，即作用域，包括全局作用域和私有作用域,那他们什么时候释放内存的？</p>
+<ul>
+<li><strong>全局作用域—-只有当页面关闭的时候全局作用域才会销毁</strong></li>
+<li><strong>私有的作用域—-只有函数执行才会产生</strong></li>
+</ul>
+<p><strong>一般情况下，函数执行会形成一个新的私有的作用域，当私有作用域中的代码执行完成后，我们当前作用域都会主动的进行释放和销毁。但当遇到函数执行返回了一个引用数据类型的值，并且在函数的外面被一个其他的东西给接收了，这种情况下一般形成的私有作用域都不会销毁</strong>。</p>
+<p>如下面这种情况：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span><span class="params">()</span></span>&#123;</span><br><span class="line"><span class="keyword">var</span> num=<span class="number">100</span>;</span><br><span class="line"><span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> f=fn();<span class="comment">//fn执行形成的这个私有的作用域就不能再销毁了</span></span><br></pre></td></tr></table></figure>
+<p>也就是像上面这段代码，fn函数内部的私有作用域会被一直占用的，发生了内存泄漏。<strong>所谓内存泄漏指任何对象在您不再拥有或需要它之后仍然存在。闭包不能滥用，否则会导致内存泄露，影响网页的性能。闭包使用完了后，要立即释放资源，将引用变量指向null</strong>。</p>
+<p>接下来我们看下有关于内存泄漏的一道经典面试题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">function</span> <span class="title">outer</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"> <span class="keyword">var</span> num=<span class="number">0</span>;<span class="comment">//内部变量</span></span><br><span class="line"> <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">add</span>(<span class="params"></span>)</span>&#123;<span class="comment">//通过return返回add函数，就可以在outer函数外访问了</span></span><br><span class="line"> num++;<span class="comment">//内部函数有引用，作为add函数的一部分了</span></span><br><span class="line"> <span class="built_in">console</span>.log(num);</span><br><span class="line"> &#125;;</span><br><span class="line">&#125;</span><br><span class="line"> <span class="keyword">var</span> func1=outer();</span><br><span class="line"> func1();<span class="comment">//实际上是调用add函数， 输出1</span></span><br><span class="line"> func1();<span class="comment">//输出2 因为outer函数内部的私有作用域会一直被占用</span></span><br><span class="line"> <span class="keyword">var</span> func2=outer();</span><br><span class="line"> func2();<span class="comment">// 输出1  每次重新引用函数的时候，闭包是全新的。</span></span><br><span class="line"> func2();<span class="comment">// 输出2</span></span><br></pre></td></tr></table></figure>
+<h2 id="五、闭包的作用"><a href="#五、闭包的作用" class="headerlink" title="五、闭包的作用"></a>五、闭包的作用</h2><p>1.<strong>可以读取函数内部的变量</strong>。</p>
+<p>2.<strong>可以使变量的值长期保存在内存中，生命周期比较长</strong>。因此不能滥用闭包，否则会造成网页的性能问题</p>
+<p>3.<strong>可以用来实现JS模块</strong>。</p>
+<p><strong>JS模块:具有特定功能的js文件,将所有的数据和功能都封装在一个函数内部(私有的),只向外暴露一个包信n个方法的对象或函数,模块的使用者,只需要通过模块暴露的对象调用方法来实现对应的功能</strong>。</p>
+<p>具体请看下面的例子:</p>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//index.html文件</span></span><br><span class="line">&lt;script <span class="built_in">type</span>=<span class="string">"text/javascript"</span> src=<span class="string">"myModule.js"</span>&gt;&lt;/script&gt;</span><br><span class="line">&lt;script <span class="built_in">type</span>=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">  myModule2.doSomething()</span><br><span class="line">  myModule2.doOtherthing()</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"><span class="comment">//myModule.js文件</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> <span class="params">()</span> &#123;</span></span><br><span class="line">  var msg = <span class="string">'Beijing'</span><span class="comment">//私有数据</span></span><br><span class="line">  <span class="comment">//操作数据的函数</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">doSomething</span><span class="params">()</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'doSomething() '</span>+msg.toUpperCase())</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">doOtherthing</span> <span class="params">()</span> &#123;</span></span><br><span class="line">    console.<span class="built_in">log</span>(<span class="string">'doOtherthing() '</span>+msg.toLowerCase())</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//向外暴露对象(给外部使用的两个方法)</span></span><br><span class="line">  window.myModule2 = &#123;</span><br><span class="line">    doSomething: doSomething,</span><br><span class="line">    doOtherthing: doOtherthing</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p><img src="/img/fronts/6726733d3132323934.png" alt="img"></p>
+<h2 id="六、闭包的运用"><a href="#六、闭包的运用" class="headerlink" title="六、闭包的运用"></a>六、闭包的运用</h2><p>我们要实现这样的一个需求: 点击某个按钮, 提示”点击的是第n个按钮”,此处我们先不用事件代理:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.....</span><br><span class="line"><span class="tag">&lt;<span class="name">button</span>&gt;</span>测试1<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span>&gt;</span>测试2<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span>&gt;</span>测试3<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">   <span class="keyword">var</span> btns = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'button'</span>)</span></span><br><span class="line"><span class="actionscript">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; btns.length; i++) &#123;</span></span><br><span class="line"><span class="actionscript">      btns[i].onclick = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">'第'</span> + (i + <span class="number">1</span>) + <span class="string">'个'</span>)</span></span><br><span class="line"><span class="undefined">      &#125;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>万万没想到，点击任意一个按钮，后台都是弹出“第四个”,这是因为i是全局变量,执行到点击事件时，此时i的值为3。那该如何修改，最简单的是用let声明i</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (let <span class="built_in">i</span> = <span class="number">0</span>; <span class="built_in">i</span> &lt; btns.<span class="built_in">length</span>; <span class="built_in">i</span>++) &#123;</span><br><span class="line">     btns[<span class="built_in">i</span>].onclick = <span class="function"><span class="keyword">function</span> <span class="params">()</span> &#123;</span></span><br><span class="line">       console.<span class="built_in">log</span>(<span class="string">'第'</span> + (<span class="built_in">i</span> + <span class="number">1</span>) + <span class="string">'个'</span>)</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>另外我们可以通过闭包的方式来修改:</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (var <span class="built_in">i</span> = <span class="number">0</span>; <span class="built_in">i</span> &lt; btns.<span class="built_in">length</span>; <span class="built_in">i</span>++) &#123;</span><br><span class="line">   (<span class="function"><span class="keyword">function</span> <span class="params">(j)</span> &#123;</span></span><br><span class="line">     btns[<span class="built_in">j</span>].onclick = <span class="function"><span class="keyword">function</span> <span class="params">()</span> &#123;</span></span><br><span class="line">       console.<span class="built_in">log</span>(<span class="string">'第'</span> + (<span class="built_in">j</span> + <span class="number">1</span>) + <span class="string">'个'</span>)</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;)(<span class="built_in">i</span>)</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://wangdoc.com/javascript/types/function.html#闭包" target="_blank" rel="noopener">Javascript教程</a></p>
+<p><a href="https://book.douban.com/subject/26351021/" target="_blank" rel="noopener">你不知道的Javascript上卷</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/02/100185.html" class="pre-post btn btn-default" title='全面阐析Javascript原型与原型链'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">全面阐析Javascript原型与原型链</span>
+        </a>
+    
+    
+        <a href="/archives/2019/02/100183.html" class="next-post btn btn-default" title='全面阐析JavaScript this关键字'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">全面阐析JavaScript this关键字</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、引子"><span class="toc-text">一、引子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、闭包是什么"><span class="toc-text">二、闭包是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#那到底什么是闭包呢？"><span class="toc-text">那到底什么是闭包呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#闭包形成的条件"><span class="toc-text">闭包形成的条件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、闭包的特性"><span class="toc-text">三、闭包的特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、闭包的内存泄漏"><span class="toc-text">四、闭包的内存泄漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、闭包的作用"><span class="toc-text">五、闭包的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、闭包的运用"><span class="toc-text">六、闭包的运用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章"><span class="toc-text">参考文章</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

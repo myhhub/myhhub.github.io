@@ -1,0 +1,467 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="docker,kubernetes">
+
+
+    <meta name="description" content="云计算
+云计算概念
+云计算技术
+
+Docker一、基础
+Docker介绍
+镜像及容器的基本操作
+Dockerfile定制镜像
+私有镜像仓库        
+数据共享与持久化
+网络模式
+
+二、三架...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Docker及Kubernetes学习教程 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Docker及Kubernetes学习教程">
+            
+	            Docker及Kubernetes学习教程
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/docker/">docker</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1347</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="云计算"><a href="#云计算" class="headerlink" title="云计算"></a>云计算</h1><ol>
+<li><a href="../06/100308.html">云计算概念</a></li>
+<li><a href="../06/100309.html">云计算技术</a></li>
+</ol>
+<h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><h2 id="一、基础"><a href="#一、基础" class="headerlink" title="一、基础"></a>一、基础</h2><ol>
+<li><a href="../../2018/06/100207.html">Docker介绍</a></li>
+<li><a href="../../2018/06/100208.html">镜像及容器的基本操作</a></li>
+<li><a href="../../2018/06/100209.html">Dockerfile定制镜像</a></li>
+<li><a href="../../2018/06/100210.html">私有镜像仓库</a>        </li>
+<li><a href="../../2018/06/100211.html">数据共享与持久化</a></li>
+<li><a href="../../2018/06/100212.html">网络模式</a></li>
+</ol>
+<h2 id="二、三架马车"><a href="#二、三架马车" class="headerlink" title="二、三架马车"></a>二、三架马车</h2><ol>
+<li><a href="../../2018/06/100213.html">Docker Compose</a></li>
+<li><a href="../../2018/06/100214.html">Docker Machine</a></li>
+<li><a href="../../2018/06/100215.html">Docker Swarm</a></li>
+</ol>
+<h2 id="三、实践"><a href="#三、实践" class="headerlink" title="三、实践"></a>三、实践</h2><ol>
+<li><a href="../../2018/06/100216.html">图形化管理和监控</a></li>
+<li><a href="../../2018/06/100217.html">多阶段构建</a></li>
+<li><a href="../../2018/06/100218.html">Dockerfile最佳实践</a></li>
+</ol>
+<h2 id="四、运维"><a href="#四、运维" class="headerlink" title="四、运维"></a>四、运维</h2><ol>
+<li><a href="../../2018/10/100054.html">docker命令大全详解</a></li>
+<li><a href="../../2018/10/100053.html">Linux常用命令大全</a></li>
+</ol>
+<h1 id="Kubernetes"><a href="#Kubernetes" class="headerlink" title="Kubernetes"></a>Kubernetes</h1><h2 id="一、基础-1"><a href="#一、基础-1" class="headerlink" title="一、基础"></a>一、基础</h2><ol>
+<li><a href="../../2018/07/100125.html">kubernetes基础知识</a></li>
+</ol>
+<h2 id="二、集群搭建"><a href="#二、集群搭建" class="headerlink" title="二、集群搭建"></a>二、集群搭建</h2><ol>
+<li><a href="../../2018/07/100005.html">二进制搭建高可用的kubernetes集群</a></li>
+<li><a href="../../2018/07/100119.html">使用kubeadm搭建kubernetes集群</a></li>
+<li><a href="../../2018/07/100350.html">使用kubeadm搭建高可用的kubernetes集群</a></li>
+</ol>
+<h2 id="三、深入理解-POD"><a href="#三、深入理解-POD" class="headerlink" title="三、深入理解 POD"></a>三、深入理解 POD</h2><ol>
+<li><a href="../../2018/12/100092.html">浅析YAML基本语法</a></li>
+<li><a href="../../2018/12/100116.html">静态Pod</a></li>
+<li><a href="../../2018/12/100117.html">Pod Hook</a></li>
+<li><a href="../../2018/12/100118.html">Pod健康检查</a></li>
+<li><a href="../../2018/12/100098.html">Pod容器初始化</a></li>
+<li><a href="../../2018/12/100097.html">Pod工作流</a></li>
+<li><a href="../../2018/12/100106.html">kubernetes Pod挂载单个文件的办法</a></li>
+</ol>
+<h2 id="四、常用对象操作"><a href="#四、常用对象操作" class="headerlink" title="四、常用对象操作"></a>四、常用对象操作</h2><ol>
+<li><a href="../../2018/11/100099.html">RC(Replication-Controller)、RS(Replica-Set)</a></li>
+<li><a href="../../2018/11/100112.html">Deployment</a></li>
+<li><a href="../../2018/11/100113.html">HPA自动扩缩容Pod</a></li>
+<li><a href="../../2018/11/100100.html">Job、CronJob</a></li>
+<li><a href="../../2018/11/100101.html">Service</a></li>
+<li><a href="../../2018/11/100114.html">ConfigMap</a></li>
+<li><a href="../../2018/11/100102.html">Secret</a></li>
+<li><a href="../../2018/11/100103.html">RBAC</a></li>
+<li><a href="../../2018/11/100115.html">DaemonSet、StatefulSet</a></li>
+</ol>
+<h2 id="五、持久化存储"><a href="#五、持久化存储" class="headerlink" title="五、持久化存储"></a>五、持久化存储</h2><ol>
+<li><a href="../../2018/06/100216.html">图形化管理和监控</a></li>
+<li><a href="../../2018/06/100217.html">多阶段构建</a></li>
+<li><a href="../../2018/06/100218.html">Dockerfile最佳实践</a></li>
+<li><a href="../../2018/12/100105.html">kubernetes持久化存储方案PV和PVC、StorageClass的使用</a></li>
+</ol>
+<h2 id="六、服务发现"><a href="#六、服务发现" class="headerlink" title="六、服务发现"></a>六、服务发现</h2><ol>
+<li><a href="../../2018/12/100107.html">DNS集群内部服务发现</a></li>
+<li><a href="../../2018/12/100108.html">ingress外部服务发现</a></li>
+<li><a href="../../2018/12/100130.html">保护Kubernetes对外暴露的服务</a></li>
+<li><a href="../../2018/12/100109.html">Kubernetes服务质量Qos解析</a></li>
+</ol>
+<h2 id="七、包管理工具-HELM"><a href="#七、包管理工具-HELM" class="headerlink" title="七、包管理工具 HELM"></a>七、包管理工具 HELM</h2><ol>
+<li><a href="../../2018/10/100056.html">Helm安装</a></li>
+<li><a href="../../2018/10/100063.html">Helm模板使用</a></li>
+<li><a href="../../2018/10/100058.html">Helm Hooks使用</a></li>
+<li><a href="../../2018/10/100132.html">Helm Chart模板开发</a></li>
+</ol>
+<h2 id="八、调度器"><a href="#八、调度器" class="headerlink" title="八、调度器"></a>八、调度器</h2><ol>
+<li><a href="../../2018/11/100110.html">调度器介绍</a></li>
+<li><a href="../../2018/11/100095.html">亲和性调度</a></li>
+</ol>
+<h2 id="九、集群监控"><a href="#九、集群监控" class="headerlink" title="九、集群监控"></a>九、集群监控</h2><ol>
+<li><a href="../../2018/12/100111.html">Prometheus</a></li>
+<li><a href="../../2018/12/100120.html">Prometheus Operator</a></li>
+<li><a href="../../2018/12/100121.html">Grafana</a></li>
+<li><a href="../../2018/12/100121.html">Grafana</a></li>
+<li><a href="../../2018/12/100122.html">AlertManager</a></li>
+<li><a href="../../2018/12/100134.html">kubernetes监控组件Metrics Server安装</a></li>
+</ol>
+<h2 id="十、日志收集"><a href="#十、日志收集" class="headerlink" title="十、日志收集"></a>十、日志收集</h2><ol>
+<li><a href="../../2018/12/100123.html">日志收集架构</a></li>
+<li><a href="../../2018/12/100124.html">搭建EFK日志系统</a></li>
+</ol>
+<h2 id="十一、CI-CD"><a href="#十一、CI-CD" class="headerlink" title="十一、CI/CD"></a>十一、CI/CD</h2><ol>
+<li><a href="../../2018/12/100126.html">动态Jenkins Slave</a></li>
+<li><a href="../../2018/12/100127.html">Jenkins Pipeline部署应用</a></li>
+<li><a href="../../2018/12/100128.html">Jenkins BlueOcean</a></li>
+<li><a href="../../2018/12/100059.html">使用Helm快速安装Harbor</a></li>
+<li><a href="../../2018/12/100060.html">Gitlab</a></li>
+<li><a href="../../2018/12/100061.html">Gitlab CI Runner</a></li>
+<li><a href="../../2018/12/100062.html">Gitlab CI与Kubernetes结合</a></li>
+<li><a href="../../2018/12/100129.html">Devops</a></li>
+<li><a href="../../2018/12/100133.html">Jenkins Pipeline脚本Groovy语言使用说明</a></li>
+</ol>
+<h2 id="十二、开发"><a href="#十二、开发" class="headerlink" title="十二、开发"></a>十二、开发</h2><ol>
+<li><a href="../../2018/11/100093.html">使用Kubernetes应用神器Skaffold简化本地开发</a></li>
+<li><a href="../../2018/11/100094.html">关于Kubernetes Downward API的用法</a></li>
+</ol>
+<h2 id="十三、其它"><a href="#十三、其它" class="headerlink" title="十三、其它"></a>十三、其它</h2><ol>
+<li><a href="../../2018/12/100104.html">kubernetes ipvs的详细用法</a></li>
+<li><a href="../../2018/11/100096.html">了解kubernetes资源配额控制器</a></li>
+</ol>
+<h2 id="十四、运维"><a href="#十四、运维" class="headerlink" title="十四、运维"></a>十四、运维</h2><ol>
+<li><a href="../../2018/10/100055.html">kubernetes命令大全详解</a></li>
+<li><a href="../../2018/10/100053.html">Linux常用命令大全</a></li>
+<li><a href="100370.html">运维常用工具</a></li>
+<li><a href="../../2018/12/100131.html">通常排查Kubernetes网络故障的方法</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100459.html" class="pre-post btn btn-default" title='大数据hadoop学习教程'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop学习教程</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100487.html" class="next-post btn btn-default" title='基于TensorFlow的机器学习速成课程(Google制作)'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">基于TensorFlow的机器学习速成课程(Google制作)</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#云计算"><span class="toc-text">云计算</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker"><span class="toc-text">Docker</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、基础"><span class="toc-text">一、基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、三架马车"><span class="toc-text">二、三架马车</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、实践"><span class="toc-text">三、实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、运维"><span class="toc-text">四、运维</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes"><span class="toc-text">Kubernetes</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、基础-1"><span class="toc-text">一、基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、集群搭建"><span class="toc-text">二、集群搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、深入理解-POD"><span class="toc-text">三、深入理解 POD</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、常用对象操作"><span class="toc-text">四、常用对象操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、持久化存储"><span class="toc-text">五、持久化存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、服务发现"><span class="toc-text">六、服务发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七、包管理工具-HELM"><span class="toc-text">七、包管理工具 HELM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#八、调度器"><span class="toc-text">八、调度器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#九、集群监控"><span class="toc-text">九、集群监控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#十、日志收集"><span class="toc-text">十、日志收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#十一、CI-CD"><span class="toc-text">十一、CI/CD</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#十二、开发"><span class="toc-text">十二、开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#十三、其它"><span class="toc-text">十三、其它</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#十四、运维"><span class="toc-text">十四、运维</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

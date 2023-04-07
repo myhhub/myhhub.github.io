@@ -1,0 +1,472 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="c++,cmake,qt">
+
+
+    <meta name="description" content="本章主要内容有：
+
+使用Visual Studio 2017构建CMake项目
+交叉编译hello world示例
+使用OpenMP并行化交叉编译Windows二进制文件
+
+CMake本身不构建...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>CMake 完整使用教程 之十四 选择生成器和交叉编译 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="CMake 完整使用教程 之十四 选择生成器和交叉编译">
+            
+	            CMake 完整使用教程 之十四 选择生成器和交叉编译
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c++</a> <a class="tag-link" href="/tags/cmake/">cmake</a> <a class="tag-link" href="/tags/qt/">qt</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/03/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>738</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>本章主要内容有：</p>
+<ul>
+<li>使用Visual Studio 2017构建CMake项目</li>
+<li>交叉编译hello world示例</li>
+<li>使用OpenMP并行化交叉编译Windows二进制文件</li>
+</ul>
+<p>CMake本身不构建可执行程序和库。不过，CMake配置一个项目，并生成构建工具或框架用于构建项目的文件。在GNU/Linux和macOS上，CMake通常生成Unix Makefile(也存在替代方式)。在Windows上，通常生成Visual Studio项目文件或MinGW或MSYS Makefile。CMake包括本地构建工具或集成开发环境(IDE)的生成器。可以通过以下链接阅读更多关于它们的信息:<a href="https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html</a></p>
+<p>可以使用<code>cmake -G</code>的方式来选择生成器：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>cmake -G <span class="string">"Visual Studio 15 2017"</span></span><br></pre></td></tr></table></figure>
+<p>不是每个平台上所有的生成器都可用，而且CMake在运行时获取平台信息。要查看当前平台上所有可用生成器的列表，请键入以下命令：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>cmake -G</span><br></pre></td></tr></table></figure>
+<p>本章中，我们不会使用所有生成器，但是本书中的大多数示例都使用了Unix Makefile、MSYS Makefile、Ninja和Visual Studio 15 2017进行了测试。</p>
+<p>我们将重点讨论Windows平台上的开发，将演示不使用命令行，如何使用Visual Studio 15 2017直接构建CMake项目。还会讨论如何在Linux或macOS系统上，交叉编译Windows的可执行文件。</p>
+<h1 id="13-1-使用CMake构建Visual-Studio-2017项目"><a href="#13-1-使用CMake构建Visual-Studio-2017项目" class="headerlink" title="13.1 使用CMake构建Visual Studio 2017项目"></a>13.1 使用CMake构建Visual Studio 2017项目</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-13/recipe-01" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-13/recipe-01</a> 中找到，其中包含一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>早期版本的Visual Studio要求开发人员在不同的Windows版本中编辑源代码并运行CMake命令，但Visual Studio 2017引入了对CMake项目的内置支持( <a href="https://aka.ms/cmake" target="_blank" rel="noopener">https://aka.ms/cmake</a> )，它允许在同一个IDE中发生整个编码、配置、构建和测试工作流。本示例中，不需要使用命令行，我们将直接使用Visual Studio 2017构建一个简单的“hello world”CMake示例项目。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>首先，下载并安装Visual Studio Community 2017 (<a href="https://www.visualstudio.com/downloads/" target="_blank" rel="noopener">https://www.visualstudio.com/downloads/</a> )。在撰写本文时，这个版本是免费的，有30天的试用期。我们将遵循的视频中的步骤:<a href="https://www.youtube.com/watch?v=_lKxJjV8r3Y" target="_blank" rel="noopener">https://www.youtube.com/watch?v=_lKxJjV8r3Y</a></p>
+<p>运行安装程序时，在左侧面板上选择<code>Desktop development with C++</code>，并在右侧的Summary面板上选择用于CMake的Visual C++工具：</p>
+<p>sual Studio 2017 15.4中，还可以为Linux平台进行构建。为此，在工具集中选择<code>Linux development with C++</code>:</p>
+<p>选择后，只要配置Linux服务器的访问权限，就可以从Visual Studio中同时对Windows和Linux机器进行构建。我们不在本章中演示这种方法。</p>
+<p>这个示例中，我们将在Windows上构建一个二进制文件，我们的目标是配置和构建以下示例代码(<code>hello-world.cpp</code>)：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> cmake_system_name = SYSTEM_NAME;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello from "</span> &lt;&lt; cmake_system_name &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>创建相应的源码：</p>
+<ol>
+<li><p>创建一个目录，并将<code>hello-world.cpp</code>放在新目录中。</p>
+</li>
+<li><p>目录中，创建一个<code>CMakeLists.txt</code>文件，其内容为:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set minimum cmake version</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.5</span> FATAL_ERROR)</span><br><span class="line"></span><br><span class="line"><span class="comment"># project name and language</span></span><br><span class="line"><span class="keyword">project</span>(recipe-<span class="number">01</span> LANGUAGES CXX)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_EXTENSIONS <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="keyword">ON</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(GNUInstallDirs)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_ARCHIVE_OUTPUT_DIRECTORY</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_LIBRARY_OUTPUT_DIRECTORY</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_BINDIR&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># define executable and its source file</span></span><br><span class="line"><span class="keyword">add_executable</span>(hello-world hello-world.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment"># we will print the system name in the code</span></span><br><span class="line"><span class="keyword">target_compile_definitions</span>(hello-world</span><br><span class="line">  PUBLIC</span><br><span class="line">    <span class="string">"SYSTEM_NAME=\"$&#123;CMAKE_SYSTEM_NAME&#125;\""</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="keyword">install</span>(</span><br><span class="line">  TARGETS</span><br><span class="line">    hello-world</span><br><span class="line">  DESTINATION</span><br><span class="line">    <span class="variable">$&#123;CMAKE_INSTALL_BINDIR&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开Visual Studio 2017，然后通过下面的<code>File -&gt;Open -&gt; Folder</code>，选择到新创建的包含源文件和<code>CMakeLists.txt</code>的文件夹下。</p>
+</li>
+<li><p>打开文件夹后，请注意CMake配置步骤是如何运行的(面板底部)：</p>
+</li>
+<li><p>现在，可以右键单击<code>CMakeLists.txt</code>(右面板)，并选择<code>Build</code>:</p>
+</li>
+<li><p>构建项目(参见底部面板上的输出):</p>
+</li>
+<li><p>这就成功地编译了可执行文件。下一小节中，我们将学习如何定位可执行文件，并更改构建和安装路径。</p>
+</li>
+</ol>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>我们已经看到Visual Studio 2017能很好地对接CMake，并且已经能够在IDE中配置和构建代码。除了构建步骤之外，还可以运行安装或测试步骤。可以通过右键单击<code>CMakeLists.txt</code>(右面板)，访问这些文件。</p>
+<p>然而，配置步骤是自动运行的，我们可能更想去修改配置选项。我们还想知道实际的构建和安装路径，以便测试我们的可执行文件。为此，我们可以选择<code>CMake -&gt; Change CMake Settings</code>，如下图所示:</p>
+<p>面板左上角，可以检查和修改生成器(本例中是Ninja)、设置、参数以及路径。构建路径在前面的显示中可以看到。这些设置被分组为构建类型(<code>x86-Debug</code>、<code>x86-Release</code>等等)，我们可以在面板栏顶部的中间部分，通过选择切换构建类型。</p>
+<p>现在知道了构建路径，可以测试编译后的可执行文件:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ./hello-world.exe</span><br><span class="line"></span><br><span class="line">Hello from Windows</span><br></pre></td></tr></table></figure>
+<p>当然，构建和安装路径可以进行修改。</p>
+<h2 id="更多信息"><a href="#更多信息" class="headerlink" title="更多信息"></a>更多信息</h2><ul>
+<li>Visual Studio支持CMake: <a href="https://aka.ms/cmake" target="_blank" rel="noopener">https://aka.ms/cmake</a></li>
+<li>使用CMake，基于Visual C++开发Linux应用：<a href="https://blogs.msdn.microsoft.com/vcblog/2017/08/25/visual-c-for-linux-development-with-cmake/" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/vcblog/2017/08/25/visual-c-for-linux-development-with-cmake/</a></li>
+<li>Visual Studio官方文档：<a href="https://www.visualstudio.com/vs/features/ide/" target="_blank" rel="noopener">https://www.visualstudio.com/vs/features/ide/</a></li>
+</ul>
+<h1 id="13-2-交叉编译hello-world示例"><a href="#13-2-交叉编译hello-world示例" class="headerlink" title="13.2 交叉编译hello world示例"></a>13.2 交叉编译hello world示例</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-13/recipe-01" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-13/recipe-01</a> 中找到，其中包含一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>这个示例中，我们将重用“Hello World”示例，并将代码从Linux或macOS交叉编译到Windows。换句话说，我们将在Linux或macOS上配置和编译代码，并生成Windows平台的可执行文件</p>
+<h2 id="准备工作-1"><a href="#准备工作-1" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们从<code>hello world</code>示例(<code>hello-world.cpp</code>)开始：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;omp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"number of available processors: "</span> &lt;&lt; omp_get_num_procs()</span><br><span class="line">            &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"number of threads: "</span> &lt;&lt; omp_get_max_threads() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> n = <span class="built_in">std</span>::stol(argv[<span class="number">1</span>]);</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"we will form sum of numbers from 1 to "</span> &lt;&lt; n &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// start timer</span></span><br><span class="line">  <span class="keyword">auto</span> t0 = omp_get_wtime();</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">auto</span> s = <span class="number">0L</span>L;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> omp parallel for reduction(+ : s)</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">  &#123;</span><br><span class="line">    s += i;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// stop timer</span></span><br><span class="line">  <span class="keyword">auto</span> t1 = omp_get_wtime();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"sum: "</span> &lt;&lt; s &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"elapsed wall clock time: "</span> &lt;&lt; t1 - t0 &lt;&lt; <span class="string">" seconds"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们还将使用与前一个示例相同的<code>CMakeLists.txt</code>：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set minimum cmake version</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.5</span> FATAL_ERROR)</span><br><span class="line"></span><br><span class="line"><span class="comment"># project name and language</span></span><br><span class="line"><span class="keyword">project</span>(recipe-<span class="number">01</span> LANGUAGES CXX)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_EXTENSIONS <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD_REQUIRED <span class="keyword">ON</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(GNUInstallDirs)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_ARCHIVE_OUTPUT_DIRECTORY</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_LIBRARY_OUTPUT_DIRECTORY</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_BINDIR&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># define executable and its source file</span></span><br><span class="line"><span class="keyword">add_executable</span>(hello-world hello-world.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment"># we will print the system name in the code</span></span><br><span class="line"><span class="keyword">target_compile_definitions</span>(hello-world</span><br><span class="line">  PUBLIC</span><br><span class="line">    <span class="string">"SYSTEM_NAME=\"$&#123;CMAKE_SYSTEM_NAME&#125;\""</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="keyword">install</span>(</span><br><span class="line">  TARGETS</span><br><span class="line">    hello-world</span><br><span class="line">  DESTINATION</span><br><span class="line">    <span class="variable">$&#123;CMAKE_INSTALL_BINDIR&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>为了交叉编译源代码，我们需要安装一个C++交叉编译器，也可以为C和Fortran安装一个交叉编译器。可以使用打包的MinGW编译器，作为打包的交叉编译器的替代方案。还可以使用MXE (M cross environment)从源代码构建一套交叉编译器：<a href="http://mxe.cc/" target="_blank" rel="noopener">http://mxe.cc</a></p>
+<h2 id="具体实施-1"><a href="#具体实施-1" class="headerlink" title="具体实施"></a>具体实施</h2><p>我们将按照以下步骤，在这个交叉编译的“hello world”示例中创建三个文件:</p>
+<ol>
+<li><p>创建一个文件夹，其中包括<code>hello-world.cpp</code>和<code>CMakeLists.txt</code>。</p>
+</li>
+<li><p>再创建一个<code>toolchain.cmake</code>文件，其内容为：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># the name of the target operating system</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_SYSTEM_NAME Windows)</span><br><span class="line"></span><br><span class="line"><span class="comment"># which compilers to use</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_CXX_COMPILER i686-w64-mingw32-g++)</span><br><span class="line"></span><br><span class="line"><span class="comment"># adjust the default behaviour of the find commands:</span></span><br><span class="line"><span class="comment"># search headers and libraries in the target environment</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)</span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)</span><br><span class="line"></span><br><span class="line"><span class="comment"># search programs in the host environment</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>CMAKE_CXX_COMPILER</code>设置为对应的编译器(路径)。</p>
+</li>
+<li><p>然后，通过将<code>CMAKE_TOOLCHAIN_FILE</code>指向工具链文件，从而配置代码(本例中，使用了从源代码构建的MXE编译器):</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake -D CMAKE_TOOLCHAIN_FILE=toolchain.cmake ..</span><br><span class="line"></span><br><span class="line">-- The CXX compiler identification is GNU <span class="number">5.4</span><span class="number">.0</span></span><br><span class="line">-- Check <span class="keyword">for</span> working CXX <span class="string">compiler:</span> <span class="regexp">/home/</span>user<span class="regexp">/mxe/</span>usr<span class="regexp">/bin/</span>i686-w64-mingw32.<span class="keyword">static</span>-g++</span><br><span class="line">-- Check <span class="keyword">for</span> working CXX <span class="string">compiler:</span> <span class="regexp">/home/</span>user<span class="regexp">/mxe/</span>usr<span class="regexp">/bin/</span>i686-w64-mingw32.<span class="keyword">static</span>-g++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - done</span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - done</span><br><span class="line">-- Configuring done</span><br><span class="line">-- Generating done</span><br><span class="line">-- Build files have been written <span class="string">to:</span> <span class="regexp">/home/</span>user<span class="regexp">/cmake-recipes/</span>chapter<span class="number">-13</span><span class="regexp">/recipe-01/</span>cxx-example/build</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在，构建可执行文件：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cmake --build .</span><br><span class="line"></span><br><span class="line">Scanning dependencies of target hello-world</span><br><span class="line">[ <span class="number">50%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/hello-world.dir/hello-world<span class="selector-class">.cpp</span><span class="selector-class">.obj</span></span><br><span class="line">[<span class="number">100%</span>] Linking CXX executable bin/hello-world.exe</span><br><span class="line">[<span class="number">100%</span>] Built target hello-world</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意，我们已经在Linux上获得<code>hello-world.exe</code>。将二进制文件复制到Windows上。</p>
+</li>
+<li><p>在WIndows上可以看到如下的输出：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello <span class="keyword">from</span> Windows</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如你所见，这个二进制可以在Windows下工作。</p>
+</li>
+</ol>
+<h2 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h2><p>由于与目标环境(Windows)不同的主机环境(在本例中是GNU/Linux或macOS)上配置和构建代码，所以我们需要向CMake提供关于目标环境的信息，这些信息记录在<code>toolchain.cmake</code>文件中( <a href="https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling</a> )。</p>
+<p>首先，提供目标操作系统的名称:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_SYSTEM_NAME Windows)</span></span></span><br></pre></td></tr></table></figure>
+<p>然后，指定编译器：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_C_COMPILER i686-w64-mingw32-gcc)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_COMPILER i686-w64-mingw32-g++)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_Fortran_COMPILER i686-w64-mingw32-gfortran)</span></span></span><br></pre></td></tr></table></figure>
+<p>这个例子中，我们不需要检测任何库或头文件。如果必要的话，我们将使用以下命令指定根路径:</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>(CMAKE_FIND_ROOT_PATH /path/<span class="comment">to</span>/target/<span class="comment">environment)</span></span><br></pre></td></tr></table></figure>
+<p>例如，提供MXE编译器的安装路径。</p>
+<p>最后，调整<code>find</code>命令的默认行为。我们指示CMake在目标环境中查找头文件和库文件:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)</span></span></span><br></pre></td></tr></table></figure>
+<p>在主机环境中的搜索程序：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="更多信息-1"><a href="#更多信息-1" class="headerlink" title="更多信息"></a>更多信息</h2><p>有关各种选项的更详细讨论，请参见： <a href="https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling</a></p>
+<h1 id="13-3-使用OpenMP并行化交叉编译Windows二进制文件"><a href="#13-3-使用OpenMP并行化交叉编译Windows二进制文件" class="headerlink" title="13.3 使用OpenMP并行化交叉编译Windows二进制文件"></a>13.3 使用OpenMP并行化交叉编译Windows二进制文件</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-13/recipe-02" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-13/recipe-02</a> 中找到，其中包含一个C++示例和Fortran示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>在这个示例中，我们将交叉编译一个OpenMP并行化的Windows二进制文件。</p>
+<h2 id="准备工作-2"><a href="#准备工作-2" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们将使用第3章第5节中的未修改的源代码，示例代码将所有自然数加到N (<code>example.cpp</code>):</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;omp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"number of available processors: "</span> &lt;&lt; omp_get_num_procs()</span><br><span class="line">  &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"number of threads: "</span> &lt;&lt; omp_get_max_threads() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> n = <span class="built_in">std</span>::stol(argv[<span class="number">1</span>]);</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"we will form sum of numbers from 1 to "</span> &lt;&lt; n &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// start timer</span></span><br><span class="line">  <span class="keyword">auto</span> t0 = omp_get_wtime();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> s = <span class="number">0L</span>L;</span><br><span class="line">  <span class="meta">#<span class="meta-keyword">pragma</span> omp parallel for reduction(+ : s)</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">  	s += i;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// stop timer</span></span><br><span class="line">  <span class="keyword">auto</span> t1 = omp_get_wtime();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"sum: "</span> &lt;&lt; s &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"elapsed wall clock time: "</span> &lt;&lt; t1 - t0 &lt;&lt; <span class="string">" seconds"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>CMakeLists.txt</code>检测OpenMP并行环境方面基本没有变化，除了有一个额外的安装目标:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># set minimum cmake version</span><br><span class="line">cmake_minimum_required(<span class="name">VERSION</span> <span class="number">3.9</span> FATAL_ERROR)</span><br><span class="line"></span><br><span class="line"># project name and language</span><br><span class="line">project(<span class="name">recipe-02</span> LANGUAGES CXX)</span><br><span class="line"></span><br><span class="line">set(<span class="name">CMAKE_CXX_STANDARD</span> <span class="number">11</span>)</span><br><span class="line">set(<span class="name">CMAKE_CXX_EXTENSIONS</span> OFF)</span><br><span class="line">set(<span class="name">CMAKE_CXX_STANDARD_REQUIRED</span> ON)</span><br><span class="line"></span><br><span class="line">include(<span class="name">GNUInstallDirs</span>)</span><br><span class="line">set(<span class="name">CMAKE_ARCHIVE_OUTPUT_DIRECTORY</span></span><br><span class="line">	$&#123;CMAKE_BINARY_DIR&#125;/$&#123;CMAKE_INSTALL_LIBDIR&#125;)</span><br><span class="line">set(<span class="name">CMAKE_LIBRARY_OUTPUT_DIRECTORY</span></span><br><span class="line">	$&#123;CMAKE_BINARY_DIR&#125;/$&#123;CMAKE_INSTALL_LIBDIR&#125;)</span><br><span class="line">set(<span class="name">CMAKE_RUNTIME_OUTPUT_DIRECTORY</span></span><br><span class="line">	$&#123;CMAKE_BINARY_DIR&#125;/$&#123;CMAKE_INSTALL_BINDIR&#125;)</span><br><span class="line"></span><br><span class="line">find_package(<span class="name">OpenMP</span> REQUIRED)</span><br><span class="line"></span><br><span class="line">add_executable(<span class="name">example</span> example.cpp)</span><br><span class="line"></span><br><span class="line">target_link_libraries(<span class="name">example</span></span><br><span class="line">  PUBLIC</span><br><span class="line">  	OpenMP:<span class="symbol">:OpenMP_CXX</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">install(</span><br><span class="line">  TARGETS</span><br><span class="line">  	example</span><br><span class="line">  DESTINATION</span><br><span class="line">  	$&#123;CMAKE_INSTALL_BINDIR&#125;</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施-2"><a href="#具体实施-2" class="headerlink" title="具体实施"></a>具体实施</h2><p>通过以下步骤，我们将设法交叉编译一个OpenMP并行化的Windows可执行文件:</p>
+<ol>
+<li><p>创建一个包含<code>example.cpp</code>和<code>CMakeLists.txt</code>的目录。</p>
+</li>
+<li><p>我们将使用与之前例子相同的<code>toolchain.cmake</code>:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># the name of the target operating system</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_SYSTEM_NAME Windows)</span><br><span class="line"></span><br><span class="line"><span class="comment"># which compilers to use</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_CXX_COMPILER i686-w64-mingw32-g++)</span><br><span class="line"></span><br><span class="line"><span class="comment"># adjust the default behaviour of the find commands:</span></span><br><span class="line"><span class="comment"># search headers and libraries in the target environment</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)</span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)</span><br><span class="line"><span class="comment"># search programs in the host environment</span></span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>CMAKE_CXX_COMPILER</code>设置为对应的编译器(路径)。</p>
+</li>
+<li><p>然后，通过<code>CMAKE_TOOLCHAIN_FILE</code>指向工具链文件来配置代码(本例中，使用了从源代码构建的MXE编译器):</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake -D CMAKE_TOOLCHAIN_FILE=toolchain.cmake ..</span><br><span class="line"></span><br><span class="line">-- The CXX compiler identification is GNU <span class="number">5.4</span><span class="number">.0</span></span><br><span class="line">-- Check <span class="keyword">for</span> working CXX <span class="string">compiler:</span> <span class="regexp">/home/</span>user<span class="regexp">/mxe/</span>usr<span class="regexp">/bin/</span>i686-w64-mingw32.<span class="keyword">static</span>-g++</span><br><span class="line">-- Check <span class="keyword">for</span> working CXX <span class="string">compiler:</span> <span class="regexp">/home/</span>user<span class="regexp">/mxe/</span>usr<span class="regexp">/bin/</span>i686-w64-mingw32.<span class="keyword">static</span>-g++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - done</span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - done</span><br><span class="line">-- Found <span class="string">OpenMP_CXX:</span> -fopenmp (found version <span class="string">"4.0"</span>)</span><br><span class="line">-- Found <span class="string">OpenMP:</span> TRUE (found version <span class="string">"4.0"</span>)</span><br><span class="line">-- Configuring done</span><br><span class="line">-- Generating done</span><br><span class="line">-- Build files have been written <span class="string">to:</span> <span class="regexp">/home/</span>user<span class="regexp">/cmake-recipes/</span>chapter<span class="number">-13</span><span class="regexp">/recipe-02/</span>cxx-example/build</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构建可执行文件：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cmake --build .</span><br><span class="line"></span><br><span class="line">Scanning dependencies of target example</span><br><span class="line">[ <span class="number">50%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/example.dir/example<span class="selector-class">.cpp</span><span class="selector-class">.obj</span></span><br><span class="line">[<span class="number">100%</span>] Linking CXX executable bin/example.exe</span><br><span class="line">[<span class="number">100%</span>] Built target example</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>example.exe</code>拷贝到Windows环境下。</p>
+</li>
+<li><p>Windows环境下，将看到如下的输出：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="builtin-name">set</span> <span class="attribute">OMP_NUM_THREADS</span>=1</span><br><span class="line">$ example.exe 1000000000</span><br><span class="line"></span><br><span class="line">number of available processors: 2</span><br><span class="line">number of threads: 1</span><br><span class="line">we will form sum of numbers <span class="keyword">from</span> 1 <span class="keyword">to</span> 1000000000</span><br><span class="line">sum: 500000000500000000</span><br><span class="line">elapsed wall<span class="built_in"> clock </span>time: 2.641 seconds</span><br><span class="line"></span><br><span class="line">$ <span class="builtin-name">set</span> <span class="attribute">OMP_NUM_THREADS</span>=2</span><br><span class="line">$ example.exe 1000000000</span><br><span class="line"></span><br><span class="line">number of available processors: 2</span><br><span class="line">number of threads: 2</span><br><span class="line">we will form sum of numbers <span class="keyword">from</span> 1 <span class="keyword">to</span> 1000000000</span><br><span class="line">sum: 500000000500000000</span><br><span class="line">elapsed wall<span class="built_in"> clock </span>time: 1.328 seconds</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>正如我们所看到的，二进制文件可以在Windows上工作，而且由于OpenMP并行化，我们可以观察到加速效果!</p>
+</li>
+</ol>
+<h2 id="工作原理-2"><a href="#工作原理-2" class="headerlink" title="工作原理"></a>工作原理</h2><p>我们已经成功地使用一个简单的工具链进行交叉编译了一个可执行文件，并可以在Windows平台上并行执行。我们可以通过设置<code>OMP_NUM_THREADS</code>来指定OpenMP线程的数量。从一个线程到两个线程，我们观察到运行时从2.6秒减少到1.3秒。有关工具链文件的讨论，请参阅前面的示例。</p>
+<h2 id="更多信息-2"><a href="#更多信息-2" class="headerlink" title="更多信息"></a>更多信息</h2><p>可以交叉编译一组目标平台(例如：Android)，可以参考：<a href="https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/03/100665.html" class="pre-post btn btn-default" title='CMake 完整使用教程 之十五 测试面板'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之十五 测试面板</span>
+        </a>
+    
+    
+        <a href="/archives/2021/03/100663.html" class="next-post btn btn-default" title='CMake 完整使用教程 之十三 构建文档'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之十三 构建文档</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#13-1-使用CMake构建Visual-Studio-2017项目"><span class="toc-text">13.1 使用CMake构建Visual Studio 2017项目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#13-2-交叉编译hello-world示例"><span class="toc-text">13.2 交叉编译hello world示例</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-1"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-1"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-1"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-1"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#13-3-使用OpenMP并行化交叉编译Windows二进制文件"><span class="toc-text">13.3 使用OpenMP并行化交叉编译Windows二进制文件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-2"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-2"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-2"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-2"><span class="toc-text">更多信息</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

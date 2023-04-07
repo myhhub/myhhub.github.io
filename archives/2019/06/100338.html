@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="一 伪分布式安装1. 下载解压给权限可以从官方下载地址下载 HBase 最新版本，推荐 stable目录下的二进制版本。我下载的是 hbase-1.1.3-bin.tar.gz 。确保你下载的版...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 三十三.HBASE的伪分布与分布式安装 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 三十三.HBASE的伪分布与分布式安装">
+            
+	            大数据hadoop之 三十三.HBASE的伪分布与分布式安装
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/22</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1384</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-伪分布式安装"><a href="#一-伪分布式安装" class="headerlink" title="一 伪分布式安装"></a>一 伪分布式安装</h2><h3 id="1-下载解压给权限"><a href="#1-下载解压给权限" class="headerlink" title="1. 下载解压给权限"></a>1. 下载解压给权限</h3><p>可以从官方下载地址下载 HBase 最新版本，推荐 stable目录下的二进制版本。我下载的是 hbase-1.1.3-bin.tar.gz 。确保你下载的版本与你现存的 Hadoop 版本兼容（兼容列表）以及支持的JDK版本（从HBase 1.0.x 已经不支持 JDK 6 了）。</p>
+<p><a href="http://hbase.apache.org/book.html#getting_started" target="_blank" rel="noopener">兼容列表:</a></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf hbase<span class="number">-1.1</span><span class="number">.3</span>-bin.tar.gz</span><br><span class="line">sudo mv hbase<span class="number">-1.1</span><span class="number">.3</span> <span class="regexp">/usr/</span>local/hbase</span><br><span class="line">cd <span class="regexp">/usr/</span>local/</span><br><span class="line">sudo chmod -R <span class="number">775</span> hbase</span><br><span class="line">sudo chown -R <span class="string">hadoop:</span><span class="string">hadoop:</span> hbase</span><br></pre></td></tr></table></figure>
+<h3 id="2-修改HBASE的JDK环境变量"><a href="#2-修改HBASE的JDK环境变量" class="headerlink" title="2. 修改HBASE的JDK环境变量"></a>2. 修改HBASE的JDK环境变量</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo nano <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/hbase/</span>conf/hbase-env.sh </span><br><span class="line">export JAVA_HOME=<span class="meta-keyword">/usr/</span>lib<span class="meta-keyword">/jvm/</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-修改hbase-site-xml"><a href="#3-修改hbase-site-xml" class="headerlink" title="3. 修改hbase-site.xml"></a>3. 修改hbase-site.xml</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">hadoop@Master:<span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/hbase/</span>conf$ sudo nano hbase-site.xml </span><br><span class="line"></span><br><span class="line"><span class="params">&lt;configuration&gt;</span></span><br><span class="line"> <span class="params">&lt;property&gt;</span></span><br><span class="line">           <span class="params">&lt;name&gt;</span>hbase.rootdir<span class="params">&lt;/name&gt;</span></span><br><span class="line">           <span class="params">&lt;value&gt;</span>hdfs:<span class="comment">//Master:9000/hbase&lt;/value&gt;</span></span><br><span class="line"> <span class="params">&lt;/property&gt;</span></span><br><span class="line"> <span class="params">&lt;property&gt;</span></span><br><span class="line">           <span class="params">&lt;name&gt;</span>hbase.cluster.distributed<span class="params">&lt;/name&gt;</span></span><br><span class="line">           <span class="params">&lt;value&gt;</span>true<span class="params">&lt;/value&gt;</span></span><br><span class="line"> <span class="params">&lt;/property&gt;</span></span><br><span class="line"><span class="params">&lt;/configuration&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-启动验证"><a href="#4-启动验证" class="headerlink" title="4. 启动验证"></a>4. 启动验证</h3><ul>
+<li>启动hbase </li>
+</ul>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">start</span>-hbase.sh</span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入hbase shell </li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">hadoop@Master<span class="symbol">:/usr/local/hbase/bin</span>$ ./hbase shell</span><br><span class="line">HBase Shell; enter <span class="string">'help&lt;RETURN&gt;'</span> <span class="keyword">for</span> list of supported commands.</span><br><span class="line">Type <span class="string">"exit&lt;RETURN&gt;"</span> to leave the HBase Shell</span><br><span class="line">Version <span class="number">1.1</span>.<span class="number">3</span>, r72bc50f5fafeb105b2139e42bbee3d61ca724989, Sat Jan <span class="number">16</span> <span class="number">18</span><span class="symbol">:</span><span class="number">29</span><span class="symbol">:</span><span class="number">00</span> PST <span class="number">2016</span></span><br><span class="line"></span><br><span class="line"><span class="meta">hbase(main):001:0&gt;</span> </span><br><span class="line"></span><br><span class="line">hadoop@Master<span class="symbol">:/usr/local/hbase/bin</span>$ jps</span><br><span class="line"><span class="number">1601</span> ResourceManager</span><br><span class="line"><span class="number">1430</span> SecondaryNameNode</span><br><span class="line"><span class="number">2374</span> HRegionServer</span><br><span class="line"><span class="number">1883</span> JobHistoryServer</span><br><span class="line"><span class="number">3037</span> Jps</span><br><span class="line"><span class="number">2253</span> HMaster</span><br><span class="line"><span class="number">1246</span> NameNode</span><br><span class="line"><span class="number">2190</span> HQuorumPeer</span><br><span class="line">hadoop@Master<span class="symbol">:/usr/local/hbase/bin</span>$</span><br></pre></td></tr></table></figure>
+<p><img src="/img/hadoop/11/hbase0001.png" alt></p>
+<h3 id="5-尝试一下Thrift通信服务"><a href="#5-尝试一下Thrift通信服务" class="headerlink" title="5. 尝试一下Thrift通信服务"></a>5. 尝试一下Thrift通信服务</h3><p>这里我们尝试使用HBase 的 Thrift API，用Python和HBase进行简单交互。首先启动HBase的Thrift服务：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">hadoop@Master:/usr/local/hbase/bin$ ./hbase-daemon.sh <span class="keyword">start</span> thrift</span><br><span class="line"><span class="keyword">starting</span> thrift, <span class="keyword">logging</span> <span class="keyword">to</span> /usr/<span class="keyword">local</span>/hbase/<span class="keyword">bin</span>/../<span class="keyword">logs</span>/hbase-hadoop-thrift-Master.out</span><br><span class="line"></span><br><span class="line">然后安装Python的happybase模块，HBase是对 HBase的Thrift接口的一个简单包装：</span><br><span class="line"></span><br><span class="line">chuguaningdeMBP:~ chuguangming$ sudo pip <span class="keyword">install</span> happybase</span><br><span class="line"></span><br><span class="line">然后启动ipython，如果没有ipython，请通过pip安装:</span><br><span class="line"></span><br><span class="line">Python <span class="number">2.7</span><span class="number">.6</span> (<span class="keyword">default</span>, Mar <span class="number">22</span> <span class="number">2014</span>, <span class="number">22</span>:<span class="number">59</span>:<span class="number">56</span>)</span><br><span class="line"><span class="keyword">Type</span> <span class="string">"copyright"</span>, <span class="string">"credits"</span> <span class="keyword">or</span> <span class="string">"license"</span> <span class="keyword">for</span> more information.</span><br><span class="line"></span><br><span class="line">IPython <span class="number">3.2</span><span class="number">.1</span> <span class="comment">-- An enhanced Interactive Python.</span></span><br><span class="line">?         -&gt; Introduction <span class="keyword">and</span> overview <span class="keyword">of</span> IPython<span class="string">'s features.</span></span><br><span class="line"><span class="string">%quickref -&gt; Quick reference.</span></span><br><span class="line"><span class="string">help      -&gt; Python'</span>s own <span class="keyword">help</span> system.</span><br><span class="line"><span class="keyword">object</span>?   -&gt; Details about <span class="string">'object'</span>, <span class="keyword">use</span> <span class="string">'object??'</span> <span class="keyword">for</span> extra details.</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">1</span>]: <span class="keyword">import</span> happybase</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">2</span>]: <span class="keyword">connection</span> = happybase.Connection(<span class="string">'localhost'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">3</span>]: connection.tables()</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">3</span>]: []</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">4</span>]: families = &#123;<span class="string">'basic'</span>:dict(max_versions=<span class="number">3</span>),<span class="string">'detail'</span>:dict(max_versions=<span class="number">1000</span>),<span class="string">'comment'</span>:dict(max_versions=<span class="number">1000</span>),<span class="string">'answer'</span>:dict(max_versions=<span class="number">1000</span>),<span class="string">'follower'</span>:dict(max_versions=<span class="number">1000</span>)&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">5</span>]: connection.create_table(<span class="string">'question'</span>,families)</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">6</span>]: connection.tables()</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">6</span>]: [<span class="string">'question'</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">7</span>]:</span><br></pre></td></tr></table></figure>
+<h2 id="二-分布式安装"><a href="#二-分布式安装" class="headerlink" title="二 分布式安装"></a>二 分布式安装</h2><h3 id="1-软件环境"><a href="#1-软件环境" class="headerlink" title="1. 软件环境"></a>1. 软件环境</h3><p>OS:Linux Master 3.19.0-25-generic #26~14.04.1-Ubuntu SMP Fri Jul 24 21:16:20 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux</p>
+<p>Java:java version “1.8.0_65”<br>Java(TM) SE Runtime Environment (build 1.8.0_65-b17)<br>Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)</p>
+<p>Hadoop:Hadoop 2.6.0</p>
+<p>Hbase:hbase-1.1.3</p>
+<h3 id="2-集群部署机器"><a href="#2-集群部署机器" class="headerlink" title="2. 集群部署机器:"></a>2. 集群部署机器:</h3><table>
+<thead>
+<tr>
+<th>IP</th>
+<th>HostName</th>
+<th>Master</th>
+<th>RegionServer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>192.168.1.80</td>
+<td>Master</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>192.168.1.82</td>
+<td>Slave1</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>192.168.1.84</td>
+<td>Slave2</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-准备"><a href="#3-准备" class="headerlink" title="3. 准备:"></a>3. 准备:</h3><p>假设你已经安装部署好了 Hadoop 集群和 Java，可以参考以前的部署 文章。</p>
+<h3 id="4-Master的安装"><a href="#4-Master的安装" class="headerlink" title="4. Master的安装:"></a>4. Master的安装:</h3><h4 id="1-基本安装"><a href="#1-基本安装" class="headerlink" title=" 1)基本安装"></a><strong> 1)基本安装</strong></h4><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf hbase<span class="number">-1.0</span><span class="number">.0</span>-bin.tar.gz</span><br><span class="line">sudo mv hbase<span class="number">-1.0</span><span class="number">.0</span> <span class="regexp">/usr/</span>local/hbase</span><br><span class="line">cd <span class="regexp">/usr/</span>local/</span><br><span class="line">sudo chmod -R <span class="number">775</span> hbase</span><br><span class="line">sudo chown -R <span class="string">hadoop:</span><span class="string">hadoop:</span> hbase</span><br></pre></td></tr></table></figure>
+<h4 id="2-修改-JAVA-HOME为jdk安装目录"><a href="#2-修改-JAVA-HOME为jdk安装目录" class="headerlink" title="2)修改$JAVA_HOME为jdk安装目录"></a><strong>2)修改$JAVA_HOME为jdk安装目录</strong></h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">usr/local/hbase/conf$ sudo nano hbase-env.sh </span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/lib/jvm/</span><br></pre></td></tr></table></figure>
+<h4 id="3-修改hbase-site-xml-1"><a href="#3-修改hbase-site-xml-1" class="headerlink" title="3)修改hbase-site.xml"></a><strong>3)修改hbase-site.xml</strong></h4><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/hbase/</span>conf/hbase-site.xml </span><br><span class="line"></span><br><span class="line"><span class="params">&lt;configuration&gt;</span></span><br><span class="line">  <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.rootdir<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span>hdfs:<span class="comment">//Master:9000/hbase&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line">  <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.cluster.distributed<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span>true<span class="params">&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line">  <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.zookeeper.quorum<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span>Master,Slave1,Slave2<span class="params">&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line">  <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.zookeeper.property.dataDir<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span><span class="meta-keyword">/home/</span>hadoop<span class="params">&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line"><span class="params">&lt;/configuration&gt;</span></span><br></pre></td></tr></table></figure>
+<p>其中第一个属性指定本机的hbase的存储目录，必须与Hadoop集群的core-site.xml文件配置保持一致；第二个属性指定hbase的运行模式，true代表全分布模式；第三个属性指定 Zookeeper 管理的机器，一般为奇数个；第四个属性是数据存放的路径。这里我使用的默认的 HBase 自带的 Zookeeper。</p>
+<h4 id="4-配置regionservers"><a href="#4-配置regionservers" class="headerlink" title="4)配置regionservers"></a><strong>4)配置regionservers</strong></h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Slave1</span><br><span class="line">Slave2</span><br></pre></td></tr></table></figure>
+<p>regionservers文件列出了所有运行hbase的机器（即HRegionServer)。此文件的配置和Hadoop中的slaves文件十分相似，每行指定一台机器的主机名。当HBase启动的时候，会将此文件中列出的所有机器启动。关闭时亦如此。</p>
+<h4 id="5-修改-ulimit-限制"><a href="#5-修改-ulimit-限制" class="headerlink" title="5)修改 ulimit 限制"></a><strong>5)修改 ulimit 限制</strong></h4><p>HBase 会在同一时间打开大量的文件句柄和进程，超过 Linux 的默认限制，导致可能会出现错误。<br>所以编辑/etc/security/limits.conf文件，添加以下两行，提高能打开的句柄数量和进程数量。注意将hadoop改成你运行 HBase 的用户名。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop  -       nofile  <span class="number">65535</span></span><br><span class="line">hadoop  -       nproc   <span class="number">32000</span></span><br></pre></td></tr></table></figure>
+<p>还需要在 /etc/pam.d/common-session 加上这一行:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">session</span> <span class="selector-tag">required</span> <span class="selector-tag">pam_limits</span><span class="selector-class">.so</span></span><br></pre></td></tr></table></figure>
+<p>否则在/etc/security/limits.conf上的配置不会生效。</p>
+<p>最后还要注销（logout或者exit）后再登录，这些配置才能生效！使用ulimit -n -u命令查看最大文件和进程数量是否改变了。记得在每台安装 HBase 的机器上运行哦。</p>
+<h3 id="5-Slave上面的操作"><a href="#5-Slave上面的操作" class="headerlink" title="5. Slave上面的操作"></a>5. Slave上面的操作</h3><p>基本上把以上步骤重复一下就可以了.</p>
+<p>在 Master 节点上执行：  </p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local</span><br><span class="line">hadoop<span class="variable">@hadoopmaster</span><span class="symbol">:/usr/local</span><span class="variable">$ </span>sudo tar cvfz ~<span class="regexp">/hbase.tar.gz ./hbase</span></span><br><span class="line">scp ~<span class="regexp">/hbase.tar.gz hadoop@hadoopslave1:/home</span><span class="regexp">/hadoop/</span></span><br><span class="line">scp ~<span class="regexp">/hbase.tar.gz  hadoop@hadoopslave2:/home</span><span class="regexp">/hadoop/</span></span><br></pre></td></tr></table></figure>
+<p>在Slave节点上执行:</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:/usr/local</span><span class="variable">$ </span>sudo tar xvfz ~<span class="regexp">/hbase.tar.gz -C /usr</span><span class="regexp">/local/</span></span><br><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:/usr/local</span><span class="variable">$ </span>sudo chown -R <span class="symbol">hadoop:</span>hadoop /usr/local/hbase/</span><br><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:/usr/local</span><span class="variable">$ </span>sudo chmod -R <span class="number">775</span> /usr/local/hbase/</span><br></pre></td></tr></table></figure>
+<h3 id="6-运行-HBase"><a href="#6-运行-HBase" class="headerlink" title="6. 运行 HBase"></a>6. 运行 HBase</h3><p>在master上运行</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">start-dfs.sh</span><br><span class="line">start-yarn.sh</span><br><span class="line">mr-jobhistory-daemon<span class="selector-class">.sh</span> start historyserver</span><br><span class="line">start-hbase.sh</span><br></pre></td></tr></table></figure>
+<h3 id="7-验证-HBase-成功安装"><a href="#7-验证-HBase-成功安装" class="headerlink" title="7. 验证 HBase 成功安装"></a>7. 验证 HBase 成功安装</h3><p>在 master 运行 jps 应该会有HMaster进程。在各个 slave 上运行jps 应该会有HQuorumPeer,HRegionServer两个进程。<br>在浏览器中输入 <a href="http://Master:16010" target="_blank" rel="noopener">http://Master:16010</a> 可以看到 HBase Web UI 。</p>
+<p><img src="/img/hadoop/11/chapter11hbaseok.png" alt></p>
+<h2 id="三-安装疑难杂症"><a href="#三-安装疑难杂症" class="headerlink" title="三 安装疑难杂症"></a>三 安装疑难杂症</h2><h3 id="错误表现-SLF4J-Class-path-contains-multiple-SLF4J-bindings"><a href="#错误表现-SLF4J-Class-path-contains-multiple-SLF4J-bindings" class="headerlink" title="错误表现-SLF4J: Class path contains multiple SLF4J bindings."></a>错误表现-SLF4J: Class path contains multiple SLF4J bindings.</h3><h4 id="错误表现："><a href="#错误表现：" class="headerlink" title="错误表现："></a>错误表现：</h4><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">SLF4J:</span> Class path contains multiple SLF4J bindings.</span><br><span class="line"><span class="symbol">SLF4J:</span> Found binding in [<span class="symbol">jar:</span><span class="symbol">file:</span>/usr/hbase/<span class="class"><span class="keyword">lib</span>/<span class="title">slf4j</span>-<span class="title">log4j12</span>-1.6.4.<span class="title">jar!</span>/<span class="title">org</span>/<span class="title">slf4j</span>/<span class="title">impl</span>/<span class="title">StaticLoggerBinder</span>.<span class="title">class</span>]</span></span><br><span class="line"><span class="symbol">SLF4J:</span> Found binding in [<span class="symbol">jar:</span><span class="symbol">file:</span>/usr/hadoop/share/hadoop/common/<span class="class"><span class="keyword">lib</span>/<span class="title">slf4j</span>-<span class="title">log4j12</span>-1.7.5.<span class="title">jar!</span>/<span class="title">org</span>/<span class="title">slf4j</span>/<span class="title">impl</span>/<span class="title">StaticLoggerBinder</span>.<span class="title">class</span>]</span></span><br><span class="line"><span class="symbol">SLF4J:</span> See <span class="symbol">http:</span>/<span class="regexp">/www.slf4j.org/codes</span>.html<span class="comment">#multiple_bindings for an explanation.</span></span><br></pre></td></tr></table></figure>
+<p>含义为：发生jar包冲突了<br>分别为：<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">file:</span>/usr/hbase/<span class="class"><span class="keyword">lib</span>/<span class="title">slf4j</span>-<span class="title">log4j12</span>-1.6.4.<span class="title">jar!</span>/<span class="title">org</span>/<span class="title">slf4j</span>/<span class="title">impl</span>/<span class="title">StaticLoggerBinder</span>.<span class="title">class</span></span></span><br><span class="line"><span class="symbol">file:</span>/usr/hadoop/share/hadoop/common/<span class="class"><span class="keyword">lib</span>/<span class="title">slf4j</span>-<span class="title">log4j12</span>-1.7.5.<span class="title">jar!</span>/<span class="title">org</span>/<span class="title">slf4j</span>/<span class="title">impl</span>/<span class="title">StaticLoggerBinder</span>.<span class="title">class</span></span></span><br></pre></td></tr></table></figure></p>
+<p>移除其中一个jar包即可</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案:"></a>解决方案:</h4><p>使用下面命令<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/hbase/<span class="class"><span class="keyword">lib</span> <span class="title">rm</span> <span class="title">slf4j</span>-<span class="title">log4j12</span>-1.6.4.<span class="title">jar</span></span></span><br></pre></td></tr></table></figure></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100339.html" class="pre-post btn btn-default" title='大数据hadoop之 三十四.HBASE常用的Shell命令'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十四.HBASE常用的Shell命令</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100337.html" class="next-post btn btn-default" title='大数据hadoop之 三十二.HBASE介绍'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十二.HBASE介绍</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-伪分布式安装"><span class="toc-text">一 伪分布式安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-下载解压给权限"><span class="toc-text">1. 下载解压给权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-修改HBASE的JDK环境变量"><span class="toc-text">2. 修改HBASE的JDK环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-修改hbase-site-xml"><span class="toc-text">3. 修改hbase-site.xml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-启动验证"><span class="toc-text">4. 启动验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-尝试一下Thrift通信服务"><span class="toc-text">5. 尝试一下Thrift通信服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-分布式安装"><span class="toc-text">二 分布式安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-软件环境"><span class="toc-text">1. 软件环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-集群部署机器"><span class="toc-text">2. 集群部署机器:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-准备"><span class="toc-text">3. 准备:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Master的安装"><span class="toc-text">4. Master的安装:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-基本安装"><span class="toc-text"> 1)基本安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-修改-JAVA-HOME为jdk安装目录"><span class="toc-text">2)修改$JAVA_HOME为jdk安装目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-修改hbase-site-xml-1"><span class="toc-text">3)修改hbase-site.xml</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-配置regionservers"><span class="toc-text">4)配置regionservers</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-修改-ulimit-限制"><span class="toc-text">5)修改 ulimit 限制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Slave上面的操作"><span class="toc-text">5. Slave上面的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-运行-HBase"><span class="toc-text">6. 运行 HBase</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-验证-HBase-成功安装"><span class="toc-text">7. 验证 HBase 成功安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-安装疑难杂症"><span class="toc-text">三 安装疑难杂症</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#错误表现-SLF4J-Class-path-contains-multiple-SLF4J-bindings"><span class="toc-text">错误表现-SLF4J: Class path contains multiple SLF4J bindings.</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#错误表现："><span class="toc-text">错误表现：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-text">解决方案:</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

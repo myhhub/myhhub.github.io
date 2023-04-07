@@ -1,0 +1,430 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,java,zookeeper">
+
+
+    <meta name="description" content="一、基本依赖Curator是Netflix公司开源的一个Zookeeper客户端，目前由Apache进行维护。与Zookeeper原生客户端相比，Curator的抽象层次更高，功能也更加丰富，是...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Zookeeper Java 客户端 ——Apache Curator | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Zookeeper Java 客户端 ——Apache Curator">
+            
+	            Zookeeper Java 客户端 ——Apache Curator
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/zookeeper/">zookeeper</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/15</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1361</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、基本依赖"><a href="#一、基本依赖" class="headerlink" title="一、基本依赖"></a>一、基本依赖</h2><p>Curator是Netflix公司开源的一个Zookeeper客户端，目前由Apache进行维护。与Zookeeper原生客户端相比，Curator的抽象层次更高，功能也更加丰富，是目前Zookeeper使用范围最广的Java客户端。本篇文章主要讲解其基本使用，项目采用Maven构建，以单元测试的方法进行讲解，相关依赖如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--Curator相关依赖--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4.13<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--单元测试相关依赖--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>完整源码见本仓库： <a href="https://github.com/myhhub/BigData-Notes/tree/master/code/Zookeeper/curator" target="_blank" rel="noopener">https://github.com/myhhub/BigData-Notes/tree/master/code/Zookeeper/curator</a></p>
+</blockquote>
+<h2 id="二、客户端相关操作"><a href="#二、客户端相关操作" class="headerlink" title="二、客户端相关操作"></a>二、客户端相关操作</h2><h3 id="2-1-创建客户端实例"><a href="#2-1-创建客户端实例" class="headerlink" title="2.1 创建客户端实例"></a>2.1 创建客户端实例</h3><p>这里使用<code>@Before</code>在单元测试执行前创建客户端实例，并使用<code>@After</code>在单元测试后关闭客户端连接。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicOperation</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> CuratorFramework client = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String zkServerPath = <span class="string">"192.168.0.226:2181"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String nodePath = <span class="string">"/hadoop/yarn"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 重试策略</span></span><br><span class="line">        RetryPolicy retryPolicy = <span class="keyword">new</span> RetryNTimes(<span class="number">3</span>, <span class="number">5000</span>);</span><br><span class="line">        client = CuratorFrameworkFactory.builder()</span><br><span class="line">        .connectString(zkServerPath)</span><br><span class="line">        .sessionTimeoutMs(<span class="number">10000</span>).retryPolicy(retryPolicy)</span><br><span class="line">        .namespace(<span class="string">"workspace"</span>).build();  <span class="comment">//指定命名空间后，client的所有路径操作都会以/workspace开头</span></span><br><span class="line">        client.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@After</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (client != <span class="keyword">null</span>) &#123;</span><br><span class="line">            client.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-重试策略"><a href="#2-2-重试策略" class="headerlink" title="2.2 重试策略"></a>2.2 重试策略</h3><p>在连接Zookeeper时，Curator提供了多种重试策略以满足各种需求，所有重试策略均继承自<code>RetryPolicy</code>接口，如下图：</p>
+<div align="center"> <img src="/img/bigdata/curator-retry-policy.png"> </div>
+
+<p>这些重试策略类主要分为以下两类：</p>
+<ul>
+<li><strong>RetryForever</strong> ：代表一直重试，直到连接成功；</li>
+<li><strong>SleepingRetry</strong> ： 基于一定间隔时间的重试。这里以其子类<code>ExponentialBackoffRetry</code>为例说明，其构造器如下：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> baseSleepTimeMs 重试之间等待的初始时间</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> maxRetries 最大重试次数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> maxSleepMs 每次重试间隔的最长睡眠时间（毫秒）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">ExponentialBackoffRetry(<span class="keyword">int</span> baseSleepTimeMs, <span class="keyword">int</span> maxRetries, <span class="keyword">int</span> maxSleepMs)</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-判断服务状态"><a href="#2-3-判断服务状态" class="headerlink" title="2.3 判断服务状态"></a>2.3 判断服务状态</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">public void getStatus() &#123;</span><br><span class="line">    <span class="type">CuratorFrameworkState</span> state = client.getState();</span><br><span class="line">    <span class="type">System</span>.out.println(<span class="string">"服务是否已经启动:"</span> + (state == <span class="type">CuratorFrameworkState</span>.<span class="type">STARTED</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三、节点增删改查"><a href="#三、节点增删改查" class="headerlink" title="三、节点增删改查"></a>三、节点增删改查</h2><h3 id="3-1-创建节点"><a href="#3-1-创建节点" class="headerlink" title="3.1 创建节点"></a>3.1 创建节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createNodes</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] data = <span class="string">"abc"</span>.getBytes();</span><br><span class="line">    client.create().creatingParentsIfNeeded()</span><br><span class="line">            .withMode(CreateMode.PERSISTENT)      <span class="comment">//节点类型</span></span><br><span class="line">            .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)</span><br><span class="line">            .forPath(nodePath, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建时可以指定节点类型，这里的节点类型和Zookeeper原生的一致，全部类型定义在枚举类<code>CreateMode</code>中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> CreateMode &#123;</span><br><span class="line">    <span class="comment">// 永久节点</span></span><br><span class="line">    PERSISTENT (<span class="number">0</span>, <span class="keyword">false</span>, <span class="keyword">false</span>),</span><br><span class="line">    <span class="comment">//永久有序节点</span></span><br><span class="line">    PERSISTENT_SEQUENTIAL (<span class="number">2</span>, <span class="keyword">false</span>, <span class="keyword">true</span>),</span><br><span class="line">    <span class="comment">// 临时节点</span></span><br><span class="line">    EPHEMERAL (<span class="number">1</span>, <span class="keyword">true</span>, <span class="keyword">false</span>),</span><br><span class="line">    <span class="comment">// 临时有序节点</span></span><br><span class="line">    EPHEMERAL_SEQUENTIAL (<span class="number">3</span>, <span class="keyword">true</span>, <span class="keyword">true</span>);</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-获取节点信息"><a href="#2-2-获取节点信息" class="headerlink" title="2.2 获取节点信息"></a>2.2 获取节点信息</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">public void getNode() <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</span><br><span class="line">    <span class="type">Stat</span> stat = <span class="keyword">new</span> <span class="type">Stat</span>();</span><br><span class="line">    byte[] data = client.getData().storingStatIn(stat).forPath(nodePath);</span><br><span class="line">    <span class="type">System</span>.out.println(<span class="string">"节点数据:"</span> + <span class="keyword">new</span> <span class="type">String</span>(data));</span><br><span class="line">    <span class="type">System</span>.out.println(<span class="string">"节点信息:"</span> + stat.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上所示，节点信息被封装在<code>Stat</code>类中，其主要属性如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stat</span> <span class="keyword">implements</span> <span class="title">Record</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> czxid;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> mzxid;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> ctime;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> mtime;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> version;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> cversion;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> aversion;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> ephemeralOwner;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> dataLength;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> numChildren;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> pzxid;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个属性的含义如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>状态属性</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>czxid</td>
+<td>数据节点创建时的事务ID</td>
+</tr>
+<tr>
+<td>ctime</td>
+<td>数据节点创建时的时间</td>
+</tr>
+<tr>
+<td>mzxid</td>
+<td>数据节点最后一次更新时的事务ID</td>
+</tr>
+<tr>
+<td>mtime</td>
+<td>数据节点最后一次更新时的时间</td>
+</tr>
+<tr>
+<td>pzxid</td>
+<td>数据节点的子节点最后一次被修改时的事务ID</td>
+</tr>
+<tr>
+<td>cversion</td>
+<td>子节点的更改次数</td>
+</tr>
+<tr>
+<td>version</td>
+<td>节点数据的更改次数</td>
+</tr>
+<tr>
+<td>aversion</td>
+<td>节点的ACL的更改次数</td>
+</tr>
+<tr>
+<td>ephemeralOwner</td>
+<td>如果节点是临时节点，则表示创建该节点的会话的SessionID；如果节点是持久节点，则该属性值为0</td>
+</tr>
+<tr>
+<td>dataLength</td>
+<td>数据内容的长度</td>
+</tr>
+<tr>
+<td>numChildren</td>
+<td>数据节点当前的子节点个数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-3-获取子节点列表"><a href="#2-3-获取子节点列表" class="headerlink" title="2.3 获取子节点列表"></a>2.3 获取子节点列表</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getChildrenNodes</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    List&lt;String&gt; childNodes = client.getChildren().forPath(<span class="string">"/hadoop"</span>);</span><br><span class="line">    <span class="keyword">for</span> (String s : childNodes) &#123;</span><br><span class="line">        System.out.println(s);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-更新节点"><a href="#2-4-更新节点" class="headerlink" title="2.4 更新节点"></a>2.4 更新节点</h3><p>更新时可以传入版本号也可以不传入，如果传入则类似于乐观锁机制，只有在版本号正确的时候才会被更新。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">public void updateNode() <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</span><br><span class="line">    byte[] newData = <span class="string">"defg"</span>.getBytes();</span><br><span class="line">    client.setData().withVersion(<span class="number">0</span>)     <span class="comment">// 传入版本号，如果版本号错误则拒绝更新操作,并抛出BadVersion异常</span></span><br><span class="line">            .forPath(nodePath, newData);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-删除节点"><a href="#2-5-删除节点" class="headerlink" title="2.5 删除节点"></a>2.5 删除节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteNodes</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    client.delete()</span><br><span class="line">            .guaranteed()                <span class="comment">// 如果删除失败，那么在会继续执行，直到成功</span></span><br><span class="line">            .deletingChildrenIfNeeded()  <span class="comment">// 如果有子节点，则递归删除</span></span><br><span class="line">            .withVersion(<span class="number">0</span>)              <span class="comment">// 传入版本号，如果版本号错误则拒绝删除操作,并抛出BadVersion异常</span></span><br><span class="line">            .forPath(nodePath);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-判断节点是否存在"><a href="#2-6-判断节点是否存在" class="headerlink" title="2.6 判断节点是否存在"></a>2.6 判断节点是否存在</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">existNode</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// 如果节点存在则返回其状态信息如果不存在则为null</span></span><br><span class="line">    Stat stat = client.checkExists().forPath(nodePath + <span class="string">"aa/bb/cc"</span>);</span><br><span class="line">    System.out.println(<span class="string">"节点是否存在:"</span> + !(stat == <span class="keyword">null</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三、监听事件"><a href="#三、监听事件" class="headerlink" title="三、监听事件"></a>三、监听事件</h2><h3 id="3-1-创建一次性监听"><a href="#3-1-创建一次性监听" class="headerlink" title="3.1 创建一次性监听"></a>3.1 创建一次性监听</h3><p>和Zookeeper原生监听一样，使用<code>usingWatcher</code>注册的监听是一次性的，即监听只会触发一次，触发后就销毁。示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DisposableWatch</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    client.getData().usingWatcher(<span class="keyword">new</span> CuratorWatcher() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"节点"</span> + event.getPath() + <span class="string">"发生了事件:"</span> + event.getType());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).forPath(nodePath);</span><br><span class="line">    Thread.sleep(<span class="number">1000</span> * <span class="number">1000</span>);  <span class="comment">//休眠以观察测试效果</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-创建永久监听"><a href="#3-2-创建永久监听" class="headerlink" title="3.2 创建永久监听"></a>3.2 创建永久监听</h3><p>Curator还提供了创建永久监听的API，其使用方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">permanentWatch</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// 使用NodeCache包装节点，对其注册的监听作用于节点，且是永久性的</span></span><br><span class="line">    NodeCache nodeCache = <span class="keyword">new</span> NodeCache(client, nodePath);</span><br><span class="line">    <span class="comment">// 通常设置为true, 代表创建nodeCache时,就去获取对应节点的值并缓存</span></span><br><span class="line">    nodeCache.start(<span class="keyword">true</span>);</span><br><span class="line">    nodeCache.getListenable().addListener(<span class="keyword">new</span> NodeCacheListener() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">nodeChanged</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            ChildData currentData = nodeCache.getCurrentData();</span><br><span class="line">            <span class="keyword">if</span> (currentData != <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"节点路径："</span> + currentData.getPath() +</span><br><span class="line">                        <span class="string">"数据："</span> + <span class="keyword">new</span> String(currentData.getData()));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    Thread.sleep(<span class="number">1000</span> * <span class="number">1000</span>);  <span class="comment">//休眠以观察测试效果</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-监听子节点"><a href="#3-3-监听子节点" class="headerlink" title="3.3 监听子节点"></a>3.3 监听子节点</h3><p>这里以监听<code>/hadoop</code>下所有子节点为例，实现方式如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">public void permanentChildrenNodesWatch() <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第三个参数代表除了节点状态外，是否还缓存节点内容</span></span><br><span class="line">    <span class="type">PathChildrenCache</span> childrenCache = <span class="keyword">new</span> <span class="type">PathChildrenCache</span>(client, <span class="string">"/hadoop"</span>, <span class="literal">true</span>);</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * StartMode代表初始化方式:</span></span><br><span class="line"><span class="comment">         *    NORMAL: 异步初始化</span></span><br><span class="line"><span class="comment">         *    BUILD_INITIAL_CACHE: 同步初始化</span></span><br><span class="line"><span class="comment">         *    POST_INITIALIZED_EVENT: 异步并通知,初始化之后会触发INITIALIZED事件</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    childrenCache.start(<span class="type">StartMode</span>.<span class="type">POST_INITIALIZED_EVENT</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">List</span>&lt;<span class="type">ChildData</span>&gt; childDataList = childrenCache.getCurrentData();</span><br><span class="line">    <span class="type">System</span>.out.println(<span class="string">"当前数据节点的子节点列表："</span>);</span><br><span class="line">    childDataList.forEach(x -&gt; <span class="type">System</span>.out.println(x.getPath()));</span><br><span class="line"></span><br><span class="line">    childrenCache.getListenable().addListener(<span class="keyword">new</span> <span class="type">PathChildrenCacheListener</span>() &#123;</span><br><span class="line">        public void childEvent(<span class="type">CuratorFramework</span> client, <span class="type">PathChildrenCacheEvent</span> event) &#123;</span><br><span class="line">            switch (event.getType()) &#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="type">INITIALIZED</span>:</span><br><span class="line">                <span class="type">System</span>.out.println(<span class="string">"childrenCache初始化完成"</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="type">CHILD_ADDED</span>:</span><br><span class="line">                <span class="comment">// 需要注意的是: 即使是之前已经存在的子节点，也会触发该监听，因为会把该子节点加入childrenCache缓存中</span></span><br><span class="line">                <span class="type">System</span>.out.println(<span class="string">"增加子节点:"</span> + event.getData().getPath());</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="type">CHILD_REMOVED</span>:</span><br><span class="line">                <span class="type">System</span>.out.println(<span class="string">"删除子节点:"</span> + event.getData().getPath());</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="type">CHILD_UPDATED</span>:</span><br><span class="line">                <span class="type">System</span>.out.println(<span class="string">"被修改的子节点的路径:"</span> + event.getData().getPath());</span><br><span class="line">                <span class="type">System</span>.out.println(<span class="string">"修改后的数据:"</span> + <span class="keyword">new</span> <span class="type">String</span>(event.getData().getData()));</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="type">Thread</span>.sleep(<span class="number">1000</span> * <span class="number">1000</span>); <span class="comment">//休眠以观察测试效果</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100436.html" class="pre-post btn btn-default" title='Zookeeper ACL权限控制'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Zookeeper ACL权限控制</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100434.html" class="next-post btn btn-default" title='Zookeeper常用Shell命令'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Zookeeper常用Shell命令</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、基本依赖"><span class="toc-text">一、基本依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、客户端相关操作"><span class="toc-text">二、客户端相关操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-创建客户端实例"><span class="toc-text">2.1 创建客户端实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-重试策略"><span class="toc-text">2.2 重试策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-判断服务状态"><span class="toc-text">2.3 判断服务状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、节点增删改查"><span class="toc-text">三、节点增删改查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-创建节点"><span class="toc-text">3.1 创建节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-获取节点信息"><span class="toc-text">2.2 获取节点信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-获取子节点列表"><span class="toc-text">2.3 获取子节点列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-更新节点"><span class="toc-text">2.4 更新节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-删除节点"><span class="toc-text">2.5 删除节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-判断节点是否存在"><span class="toc-text">2.6 判断节点是否存在</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、监听事件"><span class="toc-text">三、监听事件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-创建一次性监听"><span class="toc-text">3.1 创建一次性监听</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-创建永久监听"><span class="toc-text">3.2 创建永久监听</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-监听子节点"><span class="toc-text">3.3 监听子节点</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

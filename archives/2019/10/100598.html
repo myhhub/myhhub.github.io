@@ -1,0 +1,407 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="知识图谱,neo4j">
+
+
+    <meta name="description" content="一. 简介 前面我们爬取了百度百科的数据，获取400W的数据大概需要10天左右。接下来我们需要把它存到图数据库里来，这里我还是使用neo4j，没选Jena的原因是我个人认为在没有本体模型的情况下...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>从零开始学习知识图谱 之 八.百科知识图谱构建 2.数据清洗及存入图数据库Neo4j | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="从零开始学习知识图谱 之 八.百科知识图谱构建 2.数据清洗及存入图数据库Neo4j">
+            
+	            从零开始学习知识图谱 之 八.百科知识图谱构建 2.数据清洗及存入图数据库Neo4j
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/neo4j/">neo4j</a> <a class="tag-link" href="/tags/knowledgegraph/">知识图谱</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/10/24</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1260</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h1><p> 前面我们爬取了百度百科的数据，获取400W的数据大概需要10天左右。接下来我们需要把它存到图数据库里来，这里我还是使用neo4j，没选Jena的原因是我个人认为在没有本体模型的情况下，在neo4j上好好的建立上下位关系也许更好。 现有百度百科部分，包含词条4,190,390条，存入 neo4j 后得到节点 10,416,647个，关系 37,317,167 条，属性 45,049,533个。下面我们对其进行介绍。 </p>
+<p>本教程的项目代码放在github上，下载地址为<a href="https://github.com/myhhub/zero_knowledge_graph" target="_blank" rel="noopener">《从零开始学习知识图谱》项目源代码</a> 。</p>
+<h1 id="二-环境准备"><a href="#二-环境准备" class="headerlink" title="二. 环境准备"></a>二. 环境准备</h1><h2 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h2><p>支持操作系统：windows、macOS、Linux。为了方便大家搭建开发环境，笔者尽可能在windows下构建，系列篇未特意说明时操作系统都是<strong>windows</strong>。Linux安装可以参考<a href="100590.html">VirtualBox虚拟机安装Ubuntu</a>或<a href="100589.html">VirtualBox虚拟机安装CentOS8</a>进行安装。</p>
+<h2 id="2-jdk"><a href="#2-jdk" class="headerlink" title="2. jdk"></a>2. jdk</h2><p>安装参见<a href="100604.html">windows系统安装JDK</a></p>
+<h2 id="3-Python3"><a href="#3-Python3" class="headerlink" title="3. Python3"></a>3. Python3</h2><p>安装参见<a href="100591.html#4-Python3">从零开始学习知识图谱 之 一</a></p>
+<h2 id="4-安装Neo4j"><a href="#4-安装Neo4j" class="headerlink" title="4. 安装Neo4j"></a>4. 安装Neo4j</h2><p>参见<a href="https://www.ljjyy.com/archives/2019/10/100596.html#2-%E5%AE%89%E8%A3%85Neo4j">从零开始学习知识图谱 之 六 -安装Neo4j</a></p>
+<h1 id="三-MYSQL-数据的导出"><a href="#三-MYSQL-数据的导出" class="headerlink" title="三. MYSQL 数据的导出"></a>三. MYSQL 数据的导出</h1><p>从MYSQL中，导出所需数据，包含：</p>
+<ul>
+<li>节点<ul>
+<li>title: 包含 title,即词条的标题，如上海</li>
+<li>disambi: 包含 disambi(消除歧义的名称，如 上海 （中华人民共和国直辖市）), title(上面的标题), abstract(词条摘要), curLink(当前词条的网址), exterLink(该词条的引用外部链接)</li>
+<li>redirect: 包含 redirect,即同义词，如 沪 和上海 （中华人民共和国直辖市）是同一个意思</li>
+<li>subject: 包含 disambi, subject(词条的分类, 如 地理,地点 等)</li>
+</ul>
+</li>
+<li>关系<ul>
+<li>title_disambi: 词条标题和消岐名称间的关系</li>
+<li>disambi_redirect: 消岐名称和同义词间的关系</li>
+<li>disambi_subject: 消岐名称和词条分类间的关系 如 “内森·科德里”,”娱乐人物,人物”</li>
+<li>disambi_infobox: 消岐名称的对应属性，如 出生地、国籍等</li>
+</ul>
+</li>
+</ul>
+<p>建议使用MySQL Workbench执行下面脚本，</p>
+<p>mysql 中导出表的代码为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">                                                                    </span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">distinct</span> title  <span class="keyword">from</span> lemmas <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_title.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> disambi, title, abstract, curLink, exterLink <span class="keyword">from</span> lemmas  <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_disambi.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">distinct</span> redirect <span class="keyword">from</span> lemmas <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_redirect.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> disambi, subject <span class="keyword">from</span> lemmas <span class="keyword">where</span> subject != <span class="string">''</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_disambi_subject.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> title, disambi <span class="keyword">from</span> lemmas <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_title_disambi.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>; </span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> disambi, redirect <span class="keyword">from</span> lemmas <span class="keyword">where</span> redirect !=<span class="string">''</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_disambi_redirect.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> disambi, infobox <span class="keyword">from</span> lemmas <span class="keyword">where</span> infobox!=<span class="string">''</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/410_disambi_infobox.csv'</span> <span class="keyword">fields</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">','</span> <span class="keyword">optionally</span> <span class="keyword">enclosed</span> <span class="keyword">by</span> <span class="string">'"'</span> <span class="keyword">lines</span> <span class="keyword">terminated</span> <span class="keyword">by</span> <span class="string">'\r\n'</span>;</span><br></pre></td></tr></table></figure>
+<p> 而后我们将导出的csv文件转移到&lt;NEO4J_HOME&gt;\import文件夹内： </p>
+<p>文件移动Dos命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\mmm&gt;move C:\<span class="string">"ProgramData\MySQL\MySQL Server 8.0\Uploads\*.csv"</span> C:\my\neo4j\import\</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_disambi.csv</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_disambi_infobox.csv</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_disambi_redirect.csv</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_disambi_subject.csv</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_redirect.csv</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_title.csv</span><br><span class="line">C:\ProgramData\MySQL\MySQL<span class="built_in"> Server </span>8.0\Uploads\410_title_disambi.csv</span><br><span class="line">移动了         7 个文件。</span><br></pre></td></tr></table></figure>
+<h1 id="四-清洗数据"><a href="#四-清洗数据" class="headerlink" title="四. 清洗数据"></a>四. 清洗数据</h1><p>接下来需要对上面的这些文件做数据清洗，重点清洗对象为：title、disambi、infobox、subject这种。这里需要注意的是像disambi这种在不同文件中都出现的东西，一定要使用统一的标准去清洗它们，防止对不上导致错误。这里我建立了一个单独的python文件来统一定义清洗它们的方式：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import re        </span><br><span class="line">import commands</span><br><span class="line">                 </span><br><span class="line">class Clean(object):</span><br><span class="line">    @staticmethod</span><br><span class="line">    def clean_word(word, clean_level='others'):</span><br><span class="line">        """ Remove symbols in words :word word with unicode :clean_level keep different symbols for disambi/title :return clean word """   </span><br><span class="line">        word = word.strip()</span><br><span class="line">                 </span><br><span class="line">        if clean_level == "title":</span><br><span class="line">            word = word.strip().strip("<span class="symbol">\"</span>").replace("<span class="symbol">\n</span>", " ").replace("<span class="symbol">\"</span>","").strip(u"<span class="symbol">\\</span>")        elif clean_level == "subject":</span><br><span class="line">            word = word.replace("<span class="symbol">\"</span>", "").strip("<span class="symbol">\\</span>").strip()</span><br><span class="line">        elif clean_level == "redirect":</span><br><span class="line">            word = word.strip("<span class="symbol">\"</span>")</span><br><span class="line">        elif clean_level == "disambi":</span><br><span class="line">            word = re.sub(u"[，。、＆∈＊．↑【２—‘：“＃＞ ＢＦＲ·Ｚ&lt;ｂｆ≈ｊ×～①Ⅲ⑤⑨÷〔！％》－』１→５＝ＡＥ∧Ｉ/″▲; ］ξａｅφｉ｝④⑧…─☆《『０В＜Ｄ∪Ｌ±γ′ＴＸλ: ｄｈ｜③⑦~、℃＇〉＋」／】３〕Δ’；”？■ＣＧΨ［=μ＿ｃｇβ㈧ｏ｛②⑥'⑩。<span class="symbol">\~</span><span class="symbol">\!</span><span class="symbol">\@</span><span class="symbol">\#</span><span class="symbol">\$</span><span class="symbol">\%</span><span class="symbol">\^</span><span class="symbol">\&amp;</span><span class="symbol">\*</span><span class="symbol">\(</span><span class="symbol">\)</span><span class="symbol">\_</span><span class="symbol">\-</span><span class="symbol">\+</span><span class="symbol">\=</span><span class="symbol">\&#123;</span><span class="symbol">\&#125;</span><span class="symbol">\[</span><span class="symbol">\]</span><span class="symbol">\\</span><span class="symbol">\|</span><span class="symbol">\:</span><span class="symbol">\;</span><span class="symbol">\'</span><span class="symbol">\"</span><span class="symbol">\.</span><span class="symbol">\&gt;</span><span class="symbol">\?</span><span class="symbol">\/</span><span class="symbol">\,</span> <span class="symbol">\x</span>a0<span class="symbol">\u</span>00a0<span class="symbol">\u</span>3000<span class="symbol">\r</span><span class="symbol">\n</span>]", "", word)</span><br><span class="line">        elif clean_level == 'others':</span><br><span class="line">            word = re.sub(u"[，。、＆∈＊．↑【２—‘：“＃＞ ＢＦＲ·Ｚ&lt;ｂｆ≈ｊ×～①Ⅲ⑤⑨÷〔！％）》－』１→５＝ＡＥ∧Ｉ/″▲; ］ξａｅφｉ｝④⑧…─☆（《『０В＜Ｄ∪Ｌ±γ′ＴＸλ: ｄｈ｜③⑦~、℃＇〉＋」／】３〕Δ’；”？■ＣＧΨ［=μ＿ｃｇβ㈧ｏ｛②⑥'⑩。<span class="symbol">\~</span><span class="symbol">\!</span><span class="symbol">\@</span><span class="symbol">\#</span><span class="symbol">\$</span><span class="symbol">\%</span><span class="symbol">\^</span><span class="symbol">\&amp;</span><span class="symbol">\*</span><span class="symbol">\(</span><span class="symbol">\)</span><span class="symbol">\_</span><span class="symbol">\-</span><span class="symbol">\+</span><span class="symbol">\=</span><span class="symbol">\&#123;</span><span class="symbol">\&#125;</span><span class="symbol">\[</span><span class="symbol">\]</span><span class="symbol">\\</span><span class="symbol">\|</span><span class="symbol">\:</span><span class="symbol">\;</span><span class="symbol">\'</span><span class="symbol">\"</span><span class="symbol">\.</span><span class="symbol">\&gt;</span><span class="symbol">\?</span><span class="symbol">\/</span><span class="symbol">\,</span><span class="symbol">\x</span>a0<span class="symbol">\u</span>00a0<span class="symbol">\u</span>3000<span class="symbol">\r</span><span class="symbol">\n</span>]", "", word)</span><br><span class="line">        return word</span><br></pre></td></tr></table></figure>
+<p>接下来：</p>
+<ul>
+<li><p>运行 gen_disambi_infobox.py 得到 410_title_new.csv 的title 节点文件、410_disambi_infobox_out.csv 的 disambi_inbox 关系文件还有出现频次大于10的属性 all_attr.txt 文件。</p>
+</li>
+<li><p>运行 remove_disambi.py 得到 410_disambi_new.csv 节点文件</p>
+</li>
+<li><p>运行 get_subject.py 得到 disambi_subject.csv 关系文件和all_subject.csv 的全部subject文件。</p>
+</li>
+<li><p>运行 cleanFile.py 得到 410_title_disambi 的关系文件 和 410_disambi_redirect的关系文件。</p>
+</li>
+</ul>
+<p>以上程序放在ie/struct_to_rdf/baidu2neo4j 目录下，使用的话需要根据实际文件的存放路径进行更改。需要注意的是上面几个程序的重合度很高，在完成互动百科爬虫后，我将重写它们的结构。</p>
+<h1 id="五-将数据导入-neo4j"><a href="#五-将数据导入-neo4j" class="headerlink" title="五. 将数据导入 neo4j"></a>五. 将数据导入 neo4j</h1><p>由于数据量较大，我们需要采用neo4j-import 工具进行数据导入，运行下面的命令将数据导入 neo4j。</p>
+<p>*_header.csv头文件定义放在ie/struct_to_rdf/baidu2neo4j/header_file文件夹内。</p>
+<p><strong>需要注意的是下面所有的csv文件需要在当前目录下，或者使用路径指向它们，而后..\bin\neo4j-import、..\data\databases\的路径也根据你所处的路径而变化。同时保证..\data\databases\graph.db不存在，否则改名。</strong></p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport&gt;..<span class="symbol">\b</span>in<span class="symbol">\n</span>eo4j-import --multiline-fields=true --bad-tolerance=1000000 --into ..<span class="symbol">\d</span>ata<span class="symbol">\d</span>atabases<span class="symbol">\g</span>raph.db --id-type string --nodes:Title title_header.csv,410_title_new.csv --nodes:Disambi disambi_headers.csv,410_disambi_new.csv --nodes:Redirect redirect_header.csv,410_redirect.csv --nodes:Subject subject_header.csv,all_subject.csv --relationships:DisambiName title_disambi_header.csv,410_title_disambi_out.csv --relationships:RedirectName disambi_redirect_header.csv,410_disambi_redirect_out.csv --relationships:DisambiSubject disambi_subject_header.csv,disambi_subject.csv --relationships:Role disambi_infobox_header.csv,410_disambi_infobox_out.csv;</span><br><span class="line">WARNING: neo4j-import is deprecated and support for it will be removed in a future</span><br><span class="line">version of Neo4j; please use neo4j-admin import instead.</span><br><span class="line">Neo4j version: 3.5.11</span><br><span class="line">Importing the contents of these files into C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\d</span>ata<span class="symbol">\d</span>atabases<span class="symbol">\g</span>raph.db:</span><br><span class="line">Nodes:</span><br><span class="line">  :Title</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\t</span>itle_header.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\4</span>10_title_new.csv</span><br><span class="line"></span><br><span class="line">  :Disambi</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\d</span>isambi_headers.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\4</span>10_disambi_new.csv</span><br><span class="line"></span><br><span class="line">  :Redirect</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\r</span>edirect_header.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\4</span>10_redirect.csv</span><br><span class="line"></span><br><span class="line">  :Subject</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\s</span>ubject_header.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\a</span>ll_subject.csv</span><br><span class="line">Relationships:</span><br><span class="line">  :DisambiName</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\t</span>itle_disambi_header.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\4</span>10_title_disambi_out.csv</span><br><span class="line"></span><br><span class="line">  :RedirectName</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\d</span>isambi_redirect_header.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\4</span>10_disambi_redirect_out.csv</span><br><span class="line"></span><br><span class="line">  :DisambiSubject</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\d</span>isambi_subject_header.csv</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\d</span>isambi_subject.csv</span><br><span class="line"></span><br><span class="line">  :Role</span><br><span class="line">  C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\d</span>isambi_infobox_header.csv</span><br><span class="line"></span><br><span class="line">Available resources:</span><br><span class="line">  Total machine memory: 15.85 GB</span><br><span class="line">  Free machine memory: 9.93 GB</span><br><span class="line">  Max heap memory : 3.52 GB</span><br><span class="line">  Processors: 8</span><br><span class="line">  Configured max memory: 11.09 GB</span><br><span class="line">  High-IO: false</span><br><span class="line"></span><br><span class="line">Import starting 2019-10-29 17:05:36.714+0800</span><br><span class="line"></span><br><span class="line">······</span><br><span class="line"></span><br><span class="line">Imported:</span><br><span class="line">  10,416,647 nodes</span><br><span class="line">  37,317,167 relationships</span><br><span class="line">  45,049,533 properties</span><br><span class="line">Peak memory usage: 1.03 GB</span><br><span class="line">There were bad entries which were skipped and logged into C:<span class="symbol">\m</span>y<span class="symbol">\n</span>eo4j<span class="symbol">\i</span>mport<span class="symbol">\.</span>.<span class="symbol">\d</span>ata<span class="symbol">\d</span>atabases<span class="symbol">\g</span>raph.db<span class="symbol">\b</span>ad.log</span><br></pre></td></tr></table></figure>
+<p>其中我们定义了如下节点：</p>
+<ul>
+<li>Title： 只包含title名称</li>
+<li>Disambi：包含 disambi、title、abstract、curLink、exterLink五项内容。</li>
+<li>Redirect：只包含redirect名称</li>
+<li>Subject： 只包含subject</li>
+</ul>
+<p>除此之外还定义如下关系：</p>
+<ul>
+<li>DisambiName：表示 title到disambi间的关系</li>
+<li>RedirectName： 表示disambi 到 redirect间的关系</li>
+<li>DisambiSubject：表示 disambi 到 subject间的关系</li>
+<li>Role：表示disambi 到infobox里各个属性和属性值间的关系</li>
+</ul>
+<p>除此之外，使用 neo4j-import 最好使用像 disambi_infobox_header.csv 这种的header文件，里面包含</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:START_ID(Disambi)</span>,<span class="selector-tag">role</span>,<span class="selector-pseudo">:END_ID(Title)</span></span><br></pre></td></tr></table></figure>
+<p>其中START_ID表示关系的开始节点，END_ID表示关系的结束节点。中间的role表示关系的属性。需要注意的是上面这一行里面千万不能有空格，否则就会出现”role”这种情况。头文件定义放在ie/struct_to_rdf/baidu2neo4j/header_file文件夹内，大家可以参考使用。</p>
+<h1 id="六-参考"><a href="#六-参考" class="headerlink" title="六. 参考"></a>六. 参考</h1><p>Use the Import tool：<a href="https://neo4j.com/docs/operations-manual/current/tutorial/import-tool/" target="_blank" rel="noopener">https://neo4j.com/docs/operations-manual/current/tutorial/import-tool/</a> </p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/10/100599.html" class="pre-post btn btn-default" title='从零开始学习知识图谱 之 九.百科知识图谱构建 3.基于TensorFlow神经网络关系抽取的数据集构建(使用OpenNRE)'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 九.百科知识图谱构建 3.基于TensorFlow神经网络关系抽取的数据集构建(使用OpenNRE)</span>
+        </a>
+    
+    
+        <a href="/archives/2019/10/100597.html" class="next-post btn btn-default" title='从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-简介"><span class="toc-text">一. 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-环境准备"><span class="toc-text">二. 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统"><span class="toc-text">1. 操作系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-jdk"><span class="toc-text">2. jdk</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Python3"><span class="toc-text">3. Python3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-安装Neo4j"><span class="toc-text">4. 安装Neo4j</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-MYSQL-数据的导出"><span class="toc-text">三. MYSQL 数据的导出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四-清洗数据"><span class="toc-text">四. 清洗数据</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#五-将数据导入-neo4j"><span class="toc-text">五. 将数据导入 neo4j</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#六-参考"><span class="toc-text">六. 参考</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

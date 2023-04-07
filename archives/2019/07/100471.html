@@ -1,0 +1,403 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink,api,datastream">
+
+
+    <meta name="description" content="从头开始，从设置Flink项目到在Flink集群上运行流分析程序。
+Wikipedia提供了一个IRC频道，其中记录了对Wiki的所有编辑。我们将在Flink中读取此通道，并计算每个用户在给定时...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink DataStream API使用 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink DataStream API使用">
+            
+	            Flink DataStream API使用
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/api/">api</a> <a class="tag-link" href="/tags/datastream/">datastream</a> <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/21</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1355</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>从头开始，从设置Flink项目到在Flink集群上运行流分析程序。</p>
+<p>Wikipedia提供了一个IRC频道，其中记录了对Wiki的所有编辑。我们将在Flink中读取此通道，并计算每个用户在给定时间窗口内编辑的字节数。这很容易使用Flink在几分钟内实现，但它将为您提供一个良好的基础，从而开始自己构建更复杂的分析程序。</p>
+<h2 id="设置Maven项目"><a href="#设置Maven项目" class="headerlink" title="设置Maven项目"></a>设置Maven项目</h2><p>我们将使用Flink Maven Archetype来创建我们的项目结构。出于我们的目的，运行命令是这样的：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ mvn archetype:generate \</span><br><span class="line">    <span class="attribute">-DarchetypeGroupId</span>=org.apache.flink \</span><br><span class="line">    <span class="attribute">-DarchetypeArtifactId</span>=flink-quickstart-java \</span><br><span class="line">    <span class="attribute">-DarchetypeCatalog</span>=https://repository.apache.org/content/repositories/snapshots/ \</span><br><span class="line">    <span class="attribute">-DarchetypeVersion</span>=1.7-SNAPSHOT \</span><br><span class="line">    <span class="attribute">-DgroupId</span>=wiki-edits \</span><br><span class="line">    <span class="attribute">-DartifactId</span>=wiki-edits \</span><br><span class="line">    <span class="attribute">-Dversion</span>=0.1 \</span><br><span class="line">    <span class="attribute">-Dpackage</span>=wikiedits \</span><br><span class="line">    <span class="attribute">-DinteractiveMode</span>=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：对于Maven 3.0或更高版本，不再可以通过命令行指定存储库（-DarchetypeCatalog）。如果要使用SNAPSHOT存储库，则需要向settings.xml添加存储库条目。有关此更改的详细信息，请参阅<a href="http://maven.apache.org/archetype/maven-archetype-plugin/archetype-repository.html" target="_blank" rel="noopener">Maven官方文档</a></p>
+<p>您可以编辑<code>groupId</code>，<code>artifactId</code>而<code>package</code>如果你喜欢。使用上面的参数，Maven将创建一个如下所示的项目结构：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ tree wiki-edits</span><br><span class="line">wiki-edits/</span><br><span class="line">├── pom.xml</span><br><span class="line">└── src</span><br><span class="line">    └── main</span><br><span class="line">        ├── java</span><br><span class="line">        │   └── wikiedits</span><br><span class="line">        │       ├── BatchJob.java</span><br><span class="line">        │       ├── SocketTextStreamWordCount.java</span><br><span class="line">        │       ├── StreamingJob.java</span><br><span class="line">        │       └── WordCount.java</span><br><span class="line">        └── resources</span><br><span class="line">            └── log4j.properties</span><br></pre></td></tr></table></figure>
+<p>我们的<code>pom.xml</code>文件已经在根目录中添加了Flink依赖项，并且有几个示例Flink程序<code>src/main/java</code>。我们可以删除示例程序，因为我们将从头开始：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm wiki-edits<span class="regexp">/src/m</span>ain<span class="regexp">/java/</span>wikiedits<span class="regexp">/*.java</span></span><br></pre></td></tr></table></figure>
+<p>作为最后一步，我们需要将Flink Wikipedia连接器添加为依赖关系，以便我们可以在我们的程序中使用它。编辑它的<code>dependencies</code>部分<code>pom.xml</code>，使它看起来像这样：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;flink.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-streaming-java_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;flink.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-clients_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;flink.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-connector-wikiedits_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;flink.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>注意<code>flink-connector-wikiedits_2.11</code>添加的依赖项。（此示例和Wikipedia连接器的灵感来自Apache Samza 的<em>Hello Samza</em>示例。）</p>
+<h2 id="编写Flink程序"><a href="#编写Flink程序" class="headerlink" title="编写Flink程序"></a>编写Flink程序</h2><p>这是编码时间。启动您喜欢的IDE并导入Maven项目或打开文本编辑器并创建文件<code>src/main/java/wikiedits/WikipediaAnalysis.java</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> wikiedits;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WikipediaAnalysis</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该计划现在非常基础，但我们会尽力填写。请注意，我不会在此处提供import语句，因为IDE可以自动添加它们。在本节结束时，如果您只想跳过并在编辑器中输入，我将使用import语句显示完整的代码。</p>
+<p>Flink程序的第一步是创建一个<code>StreamExecutionEnvironment</code> （或者<code>ExecutionEnvironment</code>如果您正在编写批处理作业）。这可用于设置执行参数并创建从外部系统读取的源。所以让我们继续把它添加到main方法：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">StreamExecutionEnvironment see</span> = StreamExecutionEnvironment.getExecutionEnvironment();</span><br></pre></td></tr></table></figure>
+<p>接下来，我们将创建一个从Wikipedia IRC日志中读取的源：</p>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DataStream&lt;WikipediaEditEvent&gt; edits = <span class="meta">see</span>.addSource(<span class="keyword">new</span> WikipediaEditsSource());</span><br></pre></td></tr></table></figure>
+<p>这创建了一个我们可以进一步处理<code>DataStream</code>的<code>WikipediaEditEvent</code>数据元。出于本示例的目的，我们感兴趣的是确定每个用户在特定时间窗口中添加或删除的字节数，比如说五秒。为此，我们首先必须指定我们要在用户名上键入流，也就是说此流上的 算子操作应考虑用户名。在我们的例子中，窗口中编辑的字节的总和应该是每个唯一的用户。对于键入流，我们必须提供一个<code>KeySelector</code>，如下所示：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">KeyedStream&lt;WikipediaEditEvent, <span class="keyword">String</span>&gt; keyedEdits = edits</span><br><span class="line">    .keyBy(<span class="keyword">new</span> KeySelector&lt;WikipediaEditEvent, <span class="keyword">String</span>&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">String</span> <span class="built_in">getKey</span>(WikipediaEditEvent event) &#123;</span><br><span class="line">            <span class="built_in">return</span> event.getUser();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<p>这为我们提供了一个<code>WikipediaEditEvent</code>具有<code>String</code>Keys的用户名。我们现在可以指定我们希望在此流上加上窗口，并根据这些窗口中的数据元计算结果。窗口指定要在其上执行计算的Stream片。在无限的数据元流上计算聚合时需要Windows。在我们的例子中，我们将说我们想要每五秒聚合一次编辑的字节总和：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">DataStream&lt;Tuple2&lt;<span class="keyword">String</span>, Long&gt;&gt; result = keyedEdits</span><br><span class="line">    .timeWindow(Time.seconds(<span class="number">5</span>))</span><br><span class="line">    .fold(<span class="keyword">new</span> <span class="type">Tuple2</span>&lt;&gt;(<span class="string">""</span>, <span class="number">0</span>L), <span class="keyword">new</span> <span class="type">FoldFunction</span>&lt;WikipediaEditEvent, Tuple2&lt;<span class="keyword">String</span>, Long&gt;&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        <span class="keyword">public</span> Tuple2&lt;<span class="keyword">String</span>, Long&gt; fold(Tuple2&lt;<span class="keyword">String</span>, Long&gt; acc, WikipediaEditEvent event) &#123;</span><br><span class="line">            acc.f0 = event.getUser();</span><br><span class="line">            acc.f1 += event.getByteDiff();</span><br><span class="line">            <span class="keyword">return</span> acc;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<p>第一个调用，<code>.timeWindow()</code>指定我们想要有五秒钟的翻滚（非重叠）窗口。第二个调用为每个唯一键指定每个窗口切片的<em>折叠变换</em>。在我们的例子中，我们从一个初始值开始，<code>(&quot;&quot;, 0L)</code>并在其中为用户添加该时间窗口中每个编辑的字节差异。生成的Stream现在包含<code>Tuple2&lt;String, Long&gt;</code>每五秒钟发出一次的用户。</p>
+<p>剩下要做的就是将流打印到控制台并开始执行：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result.print()<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">see.execute()<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>最后一次调用是启动实际Flink作业所必需的。所有 算子操作（例如创建源，转换和接收器）仅构建内部 算子操作的图形。只有在<code>execute()</code>被调用时 才会在集群上抛出或在本地计算机上执行此 算子操作图。</p>
+<p>到目前为止完整的代码是这样的：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> wikiedits;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FoldFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.functions.KeySelector;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.KeyedStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.windowing.time.Time;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.wikiedits.WikipediaEditEvent;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.wikiedits.WikipediaEditsSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WikipediaAnalysis</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> void main(<span class="keyword">String</span>[] args) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">    StreamExecutionEnvironment see = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">    DataStream&lt;WikipediaEditEvent&gt; edits = see.addSource(<span class="keyword">new</span> <span class="type">WikipediaEditsSource</span>());</span><br><span class="line"></span><br><span class="line">    KeyedStream&lt;WikipediaEditEvent, <span class="keyword">String</span>&gt; keyedEdits = edits</span><br><span class="line">      .keyBy(<span class="keyword">new</span> <span class="type">KeySelector</span>&lt;WikipediaEditEvent, <span class="keyword">String</span>&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">String</span> getKey(WikipediaEditEvent event) &#123;</span><br><span class="line">          <span class="keyword">return</span> event.getUser();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">    DataStream&lt;Tuple2&lt;<span class="keyword">String</span>, Long&gt;&gt; result = keyedEdits</span><br><span class="line">      .timeWindow(Time.seconds(<span class="number">5</span>))</span><br><span class="line">      .fold(<span class="keyword">new</span> <span class="type">Tuple2</span>&lt;&gt;(<span class="string">""</span>, <span class="number">0</span>L), <span class="keyword">new</span> <span class="type">FoldFunction</span>&lt;WikipediaEditEvent, Tuple2&lt;<span class="keyword">String</span>, Long&gt;&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        <span class="keyword">public</span> Tuple2&lt;<span class="keyword">String</span>, Long&gt; fold(Tuple2&lt;<span class="keyword">String</span>, Long&gt; acc, WikipediaEditEvent event) &#123;</span><br><span class="line">          acc.f0 = event.getUser();</span><br><span class="line">          acc.f1 += event.getByteDiff();</span><br><span class="line">          <span class="keyword">return</span> acc;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">    result.print();</span><br><span class="line"></span><br><span class="line">    see.execute();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>您可以使用Maven在IDE或命令行上运行此示例：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mvn clean <span class="keyword">package</span></span><br><span class="line">$ mvn exec:java -Dexec.mainClass=wikiedits.WikipediaAnalysis</span><br></pre></td></tr></table></figure>
+<p>第一个命令构建我们的项目，第二个命令执行我们的主类。输出应该类似于：</p>
+<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">1&gt; </span>(Fenix down,<span class="number">114</span>)</span><br><span class="line"><span class="meta">6&gt; </span>(AnomieBOT,<span class="number">155</span>)</span><br><span class="line"><span class="meta">8&gt; </span>(BD2412bot,-<span class="number">3690</span>)</span><br><span class="line"><span class="meta">7&gt; </span>(IgnorantArmies,<span class="number">49</span>)</span><br><span class="line"><span class="meta">3&gt; </span>(Ckh3111,<span class="number">69</span>)</span><br><span class="line"><span class="meta">5&gt; </span>(Slade360,<span class="number">0</span>)</span><br><span class="line"><span class="meta">7&gt; </span>(Narutolovehinata5,<span class="number">2195</span>)</span><br><span class="line"><span class="meta">6&gt; </span>(Vuyisa2001,<span class="number">79</span>)</span><br><span class="line"><span class="meta">4&gt; </span>(Ms Sarah Welch,<span class="number">269</span>)</span><br><span class="line"><span class="meta">4&gt; </span>(KasparBot,-<span class="number">245</span>)</span><br></pre></td></tr></table></figure>
+<p>每行前面的数字告诉您输出生成的打印接收器的哪个并行实例。</p>
+<p>这应该让您开始编写自己的Flink程序。如果您想了解如何在自己的机器上设置Flink群集并将结果写入<a href="http://kafka.apache.org/" target="_blank" rel="noopener">Kafka</a>，请坚持参加奖励练习。</p>
+<h2 id="奖金练习：在群集上运行并写入Kafka"><a href="#奖金练习：在群集上运行并写入Kafka" class="headerlink" title="奖金练习：在群集上运行并写入Kafka"></a>奖金练习：在群集上运行并写入Kafka</h2><p>请按照我们的<a href="100466.html">本地安装教程</a>在您的机器上设置Flink分发，并 在继续 算子操作之前参考<a href="100387.html">Kafka快速入门</a>以设置Kafka安装。</p>
+<p>作为第一步，我们必须添加Flink Kafka连接器作为依赖关系，以便我们可以使用Kafka接收器。将其添加到<code>pom.xml</code>依赖项部分中的文件：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-connector-kafka-0.8_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;flink.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>接下来，我们需要修改我们的程序。我们将移除<code>print()</code>水槽，而是使用Kafka水槽。新代码如下所示：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">result</span><br><span class="line">    .map(<span class="keyword">new</span> <span class="type">MapFunction</span>&lt;Tuple2&lt;<span class="keyword">String</span>,Long&gt;, <span class="keyword">String</span>&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">String</span> map(Tuple2&lt;<span class="keyword">String</span>, Long&gt; tuple) &#123;</span><br><span class="line">            <span class="keyword">return</span> tuple.toString();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    .addSink(<span class="keyword">new</span> <span class="type">FlinkKafkaProducer08</span>&lt;&gt;(<span class="string">"localhost:9092"</span>, <span class="string">"wiki-result"</span>, <span class="keyword">new</span> <span class="type">SimpleStringSchema</span>()));</span><br></pre></td></tr></table></figure>
+<p>还需要导入相关的类：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">import</span> <span class="selector-tag">org</span><span class="selector-class">.apache</span><span class="selector-class">.flink</span><span class="selector-class">.streaming</span><span class="selector-class">.connectors</span><span class="selector-class">.kafka</span><span class="selector-class">.FlinkKafkaProducer08</span>;</span><br><span class="line"><span class="selector-tag">import</span> <span class="selector-tag">org</span><span class="selector-class">.apache</span><span class="selector-class">.flink</span><span class="selector-class">.api</span><span class="selector-class">.common</span><span class="selector-class">.serialization</span><span class="selector-class">.SimpleStringSchema</span>;</span><br><span class="line"><span class="selector-tag">import</span> <span class="selector-tag">org</span><span class="selector-class">.apache</span><span class="selector-class">.flink</span><span class="selector-class">.api</span><span class="selector-class">.common</span><span class="selector-class">.functions</span><span class="selector-class">.MapFunction</span>;</span><br></pre></td></tr></table></figure>
+<p>注意我们是如何第一个转换的流<code>Tuple2&lt;String, Long&gt;</code>来流<code>String</code>使用MapFunction。我们这样做是因为将简单字符串写入Kafka更容易。然后，我们创建了一个Kafka水槽。您可能必须使主机名和端口适应您的设置。<code>&quot;wiki-result&quot;</code> 是运行我们的程序之前我们将要创建的Kafka流的名称。使用Maven构建项目因为我们需要jar文件在集群上运行：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mvn clean <span class="class"><span class="keyword">package</span></span></span><br></pre></td></tr></table></figure>
+<p>生成的jar文件将位于<code>target</code>子文件夹中：<code>target/wiki-edits-0.1.jar</code>。我们稍后会用到它。</p>
+<p>现在我们准备启动Flink集群并运行写入Kafka的程序。转到安装Flink的位置并启动本地群集：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> my/flink/directory</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> bin/start-cluster.sh</span></span><br></pre></td></tr></table></figure>
+<p>我们还必须创建Kafka主题，以便我们的程序可以写入它：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">cd</span> my/kafka/directory</span><br><span class="line">$ bin/kafka-topics.sh <span class="params">--create</span> <span class="params">--zookeeper</span> localhost<span class="function">:2181</span> <span class="params">--topic</span> wiki-results</span><br></pre></td></tr></table></figure>
+<p>现在我们准备在本地Flink集群上运行我们的jar文件：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd <span class="keyword">my</span>/flink/directory</span><br><span class="line">$ bin/flink <span class="built_in">run</span> -c wikiedits.WikipediaAnalysis path/<span class="keyword">to</span>/wikiedits<span class="number">-0.1</span>.jar</span><br></pre></td></tr></table></figure>
+<p>如果一切按计划进行，那么该命令的输出应该与此类似：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> Job execution switched <span class="keyword">to</span> status RUNNING.</span><br><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> Source: Custom Source(<span class="number">1</span>/<span class="number">1</span>) switched <span class="keyword">to</span> SCHEDULED</span><br><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> Source: Custom Source(<span class="number">1</span>/<span class="number">1</span>) switched <span class="keyword">to</span> DEPLOYING</span><br><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> TriggerWindow<span class="function"><span class="params">(TumblingProcessingTimeWindows(<span class="number">5000</span>), FoldingStateDescriptor&#123;name=<span class="built_in">window</span>-contents, defaultValue=(,<span class="number">0</span>), serializer=<span class="literal">null</span>&#125;, ProcessingTimeTrigger(), WindowedStream.fold(WindowedStream.java:<span class="number">207</span>))</span> -&gt;</span> Map<span class="function"> -&gt;</span> Sink: Unnamed(<span class="number">1</span>/<span class="number">1</span>) switched <span class="keyword">to</span> SCHEDULED</span><br><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> TriggerWindow<span class="function"><span class="params">(TumblingProcessingTimeWindows(<span class="number">5000</span>), FoldingStateDescriptor&#123;name=<span class="built_in">window</span>-contents, defaultValue=(,<span class="number">0</span>), serializer=<span class="literal">null</span>&#125;, ProcessingTimeTrigger(), WindowedStream.fold(WindowedStream.java:<span class="number">207</span>))</span> -&gt;</span> Map<span class="function"> -&gt;</span> Sink: Unnamed(<span class="number">1</span>/<span class="number">1</span>) switched <span class="keyword">to</span> DEPLOYING</span><br><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> TriggerWindow<span class="function"><span class="params">(TumblingProcessingTimeWindows(<span class="number">5000</span>), FoldingStateDescriptor&#123;name=<span class="built_in">window</span>-contents, defaultValue=(,<span class="number">0</span>), serializer=<span class="literal">null</span>&#125;, ProcessingTimeTrigger(), WindowedStream.fold(WindowedStream.java:<span class="number">207</span>))</span> -&gt;</span> Map<span class="function"> -&gt;</span> Sink: Unnamed(<span class="number">1</span>/<span class="number">1</span>) switched <span class="keyword">to</span> RUNNING</span><br><span class="line"><span class="number">03</span>/<span class="number">08</span>/<span class="number">2016</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">27</span> Source: Custom Source(<span class="number">1</span>/<span class="number">1</span>) switched <span class="keyword">to</span> RUNNING</span><br></pre></td></tr></table></figure>
+<p>您可以看到各个算子如何开始运行。只有两个，因为出于性能原因，窗口之后的 算子操作被折叠成一个 算子操作。在Flink，我们称之为<em>链接</em>。</p>
+<p>您可以通过使用Kafka控制台使用者检查Kafka主题来观察程序的输出：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">bin/kafka</span><span class="literal">-</span><span class="comment">console</span><span class="literal">-</span><span class="comment">consumer</span><span class="string">.</span><span class="comment">sh</span>  <span class="literal">-</span><span class="literal">-</span><span class="comment">zookeeper</span> <span class="comment">localhost:2181</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">topic</span> <span class="comment">wiki</span><span class="literal">-</span><span class="comment">result</span></span><br></pre></td></tr></table></figure>
+<p>您还可以查看应在<a href="http://localhost:8081/" target="_blank" rel="noopener">http：// localhost：8081上</a>运行的Flink仪表板。您将获得群集资源和正在运行的作业的概述：</p>
+<p><img src="/img/flink/jobmanager-overview.png" alt></p>
+<p>如果单击正在运行的作业，您将获得一个视图，您可以在其中检查各个 算子操作，例如，查看已处理数据元的数量：</p>
+<p><img src="/img/flink/jobmanager-job.png" alt></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100472.html" class="pre-post btn btn-default" title='Flink批处理示例(java和Scala)'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink批处理示例(java和Scala)</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100470.html" class="next-post btn btn-default" title='Flink命令行界面'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink命令行界面</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#设置Maven项目"><span class="toc-text">设置Maven项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编写Flink程序"><span class="toc-text">编写Flink程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#奖金练习：在群集上运行并写入Kafka"><span class="toc-text">奖金练习：在群集上运行并写入Kafka</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

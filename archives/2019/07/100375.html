@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,集群">
+
+
+    <meta name="description" content="一、集群规划这里搭建一个3节点的Hadoop集群，其中三台主机均部署DataNode和NodeManager服务，但只有hadoop001上部署NameNode和ResourceManager服...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Hadoop集群环境搭建 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Hadoop集群环境搭建">
+            
+	            Hadoop集群环境搭建
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/colony/">集群</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/07</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1369</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、集群规划"><a href="#一、集群规划" class="headerlink" title="一、集群规划"></a>一、集群规划</h2><p>这里搭建一个3节点的Hadoop集群，其中三台主机均部署<code>DataNode</code>和<code>NodeManager</code>服务，但只有hadoop001上部署<code>NameNode</code>和<code>ResourceManager</code>服务。</p>
+<div align="center"> <img src="/img/bigdata/hadoopjqgh.png"> </div>
+
+<h2 id="二、前置条件"><a href="#二、前置条件" class="headerlink" title="二、前置条件"></a>二、前置条件</h2><p>Hadoop的运行依赖JDK，需要预先安装。其安装步骤单独整理至：</p>
+<ul>
+<li><a href="100371.html">Linux下JDK的安装</a></li>
+</ul>
+<h2 id="三、配置免密登录"><a href="#三、配置免密登录" class="headerlink" title="三、配置免密登录"></a>三、配置免密登录</h2><h3 id="3-1-生成密匙"><a href="#3-1-生成密匙" class="headerlink" title="3.1 生成密匙"></a>3.1 生成密匙</h3><p>在每台主机上使用<code>ssh-keygen</code>命令生成公钥私钥对：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attribute">ssh-keygen</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-2-免密登录"><a href="#3-2-免密登录" class="headerlink" title="3.2 免密登录"></a>3.2 免密登录</h3><p>将<code>hadoop001</code>的公钥写到本机和远程机器的<code>~/ .ssh/authorized_key</code>文件中：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -<span class="selector-tag">i</span> ~/.ssh/id_rsa<span class="selector-class">.pub</span> hadoop001</span><br><span class="line">ssh-copy-id -<span class="selector-tag">i</span> ~/.ssh/id_rsa<span class="selector-class">.pub</span> hadoop002</span><br><span class="line">ssh-copy-id -<span class="selector-tag">i</span> ~/.ssh/id_rsa<span class="selector-class">.pub</span> hadoop003</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-验证免密登录"><a href="#3-3-验证免密登录" class="headerlink" title="3.3 验证免密登录"></a>3.3 验证免密登录</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh hadoop002</span><br><span class="line">ssh hadoop003</span><br></pre></td></tr></table></figure>
+<h2 id="四、集群搭建"><a href="#四、集群搭建" class="headerlink" title="四、集群搭建"></a>四、集群搭建</h2><h3 id="3-1-下载并解压"><a href="#3-1-下载并解压" class="headerlink" title="3.1 下载并解压"></a>3.1 下载并解压</h3><p>下载Hadoop。这里我下载的是CDH版本Hadoop，下载地址为：<a href="http://archive.cloudera.com/cdh5/cdh/5/" target="_blank" rel="noopener">http://archive.cloudera.com/cdh5/cdh/5/</a></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="selector-tag">tar</span> <span class="selector-tag">-zvxf</span> <span class="selector-tag">hadoop-2</span><span class="selector-class">.6</span><span class="selector-class">.0-cdh5</span><span class="selector-class">.15</span><span class="selector-class">.2</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-2-配置环境变量"><a href="#3-2-配置环境变量" class="headerlink" title="3.2 配置环境变量"></a>3.2 配置环境变量</h3><p>编辑<code>profile</code>文件：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># vim /etc/profile</span></span><br></pre></td></tr></table></figure>
+<p>增加如下配置：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_HOME</span>=/usr/app/hadoop-2.6.0-cdh5.15.2</span><br><span class="line"><span class="builtin-name">export</span>  <span class="attribute">PATH</span>=<span class="variable">$&#123;HADOOP_HOME&#125;</span>/bin:$PATH</span><br></pre></td></tr></table></figure>
+<p>执行<code>source</code>命令，使得配置立即生效：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">source</span> <span class="regexp">/etc/</span>profile</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-修改配置"><a href="#3-3-修改配置" class="headerlink" title="3.3 修改配置"></a>3.3 修改配置</h3><p>进入<code>${HADOOP_HOME}/etc/hadoop</code>目录下，修改配置文件。各个配置文件内容如下：</p>
+<h4 id="1-hadoop-env-sh"><a href="#1-hadoop-env-sh" class="headerlink" title="1. hadoop-env.sh"></a>1. hadoop-env.sh</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 指定JDK的安装位置</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/java/jdk1.8.0_201/</span><br></pre></td></tr></table></figure>
+<h4 id="2-core-site-xml"><a href="#2-core-site-xml" class="headerlink" title="2.  core-site.xml"></a>2.  core-site.xml</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--指定namenode的hdfs协议文件系统的通信地址--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.defaultFS<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://hadoop001:8020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--指定hadoop集群存储临时文件的目录--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.tmp.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>/home/hadoop/tmp<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-hdfs-site-xml"><a href="#3-hdfs-site-xml" class="headerlink" title="3. hdfs-site.xml"></a>3. hdfs-site.xml</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--namenode节点数据（即元数据）的存放位置，可以指定多个目录实现容错，多个目录用逗号分隔--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.name.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/home/hadoop/namenode/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--datanode节点数据（即数据块）的存放位置--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.datanode.data.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/home/hadoop/datanode/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="4-yarn-site-xml"><a href="#4-yarn-site-xml" class="headerlink" title="4. yarn-site.xml"></a>4. yarn-site.xml</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--配置NodeManager上运行的附属服务。需要配置成mapreduce_shuffle后才可以在Yarn上运行MapReduce程序。--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--resourcemanager的主机名--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>hadoop001<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="5-mapred-site-xml"><a href="#5-mapred-site-xml" class="headerlink" title="5.  mapred-site.xml"></a>5.  mapred-site.xml</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--指定mapreduce作业运行在yarn上--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.framework.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>yarn<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="5-slaves"><a href="#5-slaves" class="headerlink" title="5. slaves"></a>5. slaves</h4><p>配置所有从属节点的主机名或IP地址，每行一个。所有从属节点上的<code>DataNode</code>服务和<code>NodeManager</code>服务都会被启动。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop001</span><br><span class="line">hadoop002</span><br><span class="line">hadoop003</span><br></pre></td></tr></table></figure>
+<h3 id="3-4-分发程序"><a href="#3-4-分发程序" class="headerlink" title="3.4 分发程序"></a>3.4 分发程序</h3><p>将Hadoop安装包分发到其他两台服务器，分发后建议在这两台服务器上也配置一下Hadoop的环境变量。</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将安装包分发到hadoop002</span></span><br><span class="line">scp -r <span class="regexp">/usr/app/hadoop-2.6.0-cdh5.15.2/</span>  hadoop002:<span class="regexp">/usr/app/</span></span><br><span class="line"><span class="comment"># 将安装包分发到hadoop003</span></span><br><span class="line">scp -r <span class="regexp">/usr/app/hadoop-2.6.0-cdh5.15.2/</span>  hadoop003:<span class="regexp">/usr/app/</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-5-初始化"><a href="#3-5-初始化" class="headerlink" title="3.5  初始化"></a>3.5  初始化</h3><p>在<code>Hadoop001</code>上执行namenode初始化命令：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs namenode -<span class="built_in">format</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-6-启动集群"><a href="#3-6-启动集群" class="headerlink" title="3.6 启动集群"></a>3.6 启动集群</h3><p>进入到<code>Hadoop001</code>的<code>${HADOOP_HOME}/sbin</code>目录下，启动Hadoop。此时<code>hadoop002</code>和<code>hadoop003</code>上的相关服务也会被启动：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动dfs服务</span></span><br><span class="line"><span class="literal">start</span>-dfs.sh</span><br><span class="line"><span class="comment"># 启动yarn服务</span></span><br><span class="line"><span class="literal">start</span>-yarn.sh</span><br></pre></td></tr></table></figure>
+<h3 id="3-7-查看集群"><a href="#3-7-查看集群" class="headerlink" title="3.7 查看集群"></a>3.7 查看集群</h3><p>在每台服务器上使用<code>jps</code>命令查看服务进程，或直接进入Web-UI界面进行查看，端口为<code>50070</code>。可以看到此时有三个可用的<code>Datanode</code>：</p>
+<div align="center"> <img src="/img/bigdata/hadoop-hjdj.png"> </div>
+
+<br>
+
+<p>点击<code>Live Nodes</code>进入，可以看到每个<code>DataNode</code>的详细情况：</p>
+<div align="center"> <img src="/img/bigdata/hadoop-hjdj2.png"> </div>
+
+<br>
+
+<p>接着可以查看Yarn的情况，端口号为<code>8088</code> ：</p>
+<div align="center"> <img src="/img/bigdata/hadoop-hjdj3.png"> </div>
+
+
+
+<h2 id="五、提交服务到集群"><a href="#五、提交服务到集群" class="headerlink" title="五、提交服务到集群"></a>五、提交服务到集群</h2><p>提交作业到集群的方式和单机环境完全一致，这里以提交Hadoop内置的计算Pi的示例程序为例，在任何一个节点上执行都可以，命令如下：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop jar /usr/app/hadoop<span class="number">-2.6</span><span class="number">.0</span>-cdh5<span class="number">.15</span><span class="number">.2</span>/share/hadoop/mapreduce/hadoop-mapreduce-examples<span class="number">-2.6</span><span class="number">.0</span>-cdh5<span class="number">.15</span><span class="number">.2</span>.jar  pi  <span class="number">3</span>  <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100376.html" class="pre-post btn btn-default" title='基于ZooKeeper搭建Hadoop高可用集群'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">基于ZooKeeper搭建Hadoop高可用集群</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100374.html" class="next-post btn btn-default" title='Hadoop单机版环境搭建'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Hadoop单机版环境搭建</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、集群规划"><span class="toc-text">一、集群规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、前置条件"><span class="toc-text">二、前置条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、配置免密登录"><span class="toc-text">三、配置免密登录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-生成密匙"><span class="toc-text">3.1 生成密匙</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-免密登录"><span class="toc-text">3.2 免密登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-验证免密登录"><span class="toc-text">3.3 验证免密登录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、集群搭建"><span class="toc-text">四、集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-下载并解压"><span class="toc-text">3.1 下载并解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-配置环境变量"><span class="toc-text">3.2 配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-修改配置"><span class="toc-text">3.3 修改配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-hadoop-env-sh"><span class="toc-text">1. hadoop-env.sh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-core-site-xml"><span class="toc-text">2.  core-site.xml</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-hdfs-site-xml"><span class="toc-text">3. hdfs-site.xml</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-yarn-site-xml"><span class="toc-text">4. yarn-site.xml</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-mapred-site-xml"><span class="toc-text">5.  mapred-site.xml</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-slaves"><span class="toc-text">5. slaves</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-分发程序"><span class="toc-text">3.4 分发程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-初始化"><span class="toc-text">3.5  初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-启动集群"><span class="toc-text">3.6 启动集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-查看集群"><span class="toc-text">3.7 查看集群</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、提交服务到集群"><span class="toc-text">五、提交服务到集群</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

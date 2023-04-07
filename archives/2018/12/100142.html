@@ -1,0 +1,439 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,汇编">
+
+
+    <meta name="description" content="介绍代码的静态分析和动态分析技术，能够使读者在进行安全测试的时候在宏观上有一个明确的执行方向。
+1. 代码静态分析技术定义：是在不执行计算机程序的条件下，对源代码进行分析，找出代码缺陷。
+执行方...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>软件代码的静态和动态分析 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="软件代码的静态和动态分析">
+            
+	            软件代码的静态和动态分析
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/assemble/">汇编</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/28</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1561</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>介绍代码的静态分析和动态分析技术，能够使读者在进行安全测试的时候在宏观上有一个明确的执行方向。</p>
+<h2 id="1-代码静态分析技术"><a href="#1-代码静态分析技术" class="headerlink" title="1. 代码静态分析技术"></a>1. 代码静态分析技术</h2><p>定义：是在不执行计算机程序的条件下，对源代码进行分析，找出代码缺陷。</p>
+<p>执行方式：一般配合静态程序分析工具进行。</p>
+<p>采用技术：数据分析流，机器学习，语义精简。</p>
+<p>可检测类型：死锁，空指针，资源泄漏，缓存区溢出，安全漏洞，竟态条件。</p>
+<p>用途：程序翻译/编译，程序优化重构，软件缺陷检测等。</p>
+<p>对比：程序动态分析：需要实际执行程序</p>
+<p>程序理解：静态分析这一术语一般用来形容自动化工具的分析，而人工分析则往往叫做程序理解。</p>
+<p><strong>优点：</strong></p>
+<ol>
+<li><p>能够检测所有的代码级别可执行路径组合，快速，准确。</p>
+</li>
+<li><p>直接面向源码，分析多种问题。</p>
+</li>
+<li><p>在研发阶段开始找到并修复多种问题，节省大量时间，人力成本</p>
+</li>
+</ol>
+<p>（注意：静态分析不是万能的，测试是持续的过程）</p>
+<p>静态分析的对象是windows内核模块，第三方驱动程序等不开源的二进制代码。</p>
+<ol>
+<li><p>首先需要通过反汇编工具对模块进行处理，生成相应的汇编代码，然后在此基础上分析，检查程序的语法，结构，过程，接口等，恢复和重建程序的数据类型，结构和框架，验证程序功能，逻辑是否正确。</p>
+</li>
+<li><p>在静态分析过程中，关键的地方是要做到准确提取信息，不论是源程序还是二进制程序，利用静态分析技术都可以从中提取出控制流，表达式，接口和数据流等相关的信息。</p>
+</li>
+<li><p>由于程序本身可以看作是抽象的，复杂的数据结构集合，因此程序的静态分析技术主要是根据从程序中提取的相关信息，从不同角度对程序的数据结构进行重构，根据模型推导数据之间的逻辑转换关系。</p>
+</li>
+</ol>
+<p>常用数据结构：</p>
+<p>常用的数据结构包括函数调用图，抽象语法树，路径图等。</p>
+<p>其中函数调用图是利用程序中函数之间的调用关系建立起的模型，抽象语法树是利用程序语义建立起的模型。</p>
+<p>建立好抽象语法树模型后，可以进一步获取到程序模块，函数的执行过程，以及它们中间数据流动的过程，通过恢复程序的函数关系，可以建立起函数模型，在此基础上，根据这些模型可以采用二进制对比技术，语法分析，规则检查，类型推导等多种方法对程序进行安全分析。</p>
+<p>如。对程序代码进行对比检查可以采用二进制对比技术，通过对比补丁前后函数汇编代码的不同，可以快速定位补丁修改位置，然后进行分析，明确漏洞触发的原因，实现编写出针对该漏洞的验证代码。</p>
+<p>如何分析缺陷：</p>
+<p>1.过程间分析：将考虑每一个合理的可执行路径</p>
+<p>2.获取一系列的函数定义：资源分配，调用</p>
+<p>3.数据流分析将跟踪所有应用中的不可信数据：source，sink，二者之间必须进行验证。</p>
+<p>4.某些使用智能静态分析</p>
+<p>找到潜在bug其实只是难题之一：</p>
+<ol>
+<li><p>消除误报非常难</p>
+</li>
+<li><p>将复杂的缺陷解释出来很难</p>
+</li>
+<li><p>只找潜在的一次性缺陷是很难的</p>
+</li>
+</ol>
+<h2 id="2-动态调试技术"><a href="#2-动态调试技术" class="headerlink" title="2. 动态调试技术"></a>2. 动态调试技术</h2><p>动态调试技术在软件逆向工程领域也是一个很热门的概念，他是与静态分析技术相对而言的。静态分析技术是指破解者利用反汇编工具将二进制的可执行文件翻译成汇编代码，通过对代码的分析来破解软件。而动态调试则是指破解者利用调试器跟踪软件的运行，寻求破解的路径。</p>
+<p>代码动态调试技术，一般是通过观察程序在运行过程中的状态，如寄存器内容，函数执行结果，内存使用情况等等，分析函数功能，明确代码逻辑，挖掘可能存在的漏洞。</p>
+<p>代码流和数据流是动态调试技术通常要特别关注的两个方面。</p>
+<p>代码动态调试的特征是：</p>
+<p>计算机必须真正运行被测试的程序，通过输入测试用例，对其运行情况即输入输出的对应关系进行分析，以达到检测的目的。</p>
+<p>动态测试包括：</p>
+<ol>
+<li><p>功能确认和接口测试</p>
+</li>
+<li><p>覆盖率分析</p>
+</li>
+<li><p>性能分析</p>
+</li>
+<li><p>内存分析</p>
+</li>
+</ol>
+<p>动态调试器：</p>
+<p>调试器一般都支持设置断点功能，通过在代码中设置断点，可以动态跟踪目标程序代码的执行情况，检测可能存在问题的函数调用。</p>
+<p>通过动态分析数据流，构造特殊输入数据来触发程序的潜在错误，对比运行得到的结果与期望获得的结果之间的差别，以便确定目标函数在安全方面有没有存在缺陷，并对比分析所得到的结果。</p>
+<p>在dos环境下，最常用的调试工具是DEBUG，它的作用有：</p>
+<ol>
+<li><p>直接输入，更改，跟踪，运行汇编程序</p>
+</li>
+<li><p>观察操作系统的内容</p>
+</li>
+<li><p>查看ROM BIOS的内容</p>
+</li>
+<li><p>观察更改RAM内部的设置值</p>
+</li>
+<li><p>以扇区或文件的方式读写软盘数据等</p>
+</li>
+</ol>
+<p>调试器分类：用户模式调试器，内核模式调试器</p>
+<p>在windows下有很多软件调试工具，使用比较广泛的工具有olldbg，softlCE等，由于内核程序是在内核态空间中运行的，所以普通用户态应用程序的调试工具，方法不适合用于内核程序，现在调试内核主要有一下三种方法：</p>
+<ol>
+<li><p>采用硬件调试器</p>
+</li>
+<li><p>编写用于调试的驱动程序和中断处理函数，安装在内核里面，在操作系统内核中断的时候，硬件被它们接管。有softlCE，syserDebugger两种。</p>
+</li>
+<li><p>微软在windows内核中添加了支持调试的相关服务。</p>
+</li>
+</ol>
+<p>Windows内核调试一般采用第三种方法，调试器采用微软提供的windbg，他能连接到微软服务器，下载与调试模块匹配的符号文件，用于显示当前代码所在函数的函数名称，便于分析人员跟踪。</p>
+<p>WinDbg：</p>
+<p>Windbg能进行三种调试：远程调试，dump调试，本地调试。</p>
+<p>Windbg主要设计用于双机调试：调试机和被调试机。</p>
+<p>通常为了调试过程中的方便以及保护被调试机的稳定，将被调试机设置在虚拟机内，虚拟软件通常不能直接管理硬件，也需要运行在一个真实的操作系统中，虚拟机和真实系统之间通过把串行端口模拟成命名管道的方式来通信，其做法是在虚拟机中建立一个虚拟的串行端口，把它映射到真实系统的一个命名管道上，虚拟软件软件把对这个串行端口的读写转换为对真实系统中命名管道的读写，然后就可以使用windbg连接命令管道与虚拟机中的内核调试模块通信，实现了一台机器上进行双机调试的目的。</p>
+<p>Olydbg：</p>
+<p>目前最流行的调试工具是OllDbg，成为当今最流行的调试解密工具，同时还支持插件扩展功能，是目前最强大的调试工具。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100143.html" class="pre-post btn btn-default" title='逆向分析之 一.常见的汇编指令'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">逆向分析之 一.常见的汇编指令</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100137.html" class="next-post btn btn-default" title='git大小写问题的解决办法'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">git大小写问题的解决办法</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-代码静态分析技术"><span class="toc-text">1. 代码静态分析技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-动态调试技术"><span class="toc-text">2. 动态调试技术</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

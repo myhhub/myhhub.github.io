@@ -1,0 +1,404 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="一、安装前置条件说明1.1 JDK版本说明HBase 需要依赖JDK环境，同时HBase 2.0+ 以上版本不再支持JDK 1.7 ，需要安装JDK 1.8+ 。JDK 安装方式见本仓库：
+
+L...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>HBase基本环境搭建 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="HBase基本环境搭建">
+            
+	            HBase基本环境搭建
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/08</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1368</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、安装前置条件说明"><a href="#一、安装前置条件说明" class="headerlink" title="一、安装前置条件说明"></a>一、安装前置条件说明</h2><h3 id="1-1-JDK版本说明"><a href="#1-1-JDK版本说明" class="headerlink" title="1.1 JDK版本说明"></a>1.1 JDK版本说明</h3><p>HBase 需要依赖JDK环境，同时HBase 2.0+ 以上版本不再支持JDK 1.7 ，需要安装JDK 1.8+ 。JDK 安装方式见本仓库：</p>
+<blockquote>
+<p><a href="100371.html">Linux环境下JDK安装</a></p>
+</blockquote>
+<h3 id="1-2-Standalone模式和伪集群模式的区别"><a href="#1-2-Standalone模式和伪集群模式的区别" class="headerlink" title="1.2 Standalone模式和伪集群模式的区别"></a>1.2 Standalone模式和伪集群模式的区别</h3><ul>
+<li>在<code>Standalone</code>模式下，所有守护进程都运行在一个<code>jvm</code>进程/实例中；</li>
+<li>在伪分布模式下，HBase仍然在单个主机上运行，但是每个守护进程(HMaster，HRegionServer 和 ZooKeeper)则分别作为一个单独的进程运行。</li>
+</ul>
+<p><strong>说明：两种模式任选其一进行部署即可，对于开发测试来说区别不大。</strong></p>
+<h2 id="二、Standalone-模式"><a href="#二、Standalone-模式" class="headerlink" title="二、Standalone 模式"></a>二、Standalone 模式</h2><h3 id="2-1-下载并解压"><a href="#2-1-下载并解压" class="headerlink" title="2.1 下载并解压"></a>2.1 下载并解压</h3><p>从<a href="https://hbase.apache.org/downloads.html" target="_blank" rel="noopener">官方网站</a>下载所需要版本的二进制安装包，并进行解压：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># <span class="selector-tag">tar</span> <span class="selector-tag">-zxvf</span> <span class="selector-tag">hbase-2</span><span class="selector-class">.1</span><span class="selector-class">.4-bin</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-2-配置环境变量"><a href="#2-2-配置环境变量" class="headerlink" title="2.2 配置环境变量"></a>2.2 配置环境变量</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># vim /etc/profile</span></span><br></pre></td></tr></table></figure>
+<p>添加环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">HBASE_HOME</span>=/usr/app/hbase-2.1.4</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$HBASE_HOME</span>/bin:$PATH</span><br></pre></td></tr></table></figure>
+<p>使得配置的环境变量生效：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">source</span> <span class="regexp">/etc/</span>profile</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-进行HBase相关配置"><a href="#2-3-进行HBase相关配置" class="headerlink" title="2.3 进行HBase相关配置"></a>2.3 进行HBase相关配置</h3><p>修改安装目录下的<code>conf/hbase-env.sh</code>,指定JDK的安装路径：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The java implementation to use.  Java 1.8+ required.</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/java/jdk1.8.0_201</span><br></pre></td></tr></table></figure>
+<p>修改安装目录下的<code>conf/hbase-site.xml</code>，增加如下配置：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">&lt;configuration&gt;</span></span><br><span class="line"> <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.rootdir<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span>file:<span class="comment">///home/hbase/rootdir&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line">  <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.zookeeper.property.dataDir<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span><span class="meta-keyword">/home/</span>zookeeper/dataDir<span class="params">&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line">  <span class="params">&lt;property&gt;</span></span><br><span class="line">    <span class="params">&lt;name&gt;</span>hbase.unsafe.stream.capability.enforce<span class="params">&lt;/name&gt;</span></span><br><span class="line">    <span class="params">&lt;value&gt;</span>false<span class="params">&lt;/value&gt;</span></span><br><span class="line">  <span class="params">&lt;/property&gt;</span></span><br><span class="line"><span class="params">&lt;/configuration&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>hbase.rootdir</code>: 配置hbase数据的存储路径；</p>
+<p><code>hbase.zookeeper.property.dataDir</code>: 配置zookeeper数据的存储路径；</p>
+<p><code>hbase.unsafe.stream.capability.enforce</code>: 使用本地文件系统存储，不使用HDFS的情况下需要禁用此配置，设置为false。</p>
+<h3 id="2-4-启动HBase"><a href="#2-4-启动HBase" class="headerlink" title="2.4 启动HBase"></a>2.4 启动HBase</h3><p>由于已经将HBase的bin目录配置到环境变量，直接使用以下命令启动：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># start-hbase.sh</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-5-验证启动是否成功"><a href="#2-5-验证启动是否成功" class="headerlink" title="2.5 验证启动是否成功"></a>2.5 验证启动是否成功</h3><p>验证方式一 ：使用<code>jps</code>命令查看HMaster进程是否启动。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop001 hbase<span class="number">-2.1</span><span class="number">.4</span>]# jps</span><br><span class="line"><span class="number">16336</span> Jps</span><br><span class="line"><span class="number">15500</span> HMaster</span><br></pre></td></tr></table></figure>
+<p>验证方式二 ：访问HBaseWeb UI 页面，默认端口为<code>16010</code> 。</p>
+<div align="center"> <img src="/img/bigdata/hbase-web-ui.png"> </div>
+
+
+
+<h2 id="三、伪集群模式安装（Pseudo-Distributed）"><a href="#三、伪集群模式安装（Pseudo-Distributed）" class="headerlink" title="三、伪集群模式安装（Pseudo-Distributed）"></a>三、伪集群模式安装（Pseudo-Distributed）</h2><h3 id="3-1-Hadoop单机伪集群安装"><a href="#3-1-Hadoop单机伪集群安装" class="headerlink" title="3.1 Hadoop单机伪集群安装"></a>3.1 Hadoop单机伪集群安装</h3><p>这里我们采用HDFS作为HBase的存储方案，需要预先安装Hadoop。Hadoop的安装方式单独整理至：</p>
+<blockquote>
+<p><a href="100374.html">Hadoop单机伪集群搭建</a></p>
+</blockquote>
+<h3 id="3-2-Hbase版本选择"><a href="#3-2-Hbase版本选择" class="headerlink" title="3.2 Hbase版本选择"></a>3.2 Hbase版本选择</h3><p>HBase的版本必须要与Hadoop的版本兼容，不然会出现各种Jar包冲突。这里我Hadoop安装的版本为<code>hadoop-2.6.0-cdh5.15.2</code>，为保持版本一致，选择的HBase版本为<code>hbase-1.2.0-cdh5.15.2</code> 。所有软件版本如下：</p>
+<ul>
+<li>Hadoop 版本： hadoop-2.6.0-cdh5.15.2</li>
+<li>HBase 版本： hbase-1.2.0-cdh5.15.2</li>
+<li>JDK 版本：JDK 1.8</li>
+</ul>
+<h3 id="3-3-软件下载解压"><a href="#3-3-软件下载解压" class="headerlink" title="3.3 软件下载解压"></a>3.3 软件下载解压</h3><p>下载后进行解压，下载地址：<a href="http://archive.cloudera.com/cdh5/cdh/5/" target="_blank" rel="noopener">http://archive.cloudera.com/cdh5/cdh/5/</a>    </p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="selector-tag">tar</span> <span class="selector-tag">-zxvf</span> <span class="selector-tag">hbase-1</span><span class="selector-class">.2</span><span class="selector-class">.0-cdh5</span><span class="selector-class">.15</span><span class="selector-class">.2</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-4-配置环境变量"><a href="#3-4-配置环境变量" class="headerlink" title="3.4 配置环境变量"></a>3.4 配置环境变量</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># vim /etc/profile</span></span><br></pre></td></tr></table></figure>
+<p>添加环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">HBASE_HOME</span>=/usr/app/hbase-1.2.0-cdh5.15.2</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$HBASE_HOME</span>/bin:$PATH</span><br></pre></td></tr></table></figure>
+<p>使得配置的环境变量生效：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">source</span> <span class="regexp">/etc/</span>profile</span><br></pre></td></tr></table></figure>
+<h3 id="3-5-进行HBase相关配置"><a href="#3-5-进行HBase相关配置" class="headerlink" title="3.5 进行HBase相关配置"></a>3.5 进行HBase相关配置</h3><p>1.修改安装目录下的<code>conf/hbase-env.sh</code>,指定JDK的安装路径：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The java implementation to use.  Java 1.7+ required.</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/java/jdk1.8.0_201</span><br></pre></td></tr></table></figure>
+<p>2.修改安装目录下的<code>conf/hbase-site.xml</code>，增加如下配置(hadoop001为主机名)：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!--指定 HBase 以分布式模式运行--&gt;</span>   </span><br><span class="line"> <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!--指定 HBase 数据存储路径为HDFS上的hbase目录,hbase目录不需要预先创建，程序会自动创建--&gt;</span>   </span><br><span class="line"> <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://hadoop001:8020/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--指定 zookeeper 数据的存储位置--&gt;</span>   </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/home/zookeeper/dataDir<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>3.修改安装目录下的<code>conf/regionservers</code>，指定region  servers的地址，修改后其内容如下：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop001</span><br></pre></td></tr></table></figure>
+<h3 id="3-6-启动"><a href="#3-6-启动" class="headerlink" title="3.6 启动"></a>3.6 启动</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># bin/start-hbase.sh</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-7-验证启动是否成功"><a href="#3-7-验证启动是否成功" class="headerlink" title="3.7 验证启动是否成功"></a>3.7 验证启动是否成功</h3><p>验证方式一 ：使用<code>jps</code>命令查看进程。其中<code>HMaster</code>，<code>HRegionServer</code>是HBase的进程，<code>HQuorumPeer</code>是HBase内置的Zookeeper的进程，其余的为HDFS和YARN的进程。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop001 conf]# jps</span><br><span class="line"><span class="number">28688</span> NodeManager</span><br><span class="line"><span class="number">25824</span> GradleDaemon</span><br><span class="line"><span class="number">10177</span> Jps</span><br><span class="line"><span class="number">22083</span> HRegionServer</span><br><span class="line"><span class="number">20534</span> DataNode</span><br><span class="line"><span class="number">20807</span> SecondaryNameNode</span><br><span class="line"><span class="number">18744</span> Main</span><br><span class="line"><span class="number">20411</span> NameNode</span><br><span class="line"><span class="number">21851</span> HQuorumPeer</span><br><span class="line"><span class="number">28573</span> ResourceManager</span><br><span class="line"><span class="number">21933</span> HMaster</span><br></pre></td></tr></table></figure>
+<p>验证方式二 ：访问HBase Web UI 界面，需要注意的是1.2 版本的HBase的访问端口为<code>60010</code></p>
+<div align="center"> <img src="/img/bigdata/hbase-60010.png"> </div>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100382.html" class="pre-post btn btn-default" title='HBase集群环境配置'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">HBase集群环境配置</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100380.html" class="next-post btn btn-default" title='Storm集群环境搭建'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Storm集群环境搭建</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、安装前置条件说明"><span class="toc-text">一、安装前置条件说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-JDK版本说明"><span class="toc-text">1.1 JDK版本说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Standalone模式和伪集群模式的区别"><span class="toc-text">1.2 Standalone模式和伪集群模式的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Standalone-模式"><span class="toc-text">二、Standalone 模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-下载并解压"><span class="toc-text">2.1 下载并解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-配置环境变量"><span class="toc-text">2.2 配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-进行HBase相关配置"><span class="toc-text">2.3 进行HBase相关配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-启动HBase"><span class="toc-text">2.4 启动HBase</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-验证启动是否成功"><span class="toc-text">2.5 验证启动是否成功</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、伪集群模式安装（Pseudo-Distributed）"><span class="toc-text">三、伪集群模式安装（Pseudo-Distributed）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Hadoop单机伪集群安装"><span class="toc-text">3.1 Hadoop单机伪集群安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Hbase版本选择"><span class="toc-text">3.2 Hbase版本选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-软件下载解压"><span class="toc-text">3.3 软件下载解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-配置环境变量"><span class="toc-text">3.4 配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-进行HBase相关配置"><span class="toc-text">3.5 进行HBase相关配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-启动"><span class="toc-text">3.6 启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-验证启动是否成功"><span class="toc-text">3.7 验证启动是否成功</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

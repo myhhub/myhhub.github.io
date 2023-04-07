@@ -1,0 +1,428 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="知识图谱,scrapy">
+
+
+    <meta name="description" content="一. 简介之前做的知识图谱还是太小，而且单一领域的图谱构建技术和通用百科类图谱间的技术差别也较大，因此根据前人的论文，尝试构建百科类知识图谱。
+为了构建中文百科类知识图谱，我们参考漆桂林老师团队...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取">
+            
+	            从零开始学习知识图谱 之 七.百科知识图谱构建 1.百科类知识抽取
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/scrapy/">scrapy</a> <a class="tag-link" href="/tags/knowledgegraph/">知识图谱</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/10/21</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1263</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h1><p>之前做的知识图谱还是太小，而且单一领域的图谱构建技术和通用百科类图谱间的技术差别也较大，因此根据前人的论文，尝试构建百科类知识图谱。</p>
+<p>为了构建中文百科类知识图谱，我们参考漆桂林老师团队做的<a href="http://openkg.cn/dataset/zhishi-me" target="_blank" rel="noopener">zhishi.me</a>。目标是包含百度百科、互动百科、中文wiki百科的知识，千万级实体数量和亿级别的关系数目。目前已完成百度百科和互动百科部分，其中百度百科词条4,190,390个，存入 neo4j 后得到节点 10,416,647个，关系 37,317,167 条，属性 45,049,533个。互动百科词条3,677,150个, 存入 neo4j中得到节点 6,081,723个，关系19,054,289个，属性16,917,984个。总计节点 16,498,370个，关系 56,371,456个，属性 61,967,517个。 </p>
+<p>在百科知识图谱上将应用以下技术：</p>
+<ul>
+<li>关系抽取：<ul>
+<li>神经网络关系抽取 <a href="https://github.com/thunlp/OpenNRE" target="_blank" rel="noopener">OpenNRE</a> 采用清华团队的OpenNRE框架</li>
+<li>DeepDive 关系抽取</li>
+<li>制作类似于NYT的远程监督学习语料</li>
+</ul>
+</li>
+<li>知识融合(TODO)：<ul>
+<li>LIMES 实战</li>
+<li>Silk 实战</li>
+</ul>
+</li>
+<li>自底向上的本体构建技术(TODO)：</li>
+<li>知识表示(TODO)：<ul>
+<li>TransE</li>
+</ul>
+</li>
+<li>知识存储<ul>
+<li>Jena</li>
+<li>Neo4j</li>
+</ul>
+</li>
+<li>知识挖掘(TODO):</li>
+<li>KBQA<ul>
+<li>基于Refo和固定模板的QA</li>
+<li>TODO</li>
+</ul>
+</li>
+</ul>
+<p>本教程的项目代码放在github上，下载地址为<a href="https://github.com/myhhub/zero_knowledge_graph" target="_blank" rel="noopener">《从零开始学习知识图谱》项目源代码</a> 。</p>
+<h1 id="二-环境准备"><a href="#二-环境准备" class="headerlink" title="二. 环境准备"></a>二. 环境准备</h1><h2 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h2><p>支持操作系统：windows、macOS、Linux。为了方便大家搭建开发环境，笔者尽可能在windows下构建，系列篇未特意说明时操作系统都是<strong>windows</strong>。Linux安装可以参考<a href="100590.html">VirtualBox虚拟机安装Ubuntu</a>或<a href="100589.html">VirtualBox虚拟机安装CentOS8</a>进行安装。</p>
+<h2 id="2-jdk"><a href="#2-jdk" class="headerlink" title="2. jdk"></a>2. jdk</h2><p>安装参见<a href="100604.html">windows系统安装JDK</a></p>
+<h2 id="3-Python3"><a href="#3-Python3" class="headerlink" title="3. Python3"></a>3. Python3</h2><p>安装参见<a href="100591.html#4-Python3">从零开始学习知识图谱 之 一</a></p>
+<h2 id="4-mysql"><a href="#4-mysql" class="headerlink" title="4. mysql"></a>4. mysql</h2><p>安装参见<a href="100591.html#3-mysql">从零开始学习知识图谱 之 一</a></p>
+<h2 id="5-Scrapy"><a href="#5-Scrapy" class="headerlink" title="5. Scrapy"></a>5. Scrapy</h2><p>安装参见<a href="100591.html#6-Scrapy">从零开始学习知识图谱 之 一</a></p>
+<h1 id="三-数据获取"><a href="#三-数据获取" class="headerlink" title="三. 数据获取"></a>三. 数据获取</h1><p>爬虫我们还是采用 scrapy框架，采用多个爬虫同时爬取的方法来加速。下面我们分块对该爬虫进行介绍。</p>
+<h2 id="1-目标内容"><a href="#1-目标内容" class="headerlink" title="1. 目标内容"></a>1. 目标内容</h2><p>对于每个词条内抽取哪些信息，我们参考<a href="http://zhishi.me/" target="_blank" rel="noopener">zhishi.me</a>的方法，获取如下条目：</p>
+<ul>
+<li>标题 title：以<a href="https://baike.baidu.com/item/%E4%B8%8A%E6%B5%B7/114606" target="_blank" rel="noopener">词条上海</a>为例，位于网页上方的“上海”两个字作为本词条的标题</li>
+<li>标题ID title_id：给每个title一个id，zhishi.me里是根据百度链接中的id，但由于互动百科里没有这个，所以我就都根据它们的获取顺序给它们一个id值。</li>
+<li>消岐名称 disambi：有些词条可能存在多个含义，如“上海”就包含“中华人民共和国直辖市”或者“小行星”等等的多个含义，因此我们将“上海（中华人民共和国直辖市）”这样的名字作为“上海”这个标题的消岐名称。</li>
+<li>多义词 redirect：比如“申”、“沪”都是指上海，我们将这种多义词也存下来，并保存为不同的词条。然后在disambi相同的词条间，建立等价关系就可以了。</li>
+<li>摘要 abstract：摘要是指词条中标题下方对词条进行简要介绍的部分。</li>
+<li>信息框 infobox：包含该词条的各种属性信息，如中文名称、外文名称、别名等。由于不同的词条包含不同的属性，因此我们采用json的形式对infobox进行统一存储。</li>
+<li>标签 subject：大部分词条都包含词条标签，如周星驰的词条标签为“编剧、演员、导演、娱乐人物、人物”。</li>
+<li>内部图片 interPic：词条内部的图片我们以链接的形式存储下来，这样在后期就可以直接在html页面中显示出该图片了。</li>
+<li>内部链接 interLink：词条内部包含很多引用，指向其他的词条，我们将这种引用的文字和链接以 key-value的形式存储下来，存为JSON格式。一开始希望把这种词条间的内部引用也加到最终的关系上，得到(:title)-[:InterLink {words: “key所处的那句话”}]-&gt;(::title)但一方面这种链接过多，另一方面关系也不明确，所以就没有加。</li>
+<li>外部链接 exterLink：有些词条尾部有参考资料，这些链接多指向其他网站，我们把它们存到外部链接里。具体存储方式和 interLink 一样。</li>
+<li>全文 all_text：词条的全部文本，可以用来做后一步的分析，如建立远程监督学习语料呀、关系抽取实验呀、防止有什么信息漏掉重新爬呀。。。。</li>
+</ul>
+<h2 id="2-爬虫介绍"><a href="#2-爬虫介绍" class="headerlink" title="2. 爬虫介绍"></a>2. 爬虫介绍</h2><p>爬虫的基本思想和之前电影的那个是一样的，只不过为了加速爬取，我们增加了多爬虫爬取和断点续爬功能，防止爬到一半断点的尴尬情况(别问我为什么这么说。。。。)</p>
+<p>首先在items.py里设置想要爬取内容，名字都和上面介绍的对应着。</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class <span class="keyword">BaiduBaikeItem(scrapy.Item):</span></span><br><span class="line"><span class="keyword"> </span>   <span class="comment"># define the fields for your item here like:     # name = scrapy.Field()     title = scrapy.Field()  </span></span><br><span class="line">    title_id = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   abstract = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   infobox = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">subject </span>= <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">disambi </span>= <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   redirect = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   curLink = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   interPic = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   interLink = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">exterLink </span>= <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   relateLemma = <span class="keyword">scrapy.Field()</span></span><br><span class="line"><span class="keyword"> </span>   all_text = <span class="keyword">scrapy.Field()</span></span><br></pre></td></tr></table></figure>
+<p>接下来要写pipelines.py，整体上的逻辑是，在爬虫分析完一个网页返回内容后，我们查询当前表中的title_id最大值，然后把当前的词条存为title_id+1。这里有几个需要注意的问题：</p>
+<ul>
+<li>存 all_text 时会由于编码问题报错，尝试很多办法也没有解决，好在这种情况不多400万里面只有9450个，因此遇到这种情况的话直接把all_text设置为none。</li>
+<li>存储速度：如果在pipelines.py里做过多的查表操作，那么可能会影响最终的爬取速度，尤其是要查询的项没做索引的时候。</li>
+<li>编码问题</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaiduBaikePipeline</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.conn = pymysql.connect(</span><br><span class="line">            host=settings.HOST_IP,</span><br><span class="line">            port=settings.PORT,</span><br><span class="line">            user=settings.USER,</span><br><span class="line">            passwd=settings.PASSWD,</span><br><span class="line">            db=settings.DB_NAME,</span><br><span class="line">            charset=<span class="string">'utf8mb4'</span>,</span><br><span class="line">            use_unicode=<span class="literal">True</span></span><br><span class="line">            )   </span><br><span class="line">        self.cursor = self.conn.cursor()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_item</span><span class="params">(self, item, spider)</span>:</span></span><br><span class="line">        <span class="comment"># process info for actor</span></span><br><span class="line">        title = str(item[<span class="string">'title'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        title_id = str(item[<span class="string">'title_id'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        abstract = str(item[<span class="string">'abstract'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        infobox = str(item[<span class="string">'infobox'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        subject = str(item[<span class="string">'subject'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        disambi = str(item[<span class="string">'disambi'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        redirect = str(item[<span class="string">'redirect'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        curLink = str(item[<span class="string">'curLink'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        interPic = str(item[<span class="string">'interPic'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        interLink = str(item[<span class="string">'interLink'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        exterLink = str(item[<span class="string">'exterLink'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        relateLemma = str(item[<span class="string">'relateLemma'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        all_text = str(item[<span class="string">'all_text'</span>]).encode(<span class="string">'utf-8'</span>)</span><br><span class="line"></span><br><span class="line">        self.cursor.execute(<span class="string">"SELECT MAX(title_id) FROM lemmas"</span>)</span><br><span class="line">        result = self.cursor.fetchall()[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">if</span> <span class="literal">None</span> <span class="keyword">in</span> result:</span><br><span class="line">            title_id = <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            title_id = result[<span class="number">0</span>] + <span class="number">1</span></span><br><span class="line">        sql = <span class="string">"""</span></span><br><span class="line"><span class="string">        INSERT INTO lemmas(title, title_id, abstract, infobox, subject, disambi, redirect, curLink, interPic, interLink, exterLink, relateLemma, all_text ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.cursor.execute(sql, (title, title_id, abstract, infobox, subject, disambi, redirect, curLink, interPic, interLink, exterLink, relateLemma, all_text ))</span><br><span class="line">            self.conn.commit()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            print(<span class="string">"#"</span>*<span class="number">20</span>, <span class="string">"\nAn error when insert into mysql!!\n"</span>)</span><br><span class="line">            print(<span class="string">"curLink: "</span>, curLink, <span class="string">"\n"</span>)</span><br><span class="line">            print(e, <span class="string">"\n"</span>, <span class="string">"#"</span>*<span class="number">20</span>)</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                all_text = str(<span class="string">'None'</span>).encode(<span class="string">'utf-8'</span>).encode(<span class="string">'utf-8'</span>)</span><br><span class="line">                self.cursor.execute(sql, (title, title_id, abstract, infobox, subject, disambi, redirect, curLink, interPic, interLink, exterLink, relateLemma, all_text ))</span><br><span class="line">                self.conn.commit()</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> f:</span><br><span class="line">                print(<span class="string">"Error without all_text!!!"</span>)</span><br><span class="line">        <span class="keyword">return</span> item</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">close_spider</span><span class="params">(self, spider)</span>:</span></span><br><span class="line">        self.conn.close()</span><br></pre></td></tr></table></figure>
+<p>然后就是写爬虫，这里就是分析页面，然后用xpath或者soup去找到对应需要的部分并提取出来。如果遇到错误就存none。这里和之前没有变化，就不贴代码了。下面重点说一下多个爬虫同时运行的部分。</p>
+<h3 id="1-并行爬虫"><a href="#1-并行爬虫" class="headerlink" title="1) 并行爬虫"></a>1) 并行爬虫</h3><p>首先在和spiders同级的目录下建立一个叫commands的文件夹，然后创建crawlall.py的文件，填入下述代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> scrapy.commands <span class="keyword">import</span> ScrapyCommand</span><br><span class="line"><span class="keyword">from</span> scrapy.crawler <span class="keyword">import</span> CrawlerRunner</span><br><span class="line"><span class="keyword">from</span> scrapy.exceptions <span class="keyword">import</span> UsageError</span><br><span class="line"><span class="keyword">from</span> scrapy.utils.project <span class="keyword">import</span> get_project_settings</span><br><span class="line"><span class="keyword">from</span> scrapy.crawler <span class="keyword">import</span> Crawler</span><br><span class="line"><span class="keyword">from</span> scrapy.utils.conf <span class="keyword">import</span> arglist_to_dict</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Command</span><span class="params">(ScrapyCommand)</span>:</span></span><br><span class="line"> </span><br><span class="line">    requires_project = <span class="literal">True</span></span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">syntax</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'[options]'</span></span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">short_desc</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Runs all of the spiders'</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_options</span><span class="params">(self, parser)</span>:</span></span><br><span class="line">        ScrapyCommand.add_options(self, parser)</span><br><span class="line">        parser.add_option(<span class="string">"-a"</span>, dest=<span class="string">"spargs"</span>, action=<span class="string">"append"</span>, default=[], metavar=<span class="string">"NAME=VALUE"</span>,</span><br><span class="line">                          help=<span class="string">"set spider argument (may be repeated)"</span>)</span><br><span class="line">        parser.add_option(<span class="string">"-o"</span>, <span class="string">"--output"</span>, metavar=<span class="string">"FILE"</span>,</span><br><span class="line">                          help=<span class="string">"dump scraped items into FILE (use - for stdout)"</span>)</span><br><span class="line">        parser.add_option(<span class="string">"-t"</span>, <span class="string">"--output-format"</span>, metavar=<span class="string">"FORMAT"</span>,</span><br><span class="line">                          help=<span class="string">"format to use for dumping items with -o"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_options</span><span class="params">(self, args, opts)</span>:</span></span><br><span class="line">        ScrapyCommand.process_options(self, args, opts)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            opts.spargs = arglist_to_dict(opts.spargs)</span><br><span class="line">        <span class="keyword">except</span> ValueError:</span><br><span class="line">            <span class="keyword">raise</span> UsageError(<span class="string">"Invalid -a value, use -a NAME=VALUE"</span>, print_help=<span class="literal">False</span>)</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self, args, opts)</span>:</span></span><br><span class="line">        <span class="comment">#settings = get_project_settings()</span></span><br><span class="line"></span><br><span class="line">        spider_loader = self.crawler_process.spider_loader</span><br><span class="line">        <span class="keyword">for</span> spidername <span class="keyword">in</span> args <span class="keyword">or</span> spider_loader.list():</span><br><span class="line">            print(<span class="string">"*********cralall spidername************"</span> + spidername)</span><br><span class="line">            self.crawler_process.crawl(spidername, **opts.spargs)</span><br><span class="line"></span><br><span class="line">        self.crawler_process.start()</span><br></pre></td></tr></table></figure>
+<p>它们可以让spiders中的爬虫一起执行。而后创建<strong>init</strong>.py文件来支持import。</p>
+<p>下一步在commands的上级目录创建setup.py文件，填入下述代码：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from setuptools <span class="keyword">import</span> <span class="built_in">setup</span>, find_packages</span><br><span class="line"></span><br><span class="line"><span class="built_in">setup</span>(name=<span class="string">'scrapy-mymodule'</span>,</span><br><span class="line">  entry_points=&#123;</span><br><span class="line">    <span class="string">'scrapy.commands'</span>: [</span><br><span class="line">      <span class="string">'crawlall=baidu_baike.commands:crawlall'</span>,</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line"> )</span><br></pre></td></tr></table></figure>
+<p>现在我们直接运行命令 scrapy crawlall 就可以并行地运行爬虫啦。</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="symbol">\d</span><span class="symbol">\m</span>mm<span class="symbol">\p</span>ycharm<span class="symbol">\c</span>raw_all_baidu&gt;scrapy crawlall</span><br></pre></td></tr></table></figure>
+<h3 id="2-爬虫的断点续爬"><a href="#2-爬虫的断点续爬" class="headerlink" title="2) 爬虫的断点续爬"></a>2) 爬虫的断点续爬</h3><h4 id="Jobs-暂停，恢复爬虫"><a href="#Jobs-暂停，恢复爬虫" class="headerlink" title="Jobs: 暂停，恢复爬虫"></a>Jobs: 暂停，恢复爬虫</h4><p>有些情况下，例如爬取大的站点，我们希望能暂停爬取，之后再恢复运行。 Scrapy通过如下工具支持这个功能:</p>
+<ul>
+<li>一个把调度请求保存在磁盘的调度器</li>
+<li>一个把访问请求保存在磁盘的副本过滤器[duplicates filter]</li>
+<li>一个能持续保持爬虫状态(键/值对)的扩展<h4 id="Job-路径"><a href="#Job-路径" class="headerlink" title="Job 路径"></a>Job 路径</h4>要启用持久化支持，你只需要通过 JOBDIR 设置 job directory 选项。这个路径将会存储 所有的请求数据来保持一个单独任务的状态(例如：一次spider爬取(a spider run))。必须要注意的是，这个目录不允许被不同的spider 共享，甚至是同一个spider的不同jobs/runs也不行。也就是说，这个目录就是存储一个 单独 job的状态信息。</li>
+</ul>
+<p>运行以下命令: </p>
+<p>其实应该叫暂停、继续爬取？这个很容易，只需在正常的命令后面加上 <code>-s JOBDIR=paths_to_somewhere</code>。</p>
+<p> 要启用一个爬虫的持久化，运行以下命令: </p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="symbol">\d</span><span class="symbol">\m</span>mm<span class="symbol">\p</span>ycharm<span class="symbol">\c</span>raw_all_baidu&gt;scrapy crawl baidu -s JOBDIR=crawls/baidu-1</span><br></pre></td></tr></table></figure>
+<p> 然后，你就能在任何时候安全地停止爬虫(按Ctrl-C或者发送一个信号)。恢复这个爬虫也是同样的命令: </p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="symbol">\d</span><span class="symbol">\m</span>mm<span class="symbol">\p</span>ycharm<span class="symbol">\c</span>raw_all_baidu&gt;scrapy crawl baidu -s JOBDIR=crawls/baidu-1</span><br></pre></td></tr></table></figure>
+<p>另一个很有用的选项是 <code>--nolog</code>，这样爬取过程中的信息就不会出来了，当然也可以在setting中设置log的 level。</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="symbol">\d</span><span class="symbol">\m</span>mm<span class="symbol">\p</span>ycharm<span class="symbol">\c</span>raw_all_baidu&gt;scrapy crawlall --nolog</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/10/100598.html" class="pre-post btn btn-default" title='从零开始学习知识图谱 之 八.百科知识图谱构建 2.数据清洗及存入图数据库Neo4j'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 八.百科知识图谱构建 2.数据清洗及存入图数据库Neo4j</span>
+        </a>
+    
+    
+        <a href="/archives/2019/10/100596.html" class="next-post btn btn-default" title='从零开始学习知识图谱 之 六.电影知识图谱构建 6.将关系型数据存入图数据库Neo4j'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 六.电影知识图谱构建 6.将关系型数据存入图数据库Neo4j</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-简介"><span class="toc-text">一. 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-环境准备"><span class="toc-text">二. 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统"><span class="toc-text">1. 操作系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-jdk"><span class="toc-text">2. jdk</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Python3"><span class="toc-text">3. Python3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-mysql"><span class="toc-text">4. mysql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Scrapy"><span class="toc-text">5. Scrapy</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-数据获取"><span class="toc-text">三. 数据获取</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-目标内容"><span class="toc-text">1. 目标内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-爬虫介绍"><span class="toc-text">2. 爬虫介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-并行爬虫"><span class="toc-text">1) 并行爬虫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-爬虫的断点续爬"><span class="toc-text">2) 爬虫的断点续爬</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Jobs-暂停，恢复爬虫"><span class="toc-text">Jobs: 暂停，恢复爬虫</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Job-路径"><span class="toc-text">Job 路径</span></a></li></ol></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

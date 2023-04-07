@@ -1,0 +1,403 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="一、前言本文主要介绍Hbase常用的三种简单的容灾备份方案，即CopyTable、Export/Import、Snapshot。分别介绍如下：
+二、CopyTable2.1 简介CopyTabl...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Hbase容灾与备份 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Hbase容灾与备份">
+            
+	            Hbase容灾与备份
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/14</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1362</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本文主要介绍Hbase常用的三种简单的容灾备份方案，即<strong>CopyTable</strong>、<strong>Export</strong>/<strong>Import</strong>、<strong>Snapshot</strong>。分别介绍如下：</p>
+<h2 id="二、CopyTable"><a href="#二、CopyTable" class="headerlink" title="二、CopyTable"></a>二、CopyTable</h2><h3 id="2-1-简介"><a href="#2-1-简介" class="headerlink" title="2.1 简介"></a>2.1 简介</h3><p><strong>CopyTable</strong>可以将现有表的数据复制到新表中，具有以下特点：</p>
+<ul>
+<li>支持时间区间 、row区间 、改变表名称 、改变列族名称 、以及是否Copy已被删除的数据等功能；</li>
+<li>执行命令前，需先创建与原表结构相同的新表；</li>
+<li><code>CopyTable</code>的操作是基于HBase Client API进行的，即采用<code>scan</code>进行查询, 采用<code>put</code>进行写入。</li>
+</ul>
+<h3 id="2-2-命令格式"><a href="#2-2-命令格式" class="headerlink" title="2.2 命令格式"></a>2.2 命令格式</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Usage: CopyTable [general options] [--starttime=X] [--endtime=Y] [--new.name=NEW] [--peer.adr=ADR] &lt;tablename&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-常用命令"><a href="#2-3-常用命令" class="headerlink" title="2.3 常用命令"></a>2.3 常用命令</h3><ol>
+<li>同集群下CopyTable</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.CopyTable --new.name=tableCopy  tableOrig</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>不同集群下CopyTable</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 两表名称相同的情况</span></span><br><span class="line">hbase org.apache.hadoop.hbase.mapreduce.CopyTable \</span><br><span class="line">--peer.adr=dstClusterZK:2181:/hbase tableOrig</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 也可以指新的表名</span></span><br><span class="line">hbase org.apache.hadoop.hbase.mapreduce.CopyTable \</span><br><span class="line">--peer.adr=dstClusterZK:2181:/hbase \</span><br><span class="line">--new.name=tableCopy tableOrig</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>下面是一个官方给的比较完整的例子，指定开始和结束时间，集群地址，以及只复制指定的列族：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.CopyTable \</span><br><span class="line">--starttime=1265875194289 \</span><br><span class="line">--endtime=1265878794289 \</span><br><span class="line">--peer.adr=server1,server2,server3:2181:/hbase \</span><br><span class="line">--families=myOldCf:myNewCf,cf2,cf3 TestTable</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-更多参数"><a href="#2-4-更多参数" class="headerlink" title="2.4 更多参数"></a>2.4 更多参数</h3><p>可以通过<code>--help</code>查看更多支持的参数</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> hbase org.apache.hadoop.hbase.mapreduce.CopyTable --<span class="built_in">help</span></span></span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/hbase-copy-table.png"> </div>
+
+
+
+<h2 id="三、Export-Import"><a href="#三、Export-Import" class="headerlink" title="三、Export/Import"></a>三、Export/Import</h2><h3 id="3-1-简介"><a href="#3-1-简介" class="headerlink" title="3.1 简介"></a>3.1 简介</h3><ul>
+<li><code>Export</code>支持导出数据到HDFS, <code>Import</code>支持从HDFS导入数据。<code>Export</code>还支持指定导出数据的开始时间和结束时间，因此可以用于增量备份。</li>
+<li><code>Export</code>导出与<code>CopyTable</code>一样，依赖HBase的<code>scan</code>操作</li>
+</ul>
+<h3 id="3-2-命令格式"><a href="#3-2-命令格式" class="headerlink" title="3.2 命令格式"></a>3.2 命令格式</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Export</span></span><br><span class="line">hbase org.apache.hadoop.hbase.mapreduce.Export &lt;tablename&gt; &lt;outputdir&gt; [&lt;versions&gt; [&lt;starttime&gt; [&lt;endtime&gt;]]]</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Inport</span></span><br><span class="line">hbase org.apache.hadoop.hbase.mapreduce.Import &lt;tablename&gt; &lt;inputdir&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>导出的<code>outputdir</code>目录可以不用预先创建，程序会自动创建。导出完成后，导出文件的所有权将由执行导出命令的用户所拥有。</li>
+<li>默认情况下，仅导出给定<code>Cell</code>的最新版本，而不管历史版本。要导出多个版本，需要将<code>&lt;versions&gt;</code>参数替换为所需的版本数。</li>
+</ul>
+<h3 id="3-3-常用命令"><a href="#3-3-常用命令" class="headerlink" title="3.3 常用命令"></a>3.3 常用命令</h3><ol>
+<li>导出命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.Export tableName  hdfs路径/tableName.db</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>导入命令</li>
+</ol>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase org<span class="selector-class">.apache</span><span class="selector-class">.hadoop</span><span class="selector-class">.hbase</span><span class="selector-class">.mapreduce</span><span class="selector-class">.Import</span> tableName  hdfs路径/tableName.db</span><br></pre></td></tr></table></figure>
+<h2 id="四、Snapshot"><a href="#四、Snapshot" class="headerlink" title="四、Snapshot"></a>四、Snapshot</h2><h3 id="4-1-简介"><a href="#4-1-简介" class="headerlink" title="4.1 简介"></a>4.1 简介</h3><p>HBase的快照(Snapshot)功能允许您获取表的副本(包括内容和元数据)，并且性能开销很小。因为快照存储的仅仅是表的元数据和HFiles的信息。快照的<code>clone</code>操作会从该快照创建新表，快照的<code>restore</code>操作会将表的内容还原到快照节点。<code>clone</code>和<code>restore</code>操作不需要复制任何数据，因为底层HFiles(包含HBase表数据的文件)不会被修改，修改的只是表的元数据信息。</p>
+<h3 id="4-2-配置"><a href="#4-2-配置" class="headerlink" title="4.2 配置"></a>4.2 配置</h3><p>HBase快照功能默认没有开启，如果要开启快照，需要在<code>hbase-site.xml</code>文件中添加如下配置项：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.snapshot.enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-3-常用命令"><a href="#4-3-常用命令" class="headerlink" title="4.3 常用命令"></a>4.3 常用命令</h3><p>快照的所有命令都需要在Hbase Shell交互式命令行中执行。</p>
+<h4 id="1-Take-a-Snapshot"><a href="#1-Take-a-Snapshot" class="headerlink" title="1. Take a Snapshot"></a>1. Take a Snapshot</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 拍摄快照</span></span><br><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> snapshot <span class="string">'表名'</span>, <span class="string">'快照名'</span></span></span><br></pre></td></tr></table></figure>
+<p>默认情况下拍摄快照之前会在内存中执行数据刷新。以保证内存中的数据包含在快照中。但是如果你不希望包含内存中的数据，则可以使用<code>SKIP_FLUSH</code>选项禁止刷新。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 禁止内存刷新</span></span><br><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> snapshot  <span class="string">'表名'</span>, <span class="string">'快照名'</span>, &#123;SKIP_FLUSH =&gt; <span class="literal">true</span>&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-Listing-Snapshots"><a href="#2-Listing-Snapshots" class="headerlink" title="2. Listing Snapshots"></a>2. Listing Snapshots</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 获取快照列表</span></span><br><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> list_snapshots</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-Deleting-Snapshots"><a href="#3-Deleting-Snapshots" class="headerlink" title="3. Deleting Snapshots"></a>3. Deleting Snapshots</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 删除快照</span></span><br><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> delete_snapshot <span class="string">'快照名'</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="4-Clone-a-table-from-snapshot"><a href="#4-Clone-a-table-from-snapshot" class="headerlink" title="4. Clone a table from snapshot"></a>4. Clone a table from snapshot</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 从现有的快照创建一张新表</span></span><br><span class="line"><span class="meta">hbase&gt;</span><span class="bash">  clone_snapshot <span class="string">'快照名'</span>, <span class="string">'新表名'</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="5-Restore-a-snapshot"><a href="#5-Restore-a-snapshot" class="headerlink" title="5. Restore a snapshot"></a>5. Restore a snapshot</h4><p>将表恢复到快照节点，恢复操作需要先禁用表</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> <span class="built_in">disable</span> <span class="string">'表名'</span></span></span><br><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> restore_snapshot <span class="string">'快照名'</span></span></span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是：是如果HBase配置了基于Replication的主从复制，由于Replication在日志级别工作，而快照在文件系统级别工作，因此在还原之后，会出现副本与主服务器处于不同的状态的情况。这时候可以先停止同步，所有服务器还原到一致的数据点后再重新建立同步。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://blog.cloudera.com/blog/2012/06/online-hbase-backups-with-copytable-2/" target="_blank" rel="noopener">Online Apache HBase Backups with CopyTable</a></li>
+<li><a href="http://hbase.apache.org/book.htm" target="_blank" rel="noopener">Apache HBase ™ Reference Guide</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100431.html" class="pre-post btn btn-default" title='Hbase的SQL中间层——Phoenix'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Hbase的SQL中间层——Phoenix</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100429.html" class="next-post btn btn-default" title='Hbase协处理器'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Hbase协处理器</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、前言"><span class="toc-text">一、前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、CopyTable"><span class="toc-text">二、CopyTable</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-简介"><span class="toc-text">2.1 简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-命令格式"><span class="toc-text">2.2 命令格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-常用命令"><span class="toc-text">2.3 常用命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-更多参数"><span class="toc-text">2.4 更多参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Export-Import"><span class="toc-text">三、Export/Import</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-简介"><span class="toc-text">3.1 简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-命令格式"><span class="toc-text">3.2 命令格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-常用命令"><span class="toc-text">3.3 常用命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、Snapshot"><span class="toc-text">四、Snapshot</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-简介"><span class="toc-text">4.1 简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-配置"><span class="toc-text">4.2 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-常用命令"><span class="toc-text">4.3 常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Take-a-Snapshot"><span class="toc-text">1. Take a Snapshot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Listing-Snapshots"><span class="toc-text">2. Listing Snapshots</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-Deleting-Snapshots"><span class="toc-text">3. Deleting Snapshots</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-Clone-a-table-from-snapshot"><span class="toc-text">4. Clone a table from snapshot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-Restore-a-snapshot"><span class="toc-text">5. Restore a snapshot</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

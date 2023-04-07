@@ -1,0 +1,372 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="知识图谱,silk">
+
+
+    <meta name="description" content="一. 简介前面使用 Silk 工具进行知识融合。但实际操作中发现，当数据量较大时，会出现内存爆掉的情况。同时由于 Silk 的 SPARQL 查询语句比较复杂，当数据量大时，获取同样的数据要慢上...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>从零开始学习知识图谱 之 十三.百科知识图谱构建 7.基于Silk批量知识融合 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="从零开始学习知识图谱 之 十三.百科知识图谱构建 7.基于Silk批量知识融合">
+            
+	            从零开始学习知识图谱 之 十三.百科知识图谱构建 7.基于Silk批量知识融合
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/silk/">silk</a> <a class="tag-link" href="/tags/knowledgegraph/">知识图谱</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/10/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1255</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h1><p>前面使用 Silk 工具进行知识融合。但实际操作中发现，当数据量较大时，会出现内存爆掉的情况。同时由于 Silk 的 SPARQL 查询语句比较复杂，当数据量大时，获取同样的数据要慢上很多倍。因此我这里将数据分成一个一个的小数据，而后对这些小数据进行分别链接。这样虽然整体耗时变长了，但具有了可操作性。不过光百度百科就有六千多万数据，可以分成13份。互动也是同样规模的数据。这一组合就是169个任务。所以必须采用自动化的方法构建任务并执行，这里介绍一下我的方法和代码。 </p>
+<p>本教程的项目代码放在github上，下载地址为<a href="https://github.com/myhhub/zero_knowledge_graph" target="_blank" rel="noopener">《从零开始学习知识图谱》项目源代码</a> 。</p>
+<h1 id="二-环境准备"><a href="#二-环境准备" class="headerlink" title="二. 环境准备"></a>二. 环境准备</h1><h2 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h2><p>支持操作系统：windows、macOS、Linux。为了方便大家搭建开发环境，笔者尽可能在windows下构建，系列篇未特意说明时操作系统都是<strong>windows</strong>。Linux安装可以参考<a href="100590.html">VirtualBox虚拟机安装Ubuntu</a>或<a href="100589.html">VirtualBox虚拟机安装CentOS8</a>进行安装。</p>
+<p><strong>笔者建议在docker下安装silk</strong>，参考<a href="100590.html">VirtualBox虚拟机安装Ubuntu</a>，其中有安装docker。</p>
+<p>在docker下，只须一条命令： <code>docker run -d --name silk-workbench -p 80:80 silkframework/silk-workbench:latest</code> ，就能完成silk镜像拉取及运行，<strong>不需要进行下面的软件安装</strong>。</p>
+<h2 id="2-Apache-jena"><a href="#2-Apache-jena" class="headerlink" title="2. Apache jena"></a>2. Apache jena</h2><p>安装参见<a href="100592.html#4-Apache-jena">从零开始学习知识图谱 之 二</a></p>
+<h2 id="3-Silk"><a href="#3-Silk" class="headerlink" title="3. Silk"></a>3. Silk</h2><p>安装参见<a href="100602.html#2-Silk">从零开始学习知识图谱 之 十二</a></p>
+<h1 id="三-加载数据到-tdb"><a href="#三-加载数据到-tdb" class="headerlink" title="三. 加载数据到 tdb"></a>三. 加载数据到 tdb</h1><p>处理代码文件knowledge_fusion/silk/batch_link.py</p>
+<p>这一步的流程为：</p>
+<ul>
+<li>分割出要加载的数据，并存储成单独的 nt 文件，由 seg_nt()函数完成。该函数采用 sed 命令快速获取指定行数间的数据。</li>
+<li>删除 Fuseki 中已经存在的同名数据库，防止被已存在数据的污染。由 delete_tdb() 函数完成。</li>
+<li>在 Fuseki 中创建数据库，来存储 tdb 文件信息。由 add_tdb() 函数完成。</li>
+<li>将 N-triples 文件加载到 Fuseki 中，存储到对应 tdb 数据库中。由 load_nt()函数完成。</li>
+<li>将 刚刚得到的 tdb 文件转移到 Fuseki 对应的文件夹内。</li>
+<li>重启 Fuseki 服务器，加载刚刚得到的数据库。</li>
+</ul>
+<p>经过上面的步骤，我们就将 N-triples 文件加载到 Fuseki 服务器中了。下面将对其进行调用来链接数据。</p>
+<h1 id="四-知识融合"><a href="#四-知识融合" class="headerlink" title="四. 知识融合"></a>四. 知识融合</h1><p>处理代码文件knowledge_fusion/silk/batch_link.py</p>
+<p>这一步的流程为：</p>
+<ul>
+<li>创建项目，由 control_project() 函数完成，该函数向 Silk 发送 POST请求进行项目创建。也可以发送 DELETE 请求来删除任务。</li>
+<li>添加 PREFIXEX,由 add_prefix() 函数完成，该函数向 Silk 发送 PUT 请求添加 PREFIXES。</li>
+<li>创建 endpoint 数据，由 build_endPoint() 完成，该函数发送 PUT 请求，在Datasets中创建SPARQL endpoint 数据。</li>
+<li>创建输出文件，由 build_output() 函数 和 build_rdf() 完成。其中build_output() 函数在将在Resource 中创建 .nt 文件。build_rdf() 函数利用该文件在 Datasets 中创建 数据。</li>
+<li>创建任务，由 build_task() 函数完成。该函数通过 POST 请求，利用上面得到的源文件、目标文件、输出文件来创建融合任务。</li>
+<li>为任务添加规则，由 add_rule() 函数完成，该函数 通过PUT请求将我们定义好的 规则添加到任务中去。</li>
+<li>执行链接任务， 由control_linking() 函数完成，当action等于 start 时，执行链接任务，当 action 为 cancel 时，取消链接任务。</li>
+</ul>
+<p>通过以上步骤的循环，就可以实现自动批量处理融合任务了。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/11/100629.html" class="pre-post btn btn-default" title='知识图谱基础 之 一.知识图谱基本概念'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">知识图谱基础 之 一.知识图谱基本概念</span>
+        </a>
+    
+    
+        <a href="/archives/2019/10/100602.html" class="next-post btn btn-default" title='从零开始学习知识图谱 之 十二.百科知识图谱构建 6.基于Silk知识融合'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">从零开始学习知识图谱 之 十二.百科知识图谱构建 6.基于Silk知识融合</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-简介"><span class="toc-text">一. 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-环境准备"><span class="toc-text">二. 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统"><span class="toc-text">1. 操作系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Apache-jena"><span class="toc-text">2. Apache jena</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Silk"><span class="toc-text">3. Silk</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-加载数据到-tdb"><span class="toc-text">三. 加载数据到 tdb</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四-知识融合"><span class="toc-text">四. 知识融合</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

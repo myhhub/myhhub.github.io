@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,安装,gitlab">
+
+
+    <meta name="description" content="接上文: kubernetes CI/CD建设之 四.使用Helm快速安装Harbor
+
+Gitlab官方提供了 Helm 的方式在 Kubernetes 集群中来快速安装，但是在使用的过程中发...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>kubernetes CI/CD建设之 五.Gitlab | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="kubernetes CI/CD建设之 五.Gitlab">
+            
+	            kubernetes CI/CD建设之 五.Gitlab
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/gitlab/">gitlab</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/install/">安装</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/19</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1569</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100059.html">kubernetes CI/CD建设之 四.使用Helm快速安装Harbor</a></p>
+<hr>
+<p><code>Gitlab</code>官方提供了 Helm 的方式在 Kubernetes 集群中来快速安装，但是在使用的过程中发现 Helm 提供的 Chart 包中有很多其他额外的配置，所以我们这里使用自定义的方式来安装，也就是自己来定义一些资源清单文件。</p>
+<p><code>Gitlab</code>主要涉及到3个应用：Redis、Postgresql、Gitlab 核心程序，实际上我们只要将这3个应用分别启动起来，然后加上对应的配置就可以很方便的安装 Gitlab 了，我们这里选择使用的镜像不是官方的，而是 Gitlab 容器化中使用非常多的一个第三方镜像：<code>sameersbn/gitlab</code>，基本上和官方保持同步更新，地址：<a href="http://www.damagehead.com/docker-gitlab/" target="_blank" rel="noopener">http://www.damagehead.com/docker-gitlab/</a></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>如果我们已经有可使用的 Redis 或 Postgresql 服务的话，那么直接配置在 Gitlab 环境变量中即可，如果没有的话就单独部署。</p>
+<p>首先部署需要的 Redis 服务，对应的资源清单文件如下：(gitlab-redis.yaml)</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">        image:</span> <span class="string">sameersbn/redis</span></span><br><span class="line"><span class="attr">        imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">          containerPort:</span> <span class="number">6379</span></span><br><span class="line"><span class="attr">        volumeMounts:</span></span><br><span class="line"><span class="attr">        - mountPath:</span> <span class="string">/var/lib/redis</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">data</span></span><br><span class="line"><span class="attr">        livenessProbe:</span></span><br><span class="line"><span class="attr">          exec:</span></span><br><span class="line"><span class="attr">            command:</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">redis-cli</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">ping</span></span><br><span class="line"><span class="attr">          initialDelaySeconds:</span> <span class="number">30</span></span><br><span class="line"><span class="attr">          timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">        readinessProbe:</span></span><br><span class="line"><span class="attr">          exec:</span></span><br><span class="line"><span class="attr">            command:</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">redis-cli</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">ping</span></span><br><span class="line"><span class="attr">          initialDelaySeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">          timeoutSeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      volumes:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">data</span></span><br><span class="line"><span class="attr">        emptyDir:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">      port:</span> <span class="number">6379</span></span><br><span class="line"><span class="attr">      targetPort:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">redis</span></span><br></pre></td></tr></table></figure>
+<p>然后是数据库 Postgresql，对应的资源清单文件如下：(gitlab-postgresql.yaml)</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">        image:</span> <span class="string">sameersbn/postgresql:10</span></span><br><span class="line"><span class="attr">        imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">        env:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_USER</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_PASS</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">passw0rd</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_NAME</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">gitlab_production</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_EXTENSION</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">pg_trgm</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">          containerPort:</span> <span class="number">5432</span></span><br><span class="line"><span class="attr">        volumeMounts:</span></span><br><span class="line"><span class="attr">        - mountPath:</span> <span class="string">/var/lib/postgresql</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">data</span></span><br><span class="line"><span class="attr">        livenessProbe:</span></span><br><span class="line"><span class="attr">          exec:</span></span><br><span class="line"><span class="attr">            command:</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">pg_isready</span></span><br><span class="line"><span class="bullet">            -</span> <span class="bullet">-h</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">localhost</span></span><br><span class="line"><span class="bullet">            -</span> <span class="bullet">-U</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">          initialDelaySeconds:</span> <span class="number">30</span></span><br><span class="line"><span class="attr">          timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">        readinessProbe:</span></span><br><span class="line"><span class="attr">          exec:</span></span><br><span class="line"><span class="attr">            command:</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">pg_isready</span></span><br><span class="line"><span class="bullet">            -</span> <span class="bullet">-h</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">localhost</span></span><br><span class="line"><span class="bullet">            -</span> <span class="bullet">-U</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">          initialDelaySeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">          timeoutSeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      volumes:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">data</span></span><br><span class="line"><span class="attr">        emptyDir:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">      port:</span> <span class="number">5432</span></span><br><span class="line"><span class="attr">      targetPort:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">postgresql</span></span><br></pre></td></tr></table></figure>
+<p>然后就是我们最核心的 Gitlab 的应用，对应的资源清单文件如下：(gitlab.yaml)</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">        image:</span> <span class="string">sameersbn/gitlab:11.8.1</span></span><br><span class="line"><span class="attr">        imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">        env:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">TZ</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_TIMEZONE</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">Beijing</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_SECRETS_DB_KEY_BASE</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">long-and-random-alpha-numeric-string</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_SECRETS_SECRET_KEY_BASE</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">long-and-random-alpha-numeric-string</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_SECRETS_OTP_KEY_BASE</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">long-and-random-alpha-numeric-string</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_ROOT_PASSWORD</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">admin321</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_ROOT_EMAIL</span></span><br><span class="line"><span class="attr">          value:</span> <span class="number">517554016</span><span class="string">@qq.com</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_HOST</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">git.ljjyy.com</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_PORT</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">"80"</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_SSH_PORT</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">"22"</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_NOTIFY_ON_BROKEN_BUILDS</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">"true"</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_NOTIFY_PUSHER</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">"false"</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_BACKUP_SCHEDULE</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">daily</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">GITLAB_BACKUP_TIME</span></span><br><span class="line"><span class="attr">          value:</span> <span class="number">01</span><span class="string">:00</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_TYPE</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_HOST</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">postgresql</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_PORT</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">"5432"</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_USER</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_PASS</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">passw0rd</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_NAME</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">gitlab_production</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">REDIS_HOST</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">REDIS_PORT</span></span><br><span class="line"><span class="attr">          value:</span> <span class="string">"6379"</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">          containerPort:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">ssh</span></span><br><span class="line"><span class="attr">          containerPort:</span> <span class="number">22</span></span><br><span class="line"><span class="attr">        volumeMounts:</span></span><br><span class="line"><span class="attr">        - mountPath:</span> <span class="string">/home/git/data</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">data</span></span><br><span class="line"><span class="attr">        livenessProbe:</span></span><br><span class="line"><span class="attr">          httpGet:</span></span><br><span class="line"><span class="attr">            path:</span> <span class="string">/</span></span><br><span class="line"><span class="attr">            port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">          initialDelaySeconds:</span> <span class="number">180</span></span><br><span class="line"><span class="attr">          timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">        readinessProbe:</span></span><br><span class="line"><span class="attr">          httpGet:</span></span><br><span class="line"><span class="attr">            path:</span> <span class="string">/</span></span><br><span class="line"><span class="attr">            port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">          initialDelaySeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">          timeoutSeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      volumes:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">data</span></span><br><span class="line"><span class="attr">        emptyDir:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">      port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">      targetPort:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">ssh</span></span><br><span class="line"><span class="attr">      port:</span> <span class="number">22</span></span><br><span class="line"><span class="attr">      targetPort:</span> <span class="string">ssh</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">gitlab</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">  annotations:</span></span><br><span class="line">    <span class="string">kubernetes.io/ingress.class:</span> <span class="string">traefik</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  rules:</span></span><br><span class="line"><span class="attr">  - host:</span> <span class="string">git.ljjyy.com</span></span><br><span class="line"><span class="attr">    http:</span></span><br><span class="line"><span class="attr">      paths:</span></span><br><span class="line"><span class="attr">      - backend:</span></span><br><span class="line"><span class="attr">          serviceName:</span> <span class="string">gitlab</span></span><br><span class="line"><span class="attr">          servicePort:</span> <span class="string">http</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>要注意我们这里应用数据没有做数据持久化，只是使用的<code>emptyDir: {}</code>类型的 volume，Pod 挂掉后，对应的数据也就没有了，所以要在正式的环境中使用一定要做数据的持久化，比如添加 PV/PVC 或者 StorageClass。</p>
+</blockquote>
+<p>要注意的是其中 Redis 和 Postgresql 相关的环境变量配置，另外，我们这里添加了一个 Ingress 对象，来为我们的 Gitlab 配置一个域名<code>git.ljjyy.com</code>，这样应用部署完成后，我们就可以通过该域名来访问了，然后直接部署即可：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f gitlab-redis<span class="selector-class">.yaml</span> gitlab-postgresql<span class="selector-class">.yaml</span> gitlab.yaml</span><br></pre></td></tr></table></figure>
+<p>创建完成后，查看 Pod 的部署状态：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pods -n kube-ops</span><br><span class="line">NAME                                           READY     STATUS    RESTARTS   AGE</span><br><span class="line">gitlab<span class="number">-7</span>d855554cb-twh7c                        <span class="number">1</span>/<span class="number">1</span>       Running   <span class="number">0</span>          <span class="number">10</span>m</span><br><span class="line">postgresql<span class="number">-8566</span>bb959c<span class="number">-2</span>tnvr                    <span class="number">1</span>/<span class="number">1</span>       Running   <span class="number">0</span>          <span class="number">17</span>h</span><br><span class="line">redis<span class="number">-8446</span>f57bdf<span class="number">-4</span>v62p                         <span class="number">1</span>/<span class="number">1</span>       Running   <span class="number">0</span>          <span class="number">17</span>h</span><br></pre></td></tr></table></figure>
+<p>可以看到都已经部署成功了，然后我们可以通过 Ingress 中定义的域名<code>git.ljjyy.com</code>(需要做 DNS 解析或者在本地 /etc/hosts 中添加映射)来访问 Portal：</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>使用用户名 root，和部署的时候指定的超级用户密码<code>GITLAB_ROOT_PASSWORD=admin321</code>即可登录进入到首页：</p>
+<p>Gitlab 运行后，我们可以注册为新用户并创建一个项目，还可以做很多的其他系统设置，比如设置语言、设置应用风格样式等等。</p>
+<p>点击<code>Create a project</code>创建一个新的项目，和之前 Github 使用上没有多大的差别：</p>
+<p>创建完成后，我们可以添加本地用户的一个<code>SSH-KEY</code>，这样我们就可以通过 SSH 来拉取或者推送代码了。SSH 公钥通常包含在<code>~/.ssh/id_rsa.pub</code> 文件中，并以<code>ssh-rsa</code>开头。如果没有的话可以使用<code>ssh-keygen</code>命令来生成，<code>id_rsa.pub</code>里面的内容就是我们需要的 SSH 公钥，然后添加到 Gitlab 中。</p>
+<p>由于平时使用的 ssh 默认是 22 端口，现在如果用默认的 22 端口去连接，是没办法和 Gitlab 容器中的 22 端口进行映射的，因为我们只是通过 Service 的 22 端口进行了映射，要想通过节点去进行 ssh 链接就需要在节点上一个端口和容器内部的22端口进行绑定，所以这里我们可以通过 NodePort 去映射 Gitlab 容器内部的22端口，比如我们将环境变量设置为<code>GITLAB_SSH_PORT=30022</code>，将 Gitlab 的 Service 也设置为 NodePort 类型：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: v1</span><br><span class="line"><span class="attribute">kind</span>: Service</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">name</span>: gitlab</span><br><span class="line">  <span class="attribute">namespace</span>: kube-ops</span><br><span class="line">  <span class="attribute">labels</span>:</span><br><span class="line">    <span class="attribute">name</span>: gitlab</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">ports</span>:</span><br><span class="line">    - <span class="attribute">name</span>: http</span><br><span class="line">      <span class="attribute">port</span>: <span class="number">80</span></span><br><span class="line">      <span class="attribute">targetPort</span>: http</span><br><span class="line">    - <span class="attribute">name</span>: ssh</span><br><span class="line">      <span class="attribute">port</span>: <span class="number">22</span></span><br><span class="line">      <span class="attribute">targetPort</span>: ssh</span><br><span class="line">      <span class="attribute">nodePort</span>: <span class="number">30022</span></span><br><span class="line">  <span class="attribute">type</span>: NodePort</span><br><span class="line">  <span class="attribute">selector</span>:</span><br><span class="line">    <span class="attribute">name</span>: gitlab</span><br></pre></td></tr></table></figure>
+<p>注意上面 ssh 对应的 nodePort 端口设置为 30022，这样就不会随机生成了，重新更新下 Deployment 和 Service，更新完成后，现在我们在项目上面 Clone 的时候使用 ssh 就会带上端口号了：</p>
+<p>现在就可以使用<code>Clone with SSH</code>的地址了，由于上面我们配置了 SSH 公钥，所以就可以直接访问上面的仓库了：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$</span> git clone ssh:<span class="comment">//git@git.ljjyy.com:30022/root/gitlab-demo.git</span></span><br><span class="line"><span class="function"><span class="title">Cloning</span></span> into <span class="string">'gitlab-demo'</span>...</span><br><span class="line">warning: You appear to have cloned an empty repository.</span><br><span class="line"><span class="function"><span class="title">Checking</span></span> connectivity... done.</span><br></pre></td></tr></table></figure>
+<p>然后随便在该项目下面添加一些资源：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ echo "<span class="comment"># hello world" &gt;  README.md</span></span><br><span class="line">$ git add .</span><br><span class="line">$ git <span class="keyword">commit</span> -m <span class="string">'hello world'</span></span><br><span class="line">[<span class="keyword">master</span> (root-<span class="keyword">commit</span>) <span class="number">63</span>de7cb] hello world</span><br><span class="line"> <span class="number">1</span> <span class="keyword">file</span> <span class="keyword">changed</span>, <span class="number">1</span> insertion(+)</span><br><span class="line"> <span class="keyword">create</span> <span class="keyword">mode</span> <span class="number">100644</span> README.md</span><br><span class="line">$ git push origin <span class="keyword">master</span></span><br><span class="line">Counting objects: <span class="number">3</span>, done.</span><br><span class="line">Writing objects: <span class="number">100</span>% (<span class="number">3</span>/<span class="number">3</span>), <span class="number">224</span> <span class="keyword">bytes</span> | <span class="number">0</span> <span class="keyword">bytes</span>/s, done.</span><br><span class="line">Total <span class="number">3</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>)</span><br><span class="line"><span class="keyword">To</span> ssh://git@git.ljjyy.com:<span class="number">30022</span>/root/gitlab-demo.git</span><br><span class="line"> * [<span class="keyword">new</span> branch]      <span class="keyword">master</span> -&gt; <span class="keyword">master</span></span><br></pre></td></tr></table></figure>
+<p>然后刷新浏览器，就可以看到刚刚创建的 Git 仓库中多了一个 README.md 的文件：</p>
+<p>到这里就表明我们的 Gitlab 就成功部署到了 Kubernetes 集群当中了。</p>
+<p>本文中涉及到的所有资源清单文件参考地址：<a href="https://github.com/myhhub/kubeapp/tree/master/gitlab" target="_blank" rel="noopener">https://github.com/myhhub/kubeapp/tree/master/gitlab</a></p>
+<hr>
+<p>接下文: <a href="100061.html">kubernetes CI/CD建设之 六.Gitlab CI Runner</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100061.html" class="pre-post btn btn-default" title='kubernetes CI/CD建设之 六.Gitlab CI Runner'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">kubernetes CI/CD建设之 六.Gitlab CI Runner</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100059.html" class="next-post btn btn-default" title='kubernetes CI/CD建设之 四.使用Helm快速安装Harbor'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">kubernetes CI/CD建设之 四.使用Helm快速安装Harbor</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用"><span class="toc-text">使用</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

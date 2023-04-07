@@ -1,0 +1,500 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="c++,cmake,qt">
+
+
+    <meta name="description" content="本章的主要内容有：
+
+使用Doxygen构建文档
+使用Sphinx构建文档
+结合Doxygen和Sphinx
+
+文档在所有的软件项目都是有必要的：对于用户来说，了解如何获得并构建代码，并且如何有...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>CMake 完整使用教程 之十三 构建文档 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="CMake 完整使用教程 之十三 构建文档">
+            
+	            CMake 完整使用教程 之十三 构建文档
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c++</a> <a class="tag-link" href="/tags/cmake/">cmake</a> <a class="tag-link" href="/tags/qt/">qt</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/03/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>738</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>本章的主要内容有：</p>
+<ul>
+<li>使用Doxygen构建文档</li>
+<li>使用Sphinx构建文档</li>
+<li>结合Doxygen和Sphinx</li>
+</ul>
+<p>文档在所有的软件项目都是有必要的：对于用户来说，了解如何获得并构建代码，并且如何有效地使用源代码或库；对于开发人员来说，文档可用来描述你源码细节，并帮助其他程序员参与其中为该项目作出贡献。本章将展示如何使用CMake构建代码文档，这里使用了两个流行的文档框架：Doxygen和Sphinx。</p>
+<h1 id="12-1-使用Doxygen构建文档"><a href="#12-1-使用Doxygen构建文档" class="headerlink" title="12.1 使用Doxygen构建文档"></a>12.1 使用Doxygen构建文档</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-12/recipe-01" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-12/recipe-01</a> 中找到，其中包含一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>Doxygen(<a href="http://www.doxygen.nl/" target="_blank" rel="noopener">http://www.doxygen.nl</a> )是非常流行的源代码文档工具。可以在代码中添加文档标记作为注释，而后运行Doxygen提取这些注释，并以Doxyfile配置文件中定义的格式创建文档。Doxygen可以输出HTML、XML，甚至LaTeX或PDF。本示例将展示，如何使用CMake来构建Doxygen文档。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>使用前几章中介绍的消息库的简化版本。目录结构如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── cmake</span><br><span class="line">│    └── UseDoxygenDoc.cmake</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── docs</span><br><span class="line">│    ├── Doxyfile.<span class="keyword">in</span></span><br><span class="line">│    └── front_page.md</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    ├── hello-world.cpp</span><br><span class="line">    ├── Message.cpp</span><br><span class="line">    └── Message.hpp</span><br></pre></td></tr></table></figure>
+<p>我们仍然在<code>src</code>子目录下放置源代码，并且在CMake子目录中有自定义的CMake模块。由于重点是文档，所以消除了对UUID的依赖，并简化了源代码。最大的区别是头文件中的大量代码注释：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iosfwd&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line">/ * ! \file Message.hpp * /</span><br><span class="line"></span><br><span class="line"><span class="comment">/*! \class Message</span></span><br><span class="line"><span class="comment">* \brief Forwards string to screen</span></span><br><span class="line"><span class="comment">* \author Roberto Di Remigio</span></span><br><span class="line"><span class="comment">* \date 2018</span></span><br><span class="line"><span class="comment">* /</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">class Message &#123;</span></span><br><span class="line"><span class="comment">public:</span></span><br><span class="line"><span class="comment">  /*! \brief Constructor from a string</span></span><br><span class="line"><span class="comment">  * \param[in] m a message</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  Message(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;m) : message_(m) &#123;&#125;</span><br><span class="line">  <span class="comment">/*! \brief Constructor from a character array</span></span><br><span class="line"><span class="comment">  * \param[in] m a message</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  Message(<span class="keyword">const</span> <span class="keyword">char</span> * m): message_(<span class="built_in">std</span>:: <span class="built_in">string</span>(m))&#123;&#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">friend</span> <span class="built_in">std</span>::ostream &amp;<span class="keyword">operator</span>&lt;&lt;(<span class="built_in">std</span>::ostream &amp;os, Message &amp;obj) &#123;</span><br><span class="line">    <span class="keyword">return</span> obj.printObject(os);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">/*! The message to be forwarded to screen */</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> message_;</span><br><span class="line">  <span class="comment">/*! \brief Function to forward message to screen</span></span><br><span class="line"><span class="comment">  * \param[in, out] os output stream</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="function">ostream &amp;<span class="title">printObject</span><span class="params">(<span class="built_in">std</span>::ostream &amp;os)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这些注释的格式是<code>/*!*/</code>，并包含一些Doxygen可以理解的特殊标记(参见<a href="http://www.stack.nl/~dimitri/Doxygen/manual/docblocks.html" target="_blank" rel="noopener">http://www.stack.nl/~dimitri/Doxygen/manual/docblocks.html</a> )。</p>
+<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>首先，来看看根目录下的<code>CMakeLists.txt</code>：</p>
+<ol>
+<li><p>我们声明了一个C++11项目：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">01</span> LANGUAGES CXX)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为动态库和静态库，以及可执行文件定义了输出目录：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">include(GNUInstallDirs)</span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_ARCHIVE_OUTPUT_DIRECTORY</span><br><span class="line">	<span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>)</span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_LIBRARY_OUTPUT_DIRECTORY</span><br><span class="line">	<span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>)</span><br><span class="line"><span class="builtin-name">set</span>(CMAKE_RUNTIME_OUTPUT_DIRECTORY</span><br><span class="line">	<span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_BINDIR&#125;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>cmake</code>子目录追加到<code>CMAKE_MODULE_PATH</code>。这是需要CMake找到我们的自定义模块：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">list</span><span class="params">(APPEND CMAKE_MODULE_PATH <span class="string">"$&#123;CMAKE_SOURCE_DIR&#125;/cmake"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>UseDoxygenDoc.cmake</code>自定义模块。将在后面讨论它的内容:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">include</span><span class="params">(UseDoxygenDoc)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后添加<code>src</code>子目录:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(src)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>src</code>子目录中的<code>CMakeLists.txt</code>文件包含以下构建块:</p>
+<ol>
+<li><p>添加了消息库:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span> STATIC</span><br><span class="line">  <span class="keyword">Message</span>.hpp</span><br><span class="line">  <span class="keyword">Message</span>.cpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，声明<code>add_doxygen_doc</code>函数。这个函数可以理解这些参数：BUILD_DIR、DOXY_FILE、TARGET_NAME和COMMENT。使用<code>cmake_parse_arguments</code>标准CMake命令解析这些参数：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function(add_doxygen_doc)</span><br><span class="line">  <span class="builtin-name">set</span>(options)</span><br><span class="line">  <span class="builtin-name">set</span>(oneValueArgs BUILD_DIR DOXY_FILE TARGET_NAME COMMENT)</span><br><span class="line">  <span class="builtin-name">set</span>(multiValueArgs)</span><br><span class="line">  </span><br><span class="line">  cmake_parse_arguments(DOXY_DOC</span><br><span class="line">    <span class="string">"<span class="variable">$&#123;options&#125;</span>"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&#123;oneValueArgs&#125;</span>"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&#123;multiValueArgs&#125;</span>"</span></span><br><span class="line">    <span class="variable">$&#123;ARGN&#125;</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  # <span class="built_in">..</span>.</span><br><span class="line">endfunction()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Doxyfile包含用于构建文档的所有Doxygen设置。一个模板<code>Doxyfile.in</code>文件作为函数参数<code>DOXY_FILE</code>传递，并解析为<code>DOXY_DOC_DOXY_FILE</code>变量。使用如下方式，配置模板文件<code>Doxyfile.in</code>:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">configure_file</span>(</span><br><span class="line">  <span class="variable">$&#123;DOXY_DOC_DOXY_FILE&#125;</span></span><br><span class="line">  <span class="variable">$&#123;DOXY_DOC_BUILD_DIR&#125;</span>/Doxyfile</span><br><span class="line">  @ONLY</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，定义了一个名为<code>DOXY_DOC_TARGET_NAME</code>的自定义目标，它将使用Doxyfile中的设置执行Doxygen，并在<code>DOXY_DOC_BUILD_DIR</code>中输出结果:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_custom_target</span>(<span class="variable">$&#123;DOXY_DOC_TARGET_NAME&#125;</span></span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">    <span class="variable">$&#123;DOXYGEN_EXECUTABLE&#125;</span> Doxyfile</span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">    <span class="variable">$&#123;DOXY_DOC_BUILD_DIR&#125;</span></span><br><span class="line">  COMMENT</span><br><span class="line">    <span class="string">"Building $&#123;DOXY_DOC_COMMENT&#125; with Doxygen"</span></span><br><span class="line">  VERBATIM</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，为用户打印一条状态信息:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Added $&#123;DOXY_DOC_TARGET_NAME&#125; [Doxygen] target to build documentation"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>可以像往常一样配置项目：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake --build .</span></span><br></pre></td></tr></table></figure>
+<p>可以通过调用自定义文档目标来构建文档:</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">$</span> <span class="comment">cmake</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">build</span> <span class="string">.</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">target</span> <span class="comment">docs</span></span><br></pre></td></tr></table></figure>
+<p>您将注意到构建树中出现了一个<code>_build</code>子目录。它包含Doxygen从源文件生成的HTML文档。用浏览器打开<code>index.html</code>将显示Doxygen欢迎页面。</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>默认情况下，CMake不支持文档构建。但是，我们可以使用<code>add_custom_target</code>执行任意操作。需要注意的是，需要确保构建文档所需的工具(本例中是Doxygen和Perl)在系统上可用。</p>
+<p>此外，请注意<code>UseDoxygenDoc.cmake</code>自定义模块只做以下工作:</p>
+<ul>
+<li>执行对Doxygen和Perl可执行程序的搜索</li>
+<li>定义函数</li>
+</ul>
+<p>使用<code>add_doxygen_doc</code>函数对文档目标进行创建。这个显式模式要优于隐式模式，我们也认为这是很好的实践方式：不要使用模块来执行类似宏(或函数)的操作。</p>
+<p>为了限制变量定义的范围和可能出现的副作用，我们使用函数而不是宏实现了<code>add_doxygen_doc</code>。这种情况下，函数和宏都可以工作(并且会产生相同的结果)，但是建议优先使用函数而不是宏，除非需要修改父范围中的变量。</p>
+<p><strong>NOTE</strong>:<em>在cmake 3.9中添加了<code>FindDoxygen.cmake</code>模块。实现了<code>doxygen_add_docs</code>函数，其行为与我们在本示例中给出的宏类似。要了解更多细节，请访问<a href="https://cmake.org/cmake/help/v3.9/module/FindDoxygen.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.9/module/FindDoxygen.html</a> 查看在线文档。</em></p>
+<h1 id="12-2-使用Sphinx构建文档"><a href="#12-2-使用Sphinx构建文档" class="headerlink" title="12.2 使用Sphinx构建文档"></a>12.2 使用Sphinx构建文档</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-12/recipe-02" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-12/recipe-02</a> 中找到，其中包含一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>Sphinx是一个Python程序，也是一个非常流行的文档系统(<a href="http://www.sphinx-doc.org/" target="_blank" rel="noopener">http://www.sphinx-doc.org</a> )。当与Python项目一起使用时，可以为<code>docstring</code>解析源文件，并自动为函数和类生成文档页面。然而，Sphinx不仅限于Python，还可以解析reStructuredText、Markdown，并生成HTML、ePUB或PDF文档。还有在线阅读服务(<a href="https://readthedocs.org/" target="_blank" rel="noopener">https://readthedocs.org</a> )，它提供了一种快速编写和部署文档的方法。本示例将向您展示，如何使用CMake构建Sphinx文档。</p>
+<h2 id="准备工作-1"><a href="#准备工作-1" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们希望建立一个简单的网站，记录我们的消息库输出的信息。源码树现在看起来如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── cmake</span><br><span class="line">│    ├── FindSphinx.cmake</span><br><span class="line">│    └── UseSphinxDoc.cmake</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── docs</span><br><span class="line">│    ├── conf<span class="selector-class">.py</span><span class="selector-class">.in</span></span><br><span class="line">│    └── index.rst</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    ├── hello-world.cpp</span><br><span class="line">    ├── Message.cpp</span><br><span class="line">    └── Message.hpp</span><br></pre></td></tr></table></figure>
+<p><code>cmake</code>子目录中有一些自定义模块，<code>docs</code>子目录以纯文本reStructuredText格式的网站主页，<code>index.rst</code>和一个带有Sphinx的设置Python模板文件<code>conf.py.in</code>，这个模板文件可以使用<code>sphinx-quickstart</code>程序自动生成。</p>
+<h2 id="具体实施-1"><a href="#具体实施-1" class="headerlink" title="具体实施"></a>具体实施</h2><p>与之前的示例相比，我们将修改主<code>CMakeLists.txt</code>文件，并实现一个函数(<code>add_sphinx_doc</code>):</p>
+<ol>
+<li><p>将<code>cmake</code>文件夹附加到<code>CMAKE_MODULE_PATH</code>之后，我们将包括<code>UseSphinxDoc.cmake</code>自定义模块:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">list</span><span class="params">(APPEND CMAKE_MODULE_PATH <span class="string">"$&#123;CMAKE_SOURCE_DIR&#125;/cmake"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(UseSphinxDoc)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>UseSphinxDoc.cmake</code>模块定义了<code>add_sphinx_doc</code>函数。我们使用关键字参数调用这个函数，以便对Sphinx文档的构建进行设置。自定义文档目标将称为<code>docs</code>:</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">add_sphinx_doc(</span><br><span class="line">  SOURCE_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/docs</span><br><span class="line">  BUILD_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/_build</span><br><span class="line">  CACHE_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/_doctrees</span><br><span class="line">  HTML_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/sphinx_html</span><br><span class="line">  CONF_FILE</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/docs/<span class="keyword">conf</span>.py.<span class="keyword">in</span></span><br><span class="line">  TARGET_NAME</span><br><span class="line">  	docs</span><br><span class="line">  COMMENT</span><br><span class="line">  	<span class="string">"HTML documentation"</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>UseSphinxDoc.cmake</code>模块遵循相同的显式方式，这样的使用方式要优于在前一个示例中的隐式方式：</p>
+<ol>
+<li><p>需要找到Python解释器和Sphinx可执行文件，如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(PythonInterp REQUIRED)</span></span></span><br><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(Sphinx REQUIRED)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，用一个值关键字参数定义<code>add_sphinx_doc</code>函数，并用<code>cmake_parse_arguments</code>解析：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">function(add_sphinx_doc)</span><br><span class="line">  <span class="builtin-name">set</span>(options)</span><br><span class="line">  <span class="builtin-name">set</span>(oneValueArgs</span><br><span class="line">    SOURCE_DIR</span><br><span class="line">    BUILD_DIR</span><br><span class="line">    CACHE_DIR</span><br><span class="line">    HTML_DIR</span><br><span class="line">    CONF_FILE</span><br><span class="line">    TARGET_NAME</span><br><span class="line">    COMMENT</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">  <span class="builtin-name">set</span>(multiValueArgs)</span><br><span class="line"></span><br><span class="line">  cmake_parse_arguments(SPHINX_DOC</span><br><span class="line">    <span class="string">"<span class="variable">$&#123;options&#125;</span>"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&#123;oneValueArgs&#125;</span>"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&#123;multiValueArgs&#125;</span>"</span></span><br><span class="line">    <span class="variable">$&#123;ARGN&#125;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">  # <span class="built_in">..</span>.</span><br><span class="line">  </span><br><span class="line">endfunction()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>模板文件<code>conf.py.in</code>作为<code>CONF_FILE</code>关键字参数传递，在<code>SPHINX_DOC_BUILD_DIR</code>中配置为<code>conf.py</code>：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">configure_file</span>(</span><br><span class="line">  <span class="variable">$&#123;SPHINX_DOC_CONF_FILE&#125;</span></span><br><span class="line">  <span class="variable">$&#123;SPHINX_DOC_BUILD_DIR&#125;</span>/conf.py</span><br><span class="line">  @ONLY</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加了一个名为<code>SPHINX_DOC_TARGET_NAME</code>的自定义目标，用Sphinx来编排文档构建:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_custom_target</span>(<span class="variable">$&#123;SPHINX_DOC_TARGET_NAME&#125;</span></span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">    <span class="variable">$&#123;SPHINX_EXECUTABLE&#125;</span></span><br><span class="line">      -q</span><br><span class="line">      -b html</span><br><span class="line">      -c <span class="variable">$&#123;SPHINX_DOC_BUILD_DIR&#125;</span></span><br><span class="line">      -d <span class="variable">$&#123;SPHINX_DOC_CACHE_DIR&#125;</span></span><br><span class="line">      <span class="variable">$&#123;SPHINX_DOC_SOURCE_DIR&#125;</span></span><br><span class="line">      <span class="variable">$&#123;SPHINX_DOC_HTML_DIR&#125;</span></span><br><span class="line">  COMMENT</span><br><span class="line">    <span class="string">"Building $&#123;SPHINX_DOC_COMMENT&#125; with Sphinx"</span></span><br><span class="line">  VERBATIM</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，打印一条状态信息:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Added $&#123;SPHINX_DOC_TARGET_NAME&#125; [Sphinx] target to build documentation"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置项目并构建了文档目标:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake --build . --target docs</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>这将生成<code>SPHINX_DOC_HTML_DIR</code>中的HTML文档 生成树的子目录。</p>
+<h2 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h2><p>我们利用<code>add_custom_target</code>的功能，可以向构建系统添加任意的构建目标。本例中，文档将使用Sphinx构建。由于Sphinx是一个可以与其他Python模块一起扩展的Python程序，所以<code>docs</code>目标将依赖于Python解释器。我们使用<code>find_package</code>确保依赖关系。需要注意的是，<code>FindSphinx.cmake</code>模块还不是一个标准的CMake模块；它的副本包含在项目源代码中，位于<code>cmake</code>子目录下。</p>
+<h1 id="12-3-结合Doxygen和Sphinx"><a href="#12-3-结合Doxygen和Sphinx" class="headerlink" title="12.3 结合Doxygen和Sphinx"></a>12.3 结合Doxygen和Sphinx</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-12/recipe-03" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-12/recipe-03</a> 中找到，其中包含一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>我们有一个C++项目，因此Doxygen是生成源代码文档的理想选择。然而，我们也希望发布面向用户的文档，例如：介绍设计选择。所以我们想使用Sphinx，因为生成的HTML也可以在移动设备上查看，而且可以部署文档进行在线阅读(<a href="https://readthedocs.org/" target="_blank" rel="noopener">https://readthedocs.org</a> )。本教程将演示如何使用Breathe插件(<a href="https://breathe.readthedocs.io/" target="_blank" rel="noopener">https://breathe.readthedocs.io</a> )组合Doxygen和Sphinx。</p>
+<h2 id="准备工作-2"><a href="#准备工作-2" class="headerlink" title="准备工作"></a>准备工作</h2><p>这个示例的目录结构，类似于之前的两个示例:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── cmake</span><br><span class="line">│    ├── FindPythonModule.cmake</span><br><span class="line">│    ├── FindSphinx.cmake</span><br><span class="line">│    └── UseBreathe.cmake</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── docs</span><br><span class="line">│    ├── code-reference</span><br><span class="line">│    │    ├── classes-and-functions.rst</span><br><span class="line">│    │    └── message.rst</span><br><span class="line">│    ├── conf<span class="selector-class">.py</span><span class="selector-class">.in</span></span><br><span class="line">│    ├── Doxyfile.<span class="keyword">in</span></span><br><span class="line">│    └── index.rst</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    ├── hello-world.cpp</span><br><span class="line">    ├── Message.cpp</span><br><span class="line">    └── Message.hpp</span><br></pre></td></tr></table></figure>
+<p><code>docs</code>子目录现在同时包含一个<code>Doxyfile.in</code>和一个<code>conf.py.in</code>模板文件。模板文件中，分别设置了Doxygen和Sphinx。此外，还有一个<code>code-referenc</code>子目录。</p>
+<p><code>code-referenc</code>子目录中的文件包含Breathe指令，用来在Sphinx中包含doxygen生成的文档：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Messaging classes</span><br><span class="line">=================</span><br><span class="line">Message</span><br><span class="line">-------</span><br><span class="line"><span class="bullet">..  </span>doxygenclass:: Message</span><br><span class="line"><span class="code">    :project: recipe-03</span></span><br><span class="line"><span class="code">    :members:</span></span><br><span class="line"><span class="code">    :protected-members:</span></span><br><span class="line"><span class="code">    :private-members:</span></span><br></pre></td></tr></table></figure>
+<p>这将输出Message类的文档。</p>
+<h2 id="具体实施-2"><a href="#具体实施-2" class="headerlink" title="具体实施"></a>具体实施</h2><p><code>src</code>目录中的<code>CMakeLists.txt</code>文件没有改变。主<code>CMakeLists.txt</code>文件中有修改：</p>
+<ol>
+<li><p>包含<code>UseBreathe.cmake</code>自定义模块：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">list</span><span class="params">(APPEND CMAKE_MODULE_PATH <span class="string">"$&#123;CMAKE_SOURCE_DIR&#125;/cmake"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(UseBreathe)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用<code>add_breathe_doc</code>函数，这个函数是在自定义模块中定义的，它接受关键字参数，来设置Doxygen和Sphinx：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">add_breathe_doc(</span><br><span class="line">  SOURCE_DIR</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/docs</span><br><span class="line">  BUILD_DIR</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/_build</span><br><span class="line">  CACHE_DIR</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/_doctrees</span><br><span class="line">  HTML_DIR</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/html</span><br><span class="line">  DOXY_FILE</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/docs/Doxyfile.<span class="keyword">in</span></span><br><span class="line">  CONF_FILE</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/docs/<span class="keyword">conf</span>.py.<span class="keyword">in</span></span><br><span class="line">  TARGET_NAME</span><br><span class="line">    docs</span><br><span class="line">  COMMENT</span><br><span class="line">    <span class="string">"HTML documentation"</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>让我们看一下<code>UseBreatheDoc.cmake</code>模块，其遵循了与我们在前两个示例中描述的显式模式。具体描述如下:</p>
+<ol>
+<li><p>文档生成依赖于Doxygen:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(Doxygen REQUIRED)</span></span></span><br><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(Perl REQUIRED)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>还依赖于Python解释器和Sphinx:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(PythonInterp REQUIRED)</span></span></span><br><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(Sphinx REQUIRED)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>此外，还必须找到breathe的Python模块。这里，我们使用<code>FindPythonModule.cmake</code>模块:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">include</span><span class="params">(FindPythonModule)</span></span></span><br><span class="line"><span class="function"><span class="title">find_python_module</span><span class="params">(breathe REQUIRED)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定义了<code>add_breathe_doc</code>函数，这个函数有一个单值关键字参数，我们将使用<code>cmake_parse_arguments</code>命令解析它:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">function(add_breathe_doc)</span><br><span class="line">  <span class="builtin-name">set</span>(options)</span><br><span class="line">  <span class="builtin-name">set</span>(oneValueArgs</span><br><span class="line">    SOURCE_DIR</span><br><span class="line">    BUILD_DIR</span><br><span class="line">    CACHE_DIR</span><br><span class="line">    HTML_DIR</span><br><span class="line">    DOXY_FILE</span><br><span class="line">    CONF_FILE</span><br><span class="line">    TARGET_NAME</span><br><span class="line">    COMMENT</span><br><span class="line">    )</span><br><span class="line">  <span class="builtin-name">set</span>(multiValueArgs)</span><br><span class="line"></span><br><span class="line">  cmake_parse_arguments(BREATHE_DOC</span><br><span class="line">    <span class="string">"<span class="variable">$&#123;options&#125;</span>"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&#123;oneValueArgs&#125;</span>"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&#123;multiValueArgs&#125;</span>"</span></span><br><span class="line">    <span class="variable">$&#123;ARGN&#125;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">  # <span class="built_in">..</span>.</span><br><span class="line"></span><br><span class="line">endfunction()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>BREATHE_DOC_CONF_FILE</code>中的Sphinx模板文件，会通过<code>conf.py</code>配置到的<code>BREATHE_DOC_BUILD_DIR</code>目录下：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">configure_file</span>(</span><br><span class="line">  <span class="variable">$&#123;BREATHE_DOC_CONF_FILE&#125;</span></span><br><span class="line">  <span class="variable">$&#123;BREATHE_DOC_BUILD_DIR&#125;</span>/conf.py</span><br><span class="line">  @ONLY</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>相应地，Doxygen的<code>BREATHE_DOC_DOXY_FILE</code>模板文件配置为<code>BREATHE_DOC_BUILD_DIR</code>中的Doxyfile:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">configure_file</span>(</span><br><span class="line">  <span class="variable">$&#123;BREATHE_DOC_DOXY_FILE&#125;</span></span><br><span class="line">  <span class="variable">$&#123;BREATHE_DOC_BUILD_DIR&#125;</span>/Doxyfile</span><br><span class="line">  @ONLY</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加<code>BREATHE_DOC_TARGET_NAME</code>自定义目标。注意，只有Sphinx在运行时，对Doxygen的调用才发生在<code>BREATHE_DOC_SPHINX_FILE</code>中:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_custom_target</span>(<span class="variable">$&#123;BREATHE_DOC_TARGET_NAME&#125;</span></span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">    <span class="variable">$&#123;SPHINX_EXECUTABLE&#125;</span></span><br><span class="line">      -q</span><br><span class="line">      -b html</span><br><span class="line">      -c <span class="variable">$&#123;BREATHE_DOC_BUILD_DIR&#125;</span></span><br><span class="line">      -d <span class="variable">$&#123;BREATHE_DOC_CACHE_DIR&#125;</span></span><br><span class="line">      <span class="variable">$&#123;BREATHE_DOC_SOURCE_DIR&#125;</span></span><br><span class="line">      <span class="variable">$&#123;BREATHE_DOC_HTML_DIR&#125;</span></span><br><span class="line">  COMMENT</span><br><span class="line">    <span class="string">"Building $&#123;BREATHE_DOC_TARGET_NAME&#125; documentation with Breathe, Sphinx and Doxygen"</span></span><br><span class="line">  VERBATIM</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，打印一条状态信息:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Added $&#123;BREATHE_DOC_TARGET_NAME&#125; [Breathe+Sphinx+Doxygen] target to build documentation"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置完成后，构建文档:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake --build . --target docs</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>该文档将在<code>BREATHE_DOC_HTML_DIR</code>子目录中可用。</p>
+<h2 id="工作原理-2"><a href="#工作原理-2" class="headerlink" title="工作原理"></a>工作原理</h2><p>尽管在声明定制的<code>BREATHE_DOC_TARGET_NAME</code>目标时只调用了Sphinx，但这里Doxygen和Sphinx都在运行。这要感谢Sphinx的<code>conf.py</code>文件中的以下设置:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_doxygen</span><span class="params">(folder)</span>:</span></span><br><span class="line">  <span class="string">"""Run the doxygen make command in the designated folder"""</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">      retcode = subprocess.call(<span class="string">"cd &#123;&#125;; doxygen"</span>.format(folder), shell=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">if</span> retcode &lt; <span class="number">0</span>:</span><br><span class="line">      sys.stderr.write(</span><br><span class="line">      <span class="string">"doxygen terminated by signal &#123;&#125;"</span>.format(-retcode))</span><br><span class="line">  <span class="keyword">except</span> OSError <span class="keyword">as</span> e:</span><br><span class="line">    sys.stderr.write(<span class="string">"doxygen execution failed: &#123;&#125;"</span>.format(e))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">setup</span><span class="params">(app)</span>:</span></span><br><span class="line">  run_doxygen(<span class="string">'@BREATHE_DOC_BUILD_DIR@'</span>)</span><br></pre></td></tr></table></figure>
+<p>Doxygen将生成XML输出，Breathe插件将能够与所选择的Sphinx文档样式一致的形式，呈现XML输出。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/03/100664.html" class="pre-post btn btn-default" title='CMake 完整使用教程 之十四 选择生成器和交叉编译'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之十四 选择生成器和交叉编译</span>
+        </a>
+    
+    
+        <a href="/archives/2021/03/100662.html" class="next-post btn btn-default" title='CMake 完整使用教程 之十二 打包项目'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之十二 打包项目</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#12-1-使用Doxygen构建文档"><span class="toc-text">12.1 使用Doxygen构建文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#12-2-使用Sphinx构建文档"><span class="toc-text">12.2 使用Sphinx构建文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-1"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-1"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-1"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#12-3-结合Doxygen和Sphinx"><span class="toc-text">12.3 结合Doxygen和Sphinx</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-2"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-2"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-2"><span class="toc-text">工作原理</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="springboot,elasticsearch">
+
+
+    <meta name="description" content="SpringBoot集成ElasticSearchpom.xml文件中，依赖的各jar包版本如下：
+12345678910111213141516171819202122232425262728...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>SpringBoot集成ElasticSearch实现增删查改(附源码) | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="SpringBoot集成ElasticSearch实现增删查改(附源码)">
+            
+	            SpringBoot集成ElasticSearch实现增删查改(附源码)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/elasticsearch/">elasticsearch</a> <a class="tag-link" href="/tags/springboot/">springboot</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/01/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1538</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h3 id="SpringBoot集成ElasticSearch"><a href="#SpringBoot集成ElasticSearch" class="headerlink" title="SpringBoot集成ElasticSearch"></a>SpringBoot集成ElasticSearch</h3><p>pom.xml文件中，依赖的各jar包版本如下：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.3.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">project.reporting.outputEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.reporting.outputEncoding</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">elasticsearch.version</span>&gt;</span>5.5.2<span class="tag">&lt;/<span class="name">elasticsearch.version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.elasticsearch.client<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>transport<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;elasticsearch.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>在工程中新建一个config包，在该包中创建一个ESConfig配置类，用于构造es的客户端实例对象。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.zero01.elasticsearch.demo.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.client.transport.TransportClient;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.common.settings.Settings;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.common.transport.InetSocketTransportAddress;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.transport.client.PreBuiltTransportClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="keyword">import</span> java.net.UnknownHostException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: es-demo</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: es配置类</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: 01</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2018-06-28 22:32</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TransportClient <span class="title">client</span><span class="params">()</span> <span class="keyword">throws</span> UnknownHostException </span>&#123;</span><br><span class="line">        <span class="comment">// 9300是es的tcp服务端口</span></span><br><span class="line">        InetSocketTransportAddress node = <span class="keyword">new</span> InetSocketTransportAddress(</span><br><span class="line">                InetAddress.getByName(<span class="string">"192.168.190.129"</span>),</span><br><span class="line">                <span class="number">9300</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置es节点的配置信息</span></span><br><span class="line">        Settings settings = Settings.builder()</span><br><span class="line">                .put(<span class="string">"cluster.name"</span>, <span class="string">"es"</span>)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 实例化es的客户端对象</span></span><br><span class="line">        TransportClient client = <span class="keyword">new</span> PreBuiltTransportClient(settings);</span><br><span class="line">        client.addTransportAddress(node);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> client;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="查询接口开发"><a href="#查询接口开发" class="headerlink" title="查询接口开发"></a>查询接口开发</h3><p>我现在有一个结构化的索引如下：<br><img src="/img/posts/03c2a3e3b387d5bd4c4c4a3a2acfb8bc.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<p>该索引中有一些文档数据，如下：<br><img src="/img/posts/30635eae5441db2e0503ee590f59e8d8.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<p>在工程中新建一个controller包，在该包中新建一个 BookCrudController 类，用于演示es增删查改接口demo。我们首先来开发查询接口，代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.zero01.elasticsearch.demo.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.<span class="keyword">get</span>.GetResponse;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.client.transport.TransportClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.<span class="keyword">annotation</span>.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.HttpStatus;</span><br><span class="line"><span class="keyword">import</span> org.springframework.http.ResponseEntity;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.<span class="keyword">annotation</span>.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.<span class="keyword">annotation</span>.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.<span class="keyword">annotation</span>.RequestParam;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.<span class="keyword">annotation</span>.RestController;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: es-demo</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: es增删查改接口demo</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: 01</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2018-07-01 10:42</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(<span class="meta-string">"/es/demo"</span>)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookCrudController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TransportClient client;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 按id查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping(<span class="meta-string">"/get/book/novel"</span>)</span></span><br><span class="line">    <span class="keyword">public</span> ResponseEntity searchById(<span class="meta">@RequestParam(<span class="meta-string">"id"</span>)</span> String id) &#123;</span><br><span class="line">        <span class="keyword">if</span> (id.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">return</span> new ResponseEntity(HttpStatus.NOT_FOUND);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过索引、类型、id向es进行查询数据</span></span><br><span class="line">        GetResponse response = client.prepareGet(<span class="string">"book"</span>, <span class="string">"novel"</span>, id).<span class="keyword">get</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!response.isExists()) &#123;</span><br><span class="line">            <span class="keyword">return</span> new ResponseEntity(HttpStatus.NOT_FOUND);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回查询到的数据</span></span><br><span class="line">        <span class="keyword">return</span> new ResponseEntity(response.getSource(), HttpStatus.OK);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动SpringBoot工程，使用postman进行测试，查询结果如下：<br><img src="/img/posts/7694cf519e72ed1ca41a0bdfe2702efe.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<hr>
+<h3 id="新增接口开发"><a href="#新增接口开发" class="headerlink" title="新增接口开发"></a>新增接口开发</h3><p>在 BookCrudController 类中开发新增接口，代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 添加书籍数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> title       书籍标题</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> author      书籍作者</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> wordCount   书籍字数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> publishDate 发行时间</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@PostMapping(<span class="meta-string">"/add/book/novel"</span>)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity add(<span class="meta">@RequestParam(<span class="meta-string">"title"</span>)</span> String title,</span><br><span class="line">                          <span class="meta">@RequestParam(<span class="meta-string">"author"</span>)</span> String author,</span><br><span class="line">                          <span class="meta">@RequestParam(<span class="meta-string">"word_count"</span>)</span> int wordCount,</span><br><span class="line">                          <span class="meta">@RequestParam(<span class="meta-string">"publish_date"</span>)</span></span><br><span class="line">                          <span class="meta">@DateTimeFormat(pattern = <span class="meta-string">"yyy-MM-dd HH:mm:ss"</span>)</span></span><br><span class="line">                                  Date publishDate) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 将参数build成一个json对象</span></span><br><span class="line">        XContentBuilder content = XContentFactory.jsonBuilder()</span><br><span class="line">                .startObject()</span><br><span class="line">                .field(<span class="string">"title"</span>, title)</span><br><span class="line">                .field(<span class="string">"author"</span>, author)</span><br><span class="line">                .field(<span class="string">"word_count"</span>, wordCount)</span><br><span class="line">                .field(<span class="string">"publish_date"</span>, publishDate.getTime())</span><br><span class="line">                .endObject();</span><br><span class="line"></span><br><span class="line">        IndexResponse response = client.prepareIndex(<span class="string">"book"</span>, <span class="string">"novel"</span>)</span><br><span class="line">                .setSource(content)</span><br><span class="line">                .<span class="keyword">get</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> new ResponseEntity(response.getId(), HttpStatus.OK);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>重启SpringBoot工程，使用postman进行测试，测试结果如下：<br><img src="/img/posts/a6acf6aeefe46257ace396c05b45556d.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<p>使用返回的id去查询我们刚刚添加的书籍数据，结果如下：<br><img src="/img/posts/a0dd26293af863a962948e5284281112.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<hr>
+<h3 id="删除接口开发"><a href="#删除接口开发" class="headerlink" title="删除接口开发"></a>删除接口开发</h3><p>代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 按id删除数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@DeleteMapping(<span class="meta-string">"/delete/book/novel"</span>)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity delete(<span class="meta">@RequestParam(<span class="meta-string">"id"</span>)</span> String id) &#123;</span><br><span class="line">    DeleteResponse response = client.prepareDelete(<span class="string">"book"</span>, <span class="string">"novel"</span>, id).<span class="keyword">get</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> new ResponseEntity(response.getResult(), HttpStatus.OK);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>重启SpringBoot工程，使用postman进行测试，删除数据成功：<br><img src="/img/posts/bfde531d22691781d06bc14051f24d25.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<hr>
+<h3 id="更新接口开发"><a href="#更新接口开发" class="headerlink" title="更新接口开发"></a>更新接口开发</h3><p>代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据文档id更新某个文档的数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> title</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> author</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> wordCount</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> publishDate</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@PutMapping(<span class="meta-string">"/update/book/novel"</span>)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity update(<span class="meta">@RequestParam(<span class="meta-string">"id"</span>)</span> String id,</span><br><span class="line">                             <span class="meta">@RequestParam(value = <span class="meta-string">"title"</span>, required = false)</span> String title,</span><br><span class="line">                             <span class="meta">@RequestParam(value = <span class="meta-string">"author"</span>, required = false)</span> String author,</span><br><span class="line">                             <span class="meta">@RequestParam(value = <span class="meta-string">"word_count"</span>, required = false)</span> Integer wordCount,</span><br><span class="line">                             <span class="meta">@RequestParam(value = <span class="meta-string">"publish_date"</span>, required = false)</span></span><br><span class="line">                             <span class="meta">@DateTimeFormat(pattern = <span class="meta-string">"yyy-MM-dd HH:mm:ss"</span>)</span></span><br><span class="line">                                     Date publishDate) &#123;</span><br><span class="line">    UpdateRequest update = new UpdateRequest(<span class="string">"book"</span>, <span class="string">"novel"</span>, id);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XContentBuilder builder = XContentFactory.jsonBuilder()</span><br><span class="line">                .startObject();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (title != <span class="literal">null</span>) &#123;</span><br><span class="line">            builder.field(<span class="string">"title"</span>, title);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (author != <span class="literal">null</span>) &#123;</span><br><span class="line">            builder.field(<span class="string">"author"</span>, author);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (wordCount != <span class="literal">null</span>) &#123;</span><br><span class="line">            builder.field(<span class="string">"word_count"</span>, wordCount);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (publishDate != <span class="literal">null</span>) &#123;</span><br><span class="line">            builder.field(<span class="string">"publish_date"</span>, publishDate.getTime());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        builder.endObject();</span><br><span class="line">        update.doc(builder);</span><br><span class="line"></span><br><span class="line">        UpdateResponse response = client.update(update).<span class="keyword">get</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> new ResponseEntity(response.getResult().toString(), HttpStatus.OK);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例如我们要修改文档id为AWQ-N_XeWWbfsfQzkrTh的书籍数据：<br><img src="/img/posts/95b9b587cfc0ea1caabcf44da001fff4.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<p>修改书籍的标题和作者：<br><img src="/img/posts/1b67d7c42c1b262ce7415f2d7d4710a1.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<p>修改成功：<br><img src="/img/posts/ec6f8dfd195a86f071f6b110eab8db5a.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+<hr>
+<h3 id="复合查询接口开发"><a href="#复合查询接口开发" class="headerlink" title="复合查询接口开发"></a>复合查询接口开发</h3><p>代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 复合查询接口</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> title</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> author</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> wordCount</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> publishDate</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> gtWordCount</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> ltWordCount</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@PostMapping(<span class="meta-string">"/query/book/novel"</span>)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity query(<span class="meta">@RequestParam(value = <span class="meta-string">"title"</span>, required = false)</span> String title,</span><br><span class="line">                            <span class="meta">@RequestParam(value = <span class="meta-string">"author"</span>, required = false)</span> String author,</span><br><span class="line">                            <span class="meta">@RequestParam(value = <span class="meta-string">"word_count"</span>, required = false)</span> Integer wordCount,</span><br><span class="line">                            <span class="meta">@RequestParam(value = <span class="meta-string">"publish_date"</span>, required = false)</span></span><br><span class="line">                            <span class="meta">@DateTimeFormat(pattern = <span class="meta-string">"yyy-MM-dd HH:mm:ss"</span>)</span></span><br><span class="line">                                    Date publishDate,</span><br><span class="line">                            <span class="meta">@RequestParam(value = <span class="meta-string">"gt_word_count"</span>, defaultValue = <span class="meta-string">"0"</span>)</span> Integer gtWordCount,</span><br><span class="line">                            <span class="meta">@RequestParam(value = <span class="meta-string">"lt_word_count"</span>, required = false)</span> Integer ltWordCount) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 组装查询条件</span></span><br><span class="line">    BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();</span><br><span class="line">    <span class="keyword">if</span> (title != <span class="literal">null</span>) &#123;</span><br><span class="line">        boolQuery.must(QueryBuilders.matchQuery(<span class="string">"title"</span>, title));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (author != <span class="literal">null</span>) &#123;</span><br><span class="line">        boolQuery.must(QueryBuilders.matchQuery(<span class="string">"author"</span>, author));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (wordCount != <span class="literal">null</span>) &#123;</span><br><span class="line">        boolQuery.must(QueryBuilders.matchQuery(<span class="string">"word_count"</span>, wordCount));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (publishDate != <span class="literal">null</span>) &#123;</span><br><span class="line">        boolQuery.must(QueryBuilders.matchQuery(<span class="string">"publish_date"</span>, publishDate));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 以word_count作为条件范围</span></span><br><span class="line">    RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery(<span class="string">"word_count"</span>).from(gtWordCount);</span><br><span class="line">    <span class="keyword">if</span> (ltWordCount != <span class="literal">null</span> &amp;&amp; ltWordCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        rangeQuery.to(ltWordCount);</span><br><span class="line">    &#125;</span><br><span class="line">    boolQuery.filter(rangeQuery);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 组装查询请求</span></span><br><span class="line">    SearchRequestBuilder requestBuilder = client.prepareSearch(<span class="string">"book"</span>)</span><br><span class="line">            .setTypes(<span class="string">"novel"</span>)</span><br><span class="line">            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)</span><br><span class="line">            .setQuery(boolQuery)</span><br><span class="line">            .setFrom(<span class="number">0</span>)</span><br><span class="line">            .setSize(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送查询请求</span></span><br><span class="line">    SearchResponse response = requestBuilder.<span class="keyword">get</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 组装查询到的数据集</span></span><br><span class="line">    List&lt;Map&lt;String, Object&gt;&gt; result = new ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (SearchHit searchHitFields : response.getHits()) &#123;</span><br><span class="line">        result.add(searchHitFields.getSource());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> new ResponseEntity(result, HttpStatus.OK);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>重启SpringBoot工程，使用postman进行测试，测试结果如下：<br><img src="/img/posts/71e4a33c05b6bd504cbfb76380fd2323.png" alt="Spring Boot集成ElasticSearch实现简单的增删查改接口"></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/01/100166.html" class="pre-post btn btn-default" title='实现NFS服务用户身份映射'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">实现NFS服务用户身份映射</span>
+        </a>
+    
+    
+        <a href="/archives/2019/01/100164.html" class="next-post btn btn-default" title='使用WebSocket解决分布式秒杀系统的推送通知'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">使用WebSocket解决分布式秒杀系统的推送通知</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#SpringBoot集成ElasticSearch"><span class="toc-text">SpringBoot集成ElasticSearch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查询接口开发"><span class="toc-text">查询接口开发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新增接口开发"><span class="toc-text">新增接口开发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除接口开发"><span class="toc-text">删除接口开发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新接口开发"><span class="toc-text">更新接口开发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#复合查询接口开发"><span class="toc-text">复合查询接口开发</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,日志">
+
+
+    <meta name="description" content="一起学习了 Kubernetes 集群中监控系统的搭建，除了对集群的监控报警之外，还有一项运维工作是非常重要的，那就是日志的收集。
+介绍应用程序和系统日志可以帮助我们了解集群内部的运行情况，日志...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>kubernetes日志收集之 一.日志收集架构 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="kubernetes日志收集之 一.日志收集架构">
+            
+	            kubernetes日志收集之 一.日志收集架构
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/logs/">日志</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/15</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1573</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>一起学习了 Kubernetes 集群中监控系统的搭建，除了对集群的监控报警之外，还有一项运维工作是非常重要的，那就是日志的收集。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>应用程序和系统日志可以帮助我们了解集群内部的运行情况，日志对于我们调试问题和监视集群情况也是非常有用的。而且大部分的应用都会有日志记录，对于传统的应用大部分都会写入到本地的日志文件之中。对于容器化应用程序来说则更简单，只需要将日志信息写入到 stdout 和 stderr 即可，容器默认情况下就会把这些日志输出到宿主机上的一个 JSON 文件之中，同样我们也可以通过 docker logs 或者 kubectl logs 来查看到对应的日志信息。</p>
+<p>但是，通常来说容器引擎或运行时提供的功能不足以记录完整的日志信息，比如，如果容器崩溃了、Pod 被驱逐了或者节点挂掉了，我们仍然也希望访问应用程序的日志。所以，日志应该独立于节点、Pod 或容器的生命周期，这种设计方式被称为 cluster-level-logging，即完全独立于 Kubernetes 系统，需要自己提供单独的日志后端存储、分析和查询工具。</p>
+<h2 id="Kubernetes-中的基本日志"><a href="#Kubernetes-中的基本日志" class="headerlink" title="Kubernetes 中的基本日志"></a>Kubernetes 中的基本日志</h2><p>下面这个示例是 Kubernetes 中的一个基本日志记录的示例，直接将数据输出到标准输出流，如下：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: v1</span><br><span class="line"><span class="attribute">kind</span>: Pod</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">name</span>: counter</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">containers</span>:</span><br><span class="line">  - <span class="attribute">name</span>: count</span><br><span class="line">    <span class="attribute">image</span>: busybox</span><br><span class="line">    <span class="attribute">args</span>: [/bin/sh, -c,</span><br><span class="line">            <span class="string">'i=0; while true; do echo "$i: $(date)"; i=$((i+1)); sleep 1; done'</span>]</span><br></pre></td></tr></table></figure>
+<p>将上面文件保存为 counter-pod.yaml，该 Pod 每秒输出一些文本信息，创建这个 Pod：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f counter-pod.yaml</span><br><span class="line">pod <span class="string">"counter"</span> created</span><br></pre></td></tr></table></figure>
+<p>创建完成后，可以使用 kubectl logs 命令查看日志信息：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl logs counter</span><br><span class="line"><span class="number">0</span>: Thu <span class="built_in">Dec</span> <span class="number">27</span> <span class="number">15</span>:<span class="number">47</span>:<span class="number">04</span> UTC <span class="number">2018</span></span><br><span class="line"><span class="number">1</span>: Thu <span class="built_in">Dec</span> <span class="number">27</span> <span class="number">15</span>:<span class="number">47</span>:<span class="number">05</span> UTC <span class="number">2018</span></span><br><span class="line"><span class="number">2</span>: Thu <span class="built_in">Dec</span> <span class="number">27</span> <span class="number">15</span>:<span class="number">47</span>:<span class="number">06</span> UTC <span class="number">2018</span></span><br><span class="line"><span class="number">3</span>: Thu <span class="built_in">Dec</span> <span class="number">27</span> <span class="number">15</span>:<span class="number">47</span>:<span class="number">07</span> UTC <span class="number">2018</span></span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<h2 id="Kubernetes-日志收集"><a href="#Kubernetes-日志收集" class="headerlink" title="Kubernetes 日志收集"></a>Kubernetes 日志收集</h2><p>Kubernetes 集群本身不提供日志收集的解决方案，一般来说有主要的3种方案来做日志收集：</p>
+<ul>
+<li>在节点上运行一个 agent 来收集日志</li>
+<li>在 Pod 中包含一个 sidecar 容器来收集应用日志</li>
+<li>直接在应用程序中将日志信息推送到采集后端</li>
+</ul>
+<h3 id="节点日志采集代理"><a href="#节点日志采集代理" class="headerlink" title="节点日志采集代理"></a>节点日志采集代理</h3><div align="center"><img src="/img/posts/logging-with-node-agent.png" alt="node agent"><br>node agent</div>
+
+<p>通过在每个节点上运行一个日志收集的 agent 来采集日志数据，日志采集 agent 是一种专用工具，用于将日志数据推送到统一的后端。一般来说，这种 agent 用一个容器来运行，可以访问该节点上所有应用程序容器的日志文件所在目录。</p>
+<p>由于这种 agent 必须在每个节点上运行，所以直接使用 DaemonSet 控制器运行该应用程序即可。在节点上运行一个日志收集的 agent 这种方式是最常见的一直方法，因为它只需要在每个节点上运行一个代理程序，并不需要对节点上运行的应用程序进行更改，对应用程序没有任何侵入性，但是这种方法也仅仅适用于收集输出到 stdout 和 stderr 的应用程序日志。</p>
+<h3 id="以-sidecar-容器收集日志"><a href="#以-sidecar-容器收集日志" class="headerlink" title="以 sidecar 容器收集日志"></a>以 sidecar 容器收集日志</h3><p>我们看上面的图可以看到有一个明显的问题就是我们采集的日志都是通过输出到容器的 stdout 和 stderr 里面的信息，这些信息会在本地的容器对应目录中保留成 JSON 日志文件，所以直接在节点上运行一个 agent 就可以采集到日志。但是如果我们的应用程序的日志是输出到容器中的某个日志文件的话呢？这种日志数据显然只通过上面的方案是采集不到的了。</p>
+<h4 id="用-sidecar-容器重新输出日志"><a href="#用-sidecar-容器重新输出日志" class="headerlink" title="用 sidecar 容器重新输出日志"></a>用 sidecar 容器重新输出日志</h4><div align="center"><img src="/img/posts/logging-with-streaming-sidecar.png" alt="sidecar agent"><br>sidecar agent</div>
+
+<p>对于上面这种情况我们可以直接在 Pod 中启动另外一个 sidecar 容器，直接将应用程序的日志通过这个容器重新输出到 stdout，这样是不是通过上面的节点日志收集方案又可以完成了。</p>
+<p>由于这个 sidecar 容器的主要逻辑就是将应用程序中的日志进行重定向打印，所以背后的逻辑非常简单，开销很小，而且由于输出到了 stdout 或者 stderr，所以我们也可以使用 kubectl logs 来查看日志了。</p>
+<p>下面的示例是在 Pod 中将日志记录在了容器的两个本地文件之中：</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  <span class="built_in">name</span>: counter</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - <span class="built_in">name</span>: <span class="built_in">count</span></span><br><span class="line">    <span class="built_in">image</span>: busybox</span><br><span class="line">    args:</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - &gt;</span><br><span class="line">      i=<span class="number">0</span>;</span><br><span class="line">      <span class="keyword">while</span> <span class="literal">true</span>;</span><br><span class="line">      <span class="keyword">do</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"$i: $(date)"</span> &gt;&gt; /var/<span class="built_in">log</span>/<span class="number">1</span>.<span class="built_in">log</span>;</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"$(date) INFO $i"</span> &gt;&gt; /var/<span class="built_in">log</span>/<span class="number">2</span>.<span class="built_in">log</span>;</span><br><span class="line">        i=$((i+<span class="number">1</span>));</span><br><span class="line">        <span class="built_in">sleep</span> <span class="number">1</span>;</span><br><span class="line">      done</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - <span class="built_in">name</span>: varlog</span><br><span class="line">      mountPath: /var/<span class="built_in">log</span></span><br><span class="line">  volumes:</span><br><span class="line">  - <span class="built_in">name</span>: varlog</span><br><span class="line">    emptyDir: &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>由于 Pod 中容器的特性，我们可以利用另外一个 sidecar 容器去获取到另外容器中的日志文件，然后将日志重定向到自己的 stdout 流中，可以将上面的 YAML 文件做如下修改：（two-files-counter-pod-streaming-sidecar.yaml）</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">apiVersi<span class="symbol">on:</span> <span class="symbol">v1</span></span><br><span class="line"><span class="symbol"></span>ki<span class="symbol">nd:</span> Pod</span><br><span class="line">metada<span class="symbol">ta:</span></span><br><span class="line">  <span class="built_in">na</span><span class="symbol">me:</span> counter</span><br><span class="line">sp<span class="symbol">ec:</span></span><br><span class="line">  containe<span class="symbol">rs:</span></span><br><span class="line">  - <span class="built_in">na</span><span class="symbol">me:</span> <span class="built_in">count</span></span><br><span class="line">    ima<span class="symbol">ge:</span> busybox</span><br><span class="line">    ar<span class="symbol">gs:</span></span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - &gt;</span><br><span class="line">      i=<span class="number">0</span>;</span><br><span class="line">      while <span class="built_in">true</span>;</span><br><span class="line">      do</span><br><span class="line">        echo <span class="string">"$i: $(date)"</span> &gt;&gt; /<span class="built_in">var</span>/<span class="built_in">log</span>/<span class="number">1</span>.<span class="built_in">log</span>;</span><br><span class="line">        echo <span class="string">"$(date) INFO $i"</span> &gt;&gt; /<span class="built_in">var</span>/<span class="built_in">log</span>/<span class="number">2</span>.<span class="built_in">log</span>;</span><br><span class="line">        i=$((i+<span class="number">1</span>));</span><br><span class="line">        sleep <span class="number">1</span>;</span><br><span class="line">      done</span><br><span class="line">    volumeMoun<span class="symbol">ts:</span></span><br><span class="line">    - <span class="built_in">na</span><span class="symbol">me:</span> varlog</span><br><span class="line">      mountPa<span class="symbol">th:</span> /<span class="built_in">var</span>/<span class="built_in">log</span></span><br><span class="line">  - <span class="built_in">na</span><span class="symbol">me:</span> <span class="built_in">count</span>-<span class="built_in">log</span>-<span class="number">1</span></span><br><span class="line">    ima<span class="symbol">ge:</span> busybox</span><br><span class="line">    ar<span class="symbol">gs:</span> [/bin/sh, -c, 'tail -<span class="built_in">n</span>+<span class="number">1</span> -f /<span class="built_in">var</span>/<span class="built_in">log</span>/<span class="number">1</span>.<span class="built_in">log</span>']</span><br><span class="line">    volumeMoun<span class="symbol">ts:</span></span><br><span class="line">    - <span class="built_in">na</span><span class="symbol">me:</span> varlog</span><br><span class="line">      mountPa<span class="symbol">th:</span> /<span class="built_in">var</span>/<span class="built_in">log</span></span><br><span class="line">  - <span class="built_in">na</span><span class="symbol">me:</span> <span class="built_in">count</span>-<span class="built_in">log</span>-<span class="number">2</span></span><br><span class="line">    ima<span class="symbol">ge:</span> busybox</span><br><span class="line">    ar<span class="symbol">gs:</span> [/bin/sh, -c, 'tail -<span class="built_in">n</span>+<span class="number">1</span> -f /<span class="built_in">var</span>/<span class="built_in">log</span>/<span class="number">2</span>.<span class="built_in">log</span>']</span><br><span class="line">    volumeMoun<span class="symbol">ts:</span></span><br><span class="line">    - <span class="built_in">na</span><span class="symbol">me:</span> varlog</span><br><span class="line">      mountPa<span class="symbol">th:</span> /<span class="built_in">var</span>/<span class="built_in">log</span></span><br><span class="line">  volum<span class="symbol">es:</span></span><br><span class="line">  - <span class="built_in">na</span><span class="symbol">me:</span> varlog</span><br><span class="line">    emptyD<span class="symbol">ir:</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>直接创建上面的 Pod：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="built_in">create</span> -f <span class="literal">two</span>-<span class="built_in">files</span>-counter-pod-streaming-sidecar.yaml</span><br><span class="line">pod <span class="string">"counter"</span> created</span><br></pre></td></tr></table></figure>
+<p>运行成功后，我们可以通过下面的命令来查看日志的信息：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl logs counter count-log-1</span><br><span class="line">0: Mon Jan <span class="number"> 1 </span>00:00:00 UTC 2001</span><br><span class="line">1: Mon Jan <span class="number"> 1 </span>00:00:01 UTC 2001</span><br><span class="line">2: Mon Jan <span class="number"> 1 </span>00:00:02 UTC 2001</span><br><span class="line">...</span><br><span class="line">$ kubectl logs counter count-log-2</span><br><span class="line">Mon Jan <span class="number"> 1 </span>00:00:00 UTC<span class="number"> 2001 </span>INFO 0</span><br><span class="line">Mon Jan <span class="number"> 1 </span>00:00:01 UTC<span class="number"> 2001 </span>INFO 1</span><br><span class="line">Mon Jan <span class="number"> 1 </span>00:00:02 UTC<span class="number"> 2001 </span>INFO 2</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>这样前面节点上的日志采集 agent 就可以自动获取这些日志信息，而不需要其他配置。</p>
+<p>这种方法虽然可以解决上面的问题，但是也有一个明显的缺陷，就是日志不仅会在原容器文件中保留下来，还会通过 stdout 输出后占用磁盘空间，这样无形中就增加了一倍磁盘空间。</p>
+<h4 id="使用-sidecar-运行日志采集-agent"><a href="#使用-sidecar-运行日志采集-agent" class="headerlink" title="使用 sidecar 运行日志采集 agent"></a>使用 sidecar 运行日志采集 agent</h4><div align="center"><img src="/img/posts/logging-with-sidecar-agent.png" alt="sidecar agent"><br>sidecar agent</div>
+
+<p>如果你觉得在节点上运行一个日志采集的代理不够灵活的话，那么你也可以创建一个单独的日志采集代理程序的 sidecar 容器，不过需要单独配置和应用程序一起运行。</p>
+<p>不过这样虽然更加灵活，但是在 sidecar 容器中运行日志采集代理程序会导致大量资源消耗，因为你有多少个要采集的 Pod，就需要运行多少个采集代理程序，另外还无法使用 kubectl logs 命令来访问这些日志，因为它们不受 kubelet 控制。</p>
+<p>举个例子，你可以使用的Stackdriver，它使用fluentd作为记录剂。以下是两个可用于实现此方法的配置文件。第一个文件包含配置流利的ConfigMap。</p>
+<p>下面是 Kubernetes 官方的一个 fluentd 的配置文件示例，使用 ConfigMap 对象来保存：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadat<span class="variable">a:</span></span><br><span class="line">  name: fluentd-config</span><br><span class="line">dat<span class="variable">a:</span></span><br><span class="line">  fluentd.<span class="keyword">conf</span>: |</span><br><span class="line">    <span class="symbol">&lt;source&gt;</span></span><br><span class="line">      <span class="built_in">type</span> tail</span><br><span class="line">      format none</span><br><span class="line">      path /var/<span class="built_in">log</span>/<span class="number">1</span>.<span class="built_in">log</span></span><br><span class="line">      pos_file /var/<span class="built_in">log</span>/<span class="number">1</span>.<span class="built_in">log</span>.pos</span><br><span class="line">      <span class="keyword">tag</span> <span class="built_in">count</span>.format1</span><br><span class="line">    &lt;/<span class="keyword">source</span>&gt;</span><br><span class="line"></span><br><span class="line">    <span class="symbol">&lt;source&gt;</span></span><br><span class="line">      <span class="built_in">type</span> tail</span><br><span class="line">      format none</span><br><span class="line">      path /var/<span class="built_in">log</span>/<span class="number">2</span>.<span class="built_in">log</span></span><br><span class="line">      pos_file /var/<span class="built_in">log</span>/<span class="number">2</span>.<span class="built_in">log</span>.pos</span><br><span class="line">      <span class="keyword">tag</span> <span class="built_in">count</span>.format2</span><br><span class="line">    &lt;/<span class="keyword">source</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;<span class="keyword">match</span> **&gt;</span><br><span class="line">      <span class="built_in">type</span> google_cloud</span><br><span class="line">    &lt;/<span class="keyword">match</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>上面的配置文件是配置收集原文件 /var/log/1.log 和 /var/log/2.log 的日志数据，然后通过 google_cloud 这个插件将数据推送到 Stackdriver 后端去。</p>
+<p>下面是我们使用上面的配置文件在应用程序中运行一个 fluentd 的容器来读取日志数据：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">apiVersion:</span> v1</span><br><span class="line"><span class="symbol">kind:</span> Pod</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> counter</span><br><span class="line"><span class="symbol">spec:</span></span><br><span class="line"><span class="symbol">  containers:</span></span><br><span class="line">  - name: count</span><br><span class="line"><span class="symbol">    image:</span> busybox</span><br><span class="line"><span class="symbol">    args:</span></span><br><span class="line">    - <span class="meta-keyword">/bin/</span>sh</span><br><span class="line">    - -c</span><br><span class="line">    - &gt;</span><br><span class="line">      i=<span class="number">0</span>;</span><br><span class="line">      while true;</span><br><span class="line">      do</span><br><span class="line">        echo <span class="string">"$i: $(date)"</span> &gt;&gt; <span class="meta-keyword">/var/</span>log/<span class="number">1.l</span>og;</span><br><span class="line">        echo <span class="string">"$(date) INFO $i"</span> &gt;&gt; <span class="meta-keyword">/var/</span>log/<span class="number">2.l</span>og;</span><br><span class="line">        i=$((i+<span class="number">1</span>));</span><br><span class="line">        sleep <span class="number">1</span>;</span><br><span class="line">      done</span><br><span class="line"><span class="symbol">    volumeMounts:</span></span><br><span class="line">    - name: varlog</span><br><span class="line"><span class="symbol">      mountPath:</span> <span class="meta-keyword">/var/</span>log</span><br><span class="line">  - name: count-agent</span><br><span class="line"><span class="symbol">    image:</span> k8s.gcr.io/fluentd-gcp:<span class="number">1.30</span></span><br><span class="line"><span class="symbol">    env:</span></span><br><span class="line">    - name: FLUENTD_ARGS</span><br><span class="line"><span class="symbol">      value:</span> -c <span class="meta-keyword">/etc/</span>fluentd-config/fluentd.conf</span><br><span class="line"><span class="symbol">    volumeMounts:</span></span><br><span class="line">    - name: varlog</span><br><span class="line"><span class="symbol">      mountPath:</span> <span class="meta-keyword">/var/</span>log</span><br><span class="line">    - name: config-volume</span><br><span class="line"><span class="symbol">      mountPath:</span> <span class="meta-keyword">/etc/</span>fluentd-config</span><br><span class="line"><span class="symbol">  volumes:</span></span><br><span class="line">  - name: varlog</span><br><span class="line"><span class="symbol">    emptyDir:</span> &#123;&#125;</span><br><span class="line">  - name: config-volume</span><br><span class="line"><span class="symbol">    configMap:</span></span><br><span class="line"><span class="symbol">      name:</span> fluentd-config</span><br></pre></td></tr></table></figure>
+<p>上面的 Pod 创建完成后，容器 count-agent 就会将 count 容器中的日志进行收集然后上传。当然，这只是一个简单的示例，我们也完全可以使用其他的任何日志采集工具来替换 fluentd，比如 logstash、fluent-bit 等等。</p>
+<h3 id="直接从应用程序收集日志"><a href="#直接从应用程序收集日志" class="headerlink" title="直接从应用程序收集日志"></a>直接从应用程序收集日志</h3><div align="center"><img src="/img/posts/logging-from-application.png" alt="app log"><br>app log</div>
+
+<p>除了上面的几种方案之外，我们也完全可以通过直接在应用程序中去显示的将日志推送到日志后端，但是这种方式需要代码层面的实现，也超出了 Kubernetes 本身的范围。</p>
+<hr>
+<p>接下文：<a href="100124.html">kubernetes日志收集之 二.搭建EFK日志系统</a> </p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100124.html" class="pre-post btn btn-default" title='kubernetes日志收集之 二.搭建EFK日志系统'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">kubernetes日志收集之 二.搭建EFK日志系统</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100097.html" class="next-post btn btn-default" title='深入理解kubernetes Pod之 六.Pod工作流'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">深入理解kubernetes Pod之 六.Pod工作流</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes-中的基本日志"><span class="toc-text">Kubernetes 中的基本日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes-日志收集"><span class="toc-text">Kubernetes 日志收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#节点日志采集代理"><span class="toc-text">节点日志采集代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#以-sidecar-容器收集日志"><span class="toc-text">以 sidecar 容器收集日志</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用-sidecar-容器重新输出日志"><span class="toc-text">用 sidecar 容器重新输出日志</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用-sidecar-运行日志采集-agent"><span class="toc-text">使用 sidecar 运行日志采集 agent</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#直接从应用程序收集日志"><span class="toc-text">直接从应用程序收集日志</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

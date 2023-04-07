@@ -1,0 +1,369 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hash,攻击,sha1">
+
+
+    <meta name="description" content="引言为什么会想到这个呢？上周末做了“强网杯”的童鞋们应该都能知道吧，它其中有个密码学的题目就是考的这一点。
+sha1的hash原理说到要解释sha1的原理其实是非常复杂的，反正我这种智商的暂时还...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>深入理解hash长度扩展攻击（sha1为例） | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="深入理解hash长度扩展攻击（sha1为例）">
+            
+	            深入理解hash长度扩展攻击（sha1为例）
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/penetration/">渗透</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hash/">hash</a> <a class="tag-link" href="/tags/sha1/">sha1</a> <a class="tag-link" href="/tags/attacks/">攻击</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/10/06</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1643</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>为什么会想到这个呢？上周末做了“强网杯”的童鞋们应该都能知道吧，它其中有个密码学的题目就是考的这一点。</p>
+<h2 id="sha1的hash原理"><a href="#sha1的hash原理" class="headerlink" title="sha1的hash原理"></a>sha1的hash原理</h2><p>说到要解释sha1的原理其实是非常复杂的，反正我这种智商的暂时还无法理解。所以，只能从面上跟大家谈一下我的理解。</p>
+<p>[<img src="/img/posts/14335264155804.png" alt="1"></p>
+<p>首先，当hash函数拿到需要被hash的字符串后，先将其字节长度整除64，取得余数。如果该余数正好等于56，那么就在该字符串最后添加上8个字节的长度描述符（具体用bit表示）。如果不等于56，就先对字符串进行长度填充，填充时第一个字节为hex(80)，其他字节均用hex(00)填充，填充至余数为56后，同样增加8个字节的长度描述符（该长度描述符为需要被hash的字符串的长度，不是填充之后整个字符串的长度）。以上过程，称之为补位。</p>
+<p>补位完成后，字符串以64位一组进行分组（因为上面的余数为56,加上8个字节的长度描述符后，正好是64位，凑成一组）。字符串能被分成几组就会进行多少次“复杂的数学变化”。每次进行“复杂的数学变化”都会生成一组新的registers值供下一次“复杂的数学变化”来调用。第一次“复杂的数学变化”会调用程序中的默认值。当后面已经没有分组可以进行数学变化时，该组生成的registers值就是最后的hash值。</p>
+<p><strong>在sha1的运算过程中，为确保同一个字符串的sha1值唯一，所以需要保证第一次registers的值也唯一。所以在sha1算法中，registers具有初始值。如上图中的registers值0。</strong></p>
+<p>Hash值的随机性完全依赖于进行“复杂的数学变化”时输入的registers值和该次运算中字符串分组的数据。如果进行“复杂数学变化”时输入的registers值和该次运算的字符串分组相同，那么他们各自生成的新的registers值也相同。</p>
+<h2 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h2><p>当需要被hash的字符串为str_a = ”123456”，程序首先判断，len(str_a) % 64 == 56是否成立。这里很明显不成立。那么程序就进行补位操作。首先补位成余数为56的长度。</p>
+<p>[<img src="/img/posts/14335264166291.png" alt="2"></p>
+<p>如上图，蓝色字体就为程序对该字符串进行补位的数据。当满足len(str_a) % 64 == 56后，程序就在该字符串的后面添加8个字节的长度描述符。注意，此处的长度为原始需要被hash的长度。也就是len(str_a) = 6字节*8bit/字节= 48bit=0x30bit。</p>
+<p>[<img src="/img/posts/14335264168130.png" alt="3"></p>
+<p>补位+长度描述符=64个字节，正好是一个分组。所以此处只要进行一次复杂的数学变化就可以了。程序根据该64个字节的数据和registers值0生成新的registers值1。那么该新的registers值1就是str_a的sha1值</p>
+<h2 id="如何利用？"><a href="#如何利用？" class="headerlink" title="如何利用？"></a>如何利用？</h2><p>讲了这么多，好像都没讲到如何利用该扩展攻击。那么下面，重点来了。</p>
+<p>我们还是利用这篇文章上面的例子进行讲解，转到FreeBuf<a href="http://www.freebuf.com/articles/web/31756.html" target="_blank" rel="noopener">之前文章</a>。</p>
+<p><strong>简单来说，就是服务器上会生成一个salt值，该salt值你是不可预测的。但是你又知道了sha1(salt+filename)的值，该filename的值你也是知道的。假设此处的filename的值report.pdf，最后sha1的值为：0a8d538b724c6f2b4288526eb540ee7c。为了方便理解，我们继续假设salt的长度为16位。</strong></p>
+<p>[<img src="/img/posts/14335264161673.png" alt="4"></p>
+<p>将上图的字符串进行sha1操作时，同样先进行整除，然后取余。最后再补上8位的长度描述符。补位+添加长度描述符后的字符串如下图：</p>
+<p>[<img src="/img/posts/14335264164625.png" alt="5"></p>
+<p>该长度也就满足了64位的分组，只需要进行一次“复杂的数学运算”就可以得到最后的sha1值了。</p>
+<p>下面请各位看官思考如何进行下面一个字符串的sha1操作。</p>
+<p>[<img src="/img/posts/14335264172470.png" alt="6"></p>
+<p>同样，还是先进行分组。由于该字符串的长度大于64个字节，且小于128个字节，所以要分成两组，需要进行两次“复杂的数学运算”。这个时候我们发现，第一个分组的数据和上图中补码后的数据完全一样，又因为他们都是第一个分组，初始的registers值也一样。那么经过第一轮“复杂的数学运算”，他们各自生成的registers值也同样是相同的。唯一不同的是，由于上面的长度小于64字节，所以只需要进行一轮运算便得到了最后的sha1值。然后这里的字符串有两个分组，需要将第一轮更新的registers值（也就是第一轮运算出来的sha1值）作为第二轮“复杂的数学运算”的registers值，然后才能得出最终的sha1值。</p>
+<p><strong>根据上面例子就说明，如果salt的值你不知道，但是你知道长度，又知道sha1(salt)，那么就也就可以知道sha1(salt+“填充数据”+“任意可控数据”).这里的salt+“填充数据”就是对salt进行sha1时所补全的数据+最后8位的长度描述符。一般来说，salt+”填充数据”的长度就是64字节，正好是一个分组。如果salt的长度就大于了56个字节，那么加入填充数据后的长度应该是N个64字节，等于N个分组。</strong></p>
+<p>为什么？你可以想象，sha1程序再对（salt+“填充数据”+“任意可控数据”）进行hash时，只需要进行第二轮及第二轮以后的运算。因为第一轮运算后的registers值就是sha1(salt)的值，该值你已经知道了。</p>
+<p>什么？？还是不懂？？你把上面的例子中的“123456789abcdefgreport.pdf”想成是salt,然后再考虑下呢？</p>
+<p><strong>如果有想更深入理解该原理的童鞋，可以拜读</strong><a href="http://weibo.com/u/1707085527?from=feed&amp;loc=at&amp;nick=aullik5" target="_blank" rel="noopener"><strong>刺总</strong></a><strong>的《白帽子讲web安全》中的“Understanding MD5 Length Extension Attack”一节。</strong></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/10/100048.html" class="pre-post btn btn-default" title='科普哈希长度扩展攻击(Hash Length Extension Attacks)'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">科普哈希长度扩展攻击(Hash Length Extension Attacks)</span>
+        </a>
+    
+    
+        <a href="/archives/2018/10/100046.html" class="next-post btn btn-default" title='hash哈希长度扩展攻击解析'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">hash哈希长度扩展攻击解析</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#引言"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sha1的hash原理"><span class="toc-text">sha1的hash原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#举个例子"><span class="toc-text">举个例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何利用？"><span class="toc-text">如何利用？</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

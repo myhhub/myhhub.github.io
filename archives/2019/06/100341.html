@@ -1,0 +1,449 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="一.  安装包安装happybase和thrift
+
+pip install happybase
+pip install thrift
+
+二.  表操作DDL创建连接：1connection =...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 三十六.基于HBASE的Python开发 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 三十六.基于HBASE的Python开发">
+            
+	            大数据hadoop之 三十六.基于HBASE的Python开发
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/25</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1381</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-安装包"><a href="#一-安装包" class="headerlink" title="一.  安装包"></a>一.  安装包</h2><p>安装happybase和thrift</p>
+<ul>
+<li>pip install happybase</li>
+<li>pip install thrift</li>
+</ul>
+<h2 id="二-表操作DDL"><a href="#二-表操作DDL" class="headerlink" title="二.  表操作DDL"></a>二.  表操作DDL</h2><h3 id="创建连接："><a href="#创建连接：" class="headerlink" title="创建连接："></a>创建连接：</h3><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">connection</span> = happybase.Connection(<span class="string">'somehost'</span>)  #链接，端口默认是<span class="number">9090</span>   hbase thrift 启动的默认端口也是<span class="number">9090</span></span><br></pre></td></tr></table></figure>
+<h3 id="列出所有表："><a href="#列出所有表：" class="headerlink" title="列出所有表："></a>列出所有表：</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">table_name_list = connection.tables()  <span class="comment"># connection.tables()：获取Hbase实例中的表名列表，返回一个list</span></span><br></pre></td></tr></table></figure>
+<h3 id="获取表："><a href="#获取表：" class="headerlink" title="获取表："></a>获取表：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">table = connection.table(name,<span class="attribute">user_prefix</span>=<span class="literal">True</span>)     # connection.table(name,<span class="attribute">user_prefix</span>=<span class="literal">True</span>)：获取一个表对象，返回一个</span><br><span class="line">happybase.Table</span><br></pre></td></tr></table></figure>
+<p>对象：</p>
+<ul>
+<li>name：表名</li>
+<li>user_prefix：是否使用表前缀，默认为True</li>
+</ul>
+<h3 id="禁用表：在做一些删除操作之前必须先禁用表"><a href="#禁用表：在做一些删除操作之前必须先禁用表" class="headerlink" title="禁用表：在做一些删除操作之前必须先禁用表"></a>禁用表：在做一些删除操作之前必须先禁用表</h3><figure class="highlight leaf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connection.disable_table(name) <span class="function"><span class="keyword">#</span><span class="title">disable_table</span><span class="params">(<span class="variable">name</span>)</span></span>：禁用表，无返回值</span><br></pre></td></tr></table></figure>
+<ul>
+<li>name：表名</li>
+</ul>
+<h3 id="启用表："><a href="#启用表：" class="headerlink" title="启用表："></a>启用表：</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connection.enable_table(<span class="built_in">name</span>) <span class="comment"># enable_table(name)：启用表，无返回值</span></span><br></pre></td></tr></table></figure>
+<p>name：表名</p>
+<h3 id="创建表："><a href="#创建表：" class="headerlink" title="创建表："></a>创建表：</h3><figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">families = &#123;</span><br><span class="line">    <span class="string">"cf"</span>:<span class="keyword">dict</span>(),</span><br><span class="line">    <span class="string">"df"</span>:<span class="keyword">dict</span>()</span><br><span class="line">&#125;</span><br><span class="line">connection.create_table(name,families)      # 如果连接时，有传递表前缀参数时，真实表名将会是：<span class="string">"&#123;&#125;_&#123;&#125;"</span>.<span class="keyword">format</span>(table_prefix,name)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>name：表名</li>
+<li>families：列族</li>
+</ul>
+<h3 id="删除表："><a href="#删除表：" class="headerlink" title="删除表："></a>删除表：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connection.delete_table(name,<span class="attribute">disable</span>=<span class="literal">False</span>) #delete_table(name,<span class="attribute">disable</span>=<span class="literal">False</span>)：删除表，无返回值  默认是<span class="literal">false</span>，若要删除改为<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>name：表名</p>
+</li>
+<li><p>disable：是否先禁用表</p>
+</li>
+</ul>
+<h2 id="三-数据操作DML"><a href="#三-数据操作DML" class="headerlink" title="三. 数据操作DML"></a>三. 数据操作DML</h2><p>　　若要对表进行数据插入等操作，需要先获取表实例。</p>
+<h3 id="获取表实例："><a href="#获取表实例：" class="headerlink" title="获取表实例："></a>获取表实例：</h3><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">table</span> = happybase.<span class="keyword">Table</span>(name,connection) <span class="comment">#happybase.Table(name,connection)</span>：获取表实例</span><br></pre></td></tr></table></figure>
+<ul>
+<li>name：表名</li>
+<li>connection：连接</li>
+</ul>
+<h3 id="获取单元格cells"><a href="#获取单元格cells" class="headerlink" title="获取单元格cells"></a>获取单元格cells</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cells(row, column, <span class="attribute">versions</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>)  # 获取单元格数据，返回一个list</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>row：行</p>
+</li>
+<li><p>column：列</p>
+</li>
+<li>versions：获取的最大版本数量，默认None，即获取所有</li>
+<li>timestamp：时间戳，默认None，即获取所有时间戳版本的数据。可指定一个时间戳，获取小于此时间戳版本的所有数据</li>
+<li>include_timestamp：是否返回时间戳，默认False</li>
+</ul>
+<p><strong>实例：</strong></p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">content = table.cells(<span class="string">'row1'</span>,<span class="string">'cf:1'</span>,<span class="number">5</span>,timestamp=<span class="number">1514861929124</span>,include_timestamp=<span class="literal">True</span>)</span><br><span class="line">print content   <span class="meta"># [(<span class="string">'1'</span>, 1514861925674L)]</span></span><br></pre></td></tr></table></figure>
+<h3 id="删除指定行数据："><a href="#删除指定行数据：" class="headerlink" title="删除指定行数据："></a>删除指定行数据：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete(row, <span class="attribute">columns</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">wal</span>=<span class="literal">True</span>)：删除指定行数据，无返回值</span><br></pre></td></tr></table></figure>
+<ul>
+<li>row：行</li>
+<li>columns：列，默认为None，即删除所有列，可传入一个list或tuple来指定删除列</li>
+<li>timestamp：时间戳，默认为None，即删除所有，可传入一个时间戳来删除小于等于此时间戳的所有数据</li>
+<li>wal：是否写入wal，默认为True</li>
+</ul>
+<p><strong>实例：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">table.delete(row, <span class="attribute">columns</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">wal</span>=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="插入数据："><a href="#插入数据：" class="headerlink" title="插入数据："></a>插入数据：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">put(row, data, <span class="attribute">timestamp</span>=None, <span class="attribute">wal</span>=<span class="literal">True</span>)：插入数据，无返回值</span><br></pre></td></tr></table></figure>
+<ul>
+<li>row: 行</li>
+<li>data: 数据，dict类型，{列:值}构成，列与值皆为str类型</li>
+<li>timestamp：时间戳，默认None，即写入当前时间戳</li>
+<li>wal：是否写入wal，默认为True</li>
+</ul>
+<p><strong>实例：</strong></p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在row1行,cf:1列插入值1</span></span><br><span class="line">table.<span class="keyword">put</span>(<span class="string">"row1"</span>,&#123;<span class="string">"cf:1"</span>:<span class="string">"1"</span>&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="获取一行数据："><a href="#获取一行数据：" class="headerlink" title="获取一行数据："></a>获取一行数据：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">row(row, <span class="attribute">columns</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>)：获取一行数据，返回一个dict</span><br></pre></td></tr></table></figure>
+<ul>
+<li>row：行</li>
+<li>columns: 列，默认为None，即获取所有列，可传入一个list或tuple来指定获取列</li>
+<li>timestamp：时间戳。默认为None，即返回最大的那个时间戳的数据。可传入一个时间戳来获取小于此时间戳的最大时间戳的版本数据</li>
+<li>include_timestamp：是否返回时间戳数据，默认为False</li>
+</ul>
+<p><strong>实例：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">info</span> = table.row(row, <span class="attribute">columns</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="获取多行数据："><a href="#获取多行数据：" class="headerlink" title="获取多行数据："></a>获取多行数据：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rows(rows, <span class="attribute">columns</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>)：获取多行数据，返回一个list</span><br></pre></td></tr></table></figure>
+<ul>
+<li>rows：行，可传入一个list或tuple来指定获取</li>
+<li>columns: 列，默认为None，即获取所有列，可传入一个list或tuple来指定获取列</li>
+<li>timestamp：时间戳。默认为None，即返回最大的那个时间戳的数据。可传入一个时间戳来获取小于此时间戳的最大时间戳的版本数据</li>
+<li>include_timestamp：是否返回时间戳数据，默认为False</li>
+</ul>
+<p><strong>实例：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">info</span> = table.rows(rows, <span class="attribute">columns</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="获取扫描器："><a href="#获取扫描器：" class="headerlink" title="获取扫描器："></a>获取扫描器：</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scan(<span class="attribute">row_start</span>=None, <span class="attribute">row_stop</span>=None, <span class="attribute">row_prefix</span>=None, <span class="attribute">columns</span>=None, <span class="attribute">filter</span>=None,</span><br><span class="line"> <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>, <span class="attribute">batch_size</span>=1000, <span class="attribute">scan_batching</span>=None, <span class="attribute">limit</span>=None, <span class="attribute">sorted_columns</span>=<span class="literal">False</span>, <span class="attribute">reverse</span>=<span class="literal">False</span>)：获取一个扫描器，返回一个generator</span><br></pre></td></tr></table></figure>
+<ul>
+<li>row_start：起始行，默认None，即第一行，可传入行号指定从哪一行开始</li>
+<li>row_stop：结束行，默认None，即最后一行，可传入行号指定到哪一行结束(不获取此行数据)</li>
+<li>row_prefix：行号前缀，默认为None，即不指定前缀扫描，可传入前缀来扫描符合此前缀的行</li>
+<li>columns：列，默认为None，即获取所有列，可传入一个list或tuple来指定获取列</li>
+<li>filter：过滤字符串</li>
+<li>timestamp：时间戳。默认为None，即返回最大的那个时间戳的数据。可传入一个时间戳来获取小于此时间戳的最大时间戳的版本数据</li>
+<li>include_timestamp：是否返回时间戳数据，默认为False</li>
+<li>batch_size：用于检索结果的批量大小</li>
+<li>scan_batching：服务端扫描批处理</li>
+<li>limit：数量</li>
+<li>sorted_columns：是否返回排序的列(根据行名称排序)</li>
+<li>reverse：是否执行反向扫描</li>
+</ul>
+<p><strong>实例：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scanner = table.scan(<span class="attribute">row_start</span>=None, <span class="attribute">row_stop</span>=None, <span class="attribute">row_prefix</span>=None,</span><br><span class="line"> <span class="attribute">columns</span>=None, <span class="attribute">filter</span>=None, <span class="attribute">timestamp</span>=None, <span class="attribute">include_timestamp</span>=<span class="literal">False</span>, <span class="attribute">batch_size</span>=1000, <span class="attribute">scan_batching</span>=None, <span class="attribute">limit</span>=None, <span class="attribute">sorted_columns</span>=<span class="literal">False</span>, <span class="attribute">reverse</span>=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100342.html" class="pre-post btn btn-default" title='大数据hadoop之 三十七.HBASE与传统数据库的区别'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十七.HBASE与传统数据库的区别</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100340.html" class="next-post btn btn-default" title='大数据hadoop之 三十五.基于HBASE的Java开发'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十五.基于HBASE的Java开发</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-安装包"><span class="toc-text">一.  安装包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-表操作DDL"><span class="toc-text">二.  表操作DDL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建连接："><span class="toc-text">创建连接：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列出所有表："><span class="toc-text">列出所有表：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取表："><span class="toc-text">获取表：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#禁用表：在做一些删除操作之前必须先禁用表"><span class="toc-text">禁用表：在做一些删除操作之前必须先禁用表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启用表："><span class="toc-text">启用表：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建表："><span class="toc-text">创建表：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除表："><span class="toc-text">删除表：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-数据操作DML"><span class="toc-text">三. 数据操作DML</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#获取表实例："><span class="toc-text">获取表实例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取单元格cells"><span class="toc-text">获取单元格cells</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除指定行数据："><span class="toc-text">删除指定行数据：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插入数据："><span class="toc-text">插入数据：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取一行数据："><span class="toc-text">获取一行数据：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取多行数据："><span class="toc-text">获取多行数据：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取扫描器："><span class="toc-text">获取扫描器：</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

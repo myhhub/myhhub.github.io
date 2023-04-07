@@ -1,0 +1,413 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="tsdb">
+
+
+    <meta name="description" content="1.基本概念时序数据库（Time Series Database）是用于存储和管理时间序列数据的专业化数据库。时序数据库特别适用于物联网设备监控和互联网业务监控场景。
+下面介绍下时序数据库的一些...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>时序数据库介绍 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="时序数据库介绍">
+            
+	            时序数据库介绍
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/tsdb/">tsdb</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/09/02</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1312</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1.基本概念"></a><strong>1.基本概念</strong></h2><p>时序数据库（Time Series Database）是用于存储和管理时间序列数据的专业化数据库。时序数据库特别适用于物联网设备监控和互联网业务监控场景。</p>
+<p>下面介绍下时序数据库的一些基本概念（不同的时序数据库称呼略有不同）。</p>
+<h3 id="1-1-度量（metric）"><a href="#1-1-度量（metric）" class="headerlink" title="1.1 度量（metric）"></a><strong>1.1 度量（metric）</strong></h3><p>监测数据的指标，例如风力和温度。相当于关系型数据库中的table。</p>
+<h3 id="1-2-标签（tag）"><a href="#1-2-标签（tag）" class="headerlink" title="1.2 标签（tag）"></a><strong>1.2 标签（tag）</strong></h3><p>指标项监测针对的具体对象，属于指定度量下的数据子类别。一个标签（Tag）由一个标签键（TagKey）和一个对应的标签值（TagValue）组成。</p>
+<p>例如在监测数据的时候，指定度量（Metric）是“气温”，“城市（TagKey）= 杭州（TagValue）”就是一个标签（Tag），则监测的就是杭州市的气温。更多标签示例：机房 = A 、IP = 172.220.110.1。</p>
+<h3 id="1-3-域（field）"><a href="#1-3-域（field）" class="headerlink" title="1.3 域（field）"></a><strong>1.3 域（field）</strong></h3><p> 在指定度量下数据的子类别，一般情况下存放的是会随着时间戳的变化而变化的数据。一个metric可支持多个field，如metric为风力，该度量可以有两个field：direction和speed。</p>
+<h3 id="1-4-度量值（value）"><a href="#1-4-度量值（value）" class="headerlink" title="1.4 度量值（value）"></a><strong>1.4 度量值（value）</strong></h3><p>度量对应的数值，如56°C、1000r/s等（实际中不带单位）。如果有多个field，每个field都有相应的value。不同的field支持不同的数据类型写入。对于同一个field，如果写入了某个数据类型的value之后，相同的field不允许写入其他数据类型。</p>
+<h3 id="1-5-时间戳（Timestamp）"><a href="#1-5-时间戳（Timestamp）" class="headerlink" title="1.5 时间戳（Timestamp）"></a><strong>1.5 时间戳（Timestamp）</strong></h3><p>数据（度量值）产生的时间点。</p>
+<h3 id="1-6-数据点-Data-Point"><a href="#1-6-数据点-Data-Point" class="headerlink" title="1.6 数据点 (Data Point)"></a><strong>1.6 数据点 (Data Point)</strong></h3><p>针对监测对象的某项指标（由度量和标签定义）按特定时间间隔（连续的时间戳）采集的每个度量值就是一个数据点。1个metric+1个field（可选）+1个timestamp+1个value + n个tag（n&gt;=1）”唯一定义了一个数据点。相当于关系型数据库中的row。</p>
+<h3 id="1-7-时间序列（Time-Series）"><a href="#1-7-时间序列（Time-Series）" class="headerlink" title="1.7 时间序列（Time Series）"></a><strong>1.7 时间序列（Time Series）</strong></h3><p>1个metric+1个field（可选） +n个tag（n&gt;=1）”定义了一个时间序列。主要是针对某个监测对象的某项指标（由度量和标签定义）的描述。某个时间序列上产生的数据值的增加，不会导致时间序列的增加。 </p>
+<p>例1（单域）：对温度的时间序列监测值</p>
+<p>温度（temperature）作为一个度量（metric），共4个数据点，每个数据点由如下组成：</p>
+<p>timestamp：时间戳</p>
+<p>三个tag：每个tag都是一个key-value对，tag的key分别是deivceID、floor、room。</p>
+<p>一个field：温度值</p>
+<p>其中4个数据点使用的metric、tag是相同的，所以是同一个时间序列。如图所示：</p>
+<p><img src="/img/influxdb/1489371-20190606181222012-768685589.png" alt="img"></p>
+<p>例2（多域，单一数据源采集）：记录一段时间内的某个集群里各机器上各端口的出入流量，每半小时记录一个观测值。</p>
+<p>网络（Network）作为一个度量（metric），总共7个数据点。每个数据点由以下部分组成：</p>
+<p>timestamp：时间戳</p>
+<p>两个tag：host、port，代表每个point归属于哪台机器的哪个端口</p>
+<p>两个field：bytes_in、bytes_out，代表piont的测量值，半小时内出入流量的平均值</p>
+<p>同一个host、同一个port，每半小时产生一个point，随着时间的增长，field（bytes_in、bytes_out）不断变化。</p>
+<p>如host：host4，port：51514，timestamp从02:00 到02:30的时间段内，bytes_in 从 37.937上涨到38.089，bytes_out从2897.26上涨到3009.86，说明这一段时间内该端口服务压力升高。</p>
+<p><img src="/img/influxdb/1489371-20190606181149446-951669168.png" alt="img"></p>
+<p>例3（多域，多个数据源采集）：监测风力的两个域(speed和direction)的监测数据，监测数据来自不同的传感器</p>
+<p>风力（wind）作为一个度量（metric），总共2个时间序列，8个数据点。每个数据点由以下部分组成：</p>
+<p>3个tag：key分别是sensor、city、province。为了表示在广东省深圳市传感器编号95D8-7913上传风向（direction）数据，可以将这个数据点的tag为标记为sensor=95D8-7913、city=深圳、province=广东。</p>
+<p>两个域：风向（direction）和速度（speed），分别来自不同的传感器。</p>
+<p>如图，当使用的是metric、field和tag是相同的时，是同一个时间序列。</p>
+<p><img src="/img/influxdb/1489371-20190606181107304-624605918.png" alt="img"></p>
+<p>将数据采用metric+field的方式存储的优势在于，可以在同一个时间序列下联合查询。以上图为例，要查询1467627246000-1467627249000时间内风力(wind)的情况，可以联合查询多个field的值，得到下图的数据。</p>
+<p><img src="/img/influxdb/1489371-20190606181037005-1163476619.png" alt="img"></p>
+<h3 id="1-8-时间精度"><a href="#1-8-时间精度" class="headerlink" title="1.8 时间精度"></a><strong>1.8 时间精度</strong></h3><p>时间线数据的写入时间精度——毫秒、秒、分钟、小时或者其他稳定时间频度。例如，每秒一个温度数据的采集频度，每 5 分钟一个负载数据的采集频度。</p>
+<h3 id="1-9-1-数据组（Data-Group）"><a href="#1-9-1-数据组（Data-Group）" class="headerlink" title="1.9-1 数据组（Data Group）"></a><strong>1.9-1 数据组（Data Group）</strong></h3><p>可以按标签这些数据分成不同的数据组。用来对比不同监测对象（由标签定义）的同一指标（由度量定义）的数据。</p>
+<p>例如，将温度指标数据按照不同城市进行分组查询，操作类似于该 SQL 语句：select temperature from xxx group by city where city in （shanghai, hangzhou)。</p>
+<h3 id="1-9-2-聚合（-Aggregation）"><a href="#1-9-2-聚合（-Aggregation）" class="headerlink" title="1.9-2 聚合（ Aggregation）"></a><strong>1.9-2 聚合（ Aggregation）</strong></h3><p>可以对一段时间的数据点做聚合，如每10分钟的和值、平均值、最大值、最小值等。</p>
+<p>例如，当选定了某个城市某个城区的污染指数时，通常将各个环境监测点的指标数据平均值作为最终区域的指标数据，这个计算过程就是空间聚合。</p>
+<h2 id="2-应用场景"><a href="#2-应用场景" class="headerlink" title="2.应用场景"></a><strong>2.应用场景</strong></h2><h3 id="2-1系统运维和业务实时监控"><a href="#2-1系统运维和业务实时监控" class="headerlink" title="2.1系统运维和业务实时监控"></a><strong>2.1系统运维和业务实时监控</strong></h3><p>在业务服务器上部署各种脚本客户端，实时采集服务器指标数据（IO指标、CPU指标、带宽内存指标等等），业务相关数据（方法调用异常次数、响应延迟、JVM GC相关数据等等）、数据库相关数据（读取延迟、写入延迟等等），很显然，这些数据都是时间序列相关的。客户端采集和实时计算之后会发送给哨兵服务器，哨兵服务器会将这些数据进行存储，并实现实现监控和分析的展现，供用户查询。</p>
+<p>如下图所示，用户可以登录哨兵系统查看某台服务器的负载，负载曲线就是按照时间进行绘制的，带有明显的时序特征：</p>
+<p><img src="/img/influxdb/1489371-20190606174732162-1601676839.png" alt="img"></p>
+<h3 id="2-2-物联网设备状态监控存储分析"><a href="#2-2-物联网设备状态监控存储分析" class="headerlink" title="2.2 物联网设备状态监控存储分析"></a><strong>2.2 物联网设备状态监控存储分析</strong></h3><p>在可预知的未来3~5年，随着物联网以及工业4.0的到来，所有设备都会携带传感器并联网，传感器收集的时序数据将严重依赖TSDB的实时分析能力、存储能力以及查询统计能力。</p>
+<p> <img src="/img/influxdb/1489371-20190606180222868-2123383622.png" alt="img"></p>
+<p>上图是一个智慧工厂示意图，工厂中所有设备都会携带传感设备，这些传感设备会实时采集设备温度、压力等基本信息，并发送给服务器端进行实时分析、存储以及后期的查询统计。除此之外，比如现在比较流行的各种穿戴设备，以后都可以联网，穿戴设备上采集的心跳信息、血流信息、体感信息等等也都会实时传输给服务器进行实时分析、存储以及查询统计。</p>
+<p>PS：阿里云拥有自主研发的时序数据库产品 TSDB ，此产品在阿里内部磨练多年， 历经多次双十一高严苛场景的功能和性能验证， 在应用监控，服务器资源监控，数据库监控， 智慧园区设备监控，以及盒马新零售边缘设备监控都有丰富的落地使用场景 ，覆盖了阿里集团80%以上的时序监控业务。</p>
+<h2 id="3-基本特点"><a href="#3-基本特点" class="headerlink" title="3.基本特点"></a><strong>3.基本特点</strong></h2><p>时序业务和普通业务在很多方面都有巨大的区别，归纳起来主要有如下几个方面：</p>
+<h3 id="3-1-持续产生海量数据，没有波峰波谷"><a href="#3-1-持续产生海量数据，没有波峰波谷" class="headerlink" title="3.1 持续产生海量数据，没有波峰波谷"></a><strong>3.1 持续产生海量数据，没有波峰波谷</strong></h3><p>举几个简单的例子，比如类似哨兵的监控系统，假如现在系统监控1w台服务器的各类指标，每台服务器每秒采集100种metrics，这样每秒钟将会有100w的TPS。再比如说，现在比较流行的运动手环，假如当前有100w人佩戴，每个手环一秒只采集3种metrcis（心跳、脉搏、步数），这样每秒钟也会产生300w的TPS。</p>
+<h3 id="3-2-数据都是插入操作，基本没有更新删除操作"><a href="#3-2-数据都是插入操作，基本没有更新删除操作" class="headerlink" title="3.2 数据都是插入操作，基本没有更新删除操作"></a><strong>3.2 数据都是插入操作，基本没有更新删除操作</strong></h3><p>时序业务产生的数据很少有更新删除的操作，基于这样的事实，在时序数据库架构设计上会有很大的简化。</p>
+<h3 id="3-3-近期数据关注度更高，未来会更关注流式处理这个环节，时间久远的数据极少被访问，甚至可以丢弃"><a href="#3-3-近期数据关注度更高，未来会更关注流式处理这个环节，时间久远的数据极少被访问，甚至可以丢弃" class="headerlink" title="3.3 近期数据关注度更高，未来会更关注流式处理这个环节，时间久远的数据极少被访问，甚至可以丢弃"></a><strong>3.3 近期数据关注度更高，未来会更关注流式处理这个环节，时间久远的数据极少被访问，甚至可以丢弃</strong></h3><p>这个很容易理解，哨兵系统我们通常最关心最近一小时的数据，最多看看最近3天的数据，很少去看3天以前的数据。随着流式计算的到来，时序数据在以后的发展中必然会更关注即时数据的价值，这部分数据的价值毫无疑问也是最大的。数据产生之后就可以根据某些规则进行报警是一个非常常见并重要的场景，报警时效性越高，对业务越有利。</p>
+<h3 id="3-4-数据存在多个维度的标签，往往需要多维度联合查询以及统计查询。"><a href="#3-4-数据存在多个维度的标签，往往需要多维度联合查询以及统计查询。" class="headerlink" title="3.4 数据存在多个维度的标签，往往需要多维度联合查询以及统计查询。"></a><strong>3.4 数据存在多个维度的标签，往往需要多维度联合查询以及统计查询。</strong></h3><p>时序数据另一个非常重要的功能是多维度聚合统计查询，比如业务需要统计最近一小时广告主google发布在USA地区的广告点击率和总收入分别是多少，这是一个典型的多维度聚合统计查询需求。这个需求通常对实效性要求不高，但对查询聚合性能有比较高的要求。</p>
+<h2 id="4-TSDB核心特性"><a href="#4-TSDB核心特性" class="headerlink" title="4.TSDB核心特性"></a><strong>4.TSDB核心特性</strong></h2><p>总结起来TSDB需要关注的技术点主要有这么几个：</p>
+<h3 id="4-1-高吞吐量写入能力"><a href="#4-1-高吞吐量写入能力" class="headerlink" title="4.1 高吞吐量写入能力"></a><strong>4.1 高吞吐量写入能力</strong></h3><p>这是针对时序业务持续产生海量数据这么一个特点量身定做的，当前要实现系统高吞吐量写入，必须要满足两个基本技术点要求：系统具有水平扩展性和单机LSM体系结构。系统具有水平扩展性很容易理解，单机肯定是扛不住的，系统必须是集群式的，而且要容易加节点扩展，说到底，就是扩容的时候对业务无感知，目前Hadoop生态系统基本上都可以做到这一点；而LSM体系结构是用来保证单台机器的高吞吐量写入，LSM结构下数据写入只需要写入内存以及追加写入日志，这样就不再需要随机将数据写入磁盘，HBase、Kudu以及Druid等对写入性能有要求的系统目前都采用的这种结构。</p>
+<h3 id="4-2-数据分级存储-TTL"><a href="#4-2-数据分级存储-TTL" class="headerlink" title="4.2 数据分级存储/TTL"></a><strong>4.2 数据分级存储/TTL</strong></h3><p>这是针对时序数据冷热性质定制的技术特性。数据分级存储要求能够将最近小时级别的数据放到内存中，将最近天级别的数据放到SSD，更久远的数据放到更加廉价的HDD或者直接使用TTL过期淘汰掉。</p>
+<h3 id="4-3-高压缩率"><a href="#4-3-高压缩率" class="headerlink" title="4.3 高压缩率"></a><strong>4.3 高压缩率</strong></h3><p>提供高压缩率有两个方面的考虑，一方面是节省成本，这很容易理解，将1T数据压缩到100G就可以减少900G的硬盘开销，这对业务来说是有很大的诱惑的。另一个方面是压缩后的数据可以更容易保证存储到内存中，比如最近3小时的数据是1T，我现在只有100G的内存，如果不压缩，就会有900G的数据被迫放到硬盘上，这样的话查询开销会非常之大，而使用压缩会将这1T数据都放入内存，查询性能会非常之好。</p>
+<h3 id="4-4-多维度查询能力"><a href="#4-4-多维度查询能力" class="headerlink" title="4.4 多维度查询能力"></a><strong>4.4 多维度查询能力</strong></h3><p>时序数据通常会有多个维度的标签来刻画一条数据，就是上文中提到的维度列。如何根据随机几个维度进行高效查询就是必须要解决的一个问题，这个问题通常需要考虑位图索引或者倒排索引技术。</p>
+<h3 id="4-5-高效聚合能力"><a href="#4-5-高效聚合能力" class="headerlink" title="4.5 高效聚合能力"></a><strong>4.5 高效聚合能力</strong></h3><p>时序业务一个通用的需求是聚合统计报表查询，比如哨兵系统中需要查看最近一天某个接口出现异常的总次数，或者某个接口执行的最大耗时时间。这样的聚合实际上就是简单的count以及max，问题是如何能高效的在那么大的数据量的基础上将满足条件的原始数据查询出来并聚合，要知道统计的原始值可能因为时间比较久远而不在内存中哈，因此这可能是一个非常耗时的操作。目前业界比较成熟的方案是使用预聚合，就是在数据写进来的时候就完成基本的聚合操作。</p>
+<p>未来技术点：异常实时检测、未来预测等等。</p>
+<h2 id="5-传统关系型数据库存储时序数据的问题"><a href="#5-传统关系型数据库存储时序数据的问题" class="headerlink" title="5.传统关系型数据库存储时序数据的问题"></a><strong>5.传统关系型数据库存储时序数据的问题</strong></h2><p>很多人可能认为在传统关系型数据库上加上时间戳一列就能作为时序数据库。数据量少的时候确实也没问题。但时序数据往往是由百万级甚至千万级终端设备产生的，写入并发量比较高，属于海量数据场景。</p>
+<h3 id="5-1-MySQL在海量的时序数据场景下存在如下问题："><a href="#5-1-MySQL在海量的时序数据场景下存在如下问题：" class="headerlink" title="5.1 MySQL在海量的时序数据场景下存在如下问题："></a><strong>5.1 MySQL在海量的时序数据场景下存在如下问题：</strong></h3><p>存储成本大：对于时序数据压缩不佳，需占用大量机器资源；</p>
+<p>维护成本高：单机系统，需要在上层人工的分库分表，维护成本高；</p>
+<p>写入吞吐低：单机写入吞吐低，很难满足时序数据千万级的写入压力；</p>
+<p>查询性能差：适用于交易处理，海量数据的聚合分析性能差。</p>
+<h3 id="5-2-使用Hadoop生态（Hadoop、Spark等）存储时序数据会有以下问题："><a href="#5-2-使用Hadoop生态（Hadoop、Spark等）存储时序数据会有以下问题：" class="headerlink" title="5.2 使用Hadoop生态（Hadoop、Spark等）存储时序数据会有以下问题："></a><strong>5.2 使用Hadoop生态（Hadoop、Spark等）存储时序数据会有以下问题：</strong></h3><p>数据延迟高：离线批处理系统，数据从产生到可分析，耗时数小时、甚至天级；</p>
+<p>查询性能差：不能很好的利用索引，依赖MapReduce任务，查询耗时一般在分钟级。</p>
+<h3 id="5-3-时序数据库需要解决以下几个问题："><a href="#5-3-时序数据库需要解决以下几个问题：" class="headerlink" title="5.3 时序数据库需要解决以下几个问题："></a><strong>5.3 时序数据库需要解决以下几个问题：</strong></h3><p>时序数据的写入：如何支持每秒钟上千万上亿数据点的写入。</p>
+<p>时序数据的读取：如何支持在秒级对上亿数据的分组聚合运算。</p>
+<p>成本敏感：由海量数据存储带来的是成本问题。如何更低成本的存储这些数据，将成为时序数据库需要解决的重中之重。</p>
+<h2 id="6-时序数据库发展简史与现状"><a href="#6-时序数据库发展简史与现状" class="headerlink" title="6.时序数据库发展简史与现状"></a><strong>6.时序数据库发展简史与现状</strong></h2><p><img src="/img/influxdb/1489371-20190606182127072-974500589.png" alt="img"></p>
+<p>目前，DB-Engines把时间序列数据库作为独立的目录来分类统计，下图就是2018年业内流行的时序数据库的关注度排名和最近5年的变化趋势。</p>
+<p><img src="/img/influxdb/1489371-20190606182303411-390211788.png" alt="img"></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/09/100583.html" class="pre-post btn btn-default" title='初识DolphinDB、KDB+ 时序数据库'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">初识DolphinDB、KDB+ 时序数据库</span>
+        </a>
+    
+    
+        <a href="/archives/2019/09/100581.html" class="next-post btn btn-default" title='监控组件kapacitor使用说明'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">监控组件kapacitor使用说明</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-基本概念"><span class="toc-text">1.基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-度量（metric）"><span class="toc-text">1.1 度量（metric）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-标签（tag）"><span class="toc-text">1.2 标签（tag）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-域（field）"><span class="toc-text">1.3 域（field）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-度量值（value）"><span class="toc-text">1.4 度量值（value）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-时间戳（Timestamp）"><span class="toc-text">1.5 时间戳（Timestamp）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-数据点-Data-Point"><span class="toc-text">1.6 数据点 (Data Point)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-时间序列（Time-Series）"><span class="toc-text">1.7 时间序列（Time Series）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-8-时间精度"><span class="toc-text">1.8 时间精度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-9-1-数据组（Data-Group）"><span class="toc-text">1.9-1 数据组（Data Group）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-9-2-聚合（-Aggregation）"><span class="toc-text">1.9-2 聚合（ Aggregation）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-应用场景"><span class="toc-text">2.应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1系统运维和业务实时监控"><span class="toc-text">2.1系统运维和业务实时监控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-物联网设备状态监控存储分析"><span class="toc-text">2.2 物联网设备状态监控存储分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-基本特点"><span class="toc-text">3.基本特点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-持续产生海量数据，没有波峰波谷"><span class="toc-text">3.1 持续产生海量数据，没有波峰波谷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-数据都是插入操作，基本没有更新删除操作"><span class="toc-text">3.2 数据都是插入操作，基本没有更新删除操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-近期数据关注度更高，未来会更关注流式处理这个环节，时间久远的数据极少被访问，甚至可以丢弃"><span class="toc-text">3.3 近期数据关注度更高，未来会更关注流式处理这个环节，时间久远的数据极少被访问，甚至可以丢弃</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-数据存在多个维度的标签，往往需要多维度联合查询以及统计查询。"><span class="toc-text">3.4 数据存在多个维度的标签，往往需要多维度联合查询以及统计查询。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-TSDB核心特性"><span class="toc-text">4.TSDB核心特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-高吞吐量写入能力"><span class="toc-text">4.1 高吞吐量写入能力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-数据分级存储-TTL"><span class="toc-text">4.2 数据分级存储/TTL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-高压缩率"><span class="toc-text">4.3 高压缩率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-多维度查询能力"><span class="toc-text">4.4 多维度查询能力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-高效聚合能力"><span class="toc-text">4.5 高效聚合能力</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-传统关系型数据库存储时序数据的问题"><span class="toc-text">5.传统关系型数据库存储时序数据的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-MySQL在海量的时序数据场景下存在如下问题："><span class="toc-text">5.1 MySQL在海量的时序数据场景下存在如下问题：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-使用Hadoop生态（Hadoop、Spark等）存储时序数据会有以下问题："><span class="toc-text">5.2 使用Hadoop生态（Hadoop、Spark等）存储时序数据会有以下问题：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-时序数据库需要解决以下几个问题："><span class="toc-text">5.3 时序数据库需要解决以下几个问题：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-时序数据库发展简史与现状"><span class="toc-text">6.时序数据库发展简史与现状</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase,hdfs,storm">
+
+
+    <meta name="description" content="一、Storm集成HDFS1.1 项目结构  
+
+
+本用例源码下载地址：storm-hdfs-integration
+
+1.2 项目主要依赖项目主要依赖如下，有两个地方需要注意：
+
+这里由于我服...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Storm集成HDFS和HBase | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Storm集成HDFS和HBase">
+            
+	            Storm集成HDFS和HBase
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a> <a class="tag-link" href="/tags/hdfs/">hdfs</a> <a class="tag-link" href="/tags/storm/">storm</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1363</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、Storm集成HDFS"><a href="#一、Storm集成HDFS" class="headerlink" title="一、Storm集成HDFS"></a>一、Storm集成HDFS</h2><h3 id="1-1-项目结构"><a href="#1-1-项目结构" class="headerlink" title="1.1 项目结构"></a>1.1 项目结构</h3><div align="center"> <img src="/img/bigdata/datasourcetohdfs.png"> </div>
+
+<blockquote>
+<p>本用例源码下载地址：<a href="https://github.com/myhhub/BigData-Notes/tree/master/code/Storm/storm-hdfs-integration" target="_blank" rel="noopener">storm-hdfs-integration</a></p>
+</blockquote>
+<h3 id="1-2-项目主要依赖"><a href="#1-2-项目主要依赖" class="headerlink" title="1.2 项目主要依赖"></a>1.2 项目主要依赖</h3><p>项目主要依赖如下，有两个地方需要注意：</p>
+<ul>
+<li>这里由于我服务器上安装的是CDH版本的Hadoop，在导入依赖时引入的也是CDH版本的依赖，需要使用<code>&lt;repository&gt;</code>标签指定CDH的仓库地址；</li>
+<li><code>hadoop-common</code>、<code>hadoop-client</code>、<code>hadoop-hdfs</code>均需要排除<code>slf4j-log4j12</code>依赖，原因是<code>storm-core</code>中已经有该依赖，不排除的话有JAR包冲突的风险；</li>
+</ul>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">storm.version</span>&gt;</span>1.2.2<span class="tag">&lt;/<span class="name">storm.version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>cloudera<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://repository.cloudera.com/artifactory/cloudera-repos/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>storm-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;storm.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="comment">&lt;!--Storm整合HDFS依赖--&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>storm-hdfs<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;storm.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hadoop<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hadoop-common<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.6.0-cdh5.15.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-log4j12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hadoop<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hadoop-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.6.0-cdh5.15.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-log4j12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hadoop<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hadoop-hdfs<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.6.0-cdh5.15.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-log4j12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="1-3-DataSourceSpout"><a href="#1-3-DataSourceSpout" class="headerlink" title="1.3 DataSourceSpout"></a>1.3 DataSourceSpout</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 产生词频样本的数据源</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceSpout</span> <span class="title">extends</span> <span class="title">BaseRichSpout</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; <span class="built_in">list</span> = Arrays.asList(<span class="string">"Spark"</span>, <span class="string">"Hadoop"</span>, <span class="string">"HBase"</span>, <span class="string">"Storm"</span>, <span class="string">"Flink"</span>, <span class="string">"Hive"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> SpoutOutputCollector spoutOutputCollector;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">(Map <span class="built_in">map</span>, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.spoutOutputCollector = spoutOutputCollector;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">nextTuple</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 模拟产生数据</span></span><br><span class="line">        String lineData = productData();</span><br><span class="line">        spoutOutputCollector.emit(<span class="keyword">new</span> Values(lineData));</span><br><span class="line">        Utils.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">declareOutputFields</span><span class="params">(OutputFieldsDeclarer outputFieldsDeclarer)</span> </span>&#123;</span><br><span class="line">        outputFieldsDeclarer.declare(<span class="keyword">new</span> Fields(<span class="string">"line"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">productData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Collections.shuffle(<span class="built_in">list</span>);</span><br><span class="line">        Random random = <span class="keyword">new</span> Random();</span><br><span class="line">        <span class="keyword">int</span> endIndex = random.nextInt(<span class="built_in">list</span>.size()) % (<span class="built_in">list</span>.size()) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> StringUtils.join(<span class="built_in">list</span>.toArray(), <span class="string">"\t"</span>, <span class="number">0</span>, endIndex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>产生的模拟数据格式如下：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Spark	HBase</span></span><br><span class="line"><span class="attribute">Hive	Flink	Storm	Hadoop	HBase	Spark</span></span><br><span class="line"><span class="attribute">Flink</span></span><br><span class="line"><span class="attribute">HBase	Storm</span></span><br><span class="line"><span class="attribute">HBase	Hadoop	Hive	Flink</span></span><br><span class="line"><span class="attribute">HBase	Flink	Hive	Storm</span></span><br><span class="line"><span class="attribute">Hive	Flink	Hadoop</span></span><br><span class="line"><span class="attribute">HBase	Hive</span></span><br><span class="line"><span class="attribute">Hadoop	Spark	HBase	Storm</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-4-将数据存储到HDFS"><a href="#1-4-将数据存储到HDFS" class="headerlink" title="1.4 将数据存储到HDFS"></a>1.4 将数据存储到HDFS</h3><p>这里HDFS的地址和数据存储路径均使用了硬编码，在实际开发中可以通过外部传参指定，这样程序更为灵活。</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataToHdfsApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">String</span> DATA_SOURCE_SPOUT = <span class="string">"dataSourceSpout"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">String</span> HDFS_BOLT = <span class="string">"hdfsBolt"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> void main(<span class="keyword">String</span>[] args) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 指定Hadoop的用户名 如果不指定,则在HDFS创建目录时候有可能抛出无权限的异常(RemoteException: Permission denied)</span></span><br><span class="line">        System.setProperty(<span class="string">"HADOOP_USER_NAME"</span>, <span class="string">"root"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义输出字段(Field)之间的分隔符</span></span><br><span class="line">        RecordFormat format = <span class="keyword">new</span> <span class="type">DelimitedRecordFormat</span>()</span><br><span class="line">                .withFieldDelimiter(<span class="string">"|"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 同步策略: 每100个tuples之后就会把数据从缓存刷新到HDFS中</span></span><br><span class="line">        SyncPolicy syncPolicy = <span class="keyword">new</span> <span class="type">CountSyncPolicy</span>(<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 文件策略: 每个文件大小上限1M,超过限定时,创建新文件并继续写入</span></span><br><span class="line">        FileRotationPolicy rotationPolicy = <span class="keyword">new</span> <span class="type">FileSizeRotationPolicy</span>(<span class="number">1.0</span>f, Units.MB);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义存储路径</span></span><br><span class="line">        FileNameFormat fileNameFormat = <span class="keyword">new</span> <span class="type">DefaultFileNameFormat</span>()</span><br><span class="line">                .withPath(<span class="string">"/storm-hdfs/"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义HdfsBolt</span></span><br><span class="line">        HdfsBolt hdfsBolt = <span class="keyword">new</span> <span class="type">HdfsBolt</span>()</span><br><span class="line">                .withFsUrl(<span class="string">"hdfs://hadoop001:8020"</span>)</span><br><span class="line">                .withFileNameFormat(fileNameFormat)</span><br><span class="line">                .withRecordFormat(format)</span><br><span class="line">                .withRotationPolicy(rotationPolicy)</span><br><span class="line">                .withSyncPolicy(syncPolicy);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建Topology</span></span><br><span class="line">        TopologyBuilder builder = <span class="keyword">new</span> <span class="type">TopologyBuilder</span>();</span><br><span class="line">        builder.setSpout(DATA_SOURCE_SPOUT, <span class="keyword">new</span> <span class="type">DataSourceSpout</span>());</span><br><span class="line">        <span class="comment">// save to HDFS</span></span><br><span class="line">        builder.setBolt(HDFS_BOLT, hdfsBolt, <span class="number">1</span>).shuffleGrouping(DATA_SOURCE_SPOUT);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果外部传参cluster则代表线上环境启动,否则代表本地启动</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>].equals(<span class="string">"cluster"</span>)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                StormSubmitter.submitTopology(<span class="string">"ClusterDataToHdfsApp"</span>, <span class="keyword">new</span> <span class="type">Config</span>(), builder.createTopology());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (AlreadyAliveException | InvalidTopologyException | AuthorizationException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            LocalCluster cluster = <span class="keyword">new</span> <span class="type">LocalCluster</span>();</span><br><span class="line">            cluster.submitTopology(<span class="string">"LocalDataToHdfsApp"</span>,</span><br><span class="line">                    <span class="keyword">new</span> <span class="type">Config</span>(), builder.createTopology());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-5-启动测试"><a href="#1-5-启动测试" class="headerlink" title="1.5 启动测试"></a>1.5 启动测试</h3><p>可以用直接使用本地模式运行，也可以打包后提交到服务器集群运行。本仓库提供的源码默认采用<code>maven-shade-plugin</code>进行打包，打包命令如下：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># mvn clean <span class="keyword">package</span> <span class="title">-D maven.test.skip=true</span></span><br></pre></td></tr></table></figure>
+<p>运行后，数据会存储到HDFS的<code>/storm-hdfs</code>目录下。使用以下命令可以查看目录内容：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看目录内容</span></span><br><span class="line">hadoop fs -ls <span class="string">/storm-hdfs</span></span><br><span class="line"><span class="comment"># 监听文内容变化</span></span><br><span class="line">hadoop fs -tail -f <span class="string">/strom-hdfs/</span>文件名</span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/storm-hdfs-result.png"> </div>
+
+
+
+<h2 id="二、Storm集成HBase"><a href="#二、Storm集成HBase" class="headerlink" title="二、Storm集成HBase"></a>二、Storm集成HBase</h2><h3 id="2-1-项目结构"><a href="#2-1-项目结构" class="headerlink" title="2.1 项目结构"></a>2.1 项目结构</h3><p>集成用例： 进行词频统计并将最后的结果存储到HBase，项目主要结构如下：</p>
+<div align="center"> <img src="/img/bigdata/WordCountToHBaseApp.png"> </div>
+
+<blockquote>
+<p>本用例源码下载地址：<a href="https://github.com/myhhub/BigData-Notes/tree/master/code/Storm/storm-hbase-integration" target="_blank" rel="noopener">storm-hbase-integration</a></p>
+</blockquote>
+<h3 id="2-2-项目主要依赖"><a href="#2-2-项目主要依赖" class="headerlink" title="2.2 项目主要依赖"></a>2.2 项目主要依赖</h3><figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml">       <span class="tag">&lt;<span class="name">storm.version</span>&gt;</span>1.2.2<span class="tag">&lt;/<span class="name">storm.version</span>&gt;</span></span></span><br><span class="line"><span class="xml">   <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">   <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span></span><br><span class="line"><span class="xml">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>storm-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">           <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;storm.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">       <span class="comment">&lt;!--Storm整合HBase依赖--&gt;</span></span></span><br><span class="line"><span class="xml">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.storm<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>storm-hbase<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">           <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;storm.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">   <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-DataSourceSpout"><a href="#2-3-DataSourceSpout" class="headerlink" title="2.3 DataSourceSpout"></a>2.3 DataSourceSpout</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 产生词频样本的数据源</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceSpout</span> <span class="title">extends</span> <span class="title">BaseRichSpout</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; <span class="built_in">list</span> = Arrays.asList(<span class="string">"Spark"</span>, <span class="string">"Hadoop"</span>, <span class="string">"HBase"</span>, <span class="string">"Storm"</span>, <span class="string">"Flink"</span>, <span class="string">"Hive"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> SpoutOutputCollector spoutOutputCollector;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">(Map <span class="built_in">map</span>, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.spoutOutputCollector = spoutOutputCollector;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">nextTuple</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 模拟产生数据</span></span><br><span class="line">        String lineData = productData();</span><br><span class="line">        spoutOutputCollector.emit(<span class="keyword">new</span> Values(lineData));</span><br><span class="line">        Utils.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">declareOutputFields</span><span class="params">(OutputFieldsDeclarer outputFieldsDeclarer)</span> </span>&#123;</span><br><span class="line">        outputFieldsDeclarer.declare(<span class="keyword">new</span> Fields(<span class="string">"line"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">productData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Collections.shuffle(<span class="built_in">list</span>);</span><br><span class="line">        Random random = <span class="keyword">new</span> Random();</span><br><span class="line">        <span class="keyword">int</span> endIndex = random.nextInt(<span class="built_in">list</span>.size()) % (<span class="built_in">list</span>.size()) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> StringUtils.join(<span class="built_in">list</span>.toArray(), <span class="string">"\t"</span>, <span class="number">0</span>, endIndex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>产生的模拟数据格式如下：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Spark	HBase</span></span><br><span class="line"><span class="attribute">Hive	Flink	Storm	Hadoop	HBase	Spark</span></span><br><span class="line"><span class="attribute">Flink</span></span><br><span class="line"><span class="attribute">HBase	Storm</span></span><br><span class="line"><span class="attribute">HBase	Hadoop	Hive	Flink</span></span><br><span class="line"><span class="attribute">HBase	Flink	Hive	Storm</span></span><br><span class="line"><span class="attribute">Hive	Flink	Hadoop</span></span><br><span class="line"><span class="attribute">HBase	Hive</span></span><br><span class="line"><span class="attribute">Hadoop	Spark	HBase	Storm</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-4-SplitBolt"><a href="#2-4-SplitBolt" class="headerlink" title="2.4 SplitBolt"></a>2.4 SplitBolt</h3><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将每行数据按照指定分隔符进行拆分</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SplitBolt</span> <span class="keyword">extends</span> <span class="title">BaseRichBolt</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> OutputCollector collector;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">prepare</span><span class="params">(Map stormConf, TopologyContext context, OutputCollector collector)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.collector = collector;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">(Tuple input)</span> </span>&#123;</span><br><span class="line">        String line = input.getStringByField(<span class="string">"line"</span>);</span><br><span class="line">        String[] words = line.split(<span class="string">"\t"</span>);</span><br><span class="line">        <span class="keyword">for</span> (String word : words) &#123;</span><br><span class="line">            collector.emit(tuple(word, <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">declareOutputFields</span><span class="params">(OutputFieldsDeclarer declarer)</span> </span>&#123;</span><br><span class="line">        declarer.<span class="keyword">declare</span>(<span class="keyword">new</span> Fields(<span class="string">"word"</span>, <span class="string">"count"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-CountBolt"><a href="#2-5-CountBolt" class="headerlink" title="2.5 CountBolt"></a>2.5 CountBolt</h3><figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 进行词频统计</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CountBolt</span> <span class="keyword">extends</span> <span class="title">BaseRichBolt</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, Integer&gt; counts = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> OutputCollector collector;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> prepare(Map stormConf, TopologyContext context, OutputCollector collector) &#123;</span><br><span class="line">            <span class="keyword">this</span>.collector=collector;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> execute(Tuple input) &#123;</span><br><span class="line">        String word = input.getStringByField(<span class="string">"word"</span>);</span><br><span class="line">        Integer <span class="keyword">count</span> = counts.get(word);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">count</span> == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">count</span>++;</span><br><span class="line">        counts.put(word, <span class="keyword">count</span>);</span><br><span class="line">        <span class="comment">// 输出</span></span><br><span class="line">        collector.emit(<span class="keyword">new</span> Values(word, String.valueOf(<span class="keyword">count</span>)));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> declareOutputFields(OutputFieldsDeclarer declarer) &#123;</span><br><span class="line">        declarer.declare(<span class="keyword">new</span> Fields(<span class="string">"word"</span>, <span class="string">"count"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-WordCountToHBaseApp"><a href="#2-6-WordCountToHBaseApp" class="headerlink" title="2.6 WordCountToHBaseApp"></a>2.6 WordCountToHBaseApp</h3><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 进行词频统计 并将统计结果存储到HBase中</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordCountToHBaseApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">String</span> DATA_SOURCE_SPOUT = <span class="string">"dataSourceSpout"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">String</span> SPLIT_BOLT = <span class="string">"splitBolt"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">String</span> COUNT_BOLT = <span class="string">"countBolt"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> final <span class="keyword">String</span> HBASE_BOLT = <span class="string">"hbaseBolt"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> void main(<span class="keyword">String</span>[] args) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// storm的配置</span></span><br><span class="line">        Config config = <span class="keyword">new</span> <span class="type">Config</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// HBase的配置</span></span><br><span class="line">        Map&lt;<span class="keyword">String</span>, Object&gt; hbConf = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;&gt;();</span><br><span class="line">        hbConf.put(<span class="string">"hbase.rootdir"</span>, <span class="string">"hdfs://hadoop001:8020/hbase"</span>);</span><br><span class="line">        hbConf.put(<span class="string">"hbase.zookeeper.quorum"</span>, <span class="string">"hadoop001:2181"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将HBase的配置传入Storm的配置中</span></span><br><span class="line">        config.put(<span class="string">"hbase.conf"</span>, hbConf);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义流数据与HBase中数据的映射</span></span><br><span class="line">        SimpleHBaseMapper mapper = <span class="keyword">new</span> <span class="type">SimpleHBaseMapper</span>()</span><br><span class="line">                .withRowKeyField(<span class="string">"word"</span>)</span><br><span class="line">                .withColumnFields(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"word"</span>,<span class="string">"count"</span>))</span><br><span class="line">                .withColumnFamily(<span class="string">"info"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * 给HBaseBolt传入表名、数据映射关系、和HBase的配置信息</span></span><br><span class="line"><span class="comment">         * 表需要预先创建: create 'WordCount','info'</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        HBaseBolt hbase = <span class="keyword">new</span> <span class="type">HBaseBolt</span>(<span class="string">"WordCount"</span>, mapper)</span><br><span class="line">                .withConfigKey(<span class="string">"hbase.conf"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建Topology</span></span><br><span class="line">        TopologyBuilder builder = <span class="keyword">new</span> <span class="type">TopologyBuilder</span>();</span><br><span class="line">        builder.setSpout(DATA_SOURCE_SPOUT, <span class="keyword">new</span> <span class="type">DataSourceSpout</span>(),<span class="number">1</span>);</span><br><span class="line">        <span class="comment">// split</span></span><br><span class="line">        builder.setBolt(SPLIT_BOLT, <span class="keyword">new</span> <span class="type">SplitBolt</span>(), <span class="number">1</span>).shuffleGrouping(DATA_SOURCE_SPOUT);</span><br><span class="line">        <span class="comment">// count</span></span><br><span class="line">        builder.setBolt(COUNT_BOLT, <span class="keyword">new</span> <span class="type">CountBolt</span>(),<span class="number">1</span>).shuffleGrouping(SPLIT_BOLT);</span><br><span class="line">        <span class="comment">// save to HBase</span></span><br><span class="line">        builder.setBolt(HBASE_BOLT, hbase, <span class="number">1</span>).shuffleGrouping(COUNT_BOLT);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果外部传参cluster则代表线上环境启动,否则代表本地启动</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>].equals(<span class="string">"cluster"</span>)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                StormSubmitter.submitTopology(<span class="string">"ClusterWordCountToRedisApp"</span>, config, builder.createTopology());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (AlreadyAliveException | InvalidTopologyException | AuthorizationException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            LocalCluster cluster = <span class="keyword">new</span> <span class="type">LocalCluster</span>();</span><br><span class="line">            cluster.submitTopology(<span class="string">"LocalWordCountToRedisApp"</span>,</span><br><span class="line">                    config, builder.createTopology());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-7-启动测试"><a href="#2-7-启动测试" class="headerlink" title="2.7 启动测试"></a>2.7 启动测试</h3><p>可以用直接使用本地模式运行，也可以打包后提交到服务器集群运行。本仓库提供的源码默认采用<code>maven-shade-plugin</code>进行打包，打包命令如下：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># mvn clean <span class="keyword">package</span> <span class="title">-D maven.test.skip=true</span></span><br></pre></td></tr></table></figure>
+<p>运行后，数据会存储到HBase的<code>WordCount</code>表中。使用以下命令查看表的内容：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">hbase</span> &gt;  scan <span class="string">'WordCount'</span></span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/storm-hbase-result.png"> </div>
+
+
+
+<h3 id="2-8-withCounterFields"><a href="#2-8-withCounterFields" class="headerlink" title="2.8 withCounterFields"></a>2.8 withCounterFields</h3><p>在上面的用例中我们是手动编码来实现词频统计，并将最后的结果存储到HBase中。其实也可以在构建<code>SimpleHBaseMapper</code>的时候通过<code>withCounterFields</code>指定count字段，被指定的字段会自动进行累加操作，这样也可以实现词频统计。需要注意的是withCounterFields指定的字段必须是Long类型，不能是String类型。</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SimpleHBaseMapper mapper = <span class="keyword">new</span> <span class="type">SimpleHBaseMapper</span>() </span><br><span class="line">        .withRowKeyField(<span class="string">"word"</span>)</span><br><span class="line">        .withColumnFields(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"word"</span>))</span><br><span class="line">        .withCounterFields(<span class="keyword">new</span> <span class="type">Fields</span>(<span class="string">"count"</span>))</span><br><span class="line">        .withColumnFamily(<span class="string">"cf"</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://storm.apache.org/releases/2.0.0/storm-hdfs.html" target="_blank" rel="noopener">Apache HDFS Integration</a></li>
+<li><a href="http://storm.apache.org/releases/2.0.0/storm-hbase.html" target="_blank" rel="noopener">Apache HBase Integration</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100425.html" class="pre-post btn btn-default" title='Storm集成Kafka'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Storm集成Kafka</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100423.html" class="next-post btn btn-default" title='Storm集成Redis详解'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Storm集成Redis详解</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Storm集成HDFS"><span class="toc-text">一、Storm集成HDFS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-项目结构"><span class="toc-text">1.1 项目结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-项目主要依赖"><span class="toc-text">1.2 项目主要依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-DataSourceSpout"><span class="toc-text">1.3 DataSourceSpout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-将数据存储到HDFS"><span class="toc-text">1.4 将数据存储到HDFS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-启动测试"><span class="toc-text">1.5 启动测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Storm集成HBase"><span class="toc-text">二、Storm集成HBase</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-项目结构"><span class="toc-text">2.1 项目结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-项目主要依赖"><span class="toc-text">2.2 项目主要依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-DataSourceSpout"><span class="toc-text">2.3 DataSourceSpout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-SplitBolt"><span class="toc-text">2.4 SplitBolt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-CountBolt"><span class="toc-text">2.5 CountBolt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-WordCountToHBaseApp"><span class="toc-text">2.6 WordCountToHBaseApp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-启动测试"><span class="toc-text">2.7 启动测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-8-withCounterFields"><span class="toc-text">2.8 withCounterFields</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

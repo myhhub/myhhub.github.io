@@ -1,0 +1,785 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,sql,spark">
+
+
+    <meta name="description" content="一、简介1.1 多数据源支持Spark支持以下六个核心数据源，同时Spark社区还提供了多达上百种数据源的读取方式，能够满足绝大部分使用场景。
+
+CSV
+JSON
+Parquet
+ORC
+JDB...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark SQL外部数据源 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark SQL外部数据源">
+            
+	            Spark SQL外部数据源
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/sql/">sql</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1365</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><h3 id="1-1-多数据源支持"><a href="#1-1-多数据源支持" class="headerlink" title="1.1 多数据源支持"></a>1.1 多数据源支持</h3><p>Spark支持以下六个核心数据源，同时Spark社区还提供了多达上百种数据源的读取方式，能够满足绝大部分使用场景。</p>
+<ul>
+<li>CSV</li>
+<li>JSON</li>
+<li>Parquet</li>
+<li>ORC</li>
+<li>JDBC/ODBC connections</li>
+<li>Plain-text files</li>
+</ul>
+<blockquote>
+<p>注：以下所有测试文件均可从本仓库的<a href="https://github.com/myhhub/BigData-Notes/tree/master/resources" target="_blank" rel="noopener">resources</a>目录进行下载</p>
+</blockquote>
+<h3 id="1-2-读数据格式"><a href="#1-2-读数据格式" class="headerlink" title="1.2 读数据格式"></a>1.2 读数据格式</h3><p>所有读取API遵循以下调用格式：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 格式</span></span><br><span class="line"><span class="selector-tag">DataFrameReader</span><span class="selector-class">.format</span>(...)<span class="selector-class">.option</span>(<span class="string">"key"</span>, <span class="string">"value"</span>)<span class="selector-class">.schema</span>(...)<span class="selector-class">.load</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例</span></span><br><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.read</span><span class="selector-class">.format</span>(<span class="string">"csv"</span>)</span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"mode"</span>, <span class="string">"FAILFAST"</span>)          <span class="comment">// 读取模式</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"inferSchema"</span>, <span class="string">"true"</span>)       <span class="comment">// 是否自动推断schema</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"path"</span>, <span class="string">"path/to/file(s)"</span>)   <span class="comment">// 文件路径</span></span><br><span class="line"><span class="selector-class">.schema</span>(someSchema)                  <span class="comment">// 使用预定义的schema      </span></span><br><span class="line"><span class="selector-class">.load</span>()</span><br></pre></td></tr></table></figure>
+<p>读取模式有以下三种可选项：</p>
+<table>
+<thead>
+<tr>
+<th>读模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>permissive</code></td>
+<td>当遇到损坏的记录时，将其所有字段设置为null，并将所有损坏的记录放在名为_corruption t_record的字符串列中</td>
+</tr>
+<tr>
+<td><code>dropMalformed</code></td>
+<td>删除格式不正确的行</td>
+</tr>
+<tr>
+<td><code>failFast</code></td>
+<td>遇到格式不正确的数据时立即失败</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-写数据格式"><a href="#1-3-写数据格式" class="headerlink" title="1.3 写数据格式"></a>1.3 写数据格式</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 格式</span></span><br><span class="line"><span class="selector-tag">DataFrameWriter</span><span class="selector-class">.format</span>(...)<span class="selector-class">.option</span>(...)<span class="selector-class">.partitionBy</span>(...)<span class="selector-class">.bucketBy</span>(...)<span class="selector-class">.sortBy</span>(...)<span class="selector-class">.save</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">//示例</span></span><br><span class="line"><span class="selector-tag">dataframe</span><span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"csv"</span>)</span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"mode"</span>, <span class="string">"OVERWRITE"</span>)         <span class="comment">//写模式</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"dateFormat"</span>, <span class="string">"yyyy-MM-dd"</span>)  <span class="comment">//日期格式</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"path"</span>, <span class="string">"path/to/file(s)"</span>)</span><br><span class="line"><span class="selector-class">.save</span>()</span><br></pre></td></tr></table></figure>
+<p>写数据模式有以下四种可选项：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Scala/Java</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>SaveMode.ErrorIfExists</code></td>
+<td style="text-align:left">如果给定的路径已经存在文件，则抛出异常，这是写数据默认的模式</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>SaveMode.Append</code></td>
+<td style="text-align:left">数据以追加的方式写入</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>SaveMode.Overwrite</code></td>
+<td style="text-align:left">数据以覆盖的方式写入</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>SaveMode.Ignore</code></td>
+<td style="text-align:left">如果给定的路径已经存在文件，则不做任何操作</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<h2 id="二、CSV"><a href="#二、CSV" class="headerlink" title="二、CSV"></a>二、CSV</h2><p>CSV是一种常见的文本文件格式，其中每一行表示一条记录，记录中的每个字段用逗号分隔。</p>
+<h3 id="2-1-读取CSV文件"><a href="#2-1-读取CSV文件" class="headerlink" title="2.1 读取CSV文件"></a>2.1 读取CSV文件</h3><p>自动推断类型读取读取示例：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.read</span><span class="selector-class">.format</span>(<span class="string">"csv"</span>)</span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"header"</span>, <span class="string">"false"</span>)        <span class="comment">// 文件中的第一行是否为列的名称</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"mode"</span>, <span class="string">"FAILFAST"</span>)      <span class="comment">// 是否快速失败</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"inferSchema"</span>, <span class="string">"true"</span>)   <span class="comment">// 是否自动推断schema</span></span><br><span class="line"><span class="selector-class">.load</span>(<span class="string">"/usr/file/csv/dept.csv"</span>)</span><br><span class="line"><span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<p>使用预定义类型：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import org<span class="selector-class">.apache</span><span class="selector-class">.spark</span><span class="selector-class">.sql</span><span class="selector-class">.types</span>.&#123;StructField, StructType, StringType,LongType&#125;</span><br><span class="line"><span class="comment">//预定义数据格式</span></span><br><span class="line">val myManualSchema = new StructType(Array(</span><br><span class="line">    StructField(<span class="string">"deptno"</span>, LongType, nullable = false),</span><br><span class="line">    StructField(<span class="string">"dname"</span>, StringType,nullable = true),</span><br><span class="line">    StructField(<span class="string">"loc"</span>, StringType,nullable = true)</span><br><span class="line">))</span><br><span class="line">spark<span class="selector-class">.read</span><span class="selector-class">.format</span>(<span class="string">"csv"</span>)</span><br><span class="line">.option(<span class="string">"mode"</span>, <span class="string">"FAILFAST"</span>)</span><br><span class="line">.schema(myManualSchema)</span><br><span class="line">.load(<span class="string">"/usr/file/csv/dept.csv"</span>)</span><br><span class="line">.show()</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-写入CSV文件"><a href="#2-2-写入CSV文件" class="headerlink" title="2.2 写入CSV文件"></a>2.2 写入CSV文件</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">df</span><span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"csv"</span>)<span class="selector-class">.mode</span>(<span class="string">"overwrite"</span>)<span class="selector-class">.save</span>(<span class="string">"/tmp/csv/dept2"</span>)</span><br></pre></td></tr></table></figure>
+<p>也可以指定具体的分隔符：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">df</span><span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"csv"</span>)<span class="selector-class">.mode</span>(<span class="string">"overwrite"</span>)<span class="selector-class">.option</span>(<span class="string">"sep"</span>, <span class="string">"\t"</span>)<span class="selector-class">.save</span>(<span class="string">"/tmp/csv/dept2"</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-可选配置"><a href="#2-3-可选配置" class="headerlink" title="2.3 可选配置"></a>2.3 可选配置</h3><p>为节省主文篇幅，所有读写配置项见文末9.1小节。</p>
+<p><br></p>
+<h2 id="三、JSON"><a href="#三、JSON" class="headerlink" title="三、JSON"></a>三、JSON</h2><h3 id="3-1-读取JSON文件"><a href="#3-1-读取JSON文件" class="headerlink" title="3.1 读取JSON文件"></a>3.1 读取JSON文件</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.read</span><span class="selector-class">.format</span>(<span class="string">"json"</span>)<span class="selector-class">.option</span>(<span class="string">"mode"</span>, <span class="string">"FAILFAST"</span>)<span class="selector-class">.load</span>(<span class="string">"/usr/file/json/dept.json"</span>)<span class="selector-class">.show</span>(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<p>需要注意的是：默认不支持一条数据记录跨越多行(如下)，可以通过配置<code>multiLine</code>为<code>true</code>来进行更改，其默认值为<code>false</code>。</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认支持单行</span></span><br><span class="line">&#123;<span class="string">"DEPTNO"</span>: <span class="number">10</span>,<span class="string">"DNAME"</span>: <span class="string">"ACCOUNTING"</span>,<span class="string">"LOC"</span>: <span class="string">"NEW YORK"</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//默认不支持多行</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"DEPTNO"</span>: <span class="number">10</span>,</span><br><span class="line">  <span class="string">"DNAME"</span>: <span class="string">"ACCOUNTING"</span>,</span><br><span class="line">  <span class="string">"LOC"</span>: <span class="string">"NEW YORK"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-写入JSON文件"><a href="#3-2-写入JSON文件" class="headerlink" title="3.2 写入JSON文件"></a>3.2 写入JSON文件</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">df</span><span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"json"</span>)<span class="selector-class">.mode</span>(<span class="string">"overwrite"</span>)<span class="selector-class">.save</span>(<span class="string">"/tmp/spark/json/dept"</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-可选配置"><a href="#3-3-可选配置" class="headerlink" title="3.3 可选配置"></a>3.3 可选配置</h3><p>为节省主文篇幅，所有读写配置项见文末9.2小节。</p>
+<p><br></p>
+<h2 id="四、Parquet"><a href="#四、Parquet" class="headerlink" title="四、Parquet"></a>四、Parquet</h2><p> Parquet是一个开源的面向列的数据存储，它提供了多种存储优化，允许读取单独的列非整个文件，这不仅节省了存储空间而且提升了读取效率，它是Spark是默认的文件格式。</p>
+<h3 id="4-1-读取Parquet文件"><a href="#4-1-读取Parquet文件" class="headerlink" title="4.1 读取Parquet文件"></a>4.1 读取Parquet文件</h3><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark.read.<span class="keyword">format</span>(<span class="string">"parquet"</span>).<span class="keyword">load</span>(<span class="string">"/usr/file/parquet/dept.parquet"</span>).<span class="keyword">show</span>(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-写入Parquet文件"><a href="#2-2-写入Parquet文件" class="headerlink" title="2.2 写入Parquet文件"></a>2.2 写入Parquet文件</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">df</span><span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"parquet"</span>)<span class="selector-class">.mode</span>(<span class="string">"overwrite"</span>)<span class="selector-class">.save</span>(<span class="string">"/tmp/spark/parquet/dept"</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-可选配置-1"><a href="#2-3-可选配置-1" class="headerlink" title="2.3 可选配置"></a>2.3 可选配置</h3><p>Parquet文件有着自己的存储规则，因此其可选配置项比较少，常用的有如下两个：</p>
+<table>
+<thead>
+<tr>
+<th>读写操作</th>
+<th>配置项</th>
+<th>可选值</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Write</td>
+<td>compression or codec</td>
+<td>None,<br>uncompressed,<br>bzip2,<br>deflate, gzip,<br>lz4, or snappy</td>
+<td>None</td>
+<td>压缩文件格式</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>mergeSchema</td>
+<td>true, false</td>
+<td>取决于配置项<code>spark.sql.parquet.mergeSchema</code></td>
+<td>当为真时，Parquet数据源将所有数据文件收集的Schema合并在一起，否则将从摘要文件中选择Schema，如果没有可用的摘要文件，则从随机数据文件中选择Schema。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>更多可选配置可以参阅官方文档：<a href="https://spark.apache.org/docs/latest/sql-data-sources-parquet.html" target="_blank" rel="noopener">https://spark.apache.org/docs/latest/sql-data-sources-parquet.html</a></p>
+</blockquote>
+<p><br></p>
+<h2 id="五、ORC"><a href="#五、ORC" class="headerlink" title="五、ORC"></a>五、ORC</h2><p>ORC是一种自描述的、类型感知的列文件格式，它针对大型数据的读写进行了优化，也是大数据中常用的文件格式。</p>
+<h3 id="5-1-读取ORC文件"><a href="#5-1-读取ORC文件" class="headerlink" title="5.1 读取ORC文件"></a>5.1 读取ORC文件</h3><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark.read.<span class="keyword">format</span>(<span class="string">"orc"</span>).<span class="keyword">load</span>(<span class="string">"/usr/file/orc/dept.orc"</span>).<span class="keyword">show</span>(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-写入ORC文件"><a href="#4-2-写入ORC文件" class="headerlink" title="4.2 写入ORC文件"></a>4.2 写入ORC文件</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">csvFile</span><span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"orc"</span>)<span class="selector-class">.mode</span>(<span class="string">"overwrite"</span>)<span class="selector-class">.save</span>(<span class="string">"/tmp/spark/orc/dept"</span>)</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h2 id="六、SQL-Databases"><a href="#六、SQL-Databases" class="headerlink" title="六、SQL Databases"></a>六、SQL Databases</h2><p>Spark同样支持与传统的关系型数据库进行数据读写。但是Spark程序默认是没有提供数据库驱动的，所以在使用前需要将对应的数据库驱动上传到安装目录下的<code>jars</code>目录中。下面示例使用的是Mysql数据库，使用前需要将对应的<code>mysql-connector-java-x.x.x.jar</code>上传到<code>jars</code>目录下。</p>
+<h3 id="6-1-读取数据"><a href="#6-1-读取数据" class="headerlink" title="6.1 读取数据"></a>6.1 读取数据</h3><p>读取全表数据示例如下，这里的<code>help_keyword</code>是mysql内置的字典表，只有<code>help_keyword_id</code>和<code>name</code>两个字段。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">spark</span><span class="selector-class">.read</span></span><br><span class="line"><span class="selector-class">.format</span>(<span class="string">"jdbc"</span>)</span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"driver"</span>, <span class="string">"com.mysql.jdbc.Driver"</span>)            <span class="comment">//驱动</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"url"</span>, <span class="string">"jdbc:mysql://127.0.0.1:3306/mysql"</span>)   <span class="comment">//数据库地址</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"dbtable"</span>, <span class="string">"help_keyword"</span>)                    <span class="comment">//表名</span></span><br><span class="line"><span class="selector-class">.option</span>(<span class="string">"user"</span>, <span class="string">"root"</span>)<span class="selector-class">.option</span>(<span class="string">"password"</span>,<span class="string">"root"</span>)<span class="selector-class">.load</span>()<span class="selector-class">.show</span>(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p>从查询结果读取数据：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">val pushDownQuery = <span class="string">"""(SELECT * FROM help_keyword WHERE help_keyword_id &lt;20) AS help_keywords"""</span></span><br><span class="line">spark.read.format(<span class="string">"jdbc"</span>)</span><br><span class="line">.option(<span class="string">"url"</span>, <span class="string">"jdbc:mysql://127.0.0.1:3306/mysql"</span>)</span><br><span class="line">.option(<span class="string">"driver"</span>, <span class="string">"com.mysql.jdbc.Driver"</span>)</span><br><span class="line">.option(<span class="string">"user"</span>, <span class="string">"root"</span>).option(<span class="string">"password"</span>, <span class="string">"root"</span>)</span><br><span class="line">.option(<span class="string">"dbtable"</span>, pushDownQuery)</span><br><span class="line">.load().show()</span><br><span class="line"></span><br><span class="line">//输出</span><br><span class="line">+---------------+-----------+</span><br><span class="line">|<span class="string">help_keyword_id</span>|<span class="string">       name</span>|</span><br><span class="line">+---------------+-----------+</span><br><span class="line">|<span class="string">              0</span>|<span class="string">         &lt;&gt;</span>|</span><br><span class="line">|<span class="string">              1</span>|<span class="string">     ACTION</span>|</span><br><span class="line">|<span class="string">              2</span>|<span class="string">        ADD</span>|</span><br><span class="line">|<span class="string">              3</span>|<span class="string">AES_DECRYPT</span>|</span><br><span class="line">|<span class="string">              4</span>|<span class="string">AES_ENCRYPT</span>|</span><br><span class="line">|<span class="string">              5</span>|<span class="string">      AFTER</span>|</span><br><span class="line">|<span class="string">              6</span>|<span class="string">    AGAINST</span>|</span><br><span class="line">|<span class="string">              7</span>|<span class="string">  AGGREGATE</span>|</span><br><span class="line">|<span class="string">              8</span>|<span class="string">  ALGORITHM</span>|</span><br><span class="line">|<span class="string">              9</span>|<span class="string">        ALL</span>|</span><br><span class="line">|<span class="string">             10</span>|<span class="string">      ALTER</span>|</span><br><span class="line">|<span class="string">             11</span>|<span class="string">    ANALYSE</span>|</span><br><span class="line">|<span class="string">             12</span>|<span class="string">    ANALYZE</span>|</span><br><span class="line">|<span class="string">             13</span>|<span class="string">        AND</span>|</span><br><span class="line">|<span class="string">             14</span>|<span class="string">    ARCHIVE</span>|</span><br><span class="line">|<span class="string">             15</span>|<span class="string">       AREA</span>|</span><br><span class="line">|<span class="string">             16</span>|<span class="string">         AS</span>|</span><br><span class="line">|<span class="string">             17</span>|<span class="string">   ASBINARY</span>|</span><br><span class="line">|<span class="string">             18</span>|<span class="string">        ASC</span>|</span><br><span class="line">|<span class="string">             19</span>|<span class="string">     ASTEXT</span>|</span><br><span class="line">+---------------+-----------+</span><br></pre></td></tr></table></figure>
+<p>也可以使用如下的写法进行数据的过滤：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">val props = new java.util.Properties</span><br><span class="line">props.setProperty(<span class="string">"driver"</span>, <span class="string">"com.mysql.jdbc.Driver"</span>)</span><br><span class="line">props.setProperty(<span class="string">"user"</span>, <span class="string">"root"</span>)</span><br><span class="line">props.setProperty(<span class="string">"password"</span>, <span class="string">"root"</span>)</span><br><span class="line">val predicates = Array(<span class="string">"help_keyword_id &lt; 10  OR name = 'WHEN'"</span>)   //指定数据过滤条件</span><br><span class="line">spark.read.jdbc(<span class="string">"jdbc:mysql://127.0.0.1:3306/mysql"</span>, <span class="string">"help_keyword"</span>, predicates, props).show() </span><br><span class="line"></span><br><span class="line">//输出：</span><br><span class="line">+---------------+-----------+</span><br><span class="line">|<span class="string">help_keyword_id</span>|<span class="string">       name</span>|</span><br><span class="line">+---------------+-----------+</span><br><span class="line">|<span class="string">              0</span>|<span class="string">         &lt;&gt;</span>|</span><br><span class="line">|<span class="string">              1</span>|<span class="string">     ACTION</span>|</span><br><span class="line">|<span class="string">              2</span>|<span class="string">        ADD</span>|</span><br><span class="line">|<span class="string">              3</span>|<span class="string">AES_DECRYPT</span>|</span><br><span class="line">|<span class="string">              4</span>|<span class="string">AES_ENCRYPT</span>|</span><br><span class="line">|<span class="string">              5</span>|<span class="string">      AFTER</span>|</span><br><span class="line">|<span class="string">              6</span>|<span class="string">    AGAINST</span>|</span><br><span class="line">|<span class="string">              7</span>|<span class="string">  AGGREGATE</span>|</span><br><span class="line">|<span class="string">              8</span>|<span class="string">  ALGORITHM</span>|</span><br><span class="line">|<span class="string">              9</span>|<span class="string">        ALL</span>|</span><br><span class="line">|<span class="string">            604</span>|<span class="string">       WHEN</span>|</span><br><span class="line">+---------------+-----------+</span><br></pre></td></tr></table></figure>
+<p>可以使用<code>numPartitions</code>指定读取数据的并行度：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">option</span><span class="params">(<span class="string">"numPartitions"</span>, <span class="number">10</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>在这里，除了可以指定分区外，还可以设置上界和下界，任何小于下界的值都会被分配在第一个分区中，任何大于上界的值都会被分配在最后一个分区中。</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> colName = <span class="string">"help_keyword_id"</span>   <span class="comment">//用于判断上下界的列</span></span><br><span class="line"><span class="keyword">val</span> lowerBound = <span class="number">300</span>L    <span class="comment">//下界</span></span><br><span class="line"><span class="keyword">val</span> upperBound = <span class="number">500</span>L    <span class="comment">//上界</span></span><br><span class="line"><span class="keyword">val</span> numPartitions = <span class="number">10</span>   <span class="comment">//分区综述</span></span><br><span class="line"><span class="keyword">val</span> jdbcDf = spark.read.jdbc(<span class="string">"jdbc:mysql://127.0.0.1:3306/mysql"</span>,<span class="string">"help_keyword"</span>,</span><br><span class="line">                             colName,lowerBound,upperBound,numPartitions,props)</span><br></pre></td></tr></table></figure>
+<p>想要验证分区内容，可以使用<code>mapPartitionsWithIndex</code>这个算子，代码如下：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">jdbcDf.rdd.mapPartitionsWithIndex((<span class="built_in">index</span>, iterator) =&gt; &#123;</span><br><span class="line">    val <span class="keyword">buffer</span> = <span class="keyword">new</span> ListBuffer[String]</span><br><span class="line">    <span class="keyword">while</span> (iterator.hasNext) &#123;</span><br><span class="line">        <span class="keyword">buffer</span>.<span class="keyword">append</span>(<span class="built_in">index</span> + <span class="string">"分区:"</span> + iterator.<span class="keyword">next</span>())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">buffer</span>.toIterator</span><br><span class="line">&#125;).foreach(println)</span><br></pre></td></tr></table></figure>
+<p>执行结果如下：<code>help_keyword</code>这张表只有600条左右的数据，本来数据应该均匀分布在10个分区，但是0分区里面却有319条数据，这是因为设置了下限，所有小于300的数据都会被限制在第一个分区，即0分区。同理所有大于500的数据被分配在9分区，即最后一个分区。</p>
+<div align="center"> <img src="/img/bigdata/spark-mysql-fq.png"> </div>
+
+<h3 id="6-2-写入数据"><a href="#6-2-写入数据" class="headerlink" title="6.2 写入数据"></a>6.2 写入数据</h3><figure class="highlight rsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">val df = spark.read.<span class="built_in">format</span>(<span class="string">"json"</span>).load(<span class="string">"/usr/file/json/emp.json"</span>)</span><br><span class="line">df.write</span><br><span class="line">.<span class="built_in">format</span>(<span class="string">"jdbc"</span>)</span><br><span class="line">.<span class="built_in">option</span>(<span class="string">"url"</span>, <span class="string">"jdbc:mysql://127.0.0.1:3306/mysql"</span>)</span><br><span class="line">.<span class="built_in">option</span>(<span class="string">"user"</span>, <span class="string">"root"</span>).<span class="built_in">option</span>(<span class="string">"password"</span>, <span class="string">"root"</span>)</span><br><span class="line">.<span class="built_in">option</span>(<span class="string">"dbtable"</span>, <span class="string">"emp"</span>)</span><br><span class="line">.save()</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h2 id="七、Text"><a href="#七、Text" class="headerlink" title="七、Text"></a>七、Text</h2><p>Text文件在读写性能方面并没有任何优势，且不能表达明确的数据结构，所以其使用的比较少，读写操作如下：</p>
+<h3 id="7-1-读取Text数据"><a href="#7-1-读取Text数据" class="headerlink" title="7.1 读取Text数据"></a>7.1 读取Text数据</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark<span class="selector-class">.read</span><span class="selector-class">.textFile</span>(<span class="string">"/usr/file/txt/dept.txt"</span>).show()</span><br></pre></td></tr></table></figure>
+<h3 id="7-2-写入Text数据"><a href="#7-2-写入Text数据" class="headerlink" title="7.2 写入Text数据"></a>7.2 写入Text数据</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df<span class="selector-class">.write</span><span class="selector-class">.text</span>(<span class="string">"/tmp/spark/txt/dept"</span>)</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h2 id="八、数据读写高级特性"><a href="#八、数据读写高级特性" class="headerlink" title="八、数据读写高级特性"></a>八、数据读写高级特性</h2><h3 id="8-1-并行读"><a href="#8-1-并行读" class="headerlink" title="8.1 并行读"></a>8.1 并行读</h3><p>多个Executors不能同时读取同一个文件，但它们可以同时读取不同的文件。这意味着当您从一个包含多个文件的文件夹中读取数据时，这些文件中的每一个都将成为DataFrame中的一个分区，并由可用的Executors并行读取。</p>
+<h3 id="8-2-并行写"><a href="#8-2-并行写" class="headerlink" title="8.2 并行写"></a>8.2 并行写</h3><p>写入的文件或数据的数量取决于写入数据时DataFrame拥有的分区数量。默认情况下，每个数据分区写一个文件。</p>
+<h3 id="8-3-分区写入"><a href="#8-3-分区写入" class="headerlink" title="8.3 分区写入"></a>8.3 分区写入</h3><p>分区和分桶这两个概念和Hive中分区表和分桶表是一致的。都是将数据按照一定规则进行拆分存储。需要注意的是<code>partitionBy</code>指定的分区和RDD中分区不是一个概念：这里的<strong>分区表现为输出目录的子目录</strong>，数据分别存储在对应的子目录中。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val df = spark<span class="selector-class">.read</span><span class="selector-class">.format</span>(<span class="string">"json"</span>).load(<span class="string">"/usr/file/json/emp.json"</span>)</span><br><span class="line">df<span class="selector-class">.write</span><span class="selector-class">.mode</span>(<span class="string">"overwrite"</span>).partitionBy(<span class="string">"deptno"</span>).save(<span class="string">"/tmp/spark/partitions"</span>)</span><br></pre></td></tr></table></figure>
+<p>输出结果如下：可以看到输出被按照部门编号分为三个子目录，子目录中才是对应的输出文件。</p>
+<div align="center"> <img src="/img/bigdata/spark-fq.png"> </div>
+
+<h3 id="8-3-分桶写入"><a href="#8-3-分桶写入" class="headerlink" title="8.3 分桶写入"></a>8.3 分桶写入</h3><p>分桶写入就是将数据按照指定的列和桶数进行散列，目前分桶写入只支持保存为表，实际上这就是Hive的分桶表。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val numberBuckets = <span class="number">10</span></span><br><span class="line">val columnToBucketBy = <span class="string">"empno"</span></span><br><span class="line">df<span class="selector-class">.write</span><span class="selector-class">.format</span>(<span class="string">"parquet"</span>).mode(<span class="string">"overwrite"</span>)</span><br><span class="line">.bucketBy(numberBuckets, columnToBucketBy).saveAsTable(<span class="string">"bucketedFiles"</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="8-5-文件大小管理"><a href="#8-5-文件大小管理" class="headerlink" title="8.5 文件大小管理"></a>8.5 文件大小管理</h3><p>如果写入产生小文件数量过多，这时会产生大量的元数据开销。Spark和HDFS一样，都不能很好的处理这个问题，这被称为“small file problem”。同时数据文件也不能过大，否则在查询时会有不必要的性能开销，因此要把文件大小控制在一个合理的范围内。</p>
+<p>在上文我们已经介绍过可以通过分区数量来控制生成文件的数量，从而间接控制文件大小。Spark 2.2引入了一种新的方法，以更自动化的方式控制文件大小，这就是<code>maxRecordsPerFile</code>参数，它允许你通过控制写入文件的记录数来控制文件大小。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// Spark将确保文件最多包含5000条记录</span></span><br><span class="line">df<span class="selector-class">.write</span><span class="selector-class">.option</span>(“maxRecordsPerFile”, <span class="number">5000</span>)</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h2 id="九、可选配置附录"><a href="#九、可选配置附录" class="headerlink" title="九、可选配置附录"></a>九、可选配置附录</h2><h3 id="9-1-CSV读写可选配置"><a href="#9-1-CSV读写可选配置" class="headerlink" title="9.1 CSV读写可选配置"></a>9.1 CSV读写可选配置</h3><table>
+<thead>
+<tr>
+<th>读\写操作</th>
+<th>配置项</th>
+<th>可选值</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Both</td>
+<td>seq</td>
+<td>任意字符</td>
+<td><code>,</code>(逗号)</td>
+<td>分隔符</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>header</td>
+<td>true, false</td>
+<td>false</td>
+<td>文件中的第一行是否为列的名称。</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>escape</td>
+<td>任意字符</td>
+<td>\</td>
+<td>转义字符</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>inferSchema</td>
+<td>true, false</td>
+<td>false</td>
+<td>是否自动推断列类型</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>ignoreLeadingWhiteSpace</td>
+<td>true, false</td>
+<td>false</td>
+<td>是否跳过值前面的空格</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>ignoreTrailingWhiteSpace</td>
+<td>true, false</td>
+<td>false</td>
+<td>是否跳过值后面的空格</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>nullValue</td>
+<td>任意字符</td>
+<td>“”</td>
+<td>声明文件中哪个字符表示空值</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>nanValue</td>
+<td>任意字符</td>
+<td>NaN</td>
+<td>声明哪个值表示NaN或者缺省值</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>positiveInf</td>
+<td>任意字符</td>
+<td>Inf</td>
+<td>正无穷</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>negativeInf</td>
+<td>任意字符</td>
+<td>-Inf</td>
+<td>负无穷</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>compression or codec</td>
+<td>None,<br>uncompressed,<br>bzip2, deflate,<br>gzip, lz4, or<br>snappy</td>
+<td>none</td>
+<td>文件压缩格式</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>dateFormat</td>
+<td>任何能转换为 Java的 <br>SimpleDataFormat的字符串</td>
+<td>yyyy-MM-dd</td>
+<td>日期格式</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>timestampFormat</td>
+<td>任何能转换为 Java的 <br>SimpleDataFormat的字符串</td>
+<td>yyyy-MMdd’T’HH:mm:ss.SSSZZ</td>
+<td>时间戳格式</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>maxColumns</td>
+<td>任意整数</td>
+<td>20480</td>
+<td>声明文件中的最大列数</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>maxCharsPerColumn</td>
+<td>任意整数</td>
+<td>1000000</td>
+<td>声明一个列中的最大字符数。</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>escapeQuotes</td>
+<td>true, false</td>
+<td>true</td>
+<td>是否应该转义行中的引号。</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>maxMalformedLogPerPartition</td>
+<td>任意整数</td>
+<td>10</td>
+<td>声明每个分区中最多允许多少条格式错误的数据，超过这个值后格式错误的数据将不会被读取</td>
+</tr>
+<tr>
+<td>Write</td>
+<td>quoteAll</td>
+<td>true, false</td>
+<td>false</td>
+<td>指定是否应该将所有值都括在引号中，而不只是转义具有引号字符的值。</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>multiLine</td>
+<td>true, false</td>
+<td>false</td>
+<td>是否允许每条完整记录跨域多行</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-2-JSON读写可选配置"><a href="#9-2-JSON读写可选配置" class="headerlink" title="9.2 JSON读写可选配置"></a>9.2 JSON读写可选配置</h3><table>
+<thead>
+<tr>
+<th>读\写操作</th>
+<th>配置项</th>
+<th>可选值</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Both</td>
+<td>compression or codec</td>
+<td>None,<br>uncompressed,<br>bzip2, deflate,<br>gzip, lz4, or<br>snappy</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>dateFormat</td>
+<td>任何能转换为 Java的 SimpleDataFormat的字符串</td>
+<td>yyyy-MM-dd</td>
+</tr>
+<tr>
+<td>Both</td>
+<td>timestampFormat</td>
+<td>任何能转换为 Java的 SimpleDataFormat的字符串</td>
+<td>yyyy-MMdd’T’HH:mm:ss.SSSZZ</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>primitiveAsString</td>
+<td>true, false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>allowComments</td>
+<td>true, false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>allowUnquotedFieldNames</td>
+<td>true, false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>allowSingleQuotes</td>
+<td>true, false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>allowNumericLeadingZeros</td>
+<td>true, false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>allowBackslashEscapingAnyCharacter</td>
+<td>true, false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>columnNameOfCorruptRecord</td>
+<td>true, false</td>
+<td>Value of spark.sql.column&amp;NameOf</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>multiLine</td>
+<td>true, false</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-3-数据库读写可选配置"><a href="#9-3-数据库读写可选配置" class="headerlink" title="9.3 数据库读写可选配置"></a>9.3 数据库读写可选配置</h3><table>
+<thead>
+<tr>
+<th>属性名称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>url</td>
+<td>数据库地址</td>
+</tr>
+<tr>
+<td>dbtable</td>
+<td>表名称</td>
+</tr>
+<tr>
+<td>driver</td>
+<td>数据库驱动</td>
+</tr>
+<tr>
+<td>partitionColumn,<br>lowerBound, upperBoun</td>
+<td>分区总数，上界，下界</td>
+</tr>
+<tr>
+<td>numPartitions</td>
+<td>可用于表读写并行性的最大分区数。如果要写的分区数量超过这个限制，那么可以调用coalesce(numpartition)重置分区数。</td>
+</tr>
+<tr>
+<td>fetchsize</td>
+<td>每次往返要获取多少行数据。此选项仅适用于读取数据。</td>
+</tr>
+<tr>
+<td>batchsize</td>
+<td>每次往返插入多少行数据，这个选项只适用于写入数据。默认值是1000。</td>
+</tr>
+<tr>
+<td>isolationLevel</td>
+<td>事务隔离级别：可以是NONE，READ_COMMITTED, READ_UNCOMMITTED，REPEATABLE_READ或SERIALIZABLE，即标准事务隔离级别。<br>默认值是READ_UNCOMMITTED。这个选项只适用于数据读取。</td>
+</tr>
+<tr>
+<td>createTableOptions</td>
+<td>写入数据时自定义创建表的相关配置</td>
+</tr>
+<tr>
+<td>createTableColumnTypes</td>
+<td>写入数据时自定义创建列的列类型</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>数据库读写更多配置可以参阅官方文档：<a href="https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html" target="_blank" rel="noopener">https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html</a></p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Matei Zaharia, Bill Chambers . Spark: The Definitive Guide[M] . 2018-02 </li>
+<li><a href="https://spark.apache.org/docs/latest/sql-data-sources.html" target="_blank" rel="noopener">https://spark.apache.org/docs/latest/sql-data-sources.html</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100409.html" class="pre-post btn btn-default" title='Spark聚合函数Aggregations'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark聚合函数Aggregations</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100407.html" class="next-post btn btn-default" title='Spark Structured API基本使用'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark Structured API基本使用</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、简介"><span class="toc-text">一、简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-多数据源支持"><span class="toc-text">1.1 多数据源支持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-读数据格式"><span class="toc-text">1.2 读数据格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-写数据格式"><span class="toc-text">1.3 写数据格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、CSV"><span class="toc-text">二、CSV</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-读取CSV文件"><span class="toc-text">2.1 读取CSV文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-写入CSV文件"><span class="toc-text">2.2 写入CSV文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-可选配置"><span class="toc-text">2.3 可选配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、JSON"><span class="toc-text">三、JSON</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-读取JSON文件"><span class="toc-text">3.1 读取JSON文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-写入JSON文件"><span class="toc-text">3.2 写入JSON文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-可选配置"><span class="toc-text">3.3 可选配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、Parquet"><span class="toc-text">四、Parquet</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-读取Parquet文件"><span class="toc-text">4.1 读取Parquet文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-写入Parquet文件"><span class="toc-text">2.2 写入Parquet文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-可选配置-1"><span class="toc-text">2.3 可选配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、ORC"><span class="toc-text">五、ORC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-读取ORC文件"><span class="toc-text">5.1 读取ORC文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-写入ORC文件"><span class="toc-text">4.2 写入ORC文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、SQL-Databases"><span class="toc-text">六、SQL Databases</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-读取数据"><span class="toc-text">6.1 读取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-写入数据"><span class="toc-text">6.2 写入数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七、Text"><span class="toc-text">七、Text</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-读取Text数据"><span class="toc-text">7.1 读取Text数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-写入Text数据"><span class="toc-text">7.2 写入Text数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#八、数据读写高级特性"><span class="toc-text">八、数据读写高级特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-并行读"><span class="toc-text">8.1 并行读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-并行写"><span class="toc-text">8.2 并行写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-分区写入"><span class="toc-text">8.3 分区写入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-分桶写入"><span class="toc-text">8.3 分桶写入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-文件大小管理"><span class="toc-text">8.5 文件大小管理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#九、可选配置附录"><span class="toc-text">九、可选配置附录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-CSV读写可选配置"><span class="toc-text">9.1 CSV读写可选配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-JSON读写可选配置"><span class="toc-text">9.2 JSON读写可选配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-数据库读写可选配置"><span class="toc-text">9.3 数据库读写可选配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

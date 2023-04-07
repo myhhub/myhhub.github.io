@@ -1,0 +1,420 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="vb6,wktvbdebugger">
+
+
+    <meta name="description" content="解读由于Microsoft没有公开VB P-code伪代码的技术文档，我们无法获得现成的伪代码指令说明，而单凭VB P-code反编译器给出的助记符信息是远远不够的，这就要求我们自行发掘伪代码执...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>VB6 P-code伪代码的解读 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="VB6 P-code伪代码的解读">
+            
+	            VB6 P-code伪代码的解读
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/vb6/">vb6</a> <a class="tag-link" href="/tags/wktvbdebugger/">wktvbdebugger</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/10/27</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1622</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="解读"><a href="#解读" class="headerlink" title="解读"></a>解读</h2><p>由于Microsoft没有公开VB P-code伪代码的技术文档，我们无法获得现成的伪代码指令说明，而单凭VB P-code反编译器给出的助记符信息是远远不够的，这就要求我们自行发掘伪代码执行的奥秘。</p>
+<p>可能有些朋友还不太明白，既然WKTVBDebugger作为一个伪代码级的调试器已经屏蔽了VB P-code虚拟机的解释过程，为什么还费神要去了解这些伪指令执行的细节呢？这里我请大家思考一个问题：假设你现在用WKTVBDebugger跟踪AddVar这句伪指令，你如何知道它的操作数和操作结果分别是多少？也许有人说，既然VB P-code虚拟机是基于堆栈的，那么操作数和操作结果一定存放在堆栈里了。不错，这些内容确实存在于堆栈中，但是你知道它的存放形式吗？是单个的操作数，是指针，还是其他复杂的数据结构？我敢说，如果你是第一次调试这句VB P-code指令，它一定会令你不知所措，即使你能最终解决这个问题，也一定会花上不少时间，结果也会令你觉得不可思议。此外，对于不同的P-code伪指令，其存放形式是各不相同的。如果你在调试一个软件时，不能看到每句指令的操作数和操作结果，那与静态反编译何异之有？WKTVBDebugger的调试功能还不是形同虚设？当然，这只是其中的一个方面。如果你连伪指令的抽象动作都不明白（毕竟不是所有的伪指令都能从其助记符看出其含义的），那又该如何呢？正如我前面所言，要理解这些伪指令的执行细节，是要费一番功夫的。</p>
+<p> 既然如此，我们应当如何解决这些问题呢？答案将由黄金组合OllyDBG＋WKTVBDebugger＋VBParser来揭晓。为了方便，这次使用的例子程序还是上两篇使用的VB P-code.exe，我们将通过跟踪虚拟机的解释过程来研究P-code伪代码的执行细节。</p>
+<p>首先使用ljtt的VBParser（非常专业的VB P-code反编译器）解析VB P-code.exe，得到伪代码如下：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">FileName: D:\Contribution\VB P-code\VB P-code--伪代码的奥秘\VB P-code.exe</span><br><span class="line"> </span><br><span class="line">-----=====-----=====-----=====--Pcode--=====-----=====-----=====-----</span><br><span class="line"> </span><br><span class="line">[CommandButton]</span><br><span class="line">Private Sub Command1_Click()</span><br><span class="line">'-=-=-=-=-=-=-= ProcAddr Range: [<span class="number">004019</span>C4 - <span class="number">0040</span>1A54] , ProcSize: 90 =-=-=-=-=-=-=-</span><br><span class="line"><span class="number">004019</span>C4: 27 9C FE           LitVar_Missing          PushVarError <span class="number">80020004</span> (missing)                                                   <span class="number">004019</span>C7: 27 BC FE           LitVar_Missing          PushVarError <span class="number">80020004</span> (missing)                                                   <span class="number">004019</span>CA: 27 DC FE           LitVar_Missing          PushVarError <span class="number">80020004</span> (missing)                                                  </span><br><span class="line"><span class="number">004019</span>CD: 27 FC FE           LitVar_Missing          PushVarError <span class="number">80020004</span> (missing)                                                  </span><br><span class="line"><span class="number">004019</span>D0: 27 1C FF           LitVar_Missing          PushVarError <span class="number">80020004</span> (missing)                                                  </span><br><span class="line"> </span><br><span class="line">*********** Referent String: "Input" ***********</span><br><span class="line">                              |</span><br><span class="line"><span class="number">004019</span>D3: 3A 4C FF 00 00     LitVarStr               PushVarString Ptr_<span class="number">00401434</span></span><br><span class="line"><span class="number">004019</span>D8: 4E 3C FF           FStVarCopyObj           [local_C4]=vbaVarDup(Pop)</span><br><span class="line"><span class="number">004019</span>DB: 04 3C FF           FLdRfVar                Push local_C4</span><br><span class="line"> </span><br><span class="line">*********** Referent String: "Please input an integer" ***********</span><br><span class="line">                              |</span><br><span class="line"><span class="number">004019</span>DE: 3A 6C FF 01 00     LitVarStr               PushVarString Ptr_<span class="number">00401400</span></span><br><span class="line"><span class="number">004019</span>E3: 4E 5C FF           FStVarCopyObj           [local_A4]=vbaVarDup(Pop)</span><br><span class="line"><span class="number">004019</span>E6: 04 5C FF           FLdRfVar                Push local_A4</span><br><span class="line"><span class="number">004019</span>E9: 0B 02 00 1C 00     ImpAdCallI2             Call Ptr_<span class="number">00401020</span>; check stack 001C; Push EAX</span><br><span class="line"><span class="number">004019</span>EE: 46 7C FE           CVarStr                </span><br><span class="line"><span class="number">004019</span>F1: FC F6 8C FE        FStVar                 </span><br><span class="line"> </span><br><span class="line">（……省略）</span><br></pre></td></tr></table></figure>
+<p>以上就是Command_Click事件响应代码的开头部分，是不是一下子觉得有些手足无措？没关系，我们一句一句来调试。如果你还记得我在第一篇中所描述的VB P-code虚拟机运行机制，那么你应该能想到下一步该怎么做。VB P-code虚拟机以流的形式顺序读入每一句伪指令，然后通过一个跳转地址表找到相应的解释代码，我们要跟踪它解释伪指令的细节，就必须在伪指令的操作码上下内存访问断点。现在我们看到第一句伪指令LitVar_Missing从004019C4（虚拟地址）开始，那么用OllyDBG加载VB P-code.exe，在转存窗口中来到004019C4，对第一个字节（操作码）下内存访问断点，然后按下F9让它执行，接着点OK。看看我们中断在哪里：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">6A37D153  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]          ；中断在这句，开始读操作码了，注意<span class="built_in">esi</span>的值为004019C4</span><br><span class="line">6A37D155  <span class="keyword">INC</span> <span class="built_in">ESI</span>                   ；使<span class="built_in">esi</span>指向操作数</span><br><span class="line">6A37D156  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+6A37DA58]     ；根据跳转地址表和操作码寻址解释单元</span><br></pre></td></tr></table></figure>
+<p>   F8往下走，我们来到这句伪指令的解释单元：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">6A37D39F  <span class="keyword">MOVSX</span> <span class="built_in">EDI</span>,<span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]           ；把字操作数带符号扩展到<span class="built_in">edi</span></span><br><span class="line">6A37D3A2  <span class="keyword">ADD</span> <span class="built_in">ESI</span>,<span class="number">2</span>                 ；<span class="built_in">esi</span>指向下一句伪指令的操作码</span><br><span class="line">6A37D3A5  <span class="keyword">MOV</span> <span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>+<span class="built_in">EBP</span>],0A          ；<span class="built_in">ebp</span>显然是程序堆栈区某处的基址，但不是堆栈顶的指针，它把0A保存到<span class="built_in">edi</span>指向的偏移地址处</span><br><span class="line">6A37D3AB  <span class="keyword">MOV</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>+<span class="built_in">EBP</span>+<span class="number">8</span>],<span class="number">80020004</span>     ；向下<span class="number">8</span>个字节处存入<span class="number">80020004</span>，根据VBParser的说明，这个数字表示空参数（缺省参数），事实上我在源代码中确实没有提供这个参数</span><br><span class="line">6A37D3B3  <span class="keyword">ADD</span> <span class="built_in">EDI</span>,<span class="built_in">EBP</span>                   ；这次<span class="built_in">edi</span>得到0A所在的虚拟地址</span><br><span class="line">6A37D3B5  <span class="keyword">PUSH</span> <span class="built_in">EDI</span>                  ；在堆栈中压入这个虚拟地址</span><br><span class="line">6A37D3B6  <span class="keyword">XOR</span> <span class="built_in">EAX</span>,<span class="built_in">EAX</span>                   ；清空<span class="built_in">eax</span>，准备读取下一句伪指令</span><br><span class="line">6A37D3B8  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]          ；读取下一句伪指令的操作码</span><br><span class="line">6A37D3BA  <span class="keyword">INC</span> <span class="built_in">ESI</span>                   ；<span class="built_in">esi</span>指向下一句伪指令的次级操作码或操作数</span><br><span class="line">6A37D3BB  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+6A37DA58]     ；根据地址跳转表和操作码寻址解释单元</span><br></pre></td></tr></table></figure>
+<p>   我们来看一下这些指令执行完以后的堆栈：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0012</span>F458   <span class="number">0012</span>F494                 ；栈顶</span><br><span class="line"><span class="number">0012</span>F45C   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F460   <span class="number">00000000</span></span><br><span class="line">……………………</span><br><span class="line">……………………</span><br><span class="line"><span class="number">0012</span>F488   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F48C   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F490   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F494   <span class="number">0000000</span>A                 ；这就是刚才压入栈顶的数据了</span><br><span class="line"><span class="number">0012</span>F498   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F49C   <span class="number">80020004</span></span><br><span class="line"><span class="number">0012</span>F4A0   <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+<p>现在这个伪指令的动作很清楚了，LitVar_Missing执行以后，把一个虚拟地址压入堆栈，这个虚拟地址指向0000000A，00000000，80020004。实际上，这句伪指令的功能就是在堆栈中提供一个空参数，其堆栈完全没有参考价值。但我要据此说明的是，对所有的伪指令，我们都将使用这种方法来跟踪。在下面的说明中我将省略对虚拟机伪代码读取引擎的注释，因为这部分都是一样的。</p>
+<p>下面我们来看看004019D3处的伪指令LitVarStr。老规矩，在004019D3处设内存访问断点，F9中断在下面的地方：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">6A37D3B8  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]          ；<span class="built_in">esi</span>=004019D3</span><br><span class="line">6A37D3BA  <span class="keyword">INC</span> <span class="built_in">ESI</span></span><br><span class="line">6A37D3BB  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+6A37DA58]</span><br></pre></td></tr></table></figure>
+<p>   执行跳转来到：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">6A37D3C2  <span class="keyword">MOVSX</span> <span class="built_in">EDI</span>,<span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]           ；第一个字操作数FF4C（堆栈区偏移量）带符号扩展到<span class="built_in">edi</span></span><br><span class="line">6A37D3C5  <span class="keyword">MOVZX</span> <span class="built_in">EAX</span>,<span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>+<span class="number">2</span>]         ；第二个字操作数<span class="number">0000</span>（数据区偏移量）无符号扩展到<span class="built_in">eax</span></span><br><span class="line">6A37D3C9  <span class="keyword">MOV</span> <span class="built_in">EDX</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">SS</span>:[<span class="built_in">EBP</span>-<span class="number">54</span>]         ；根据下一句指令来看，这是P-code程序数据区的基址</span><br><span class="line">6A37D3CC  <span class="keyword">MOV</span> <span class="built_in">EAX</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDX</span>+<span class="built_in">EAX</span>*<span class="number">4</span>]      ；根据<span class="built_in">eax</span>产生偏移量，取得数据区的数据，这里我们看到<span class="built_in">eax</span>最后取得   一个虚拟地址，指向Unicode字符串<span class="string">"Input"</span></span><br><span class="line">6A37D3CF  <span class="keyword">ADD</span> <span class="built_in">EDI</span>,<span class="built_in">EBP</span>                   ；<span class="built_in">edi</span>（堆栈区偏移量）指向堆栈区即将保存数据的地方</span><br><span class="line">6A37D3D1  <span class="keyword">MOV</span> <span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>],<span class="number">8</span>           ；存入表示类型的数据</span><br><span class="line">6A37D3D6  <span class="keyword">MOV</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>+<span class="number">8</span>],<span class="built_in">EAX</span>          ；向下偏移<span class="number">8</span>个字节处存入指向Unicode字符串<span class="string">"Input"</span>的虚拟地址</span><br><span class="line">6A37D3D9  <span class="keyword">PUSH</span> <span class="built_in">EDI</span>                  ；最后堆栈区数据指针入栈</span><br><span class="line">6A37D3DA  <span class="keyword">XOR</span> <span class="built_in">EAX</span>,<span class="built_in">EAX</span></span><br><span class="line">6A37D3DC  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>+<span class="number">4</span>]</span><br><span class="line">6A37D3DF  <span class="keyword">ADD</span> <span class="built_in">ESI</span>,<span class="number">5</span></span><br><span class="line">6A37D3E2  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+6A37DA58]</span><br></pre></td></tr></table></figure>
+<p>   同样地，有必要观察一下堆栈：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0012</span>F444   <span class="number">0012</span>F544                 ；栈顶</span><br><span class="line"><span class="number">0012</span>F448   <span class="number">0012</span>F514                 ；下面是前面其他指令形成地堆栈</span><br><span class="line"><span class="number">0012</span>F44C   <span class="number">0012</span>F4F4</span><br><span class="line"><span class="number">0012</span>F450   <span class="number">0012</span>F4D4</span><br><span class="line"><span class="number">0012</span>F454   <span class="number">0012</span>F4B4</span><br><span class="line"><span class="number">0012</span>F458   <span class="number">0012</span>F494</span><br><span class="line"><span class="number">0012</span>F45C   <span class="number">00000000</span></span><br><span class="line">……………………</span><br><span class="line">……………………</span><br><span class="line"><span class="number">0012</span>F540   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F544   <span class="number">00000008</span></span><br><span class="line"><span class="number">0012</span>F548   <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F54C   <span class="number">00401434</span>  UNICODE <span class="string">"Input"</span></span><br><span class="line"><span class="number">0012</span>F550   <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+<p>结合上述跟踪，LitVarStr伪指令操作数的观察方法就很明显了：首先在dump窗口观察0012F544处的内容，向后移8个字节，得到虚拟地址00401434，再从dump窗口观察00401434处的内容，就是入栈的字符串参数了。</p>
+<p>相应地，下面我们在WKTVBDebugger中演示一下操作的过程：</p>
+<ol>
+<li><p>WKTVBDebugger加载VB P-code.exe；</p>
+</li>
+<li><p>在Form Manager中对Command1控件设断点；</p>
+</li>
+<li><p>点击OK；</p>
+</li>
+<li><p>WKTVBDebugger中断在下面的地方：</p>
+</li>
+</ol>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">004019C4</span>: <span class="number">27</span> LitVar_Missing <span class="number">0012</span>F474h</span><br><span class="line"><span class="number">004019</span><span class="attribute">C7</span>: <span class="number">27</span> LitVar_Missing <span class="number">0012</span>F494h</span><br><span class="line"><span class="number">004019</span><span class="attribute">CA</span>: <span class="number">27</span> LitVar_Missing <span class="number">0012</span>F4B4h</span><br><span class="line"><span class="number">004019</span><span class="attribute">CD</span>: <span class="number">27</span> LitVar_Missing <span class="number">0012</span>F4D4h</span><br><span class="line"><span class="number">004019</span><span class="attribute">D0</span>: <span class="number">27</span> LitVar_Missing <span class="number">0012</span>F4F4h</span><br><span class="line"><span class="number">004019</span><span class="attribute">D3</span>: <span class="number">3</span>A LitVarStr <span class="string">'Input'</span>      ；这句就是我们在OllyDBG中跟踪的LitVarStr伪指令</span><br><span class="line"><span class="number">004019</span><span class="attribute">D8</span>: <span class="number">4</span>E FStVarCopyObj <span class="number">0012</span>F514h</span><br><span class="line"><span class="number">004019</span><span class="attribute">DB</span>: <span class="number">04</span> FLdRfVar <span class="number">0012</span>F514h</span><br><span class="line"><span class="number">004019</span><span class="attribute">DE</span>: <span class="number">3</span>A LitVarStr <span class="string">'Please input an integer'</span>       </span><br><span class="line"><span class="number">004019</span><span class="attribute">E3</span>: <span class="number">4</span>E FStVarCopyObj <span class="number">0012</span>F534h</span><br><span class="line"><span class="number">004019</span><span class="attribute">E6</span>: <span class="number">04</span> FLdRfVar <span class="number">0012</span>F534h</span><br><span class="line"><span class="number">004019</span><span class="attribute">E9</span>: <span class="number">0</span>B ImpAdCallI2 rtcInputBox on address <span class="number">73472265</span>h</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>注意我所注释的这句伪指令，当我们单步走过这句指令时，右上角堆栈窗口显示如下（为了便于观察，在右侧的单选框中选择DWORD）：</li>
+</ol>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0012F424</span>: <span class="number">0012F524</span> <span class="number">0012F4F4</span>         ；注意这里的栈顶<span class="number">0012F524</span></span><br><span class="line"><span class="number">0012</span>F41C: <span class="number">0012</span>FE3C <span class="number">0000004</span>E</span><br><span class="line">……………………</span><br><span class="line">……………………</span><br><span class="line"><span class="number">0012F3B4</span>: <span class="number">00000000</span> <span class="number">00000000</span></span><br><span class="line"><span class="number">0012</span>F3AC: <span class="number">77</span>E6780F <span class="number">0000008</span>C</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>按下Ctrl+M打开转存窗口，在Address to Dump组合框中输入0012F524，我们看到：</li>
+</ol>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0012F524:08<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>00 00</span><br><span class="line">0012F52C:34<span class="number"> 14 </span>40<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>       ；好了，还记得那个8个字节的偏移吗？00401434就是我们需要的那个数据区字符串的指针了！</span><br><span class="line">0012F534:00<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>00 00</span><br></pre></td></tr></table></figure>
+<ol start="7">
+<li>记下这个指针，输入到Address to Dump组合框，现在这个Unicode字符串终于露出了真面目：</li>
+</ol>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00401434:49<span class="number"> 00 </span>6E<span class="number"> 00 </span>70<span class="number"> 00 </span>75<span class="number"> 00 </span>        I.n.p.u.</span><br><span class="line">0040143C:74<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>00<span class="number"> 00 </span>        t.......</span><br><span class="line">00401444:00<span class="number"> 00 </span>00<span class="number"> 00 </span>E1 4E AD<span class="number"> 33 </span>        ....嵛?</span><br></pre></td></tr></table></figure>
+<p>当然，就这个指令本身而言，WKTVBDebugger已经在伪指令窗口中给出了其操作数，所以我们要观察这个字符串大可不必那么麻烦，但是对于其他没有注释的伪指令，这恐怕是唯一的办法了。</p>
+<p>由此可见，要熟练地调试VB P-code程序，整理出全部伪指令操作数的寻址方式是必要的一步。在OllyDBG和WKTVBDebugger面前，P-code伪指令并不神秘，它们只不过是一些人为定义的符号罢了。在WKTVBDebugger中，伪指令像是一个黑盒子，虚拟机隐藏了黑盒子的全部秘密。既然虚拟机的内部对OllyDBG是可见的，P-code伪指令又怎会遥不可及呢？</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>我选择了由CyberBlade编写的一个中级VB P-code CrackMe作为范例来为大家介绍VB P-code程序的调试过程，希望能帮助大家熟悉一部分P-code伪指令，为将来的研究学习打下基础。由于我在前几期中已经讲解了对陌生的VB P-code伪指令的处理方法（用OllyDBG跟踪其解释过程），这次我将完全从伪代码的层面上对程序进行调试，也就是说，我将以伪指令为单位说明程序各部分所实现的功能。这种方法乍看起来可能不太直观，但是请相信，一旦您熟悉了这样的调试方法，将给您今后的学习带来极大的方便。</p>
+<p>   好了，我们这就开始了。这次我首先使用Josephco的Exdec来生成该CrackMe的反编译代码，然后结合WKTVBDebugger和OllyDBG来进行调试。像往常一样，我们在WKTVBDebugger的Form Manager中对Check按钮下断点，记住这是个不同于其他程序调试的极其有效的断点方式，对于事件驱动的注册验证过程，这种断点是百分之百有效的。点下Check按钮以后，我们停在下面的代码上（从Exdec抓取）：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Proc</span>: <span class="number">40</span>e680</span><br><span class="line"> </span><br><span class="line"><span class="number">40</span><span class="attribute">E26C</span>: <span class="number">04</span> FLdRfVar                local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E26F</span>: <span class="number">21</span> FLdPrThis             </span><br><span class="line"><span class="number">40</span><span class="attribute">E270</span>: <span class="number">0</span>f VCallAd                 text</span><br><span class="line"><span class="number">40</span><span class="attribute">E273</span>: <span class="number">19</span> FStAdFunc               local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E276</span>: <span class="number">08</span> FLdPr                   local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E279</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT   ；这是一个很常见的调用，其功能是取得编辑框的字符串（<span class="string">"TEXTEDIT"</span>已经透露了秘密），很明显，这里取得的就是我们输入的用户名了</span><br><span class="line"><span class="number">40</span><span class="attribute">E27E</span>: <span class="number">6</span>c ILdRf                   local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E281</span>: <span class="number">1</span>b <span class="attribute">LitStr</span>:                 </span><br><span class="line"><span class="number">40</span><span class="attribute">E284</span>: Lead0/<span class="number">30</span> EqStr           </span><br><span class="line"><span class="number">40</span><span class="attribute">E286</span>: <span class="number">2</span>f FFree1Str               local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E289</span>: <span class="number">1</span>a FFree1Ad                local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E28C</span>: <span class="number">1</span>c <span class="attribute">BranchF</span>:                <span class="number">40</span>E2C1       ；上面这一段检验输入的用户名是否为空，没有输入的话当然就直接fail了，注意Branch这个词表示分支，F表示False</span><br><span class="line"> </span><br><span class="line">………………</span><br><span class="line">………………</span><br><span class="line"> </span><br><span class="line"><span class="number">40</span><span class="attribute">E2CE</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT   ；又来了，这回是取试炼码了</span><br><span class="line"><span class="number">40</span><span class="attribute">E2D3</span>: <span class="number">6</span>c ILdRf                   local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E2D6</span>: <span class="number">1</span>b <span class="attribute">LitStr</span>:                 </span><br><span class="line"><span class="number">40</span><span class="attribute">E2D9</span>: Lead0/<span class="number">30</span> EqStr           </span><br><span class="line"><span class="number">40</span><span class="attribute">E2DB</span>: <span class="number">2</span>f FFree1Str               local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E2DE</span>: <span class="number">1</span>a FFree1Ad                local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E2E1</span>: <span class="number">1</span>c <span class="attribute">BranchF</span>:                <span class="number">40</span>E316       ；试炼码是否为空？</span><br><span class="line"><span class="number">40</span><span class="attribute">E2E4</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E2E7</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E2EA</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00CC ) Error</span><br><span class="line"><span class="number">40</span><span class="attribute">E2EF</span>: <span class="number">4</span>e FStVarCopyObj           local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E2F2</span>: <span class="number">04</span> FLdRfVar                local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E2F5</span>: f5 <span class="attribute">LitI4</span>:                  <span class="number">0</span>x40  <span class="number">64</span>  (...@)</span><br><span class="line"><span class="number">40</span><span class="attribute">E2FA</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00AC ) You have to enter a key first.</span><br><span class="line">                            ；这个提示很熟悉吧？</span><br><span class="line"> </span><br><span class="line">………………</span><br><span class="line">………………</span><br><span class="line"> </span><br><span class="line">继续往下走，还有一次关于试炼码合法性的初步检验，跟上面的差不多：</span><br><span class="line"> </span><br><span class="line"><span class="number">40</span><span class="attribute">E323</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT   ；取试炼码</span><br><span class="line"><span class="number">40</span><span class="attribute">E328</span>: <span class="number">6</span>c ILdRf                   local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E32B</span>: <span class="number">1</span>b <span class="attribute">LitStr</span>:                 </span><br><span class="line"><span class="number">40</span><span class="attribute">E32E</span>: Lead0/<span class="number">30</span> EqStr           </span><br><span class="line"><span class="number">40</span><span class="attribute">E330</span>: <span class="number">2</span>f FFree1Str               local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E333</span>: <span class="number">1</span>a FFree1Ad                local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E336</span>: <span class="number">1</span>c <span class="attribute">BranchF</span>:                <span class="number">40</span>E36B       ；不足<span class="number">5</span>位就走下去</span><br><span class="line"><span class="number">40</span><span class="attribute">E339</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E33C</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E33F</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00CC ) Error</span><br><span class="line"><span class="number">40</span><span class="attribute">E344</span>: <span class="number">4</span>e FStVarCopyObj           local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E347</span>: <span class="number">04</span> FLdRfVar                local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E34A</span>: f5 <span class="attribute">LitI4</span>:                  <span class="number">0</span>x40  <span class="number">64</span>  (...@)</span><br><span class="line"><span class="number">40</span><span class="attribute">E34F</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00AC ) You have to enter at least <span class="number">5</span> chars.</span><br><span class="line"><span class="number">40</span><span class="attribute">E354</span>: <span class="number">4</span>e FStVarCopyObj           local_00BC       ；试炼码必须大于等于<span class="number">5</span>位</span><br><span class="line"><span class="number">40</span><span class="attribute">E357</span>: <span class="number">04</span> FLdRfVar                local_00BC</span><br><span class="line"> </span><br><span class="line">    注意，下面要开始真正的计算了：</span><br><span class="line"> </span><br><span class="line"><span class="number">40</span><span class="attribute">E36B</span>: <span class="number">28</span> <span class="attribute">LitVarI2</span>:               ( local_00EC ) <span class="number">0</span>x1  (<span class="number">1</span>)；立即数<span class="number">1</span>入栈，Lit表示立即数</span><br><span class="line"><span class="number">40</span><span class="attribute">E370</span>: <span class="number">04</span> FLdRfVar                local_012C       ；FLd表示压栈，这里保存的是循环计数器</span><br><span class="line"><span class="number">40</span><span class="attribute">E373</span>: <span class="number">04</span> FLdRfVar                local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E376</span>: <span class="number">21</span> FLdPrThis             </span><br><span class="line"><span class="number">40</span><span class="attribute">E377</span>: <span class="number">0</span>f VCallAd                 text</span><br><span class="line"><span class="number">40</span><span class="attribute">E37A</span>: <span class="number">19</span> FStAdFunc               local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E37D</span>: <span class="number">08</span> FLdPr                   local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E380</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT   ；再次读取用户名</span><br><span class="line"><span class="number">40</span><span class="attribute">E385</span>: <span class="number">6</span>c ILdRf                   local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E388</span>: <span class="number">4</span>a FnLenStr                         ；取用户名的长度，这个伪指令是很常见的</span><br><span class="line"><span class="number">40</span><span class="attribute">E389</span>: Lead2/<span class="number">69</span> CVarI4            local_00CC       ；转换（C－Convert）为变体型（Var就是Variant），这里要利用这个长度作为循环次数</span><br><span class="line"><span class="number">40</span><span class="attribute">E38D</span>: <span class="number">2</span>f FFree1Str               local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E390</span>: <span class="number">1</span>a FFree1Ad                local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E393</span>: Lead3/<span class="number">68</span> <span class="attribute">ForVar</span>:           (when done) <span class="number">40</span>E3F5   ；ForVar，呵呵，循环从这里开始了</span><br><span class="line"><span class="number">40</span><span class="attribute">E399</span>: <span class="number">04</span> FLdRfVar                local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E39C</span>: <span class="number">21</span> FLdPrThis             </span><br><span class="line"><span class="number">40</span><span class="attribute">E39D</span>: <span class="number">0</span>f VCallAd                 text</span><br><span class="line"><span class="number">40</span><span class="attribute">E3A0</span>: <span class="number">19</span> FStAdFunc               local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E3A3</span>: <span class="number">08</span> FLdPr                   local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E3A6</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT   ；再取用户名……</span><br><span class="line"><span class="number">40</span><span class="attribute">E3AB</span>: <span class="number">04</span> FLdRfVar                local_0094       ；这是用户名的指针--我怎么知道？用OllyDBG调试一下您也就知道了</span><br><span class="line"><span class="number">40</span><span class="attribute">E3AE</span>: <span class="number">28</span> <span class="attribute">LitVarI2</span>:               ( local_00DC ) <span class="number">0</span>x1  (<span class="number">1</span>)  ；立即数<span class="number">1</span>入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E3B3</span>: <span class="number">04</span> FLdRfVar                local_012C       ；记得吗，刚才的那个循环计数器</span><br><span class="line"><span class="number">40</span><span class="attribute">E3B6</span>: Lead1/<span class="number">22</span> CI4Var                     ；转换为整型</span><br><span class="line"><span class="number">40</span><span class="attribute">E3B8</span>: <span class="number">3</span>e FLdZeroAd               local_009C       ；取得用户名字符串一级指针</span><br><span class="line"><span class="number">40</span><span class="attribute">E3BB</span>: <span class="number">46</span> CVarStr                 local_00BC       ；转换为变体型</span><br><span class="line"><span class="number">40</span><span class="attribute">E3BE</span>: <span class="number">04</span> FLdRfVar                local_00FC       ；用户名字符串指针入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E3C1</span>: <span class="number">0</span>a <span class="attribute">ImpAdCallFPR4</span>:                       ；这句调用rtcMidCharVar，调试的时候您就可以看到了，用意很明显：每轮循环取用户名的一个字符</span><br><span class="line"><span class="number">40</span><span class="attribute">E3C6</span>: <span class="number">04</span> FLdRfVar                local_00FC       ；取得的字母入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E3C9</span>: Lead2/fe CStrVarVal        local_0150       ；转换为字符串型</span><br><span class="line"><span class="number">40</span><span class="attribute">E3CD</span>: <span class="number">0</span>b ImpAdCallI2                      ；调用rtcAnsiValueBstr转换为ASCII码</span><br><span class="line"><span class="number">40</span><span class="attribute">E3D2</span>: <span class="number">44</span> CVarI2                  local_00CC       ；再转换为变体型</span><br><span class="line"><span class="number">40</span><span class="attribute">E3D5</span>: Lead0/ef ConcatVar                  ；将每轮循环得到的十进制数作为字符串相连接，假定输入是cyclotron，那么循环最后得到的就是<span class="string">"9912199108111116114111110"</span>，当然这个字符串在内存中是以Unicode的形式出现的</span><br><span class="line"><span class="number">40</span><span class="attribute">E3D9</span>: Lead1/f6 FStVar                     ；保存字符串（St－Save to）</span><br><span class="line"><span class="number">40</span><span class="attribute">E3DD</span>: <span class="number">2</span>f FFree1Str               local_0150</span><br><span class="line"><span class="number">40</span><span class="attribute">E3E0</span>: <span class="number">1</span>a FFree1Ad                local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E3E3</span>: <span class="number">36</span> FFreeVar</span><br><span class="line"><span class="number">40</span><span class="attribute">E3EC</span>: <span class="number">04</span> FLdRfVar                local_012C</span><br><span class="line"><span class="number">40</span><span class="attribute">E3EF</span>: Lead3/<span class="number">7</span>e <span class="attribute">NextStepVar</span>:      (continue) <span class="number">40</span>E399    ；下一轮循环</span><br></pre></td></tr></table></figure>
+<p> 好了，上面就是这个CrackMe的第一个循环，看到这里是不是有点疲惫了？其实我第一次调试的时候也觉得这P-code不知所云，上面我给大家的提示都是反复斟酌、研究的结果，有些可以从伪指令的命名上猜出来，还有一些就不得不进入OllyDBG跟踪汇编指令的解释过程了。比如像ConcatVar这样奇怪的指令，用惯了C和Asm的朋友可能无法理解–这么复杂的一个操作居然是一个指令而不是一个调用！？很遗憾，这些疑问只有在OllyDBG中才能解决了。另外，大家可能注意到了P-code代码中大量的变量类型转换，一会儿从整型变成变体型，一会儿又从变体型变成字符串型。其实如果在OllyDBG里面跟踪一下就会发现，很多类型转换其实根本就是换汤不换料，什么都没动，就是从一个地方移动到另一个地方了，所以大家跟踪的时候千万不要被它们迷惑。其实仔细想想，一个字母在内存里面除了ASCII码（当然也包括Unicode码），还能以什么形式存在呢？说了那么多，就是希望大家不要丧失信心，过了这心理一关，其他什么都好办。下面继续我们的旅程：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">40E3F5</span>: <span class="number">04</span> FLdRfVar                local_0094       ；这里是把前面循环得到的字符串入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E3F8</span>: Lead0/eb FnLenVar                   ；取它的长度</span><br><span class="line"><span class="number">40</span><span class="attribute">E3FC</span>: <span class="number">28</span> <span class="attribute">LitVarI2</span>:               ( local_00AC ) <span class="number">0</span>x9  (<span class="number">9</span>)；立即数<span class="number">9</span>入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E401</span>: <span class="number">5</span>d HardType              </span><br><span class="line"><span class="number">40</span><span class="attribute">E402</span>: Lead0/<span class="number">74</span> GtVarBool                  ；是否大于<span class="number">9</span>？</span><br><span class="line"><span class="number">40</span><span class="attribute">E404</span>: <span class="number">1</span>c <span class="attribute">BranchF</span>:                <span class="number">40</span>E425</span><br><span class="line"><span class="number">40</span><span class="attribute">E407</span>: <span class="number">04</span> FLdRfVar                local_0094</span><br><span class="line"><span class="number">40</span><span class="attribute">E40A</span>: Lead3/c4 LitVarR8                   ；浮点立即数<span class="number">3.1415926540000000000</span>入栈，R8就表示Real of <span class="number">8</span> bytes，如何得到这个浮点立即数的精确值？这里有一个小技巧，我待会儿会给大家介绍：）</span><br><span class="line"><span class="number">40</span><span class="attribute">E416</span>: Lead0/bc DivVar                     ；Div--很明显是做除法，记住：先入栈的是被除数，后入栈的是除数，其他算术运算指令也遵循这个规则</span><br><span class="line"><span class="number">40</span><span class="attribute">E41A</span>: Lead0/e1 FnFixVar                   ；对除法的结果取整，学过VB的朋友应该熟悉这个指令   </span><br><span class="line"><span class="number">40</span><span class="attribute">E41E</span>: Lead1/f6 FStVar                     ；保存结果为保存为Variant型</span><br><span class="line"><span class="number">40</span><span class="attribute">E422</span>: <span class="number">1</span>e <span class="attribute">Branch</span>:                 <span class="number">40</span>e3f5</span><br><span class="line"><span class="number">40</span><span class="attribute">E425</span>: <span class="number">04</span> FLdRfVar                local_0094</span><br><span class="line"><span class="number">40</span><span class="attribute">E428</span>: Lead3/c1 <span class="attribute">LitVarI4</span>:         ( local_param_5678FF54 ) <span class="number">0</span>x30f85678  (<span class="number">821581432</span>)</span><br><span class="line">                            ；立即数<span class="number">0</span>x30f85678入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E430</span>: Lead0/<span class="number">17</span> XorVar                     ；Xor--异或运算</span><br><span class="line"><span class="number">40</span><span class="attribute">E434</span>: Lead1/f6 FStVar                     ；保存为Variant型</span><br><span class="line"><span class="number">40</span><span class="attribute">E438</span>: <span class="number">04</span> FLdRfVar                local_0094       ；前面的运算结果入栈</span><br><span class="line"><span class="number">40</span><span class="attribute">E43B</span>: <span class="number">08</span> FLdPr                   local_param_0008</span><br><span class="line"><span class="number">40</span><span class="attribute">E43E</span>: <span class="number">8</span>a MemLdStr                         ；这里调入一个内存操作数<span class="number">0</span>D8B3h，可以用OllyDBG跟踪一下看看</span><br><span class="line"><span class="number">40</span><span class="attribute">E441</span>: Lead2/<span class="number">69</span> CVarI4            local_00AC       ；转换为变体型</span><br><span class="line"><span class="number">40</span><span class="attribute">E445</span>: Lead0/<span class="number">9</span>c SubVar                     ；两数相减</span><br><span class="line"><span class="number">40</span><span class="attribute">E449</span>: Lead1/f6 FStVar                     ；保存为Variant型，我们记这个结果为S</span><br></pre></td></tr></table></figure>
+<p>   上面这一系列算术运算结束了，现在我来讲讲40E40A处的指令。这个指令压入一个8字节的浮点数到堆栈中，我们知道浮点数在内存中是以特定规则的科学计数法保存的，虽然通过仔细分析其每个bit的内容，我们可以推算出这个浮点数的值，但是这样未免太麻烦了，而要写注册机的话，不可避免地要用到这个值，这里我们将采用一种变通的方法让OllyDBG来替我们完成这一任务。</p>
+<p>   首先我们用OllyDBG载入CyberBlade.exe，在40E40A处下内存访问断点。然后像往常一样，让程序跑起来，我们填入用户名和试炼码后点Check按钮，BOOM！！！我们停在下面的地方：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">7637D9AA  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>+<span class="number">2</span>]            ；注意这里<span class="built_in">esi</span>＋<span class="number">2</span>＝40E40A，开始读取目标伪指令了</span><br><span class="line">7637D9AD  <span class="keyword">ADD</span> <span class="built_in">ESI</span>,<span class="number">3</span></span><br><span class="line">7637D9B0  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+7637ED94]     ；这里进入解释引擎</span><br><span class="line"> </span><br><span class="line">………………</span><br><span class="line">………………</span><br><span class="line"> </span><br><span class="line">7637ECAB  <span class="keyword">XOR</span> <span class="built_in">EAX</span>,<span class="built_in">EAX</span></span><br><span class="line">7637ECAD  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]</span><br><span class="line">7637ECAF  <span class="keyword">INC</span> <span class="built_in">ESI</span></span><br><span class="line">7637ECB0  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+7637FD94]     ；次级跳转</span><br><span class="line"> </span><br><span class="line">………………</span><br><span class="line">………………</span><br><span class="line"> </span><br><span class="line">    下面是关键了：</span><br><span class="line"> </span><br><span class="line">7637DF07  <span class="keyword">MOV</span> <span class="built_in">EBX</span>,<span class="number">5</span></span><br><span class="line">7637DF0C  <span class="keyword">MOVSX</span> <span class="built_in">EDI</span>,<span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]</span><br><span class="line">7637DF0F  <span class="keyword">MOV</span> <span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>+<span class="built_in">EBP</span>],<span class="built_in">BX</span></span><br><span class="line">7637DF13  <span class="keyword">MOV</span> <span class="built_in">EAX</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>+<span class="number">2</span>]          ；取第一个<span class="built_in">DWORD</span></span><br><span class="line">7637DF16  <span class="keyword">MOV</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>+<span class="built_in">EBP</span>+<span class="number">8</span>],<span class="built_in">EAX</span>      ；第一个<span class="built_in">DWORD</span>存入堆栈</span><br><span class="line">7637DF1A  <span class="keyword">MOV</span> <span class="built_in">EAX</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>+<span class="number">6</span>]          ；取第二个<span class="built_in">DWORD</span></span><br><span class="line">7637DF1D  <span class="keyword">ADD</span> <span class="built_in">ESI</span>,0A</span><br><span class="line">7637DF20  <span class="keyword">MOV</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EDI</span>+<span class="built_in">EBP</span>+C],<span class="built_in">EAX</span>      ；第二个<span class="built_in">DWORD</span>存入堆栈</span><br><span class="line">7637DF24  <span class="keyword">JMP</span> SHORT MSVBVM50.7637DEE0           ；修改这条指令！</span><br><span class="line">7637DF26  <span class="keyword">POP</span> <span class="built_in">EAX</span></span><br><span class="line">7637DF27  <span class="keyword">ADD</span> <span class="built_in">WORD</span> <span class="built_in">PTR</span> <span class="built_in">SS</span>:[<span class="built_in">ESP</span>],<span class="built_in">AX</span></span><br><span class="line">7637DF2B  <span class="keyword">JO</span> MSVBVM50.7637DAC4</span><br><span class="line">7637DF31  <span class="keyword">XOR</span> <span class="built_in">EAX</span>,<span class="built_in">EAX</span></span><br><span class="line">7637DF33  <span class="keyword">MOV</span> <span class="built_in">AL</span>,<span class="built_in">BYTE</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">ESI</span>]</span><br><span class="line">7637DF35  <span class="keyword">INC</span> <span class="built_in">ESI</span></span><br><span class="line">7637DF36  <span class="keyword">JMP</span> <span class="built_in">DWORD</span> <span class="built_in">PTR</span> <span class="built_in">DS</span>:[<span class="built_in">EAX</span>*<span class="number">4</span>+7637ED94]</span><br></pre></td></tr></table></figure>
+<p>   从上面的指令中，我们看出虚拟机把8字节的浮点数保存到12F52C指向的堆栈空间中。如果大家学过协处理器指令的话，应该知道这句：</p>
+<p>​        FLD mem32/64/80</p>
+<p>   这句指令的功能是把实数装入到st（0），st（0）是FPU的一个浮点数寄存器，而OllyDBG的寄存器面板恰好可以监视所有的浮点数寄存器。说到这里，大家也许都明白了，是的，我们只要在7637DF20后面汇编一条FLD指令把12F52C处的8个字节装入到st（0），就可以看到浮点数的精确值了！下面就是这条指令的具体格式：</p>
+<p>​        FLD QWORD PTR [0012F52C]</p>
+<p>执行上面的指令以后，我们在OllyDBG的寄存器面板中看，这个形式不再令您困惑了吧！</p>
+<p>如果您是使用SoftICE来跟踪的，那么就不必这么费神了：SoftICE中有一条专门的DUMP命令DL ADDRESS可以直接解析内存中的浮点数：）</p>
+<p>   上面这段运算结束后，我们又来到一个循环：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">40E44D</span>: <span class="number">28</span> <span class="attribute">LitVarI2</span>:               ( local_00EC ) <span class="number">0</span>x1  (<span class="number">1</span>)  ；立即数<span class="number">1</span>入栈，作为循环的初始值</span><br><span class="line"><span class="number">40</span><span class="attribute">E452</span>: <span class="number">04</span> FLdRfVar                local_012C           ；计数器</span><br><span class="line"><span class="number">40</span><span class="attribute">E455</span>: <span class="number">28</span> <span class="attribute">LitVarI2</span>:               ( local_00CC ) <span class="number">0</span>xa  (<span class="number">10</span>) ；循环终止值<span class="number">10</span></span><br><span class="line"><span class="number">40</span><span class="attribute">E45A</span>: Lead3/<span class="number">68</span> <span class="attribute">ForVar</span>:           (when done) <span class="number">40</span>E495       ；进入循环</span><br><span class="line"><span class="number">40</span><span class="attribute">E460</span>: <span class="number">04</span> FLdRfVar                local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E463</span>: <span class="number">21</span> FLdPrThis             </span><br><span class="line"><span class="number">40</span><span class="attribute">E464</span>: <span class="number">0</span>f VCallAd                 text</span><br><span class="line"><span class="number">40</span><span class="attribute">E467</span>: <span class="number">19</span> FStAdFunc               local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E46A</span>: <span class="number">08</span> FLdPr                   local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E46D</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT       ；取得试炼码</span><br><span class="line"><span class="number">40</span><span class="attribute">E472</span>: <span class="number">6</span>c ILdRf                   local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E475</span>: <span class="number">04</span> FLdRfVar                local_012C</span><br><span class="line"><span class="number">40</span><span class="attribute">E478</span>: Lead1/<span class="number">22</span> CI4Var                         ；转换为整型</span><br><span class="line"><span class="number">40</span><span class="attribute">E47A</span>: <span class="number">08</span> FLdPr                   local_param_0008</span><br><span class="line"><span class="number">40</span><span class="attribute">E47D</span>: <span class="number">06</span> MemLdRfVar              local_param_0034</span><br><span class="line"><span class="number">40</span><span class="attribute">E480</span>: <span class="number">9</span>e Ary1LdI4                             ；这里是从一个Unicode字符串数组依次取出一系列字符串--</span><br><span class="line">    UNICODE <span class="string">"373703670"</span></span><br><span class="line">    UNICODE <span class="string">"684708686"</span></span><br><span class="line">    UNICODE <span class="string">"698673531"</span></span><br><span class="line">    UNICODE <span class="string">"391184533"</span></span><br><span class="line">    UNICODE <span class="string">"329528230"</span></span><br><span class="line">    UNICODE <span class="string">"654824169"</span></span><br><span class="line">    UNICODE <span class="string">"557168731"</span></span><br><span class="line">    UNICODE <span class="string">"387375850"</span></span><br><span class="line">    UNICODE <span class="string">"212298498"</span></span><br><span class="line">    UNICODE <span class="string">"851143730"</span></span><br><span class="line"> </span><br><span class="line"><span class="number">40</span><span class="attribute">E481</span>: Lead0/<span class="number">30</span> EqStr                          ；上面这些字符串依次同同输入的试炼码比较。先不要急着高兴，看看下面的代码就知道这是迷魂阵：（</span><br><span class="line"><span class="number">40</span><span class="attribute">E483</span>: <span class="number">2</span>f FFree1Str               local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E486</span>: <span class="number">1</span>a FFree1Ad                local_0098</span><br><span class="line"><span class="number">40</span><span class="attribute">E489</span>: <span class="number">1</span>c <span class="attribute">BranchF</span>:                <span class="number">40</span>E48C           ；奇怪的跳转，比较结果为False就直接跳到下一句--不跳也罢……</span><br><span class="line"><span class="number">40</span><span class="attribute">E48C</span>: <span class="number">04</span> FLdRfVar                local_012C</span><br><span class="line"><span class="number">40</span><span class="attribute">E48F</span>: Lead3/<span class="number">7</span>e <span class="attribute">NextStepVar</span>:      (continue) <span class="number">40</span>E460</span><br></pre></td></tr></table></figure>
+<p>   几圈下来，一点收获也没有，我们只能继续跟踪：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">40E4A2</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT       ；再一次取试炼码</span><br><span class="line"><span class="number">40</span><span class="attribute">E4A7</span>: <span class="number">3</span>e FLdZeroAd               local_009C</span><br><span class="line"><span class="number">40</span><span class="attribute">E4AA</span>: <span class="number">46</span> CVarStr                 local_00BC           ；转换为变体型</span><br><span class="line"><span class="number">40</span><span class="attribute">E4AD</span>: <span class="number">04</span> FLdRfVar                local_0094           ；还记得吗？这是前面用户名的计算结果S</span><br><span class="line"><span class="number">40</span><span class="attribute">E4B0</span>: Lead0/<span class="number">9</span>c SubVar                         ；试炼码减去这个计算值得到M</span><br><span class="line"><span class="number">40</span><span class="attribute">E4B4</span>: <span class="number">04</span> FLdRfVar                local_0150</span><br><span class="line"><span class="number">40</span><span class="attribute">E4B7</span>: <span class="number">21</span> FLdPrThis             </span><br><span class="line"><span class="number">40</span><span class="attribute">E4B8</span>: <span class="number">0</span>f VCallAd                 text</span><br><span class="line"><span class="number">40</span><span class="attribute">E4BB</span>: <span class="number">19</span> FStAdFunc               local_0174</span><br><span class="line"><span class="number">40</span><span class="attribute">E4BE</span>: <span class="number">08</span> FLdPr                   local_0174</span><br><span class="line"><span class="number">40</span><span class="attribute">E4C1</span>: <span class="number">0</span>d VCallHresult            get__ipropTEXTEDIT       ；又取用户名</span><br><span class="line"><span class="number">40</span><span class="attribute">E4C6</span>: <span class="number">6</span>c ILdRf                   local_0150</span><br><span class="line"><span class="number">40</span><span class="attribute">E4C9</span>: <span class="number">4</span>a FnLenStr                             ；取用户名长度</span><br><span class="line"><span class="number">40</span><span class="attribute">E4CA</span>: Lead2/<span class="number">69</span> CVarI4            local_00AC           ；转换为变体型</span><br><span class="line"><span class="number">40</span><span class="attribute">E4CE</span>: <span class="number">5</span>d HardType              </span><br><span class="line"><span class="number">40</span><span class="attribute">E4CF</span>: Lead0/<span class="number">33</span> EqVarBool                      ；是否与前面的计算值M相等？</span><br><span class="line"><span class="number">40</span><span class="attribute">E4D1</span>: <span class="number">2</span>f FFree1Str               local_0150</span><br><span class="line"><span class="number">40</span><span class="attribute">E4D4</span>: <span class="number">29</span> <span class="attribute">FFreeAd</span>:</span><br><span class="line"><span class="number">40</span><span class="attribute">E4DB</span>: <span class="number">35</span> FFree1Var               local_00BC</span><br><span class="line"><span class="number">40</span><span class="attribute">E4DE</span>: <span class="number">1</span>c <span class="attribute">BranchF</span>:                <span class="number">40</span>E55B           ；这回是真正的关键跳转了！</span><br><span class="line"><span class="number">40</span><span class="attribute">E4E1</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E4E4</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E4E7</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00CC ) Correct key</span><br><span class="line"><span class="number">40</span><span class="attribute">E4EC</span>: <span class="number">4</span>e FStVarCopyObj           local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E4EF</span>: <span class="number">04</span> FLdRfVar                local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E4F2</span>: f5 <span class="attribute">LitI4</span>:                  <span class="number">0</span>x40  <span class="number">64</span>  (...@)</span><br><span class="line"><span class="number">40</span><span class="attribute">E4F7</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00AC ) Wow, you have found a correct key!</span><br><span class="line">                                ；作者的褒奖：）</span><br><span class="line"><span class="number">40</span><span class="attribute">E4FC</span>: <span class="number">4</span>e FStVarCopyObj           local_00BC</span><br><span class="line"><span class="number">40</span><span class="attribute">E4FF</span>: <span class="number">04</span> FLdRfVar                local_00BC</span><br><span class="line"><span class="number">40</span><span class="attribute">E502</span>: <span class="number">0</span>a <span class="attribute">ImpAdCallFPR4</span>:          </span><br><span class="line"><span class="number">40</span><span class="attribute">E507</span>: <span class="number">36</span> FFreeVar</span><br><span class="line"><span class="number">40</span><span class="attribute">E512</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E515</span>: <span class="number">27</span> LitVar_Missing        </span><br><span class="line"><span class="number">40</span><span class="attribute">E518</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00CC ) Correct key!</span><br><span class="line"><span class="number">40</span><span class="attribute">E51D</span>: <span class="number">4</span>e FStVarCopyObj           local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E520</span>: <span class="number">04</span> FLdRfVar                local_00DC</span><br><span class="line"><span class="number">40</span><span class="attribute">E523</span>: f5 <span class="attribute">LitI4</span>:                  <span class="number">0</span>x40  <span class="number">64</span>  (...@)</span><br><span class="line"><span class="number">40</span><span class="attribute">E528</span>: <span class="number">3</span>a <span class="attribute">LitVarStr</span>:              ( local_00AC ) Mail me, how you got <span class="attribute">it</span>: [email]CyberBlade<span class="variable">@gmx</span>.net[/email]</span><br><span class="line">                                ；你愿意吗：）</span><br><span class="line"><span class="number">40</span><span class="attribute">E52D</span>: <span class="number">4</span>e FStVarCopyObj           local_00BC</span><br><span class="line"><span class="number">40</span><span class="attribute">E530</span>: <span class="number">04</span> FLdRfVar                local_00BC</span><br><span class="line"><span class="number">40</span><span class="attribute">E533</span>: <span class="number">0</span>a <span class="attribute">ImpAdCallFPR4</span>:</span><br></pre></td></tr></table></figure>
+<p>   好了，最后我们总结一下这个CrackMe的算法：</p>
+<ol>
+<li><p>用户名必须大于等于5位；</p>
+</li>
+<li><p>把用户名所有字符的十进制ASCII码连接起来得到一个数；</p>
+</li>
+<li><p>把上面这个数除以3.1415926540000000000，取整以后与30F85678h异或，再减去0D8B3h；</p>
+</li>
+<li><p>试炼码减去上面这个值的结果必须等于用户名的长度，也就是说我们只要把上面这个值加上strlen（用户名）就得到了注册码。</p>
+</li>
+</ol>
+<p>我的注册信息是：</p>
+<p>用户名：cyclotron</p>
+<p>注册码：667574641</p>
+<p>供您调试时参考：）</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/10/100069.html" class="pre-post btn btn-default" title='使用Java8的新特性lambda表达式'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">使用Java8的新特性lambda表达式</span>
+        </a>
+    
+    
+        <a href="/archives/2018/10/100067.html" class="next-post btn btn-default" title='VB6开发的软件破解'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">VB6开发的软件破解</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#解读"><span class="toc-text">解读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子"><span class="toc-text">例子</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,集群,高可用,安装">
+
+
+    <meta name="description" content="接上文：手动搭建高可用的kubernetes集群(二) 
+
+7. kube-apiserver 高可用按照上面的方式在master01与master02机器上安装kube-apiserver、k...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>二进制搭建高可用的kubernetes集群(三) | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="二进制搭建高可用的kubernetes集群(三)">
+            
+	            二进制搭建高可用的kubernetes集群(三)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/install/">安装</a> <a class="tag-link" href="/tags/colony/">集群</a> <a class="tag-link" href="/tags/availability/">高可用</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/07/05</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1736</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文：<a href="100006.html">手动搭建高可用的kubernetes集群(二)</a> </p>
+<hr>
+<h1 id="7-kube-apiserver-高可用"><a href="#7-kube-apiserver-高可用" class="headerlink" title="7. kube-apiserver 高可用"></a>7. kube-apiserver 高可用</h1><p>按照上面的方式在master01与master02机器上安装kube-apiserver、kube-controller-manager、kube-scheduler，但是现在我们还是手动指定访问的6443和8080端口的，因为我们的域名k8s-api.virtual.local对应的master01节点直接通过http 和https 还不能访问，这里我们使用haproxy 来代替请求。</p>
+<blockquote>
+<p>明白什么意思吗？就是我们需要将http默认的80端口请求转发到apiserver的8080端口，将https默认的443端口请求转发到apiserver的6443端口，所以我们这里使用haproxy来做请求转发。</p>
+</blockquote>
+<h2 id="安装haproxy"><a href="#安装haproxy" class="headerlink" title="安装haproxy"></a>安装haproxy</h2><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum <span class="keyword">install</span> -y haproxy</span><br></pre></td></tr></table></figure>
+<h2 id="配置haproxy"><a href="#配置haproxy" class="headerlink" title="配置haproxy"></a>配置haproxy</h2><p>由于集群内部有的组建是通过非安全端口访问apiserver 的，有的是通过安全端口访问apiserver 的，所以我们要配置http 和https 两种代理方式，配置文件 /etc/haproxy/haproxy.cfg：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">listen stats</span><br><span class="line">  bind    *:9000</span><br><span class="line">  mode    http</span><br><span class="line">  stats   enable</span><br><span class="line">  stats   hide-version</span><br><span class="line">  stats   uri       /stats</span><br><span class="line">  stats   refresh   30s</span><br><span class="line">  stats   realm     Haproxy\ Statistics</span><br><span class="line">  stats   auth      Admin:Password</span><br><span class="line"></span><br><span class="line">frontend k8s-api</span><br><span class="line">    bind 192.168.1.137:443</span><br><span class="line">    mode tcp</span><br><span class="line">    option tcplog</span><br><span class="line">    tcp-request inspect-delay 5s</span><br><span class="line">    tcp-request content accept <span class="keyword">if</span> &#123; req.ssl_hello_type 1 &#125;</span><br><span class="line">    default_backend k8s-api</span><br><span class="line"></span><br><span class="line">backend k8s-api</span><br><span class="line">    mode tcp</span><br><span class="line">    option tcplog</span><br><span class="line">    option tcp-check</span><br><span class="line">    balance roundrobin</span><br><span class="line">    default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100</span><br><span class="line">   <span class="built_in"> server </span>k8s-api-1 192.168.1.137:6443 check</span><br><span class="line">   <span class="built_in"> server </span>k8s-api-2 192.168.1.138:6443 check</span><br><span class="line"></span><br><span class="line">frontend k8s-http-api</span><br><span class="line">    bind 192.168.1.137:80</span><br><span class="line">    mode tcp</span><br><span class="line">    option tcplog</span><br><span class="line">    default_backend k8s-http-api</span><br><span class="line"></span><br><span class="line">backend k8s-http-api</span><br><span class="line">    mode tcp</span><br><span class="line">    option tcplog</span><br><span class="line">    option tcp-check</span><br><span class="line">    balance roundrobin</span><br><span class="line">    default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100</span><br><span class="line">   <span class="built_in"> server </span>k8s-http-api-1 192.168.1.137:8080 check</span><br><span class="line">   <span class="built_in"> server </span>k8s-http-api-2 192.168.1.138:8080 check</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的配置文件我们可以看出通过https的访问将请求转发给apiserver 的6443端口了，http的请求转发到了apiserver 的8080端口。</p>
+<h2 id="启动haproxy"><a href="#启动haproxy" class="headerlink" title="启动haproxy"></a>启动haproxy</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl start haproxy</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> haproxy</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status haproxy</span></span><br></pre></td></tr></table></figure>
+<p>然后我们可以通过上面9000端口监控我们的haproxy的运行状态(192.168.1.137:9000/stats):</p>
+<div align="center"><img src="/img/posts/1510279991107.jpg" alt="image">haproxy stats</div>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>上面我们的haproxy的确可以代理我们的两个master 上的apiserver 了，但是还不是高可用的，如果master01 这个节点down 掉了，那么我们haproxy 就不能正常提供服务了。这里我们可以使用两种方法来实现高可用</p>
+<p><strong>方式1：使用阿里云SLB</strong><br>这种方式实际上是最省心的，在阿里云上建一个内网的SLB，将master01 与master02 添加到SLB 机器组中，转发80(http)和443(https)端口即可（注意下面的提示）</p>
+<blockquote>
+<p>注意：阿里云的负载均衡是四层TCP负责，不支持后端ECS实例既作为Real Server又作为客户端向所在的负载均衡实例发送请求。因为返回的数据包只在云服务器内部转发，不经过负载均衡，所以在后端ECS实例上去访问负载均衡的服务地址是不通的。什么意思？就是如果你要使用阿里云的SLB的话，那么你不能在apiserver节点上使用SLB（比如在apiserver 上安装kubectl，然后将apiserver的地址设置为SLB的负载地址使用），因为这样的话就可能造成回环了，所以简单的做法是另外用两个新的节点做HA实例，然后将这两个实例添加到SLB 机器组中。</p>
+</blockquote>
+<p><strong>方式2：使用keepalived</strong><br>KeepAlived 是一个高可用方案，通过 VIP（即虚拟 IP）和心跳检测来实现高可用。其原理是存在一组（两台）服务器，分别赋予 Master、Backup 两个角色，默认情况下Master 会绑定VIP 到自己的网卡上，对外提供服务。Master、Backup 会在一定的时间间隔向对方发送心跳数据包来检测对方的状态，这个时间间隔一般为 2 秒钟，如果Backup 发现Master 宕机，那么Backup 会发送ARP 包到网关，把VIP 绑定到自己的网卡，此时Backup 对外提供服务，实现自动化的故障转移，当Master 恢复的时候会重新接管服务。非常类似于路由器中的虚拟路由器冗余协议（VRRP）</p>
+<p>开启路由转发，这里我们定义虚拟IP为：192.168.1.139<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ vi <span class="meta-keyword">/etc/</span>sysctl.conf</span><br><span class="line"><span class="meta"># 添加以下内容</span></span><br><span class="line">net.ipv4.ip_forward = <span class="number">1</span></span><br><span class="line">net.ipv4.ip_nonlocal_bind = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 验证并生效</span></span><br><span class="line">$ sysctl -p</span><br><span class="line"><span class="meta"># 验证是否生效</span></span><br><span class="line">$ cat <span class="meta-keyword">/proc/</span>sys<span class="meta-keyword">/net/</span>ipv4/ip_forward</span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+<p>安装keepalived:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum <span class="keyword">install</span> -y keepalived</span><br></pre></td></tr></table></figure></p>
+<p>我们这里将master01 设置为Master，master02 设置为Backup，修改配置：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/keepalived/keepalived.conf</span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">   &#125;</span><br><span class="line">   router_id kube_api</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_haproxy &#123;</span><br><span class="line">    # 自身状态检测</span><br><span class="line">    script <span class="string">"killall -0 haproxy"</span></span><br><span class="line">    interval <span class="number">3</span></span><br><span class="line">    weight <span class="number">5</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance haproxy-vip &#123;</span><br><span class="line">    # 使用单播通信，默认是组播通信</span><br><span class="line">    unicast_src_ip <span class="number">192.168</span><span class="number">.1</span><span class="number">.137</span></span><br><span class="line">    unicast_peer &#123;</span><br><span class="line">        <span class="number">192.168</span><span class="number">.1</span><span class="number">.138</span></span><br><span class="line">    &#125;</span><br><span class="line">    # 初始化状态</span><br><span class="line">    <span class="section">state</span> MASTER</span><br><span class="line">    # 虚拟ip 绑定的网卡 （这里根据你自己的实际情况选择网卡）</span><br><span class="line">    interface eth0</span><br><span class="line">    # 此ID 要与Backup 配置一致</span><br><span class="line">    virtual_router_id <span class="number">51</span></span><br><span class="line">    # 默认启动优先级，要比Backup 大点，但要控制量，保证自身状态检测生效</span><br><span class="line">    priority <span class="number">100</span></span><br><span class="line">    advert_int <span class="number">1</span></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass <span class="number">1111</span></span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        # 虚拟ip 地址</span><br><span class="line">        <span class="number">192.168</span><span class="number">.1</span><span class="number">.139</span></span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_haproxy</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">virtual_server <span class="number">192.168</span><span class="number">.1</span><span class="number">.139</span> <span class="number">80</span> &#123;</span><br><span class="line">  delay_loop <span class="number">5</span></span><br><span class="line">  lvs_sched wlc</span><br><span class="line">  lvs_method NAT</span><br><span class="line">  persistence_timeout <span class="number">1800</span></span><br><span class="line">  protocol TCP</span><br><span class="line"></span><br><span class="line">  real_server <span class="number">192.168</span><span class="number">.1</span><span class="number">.137</span> <span class="number">80</span> &#123;</span><br><span class="line">    weight <span class="number">1</span></span><br><span class="line">    TCP_CHECK &#123;</span><br><span class="line">      connect_port <span class="number">80</span></span><br><span class="line">      connect_timeout <span class="number">3</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">virtual_server <span class="number">192.168</span><span class="number">.1</span><span class="number">.139</span> <span class="number">443</span> &#123;</span><br><span class="line">  delay_loop <span class="number">5</span></span><br><span class="line">  lvs_sched wlc</span><br><span class="line">  lvs_method NAT</span><br><span class="line">  persistence_timeout <span class="number">1800</span></span><br><span class="line">  protocol TCP</span><br><span class="line"></span><br><span class="line">  real_server <span class="number">192.168</span><span class="number">.1</span><span class="number">.137</span> <span class="number">443</span> &#123;</span><br><span class="line">    weight <span class="number">1</span></span><br><span class="line">    TCP_CHECK &#123;</span><br><span class="line">      connect_port <span class="number">443</span></span><br><span class="line">      connect_timeout <span class="number">3</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>统一的方式在master02 节点上安装keepalived，修改配置，只需要将state 更改成BACKUP，priority更改成99，unicast_src_ip 与unicast_peer 地址修改即可。</p>
+<p>启动keepalived:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl start keepalived</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> systemctl <span class="built_in">enable</span> keepalived</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看日志</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> journalctl -f -u keepalived</span></span><br></pre></td></tr></table></figure></p>
+<p>验证虚拟IP:<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用ifconfig -a 命令查看不到，要使用ip addr</span></span><br><span class="line">$ ip addr</span><br><span class="line"><span class="number">1</span>: lo: <span class="variable">&lt;LOOPBACK,UP,LOWER_UP&gt;</span> mtu <span class="number">65536</span> qdisc noqueue <span class="keyword">state</span> UNKNOWN qlen <span class="number">1</span></span><br><span class="line">    link/loopback <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> brd <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span></span><br><span class="line">    <span class="keyword">inet</span> <span class="number">127.0</span>.<span class="number">0.1</span>/<span class="number">8</span> scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line"><span class="number">2</span>: eth0: <span class="variable">&lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span> mtu <span class="number">1500</span> qdisc pfifo_fast <span class="keyword">state</span> UP qlen <span class="number">1000</span></span><br><span class="line">    link/ether <span class="number">00</span>:<span class="number">16</span>:<span class="number">3</span>e:<span class="number">00</span>:<span class="number">55</span>:c1 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    <span class="keyword">inet</span> <span class="number">192.168</span>.<span class="number">1.137</span>/<span class="number">24</span> brd <span class="number">192.168</span>.<span class="number">1.255</span> scope <span class="keyword">global</span> dynamic eth0</span><br><span class="line">       valid_lft <span class="number">31447746</span>sec preferred_lft <span class="number">31447746</span>sec</span><br><span class="line">    <span class="keyword">inet</span> <span class="number">192.168</span>.<span class="number">1.139</span>/<span class="number">24</span> brd <span class="number">192.168</span>.<span class="number">1.255</span> scope <span class="keyword">global</span> secondary eth0-vip</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>到这里，我们就可以将上面的6443端口和8080端口去掉了，可以手动将kubectl生成的config文件(~/.kube/config)中的server 地址6443端口去掉，另外kube-controller-manager和kube-scheduler的–master参数中的8080端口去掉了，然后分别重启这两个组件即可。</p>
+</blockquote>
+<p>验证apiserver：关闭master01 节点上的kube-apiserver 进程，然后查看虚拟ip是否漂移到了master02 节点。</p>
+<p>然后我们就可以将第一步在/etc/hosts里面设置的域名对应的IP 更改为我们的虚拟IP了</p>
+<blockquote>
+<p>master01 与master 02 节点都需要安装keepalived 和haproxy，实际上我们虚拟IP的自身检测应该是检测haproxy，脚本大家可以自行更改</p>
+</blockquote>
+<div align="center"><img src="/img/posts/apiserver-ha.png" alt="image">kube-apiserver ha</div>
+
+
+<p>这样我们就实现了接入层apiserver 的高可用了，一个部分是多活的apiserver 服务，另一个部分是一主一备的haproxy 服务。</p>
+<h2 id="kube-controller-manager-和kube-scheduler的高可用"><a href="#kube-controller-manager-和kube-scheduler的高可用" class="headerlink" title="kube-controller-manager 和kube-scheduler的高可用"></a>kube-controller-manager 和kube-scheduler的高可用</h2><p>Kubernetes 的管理层服务包括kube-scheduler和kube-controller-manager。kube-scheduler和kube-controller-manager使用一主多从的高可用方案，在同一时刻只允许一个服务处以具体的任务。Kubernetes中实现了一套简单的选主逻辑，依赖Etcd实现scheduler和controller-manager的选主功能。如果scheduler和controller-manager在启动的时候设置了leader-elect参数，它们在启动后会先尝试获取leader节点身份，只有在获取leader节点身份后才可以执行具体的业务逻辑。它们分别会在Etcd中创建kube-scheduler和kube-controller-manager的endpoint，endpoint的信息中记录了当前的leader节点信息，以及记录的上次更新时间。leader节点会定期更新endpoint的信息，维护自己的leader身份。每个从节点的服务都会定期检查endpoint的信息，如果endpoint的信息在时间范围内没有更新，它们会尝试更新自己为leader节点。scheduler服务以及controller-manager服务之间不会进行通信，利用Etcd的强一致性，能够保证在分布式高并发情况下leader节点的全局唯一性。整体方案如下图所示：</p>
+<div align="center"><img src="/img/posts/1498099870616.png" alt="image">高可用</div>
+
+<h1 id="8-部署Node-节点"><a href="#8-部署Node-节点" class="headerlink" title="8. 部署Node 节点"></a>8. 部署Node 节点</h1><p>kubernetes Node 节点包含如下组件：</p>
+<ul>
+<li>flanneld</li>
+<li>docker</li>
+<li>kubelet</li>
+<li>kube-proxy</li>
+</ul>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">source</span> /usr/k8s/bin/env.sh</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> KUBE_APISERVER=<span class="string">"https://<span class="variable">$&#123;MASTER_URL&#125;</span>"</span>  // 如果你没有安装`haproxy`的话，还是需要使用6443端口的哦</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> NODE_IP=192.168.1.170  <span class="comment"># 当前部署的节点 IP</span></span></span><br></pre></td></tr></table></figure>
+<p>按照上面的步骤安装配置好flanneld</p>
+<h2 id="开启路由转发"><a href="#开启路由转发" class="headerlink" title="开启路由转发"></a>开启路由转发</h2><p>修改/etc/sysctl.conf文件，添加下面的规则：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net<span class="selector-class">.ipv4</span><span class="selector-class">.ip_forward</span>=<span class="number">1</span></span><br><span class="line">net<span class="selector-class">.bridge</span><span class="selector-class">.bridge-nf-call-iptables</span>=<span class="number">1</span></span><br><span class="line">net<span class="selector-class">.bridge</span><span class="selector-class">.bridge-nf-call-ip6tables</span>=<span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+<p>执行下面的命令立即生效：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>sysctl -p</span><br></pre></td></tr></table></figure></p>
+<p>配置docker<br>你可以用二进制或yum install 的方式来安装docker，然后修改docker 的systemd unit 文件：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">$ cat /usr/lib/systemd/system/docker.service  # 用systemctl status docker 命令可查看unit 文件路径</span><br><span class="line">[Unit]</span><br><span class="line"><span class="attribute">Description</span>=Docker Application Container Engine</span><br><span class="line"><span class="attribute">Documentation</span>=https://docs.docker.com</span><br><span class="line"><span class="attribute">After</span>=network-online.target firewalld.service</span><br><span class="line"><span class="attribute">Wants</span>=network-online.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line"><span class="attribute">Type</span>=notify</span><br><span class="line"><span class="comment"># the default is not to use systemd for cgroups because the delegate issues still</span></span><br><span class="line"><span class="comment"># exists and systemd currently does not support the cgroup feature set required</span></span><br><span class="line"><span class="comment"># for containers run by docker</span></span><br><span class="line"><span class="attribute">EnvironmentFile</span>=-/run/flannel/docker</span><br><span class="line"><span class="attribute">ExecStart</span>=/usr/bin/dockerd <span class="attribute">--log-level</span>=info <span class="variable">$DOCKER_NETWORK_OPTIONS</span></span><br><span class="line"><span class="attribute">ExecReload</span>=/bin/kill -s HUP <span class="variable">$MAINPID</span></span><br><span class="line"><span class="comment"># Having non-zero Limit*s causes performance problems due to accounting overhead</span></span><br><span class="line"><span class="comment"># in the kernel. We recommend using cgroups to do container-local accounting.</span></span><br><span class="line"><span class="attribute">LimitNOFILE</span>=infinity</span><br><span class="line"><span class="attribute">LimitNPROC</span>=infinity</span><br><span class="line"><span class="attribute">LimitCORE</span>=infinity</span><br><span class="line"><span class="comment"># Uncomment TasksMax if your systemd version supports it.</span></span><br><span class="line"><span class="comment"># Only systemd 226 and above support this version.</span></span><br><span class="line"><span class="comment">#TasksMax=infinity</span></span><br><span class="line"><span class="attribute">TimeoutStartSec</span>=0</span><br><span class="line"><span class="comment"># set delegate yes so that systemd does not reset the cgroups of docker containers</span></span><br><span class="line"><span class="attribute">Delegate</span>=<span class="literal">yes</span></span><br><span class="line"><span class="comment"># kill only the docker process, not all processes in the cgroup</span></span><br><span class="line"><span class="attribute">KillMode</span>=process</span><br><span class="line"><span class="comment"># restart the docker process if it exits prematurely</span></span><br><span class="line"><span class="attribute">Restart</span>=on-failure</span><br><span class="line"><span class="attribute">StartLimitBurst</span>=3</span><br><span class="line"><span class="attribute">StartLimitInterval</span>=60s</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line"><span class="attribute">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>dockerd 运行时会调用其它 docker 命令，如 docker-proxy，所以需要将 docker 命令所在的目录加到 PATH 环境变量中</p>
+</li>
+<li><p>flanneld 启动时将网络配置写入到 /run/flannel/docker 文件中的变量 DOCKER_NETWORK_OPTIONS，dockerd 命令行上指定该变量值来设置 docker0 网桥参数</p>
+</li>
+<li><p>如果指定了多个 EnvironmentFile 选项，则必须将 /run/flannel/docker 放在最后(确保 docker0 使用 flanneld 生成的 bip 参数)</p>
+</li>
+<li><p>不能关闭默认开启的 –iptables 和 –ip-masq 选项</p>
+</li>
+<li><p>如果内核版本比较新，建议使用 overlay 存储驱动</p>
+</li>
+<li><p>docker 从 1.13 版本开始，可能将 iptables FORWARD chain的默认策略设置为DROP，从而导致 ping 其它 Node 上的 Pod IP 失败，遇到这种情况时，需要手动设置策略为 ACCEPT：</p>
+</li>
+</ul>
+<figure class="highlight tp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo iptables -<span class="keyword">P</span> FORWARD <span class="keyword">ACC</span>EPT</span><br></pre></td></tr></table></figure>
+<p>如果没有开启上面的路由转发(net.ipv4.ip_forward=1)，则需要把以下命令写入/etc/rc.local文件中，防止节点重启<strong>iptables FORWARD chain的默认策略又还原为DROP</strong>（下面的开机脚本我测试了几次都没生效，不知道是不是方法有误，所以最好的方式还是开启上面的路由转发功能，一劳永逸）</p>
+<figure class="highlight tp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sleep <span class="number">60</span> &amp;&amp; /sbin/iptables -<span class="keyword">P</span> FORWARD <span class="keyword">ACC</span>EPT</span><br></pre></td></tr></table></figure>
+<p>为了加快 pull image 的速度，可以使用国内的仓库镜像服务器，同时增加下载的并发数。(如果 dockerd 已经运行，则需要重启 dockerd 生效。)</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat <span class="meta-keyword">/etc/</span>docker/daemon.json</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"max-concurrent-downloads"</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="启动docker"><a href="#启动docker" class="headerlink" title="启动docker"></a>启动docker</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl stop firewalld</span><br><span class="line">$ sudo systemctl <span class="builtin-name">disable</span> firewalld</span><br><span class="line">$ sudo iptables -F &amp;&amp; sudo iptables -X &amp;&amp; sudo iptables -F -t<span class="built_in"> nat </span>&amp;&amp; sudo iptables -X -t nat</span><br><span class="line">$ sudo systemctl <span class="builtin-name">enable</span> docker</span><br><span class="line">$ sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需要关闭 firewalld(centos7)/ufw(ubuntu16.04)，否则可能会重复创建 iptables 规则</li>
+<li>最好清理旧的 iptables rules 和 chains 规则</li>
+<li>执行命令：docker version，检查docker服务是否正常</li>
+</ul>
+<h2 id="安装和配置kubelet"><a href="#安装和配置kubelet" class="headerlink" title="安装和配置kubelet"></a>安装和配置kubelet</h2><p>kubelet 启动时向kube-apiserver 发送TLS bootstrapping 请求，需要先将bootstrap token 文件中的kubelet-bootstrap 用户赋予system:node-bootstrapper 角色，然后kubelet 才有权限创建认证请求(certificatesigningrequests)：</p>
+<blockquote>
+<p>kubelet就是运行在Node节点上的，所以这一步安装是在所有的Node节点上，如果你想把你的Master也当做Node节点的话，当然也可以在Master节点上安装的。</p>
+</blockquote>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create clusterrolebinding kubelet-bootstrap --<span class="attr">clusterrole=</span>system:<span class="keyword">node</span><span class="title">-bootstrapper</span> --<span class="attr">user=</span>kubelet-bootstrap</span><br></pre></td></tr></table></figure>
+<ul>
+<li>–user=kubelet-bootstrap 是文件 /etc/kubernetes/token.csv 中指定的用户名，同时也写入了文件 /etc/kubernetes/bootstrap.kubeconfig</li>
+</ul>
+<p>另外1.8 版本中还需要为Node 请求创建一个RBAC 授权规则：<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create clusterrolebinding kubelet-nodes --<span class="attr">clusterrole=</span>system:<span class="keyword">node</span> <span class="title">--group</span>=system:nodes</span><br></pre></td></tr></table></figure></p>
+<p>然后下载最新的kubelet 和kube-proxy 二进制文件（前面下载kubernetes 目录下面其实也有）：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ wget https:<span class="comment">//dl.k8s.io/v1.8.2/kubernetes-server-linux-amd64.tar.gz</span></span><br><span class="line">$ tar -xzvf kubernetes-server-linux-amd64<span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br><span class="line">$ cd kubernetes</span><br><span class="line">$ tar -xzvf  kubernetes-src<span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br><span class="line">$ sudo cp -r ./server/bin/&#123;kube-proxy,kubelet&#125; /usr/k8s/bin/</span><br></pre></td></tr></table></figure></p>
+<h2 id="创建kubelet-bootstapping-kubeconfig-文件"><a href="#创建kubelet-bootstapping-kubeconfig-文件" class="headerlink" title="创建kubelet bootstapping kubeconfig 文件"></a>创建kubelet bootstapping kubeconfig 文件</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ # 设置集群参数</span><br><span class="line">$ kubectl<span class="built_in"> config </span>set-cluster kubernetes \</span><br><span class="line">  <span class="attribute">--certificate-authority</span>=/etc/kubernetes/ssl/ca.pem \</span><br><span class="line">  <span class="attribute">--embed-certs</span>=<span class="literal">true</span> \</span><br><span class="line">  <span class="attribute">--server</span>=<span class="variable">$&#123;KUBE_APISERVER&#125;</span> \</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=bootstrap.kubeconfig</span><br><span class="line">$ # 设置客户端认证参数</span><br><span class="line">$ kubectl<span class="built_in"> config </span>set-credentials kubelet-bootstrap \</span><br><span class="line">  <span class="attribute">--token</span>=<span class="variable">$&#123;BOOTSTRAP_TOKEN&#125;</span> \</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=bootstrap.kubeconfig</span><br><span class="line">$ # 设置上下文参数</span><br><span class="line">$ kubectl<span class="built_in"> config </span>set-context<span class="built_in"> default </span>\</span><br><span class="line">  <span class="attribute">--cluster</span>=kubernetes \</span><br><span class="line">  <span class="attribute">--user</span>=kubelet-bootstrap \</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=bootstrap.kubeconfig</span><br><span class="line">$ # 设置默认上下文</span><br><span class="line">$ kubectl<span class="built_in"> config </span>use-context<span class="built_in"> default </span><span class="attribute">--kubeconfig</span>=bootstrap.kubeconfig</span><br><span class="line">$ mv bootstrap.kubeconfig /etc/kubernetes/</span><br></pre></td></tr></table></figure>
+<ul>
+<li>–embed-certs 为 true 时表示将 certificate-authority 证书写入到生成的 bootstrap.kubeconfig 文件中；</li>
+<li>设置 kubelet 客户端认证参数时没有指定秘钥和证书，后续由 kube-apiserver 自动生成；</li>
+</ul>
+<h2 id="创建kubelet-的systemd-unit-文件"><a href="#创建kubelet-的systemd-unit-文件" class="headerlink" title="创建kubelet 的systemd unit 文件"></a>创建kubelet 的systemd unit 文件</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkdir /var/lib/kubelet # 必须先创建工作目录</span><br><span class="line">$ cat &gt; kubelet.service &lt;&lt;EOF</span><br><span class="line">[Unit]</span><br><span class="line"><span class="attribute">Description</span>=Kubernetes Kubelet</span><br><span class="line"><span class="attribute">Documentation</span>=https://github.com/GoogleCloudPlatform/kubernetes</span><br><span class="line"><span class="attribute">After</span>=docker.service</span><br><span class="line"><span class="attribute">Requires</span>=docker.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line"><span class="attribute">WorkingDirectory</span>=/var/lib/kubelet</span><br><span class="line"><span class="attribute">ExecStart</span>=/usr/k8s/bin/kubelet \\</span><br><span class="line">  <span class="attribute">--fail-swap-on</span>=<span class="literal">false</span> \\</span><br><span class="line">  <span class="attribute">--cgroup-driver</span>=cgroupfs \\</span><br><span class="line">  <span class="attribute">--address</span>=<span class="variable">$&#123;NODE_IP&#125;</span> \\</span><br><span class="line">  <span class="attribute">--hostname-override</span>=<span class="variable">$&#123;NODE_IP&#125;</span> \\</span><br><span class="line">  <span class="attribute">--experimental-bootstrap-kubeconfig</span>=/etc/kubernetes/bootstrap.kubeconfig \\</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=/etc/kubernetes/kubelet.kubeconfig \\</span><br><span class="line">  --require-kubeconfig \\</span><br><span class="line">  <span class="attribute">--cert-dir</span>=/etc/kubernetes/ssl \\</span><br><span class="line">  <span class="attribute">--cluster-dns</span>=<span class="variable">$&#123;CLUSTER_DNS_SVC_IP&#125;</span> \\</span><br><span class="line">  <span class="attribute">--cluster-domain</span>=<span class="variable">$&#123;CLUSTER_DNS_DOMAIN&#125;</span> \\</span><br><span class="line">  --hairpin-mode promiscuous-bridge \\</span><br><span class="line">  <span class="attribute">--allow-privileged</span>=<span class="literal">true</span> \\</span><br><span class="line">  <span class="attribute">--serialize-image-pulls</span>=<span class="literal">false</span> \\</span><br><span class="line">  <span class="attribute">--logtostderr</span>=<span class="literal">true</span> \\</span><br><span class="line">  <span class="attribute">--v</span>=2</span><br><span class="line"><span class="attribute">Restart</span>=on-failure</span><br><span class="line"><span class="attribute">RestartSec</span>=5</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line"><span class="attribute">WantedBy</span>=multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>请仔细阅读下面的注意事项，不然可能会启动失败。</p>
+</blockquote>
+<ul>
+<li>–fail-swap-on参数，这个一定要注意，Kubernetes 1.8开始要求关闭系统的Swap，如果不关闭，默认配置下kubelet将无法启动，也可以通过kubelet的启动参数–fail-swap-on=false来避免该问题</li>
+<li>–cgroup-driver参数，kubelet 用来维护主机的的 cgroups 的，默认是cgroupfs，但是这个地方的值需要你根据docker 的配置来确定（docker info |grep cgroup）</li>
+<li>-address 不能设置为 127.0.0.1，否则后续 Pods 访问 kubelet 的 API 接口时会失败，因为 Pods 访问的 127.0.0.1指向自己而不是 kubelet</li>
+<li>如果设置了 –hostname-override 选项，则 kube-proxy 也需要设置该选项，否则会出现找不到 Node 的情况</li>
+<li>–experimental-bootstrap-kubeconfig 指向 bootstrap kubeconfig 文件，kubelet 使用该文件中的用户名和 token 向 kube-apiserver 发送 TLS Bootstrapping 请求</li>
+<li>管理员通过了 CSR 请求后，kubelet 自动在 –cert-dir 目录创建证书和私钥文件(kubelet-client.crt 和 kubelet-client.key)，然后写入 –kubeconfig 文件(自动创建 –kubeconfig 指定的文件)</li>
+<li>建议在 –kubeconfig 配置文件中指定 kube-apiserver 地址，如果未指定 –api-servers 选项，则必须指定 –require-kubeconfig 选项后才从配置文件中读取 kue-apiserver 的地址，否则 kubelet 启动后将找不到 kube-apiserver (日志中提示未找到 API Server），kubectl get nodes 不会返回对应的 Node 信息</li>
+<li>–cluster-dns 指定 kubedns 的 Service IP(可以先分配，后续创建 kubedns 服务时指定该 IP)，–cluster-domain 指定域名后缀，这两个参数同时指定后才会生效</li>
+</ul>
+<h2 id="启动kubelet"><a href="#启动kubelet" class="headerlink" title="启动kubelet"></a>启动kubelet</h2><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$</span> sudo cp kubelet.service /etc/systemd/<span class="keyword">system</span>/kubelet.service</span><br><span class="line"><span class="symbol">$</span> sudo systemctl daemon-reload</span><br><span class="line"><span class="symbol">$</span> sudo systemctl enable kubelet</span><br><span class="line"><span class="symbol">$</span> sudo systemctl start kubelet</span><br><span class="line"><span class="symbol">$</span> systemctl status kubelet</span><br></pre></td></tr></table></figure>
+<h2 id="通过kubelet-的TLS-证书请求"><a href="#通过kubelet-的TLS-证书请求" class="headerlink" title="通过kubelet 的TLS 证书请求"></a>通过kubelet 的TLS 证书请求</h2><p>kubelet 首次启动时向kube-apiserver 发送证书签名请求，必须通过后kubernetes 系统才会将该 Node 加入到集群。查看未授权的CSR 请求：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> csr</span><br><span class="line">NAME                                                   AGE       REQUESTOR           CONDITION</span><br><span class="line">node-csr--k3G2G1EoM4h9w1FuJRjJjfbIPNxa551A8TZfW9dG-g   2m        kubelet-bootstrap   Pending</span><br><span class="line">$ kubectl <span class="builtin-name">get</span> nodes</span><br><span class="line"><span class="literal">No</span> resources found.</span><br></pre></td></tr></table></figure></p>
+<p>通过CSR 请求：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl certificate approve node-csr--k3G2G1EoM4h9w1FuJRjJjfbIPNxa551A8TZfW9dG-g</span><br><span class="line">certificatesigningrequest <span class="string">"node-csr--k3G2G1EoM4h9w1FuJRjJjfbIPNxa551A8TZfW9dG-g"</span> approved</span><br><span class="line">$ kubectl get nodes</span><br><span class="line">NAME            STATUS    ROLES     AGE       VERSION</span><br><span class="line"><span class="number">192.168</span><span class="number">.1</span><span class="number">.170</span>   Ready     &lt;none&gt;    <span class="number">48</span>s       v1<span class="number">.8</span><span class="number">.1</span></span><br></pre></td></tr></table></figure></p>
+<p>自动生成了kubelet kubeconfig 文件和公私钥：<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l /etc/kubernetes/kubelet.kubeconfig</span><br><span class="line">-rw-------<span class="number"> 1 </span>root root<span class="number"> 2280 </span>Nov <span class="number"> 7 </span>10:26 /etc/kubernetes/kubelet.kubeconfig</span><br><span class="line">$ ls -l /etc/kubernetes/ssl/kubelet*</span><br><span class="line">-rw-r--r--<span class="number"> 1 </span>root root<span class="number"> 1046 </span>Nov <span class="number"> 7 </span>10:26 /etc/kubernetes/ssl/kubelet-client.crt</span><br><span class="line">-rw-------<span class="number"> 1 </span>root root <span class="number"> 227 </span>Nov <span class="number"> 7 </span>10:22 /etc/kubernetes/ssl/kubelet-client.key</span><br><span class="line">-rw-r--r--<span class="number"> 1 </span>root root<span class="number"> 1115 </span>Nov <span class="number"> 7 </span>10:16 /etc/kubernetes/ssl/kubelet.crt</span><br><span class="line">-rw-------<span class="number"> 1 </span>root root<span class="number"> 1675 </span>Nov <span class="number"> 7 </span>10:16 /etc/kubernetes/ssl/kubelet.key</span><br></pre></td></tr></table></figure></p>
+<h2 id="配置kube-proxy"><a href="#配置kube-proxy" class="headerlink" title="配置kube-proxy"></a>配置kube-proxy</h2><p><strong>创建kube-proxy 证书签名请求：</strong><br><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ cat &gt; kube-proxy-csr.json &lt;&lt;<span class="symbol">EOF</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"CN"</span>: <span class="string">"system:kube-proxy"</span>,</span><br><span class="line">  <span class="string">"hosts"</span>: [],</span><br><span class="line">  <span class="string">"key"</span>: &#123;</span><br><span class="line">    <span class="string">"algo"</span>: <span class="string">"rsa"</span>,</span><br><span class="line">    <span class="string">"size"</span>: <span class="number">2048</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"names"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"C"</span>: <span class="string">"CN"</span>,</span><br><span class="line">      <span class="string">"ST"</span>: <span class="string">"BeiJing"</span>,</span><br><span class="line">      <span class="string">"L"</span>: <span class="string">"BeiJing"</span>,</span><br><span class="line">      <span class="string">"O"</span>: <span class="string">"k8s"</span>,</span><br><span class="line">      <span class="string">"OU"</span>: <span class="string">"System"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"><span class="symbol">EOF</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>CN 指定该证书的 User 为 system:kube-proxy</li>
+<li>kube-apiserver 预定义的 RoleBinding system:node-proxier 将User system:kube-proxy 与 Role system:node-proxier绑定，该 Role 授予了调用 kube-apiserver Proxy 相关 API 的权限</li>
+<li>hosts 属性值为空列表</li>
+</ul>
+<p><strong>生成kube-proxy 客户端证书和私钥</strong><br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>cfssl gencert -ca=<span class="regexp">/etc/kubernetes</span><span class="regexp">/ssl/ca</span>.pem \</span><br><span class="line">  -ca-key=<span class="regexp">/etc/kubernetes</span><span class="regexp">/ssl/ca</span>-key.pem \</span><br><span class="line">  -config=<span class="regexp">/etc/kubernetes</span><span class="regexp">/ssl/ca</span>-config.json \</span><br><span class="line">  -profile=kubernetes kube-proxy-csr.json | cfssljson -bare kube-proxy</span><br><span class="line"><span class="variable">$ </span>ls kube-proxy*</span><br><span class="line">kube-proxy.csr  kube-proxy-csr.json  kube-proxy-key.pem  kube-proxy.pem</span><br><span class="line"><span class="variable">$ </span>sudo mv kube-proxy*.pem /etc/kubernetes/ssl/</span><br></pre></td></tr></table></figure></p>
+<p><strong>创建kube-proxy kubeconfig 文件</strong><br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ # 设置集群参数</span><br><span class="line">$ kubectl<span class="built_in"> config </span>set-cluster kubernetes \</span><br><span class="line">  <span class="attribute">--certificate-authority</span>=/etc/kubernetes/ssl/ca.pem \</span><br><span class="line">  <span class="attribute">--embed-certs</span>=<span class="literal">true</span> \</span><br><span class="line">  <span class="attribute">--server</span>=<span class="variable">$&#123;KUBE_APISERVER&#125;</span> \</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=kube-proxy.kubeconfig</span><br><span class="line">$ # 设置客户端认证参数</span><br><span class="line">$ kubectl<span class="built_in"> config </span>set-credentials kube-proxy \</span><br><span class="line">  <span class="attribute">--client-certificate</span>=/etc/kubernetes/ssl/kube-proxy.pem \</span><br><span class="line">  <span class="attribute">--client-key</span>=/etc/kubernetes/ssl/kube-proxy-key.pem \</span><br><span class="line">  <span class="attribute">--embed-certs</span>=<span class="literal">true</span> \</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=kube-proxy.kubeconfig</span><br><span class="line">$ # 设置上下文参数</span><br><span class="line">$ kubectl<span class="built_in"> config </span>set-context<span class="built_in"> default </span>\</span><br><span class="line">  <span class="attribute">--cluster</span>=kubernetes \</span><br><span class="line">  <span class="attribute">--user</span>=kube-proxy \</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=kube-proxy.kubeconfig</span><br><span class="line">$ # 设置默认上下文</span><br><span class="line">$ kubectl<span class="built_in"> config </span>use-context<span class="built_in"> default </span><span class="attribute">--kubeconfig</span>=kube-proxy.kubeconfig</span><br><span class="line">$ mv kube-proxy.kubeconfig /etc/kubernetes/</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>设置集群参数和客户端认证参数时 –embed-certs 都为 true，这会将 certificate-authority、client-certificate 和 client-key 指向的证书文件内容写入到生成的 kube-proxy.kubeconfig 文件中</li>
+<li>kube-proxy.pem 证书中 CN 为 system:kube-proxy，kube-apiserver 预定义的 RoleBinding cluster-admin 将User system:kube-proxy 与 Role system:node-proxier 绑定，该 Role 授予了调用 kube-apiserver Proxy 相关 API 的权限</li>
+</ul>
+<p><strong>创建kube-proxy 的systemd unit 文件</strong><br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkdir -p /var/lib/kube-proxy # 必须先创建工作目录</span><br><span class="line">$ cat &gt; kube-proxy.service &lt;&lt;EOF</span><br><span class="line">[Unit]</span><br><span class="line"><span class="attribute">Description</span>=Kubernetes Kube-Proxy Server</span><br><span class="line"><span class="attribute">Documentation</span>=https://github.com/GoogleCloudPlatform/kubernetes</span><br><span class="line"><span class="attribute">After</span>=network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line"><span class="attribute">WorkingDirectory</span>=/var/lib/kube-proxy</span><br><span class="line"><span class="attribute">ExecStart</span>=/usr/k8s/bin/kube-proxy \\</span><br><span class="line">  <span class="attribute">--bind-address</span>=<span class="variable">$&#123;NODE_IP&#125;</span> \\</span><br><span class="line">  <span class="attribute">--hostname-override</span>=<span class="variable">$&#123;NODE_IP&#125;</span> \\</span><br><span class="line">  <span class="attribute">--cluster-cidr</span>=<span class="variable">$&#123;SERVICE_CIDR&#125;</span> \\</span><br><span class="line">  <span class="attribute">--kubeconfig</span>=/etc/kubernetes/kube-proxy.kubeconfig \\</span><br><span class="line">  <span class="attribute">--logtostderr</span>=<span class="literal">true</span> \\</span><br><span class="line">  <span class="attribute">--v</span>=2</span><br><span class="line"><span class="attribute">Restart</span>=on-failure</span><br><span class="line"><span class="attribute">RestartSec</span>=5</span><br><span class="line"><span class="attribute">LimitNOFILE</span>=65536</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line"><span class="attribute">WantedBy</span>=multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>–hostname-override 参数值必须与 kubelet 的值一致，否则 kube-proxy 启动后会找不到该 Node，从而不会创建任何 iptables 规则</li>
+<li>–cluster-cidr 必须与 kube-apiserver 的 –service-cluster-ip-range 选项值一致</li>
+<li>kube-proxy 根据 –cluster-cidr 判断集群内部和外部流量，指定 –cluster-cidr 或 –masquerade-all 选项后 kube-proxy 才会对访问 Service IP 的请求做 SNAT</li>
+<li>–kubeconfig 指定的配置文件嵌入了 kube-apiserver 的地址、用户名、证书、秘钥等请求和认证信息</li>
+<li>预定义的 RoleBinding cluster-admin 将User system:kube-proxy 与 Role system:node-proxier 绑定，该 Role 授予了调用 kube-apiserver Proxy 相关 API 的权限</li>
+</ul>
+<h2 id="启动kube-proxy"><a href="#启动kube-proxy" class="headerlink" title="启动kube-proxy"></a>启动kube-proxy</h2><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$</span> sudo cp kube-proxy.service /etc/systemd/<span class="keyword">system</span>/</span><br><span class="line"><span class="symbol">$</span> sudo systemctl daemon-reload</span><br><span class="line"><span class="symbol">$</span> sudo systemctl enable kube-proxy</span><br><span class="line"><span class="symbol">$</span> sudo systemctl start kube-proxy</span><br><span class="line"><span class="symbol">$</span> systemctl status kube-proxy</span><br></pre></td></tr></table></figure>
+<h2 id="验证集群功能"><a href="#验证集群功能" class="headerlink" title="验证集群功能"></a>验证集群功能</h2><p>定义yaml 文件：（将下面内容保存为：nginx-ds.yaml）<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">nginx-ds</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">nginx-ds</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">NodePort</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">nginx-ds</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">80</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">DaemonSet</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">nginx-ds</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line">    <span class="string">addonmanager.kubernetes.io/mode:</span> <span class="string">Reconcile</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        app:</span> <span class="string">nginx-ds</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my-nginx</span></span><br><span class="line"><span class="attr">        image:</span> <span class="attr">nginx:1.7.9</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - containerPort:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure></p>
+<p>创建 Pod 和服务：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f nginx-ds.yml</span><br><span class="line">service <span class="string">"nginx-ds"</span> created</span><br><span class="line">daemonset <span class="string">"nginx-ds"</span> created</span><br></pre></td></tr></table></figure></p>
+<p>执行下面的命令查看Pod 和SVC：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> pods -o wide</span><br><span class="line">NAME             READY     STATUS    RESTARTS   AGE      <span class="built_in"> IP </span>          NODE</span><br><span class="line">nginx-ds-f29zt   1/1       Running   0          23m       172.17.0.2   192.168.1.170</span><br><span class="line">$ kubectl <span class="builtin-name">get</span> svc</span><br><span class="line">NAME        <span class="built_in"> TYPE </span>       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">nginx-ds     NodePort    10.254.6.249   &lt;none&gt;        80:30813/TCP   24m</span><br></pre></td></tr></table></figure></p>
+<p>可以看到：</p>
+<ul>
+<li>服务IP：10.254.6.249</li>
+<li>服务端口：80</li>
+<li>NodePort端口：30813</li>
+</ul>
+<p>在所有 Node 上执行：<br><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl <span class="number">10.254</span><span class="meta">.6</span><span class="meta">.249</span></span><br><span class="line">$ curl <span class="number">192.168</span><span class="meta">.1</span><span class="meta">.170</span>:<span class="number">30813</span></span><br></pre></td></tr></table></figure></p>
+<p>执行上面的命令预期都会输出nginx 欢迎页面内容，表示我们的Node 节点正常运行了。</p>
+<h1 id="9-部署kubedns-插件"><a href="#9-部署kubedns-插件" class="headerlink" title="9. 部署kubedns 插件"></a>9. 部署kubedns 插件</h1><p>官方文件目录：kubernetes/cluster/addons/dns</p>
+<p>使用的文件：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls *<span class="selector-class">.yaml</span> *.base</span><br><span class="line">kubedns-cm<span class="selector-class">.yaml</span>  kubedns-sa<span class="selector-class">.yaml</span>  kubedns-controller<span class="selector-class">.yaml</span><span class="selector-class">.base</span>  kubedns-svc<span class="selector-class">.yaml</span><span class="selector-class">.base</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="系统预定义的RoleBinding"><a href="#系统预定义的RoleBinding" class="headerlink" title="系统预定义的RoleBinding"></a>系统预定义的RoleBinding</h2><p>预定义的RoleBinding system:kube-dns将kube-system 命名空间的kube-dnsServiceAccount 与 system:kube-dns Role 绑定，该Role 具有访问kube-apiserver DNS 相关的API 权限：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">kubectl</span> <span class="string">get</span> <span class="string">clusterrolebindings</span> <span class="attr">system:kube-dns</span> <span class="bullet">-o</span> <span class="string">yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  annotations:</span></span><br><span class="line">    <span class="string">rbac.authorization.kubernetes.io/autoupdate:</span> <span class="string">"true"</span></span><br><span class="line"><span class="attr">  creationTimestamp:</span> <span class="number">2017</span><span class="bullet">-11</span><span class="bullet">-06</span><span class="attr">T10:51:59Z</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line">    <span class="string">kubernetes.io/bootstrapping:</span> <span class="string">rbac-defaults</span></span><br><span class="line"><span class="attr">  name:</span> <span class="attr">system:kube-dns</span></span><br><span class="line"><span class="attr">  resourceVersion:</span> <span class="string">"78"</span></span><br><span class="line"><span class="attr">  selfLink:</span> <span class="string">/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/system%3Akube-dns</span></span><br><span class="line"><span class="attr">  uid:</span> <span class="number">83</span><span class="string">a25fd9-c2e0-11e7-9646-00163e0055c1</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="attr">system:kube-dns</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">- kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kube-dns</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>kubedns-controller.yaml 中定义的 Pods 时使用了 kubedns-sa.yaml 文件定义的 kube-dns ServiceAccount，所以具有访问 kube-apiserver DNS 相关 API 的权限；</li>
+</ul>
+<h2 id="配置kube-dns-ServiceAccount"><a href="#配置kube-dns-ServiceAccount" class="headerlink" title="配置kube-dns ServiceAccount"></a>配置kube-dns ServiceAccount</h2><p>无需更改</p>
+<h2 id="配置kube-dns-服务"><a href="#配置kube-dns-服务" class="headerlink" title="配置kube-dns 服务"></a>配置kube-dns 服务</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">diff</span> <span class="string">kubedns-svc.yaml.base</span> <span class="string">kubedns-svc.yaml</span></span><br><span class="line"><span class="number">30</span><span class="string">c30</span></span><br><span class="line"><span class="string">&lt;</span>   <span class="attr">clusterIP:</span> <span class="string">__PILLAR__DNS__SERVER__</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">&gt;   clusterIP: 10.254.0.2</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>需要将 spec.clusterIP 设置为集群环境变量中变量 CLUSTER_DNS_SVC_IP 值，这个IP 需要和 kubelet 的 —cluster-dns 参数值一致</li>
+</ul>
+<h2 id="配置kube-dns-Deployment"><a href="#配置kube-dns-Deployment" class="headerlink" title="配置kube-dns Deployment"></a>配置kube-dns Deployment</h2><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ diff kubedns-controller<span class="selector-class">.yaml</span><span class="selector-class">.base</span> kubedns-controller.yaml</span><br><span class="line"><span class="number">88</span>c88</span><br><span class="line">&lt;         - --domain=__PILLAR__DNS__DOMAIN__.</span><br><span class="line">---</span><br><span class="line">&gt;         - --domain=cluster.local</span><br><span class="line"><span class="number">128</span>c128</span><br><span class="line">&lt;         - --server=/__PILLAR__DNS__DOMAIN__/<span class="number">127.0</span>.<span class="number">0.1</span><span class="number">#100</span>53</span><br><span class="line">---</span><br><span class="line">&gt;         - --server=/cluster.local/<span class="number">127.0</span>.<span class="number">0.1</span><span class="number">#100</span>53</span><br><span class="line"><span class="number">160</span>,<span class="number">161</span>c160,<span class="number">161</span></span><br><span class="line">&lt;         - --probe=kubedns,<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">10053</span>,kubernetes<span class="selector-class">.default</span><span class="selector-class">.svc</span>.__PILLAR__DNS__DOMAIN__,<span class="number">5</span>,A</span><br><span class="line">&lt;         - --probe=dnsmasq,<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">53</span>,kubernetes<span class="selector-class">.default</span><span class="selector-class">.svc</span>.__PILLAR__DNS__DOMAIN__,<span class="number">5</span>,A</span><br><span class="line">---</span><br><span class="line">&gt;         - --probe=kubedns,<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">10053</span>,kubernetes<span class="selector-class">.default</span><span class="selector-class">.svc</span><span class="selector-class">.cluster</span><span class="selector-class">.local</span>,<span class="number">5</span>,A</span><br><span class="line">&gt;         - --probe=dnsmasq,<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">53</span>,kubernetes<span class="selector-class">.default</span><span class="selector-class">.svc</span><span class="selector-class">.cluster</span><span class="selector-class">.local</span>,<span class="number">5</span>,A</span><br></pre></td></tr></table></figure>
+<ul>
+<li>–domain 为集群环境变量CLUSTER_DNS_DOMAIN 的值</li>
+<li>使用系统已经做了 RoleBinding 的 kube-dns ServiceAccount，该账户具有访问 kube-apiserver DNS 相关 API 的权限</li>
+</ul>
+<h2 id="执行所有定义文件"><a href="#执行所有定义文件" class="headerlink" title="执行所有定义文件"></a>执行所有定义文件</h2><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ pwd</span><br><span class="line">/home/ych/k8s-repo/kube-dns</span><br><span class="line">$ ls *.yaml</span><br><span class="line">kubedns-cm<span class="selector-class">.yaml</span>  kubedns-controller<span class="selector-class">.yaml</span>  kubedns-sa<span class="selector-class">.yaml</span>  kubedns-svc.yaml</span><br><span class="line">$ kubectl create -f .</span><br></pre></td></tr></table></figure>
+<h2 id="检查kubedns-功能"><a href="#检查kubedns-功能" class="headerlink" title="检查kubedns 功能"></a>检查kubedns 功能</h2><p>新建一个Deployment<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">&gt; my-nginx.yaml&lt;&lt;EOF</span></span><br><span class="line"><span class="string"></span><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">my-nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  replicas:</span> <span class="number">2</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        run:</span> <span class="string">my-nginx</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my-nginx</span></span><br><span class="line"><span class="attr">        image:</span> <span class="attr">nginx:1.7.9</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - containerPort:</span> <span class="number">80</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"><span class="string">$</span> <span class="string">kubectl</span> <span class="string">create</span> <span class="bullet">-f</span> <span class="string">my-nginx.yaml</span></span><br><span class="line"><span class="string">deployment</span> <span class="string">"my-nginx"</span> <span class="string">created</span></span><br></pre></td></tr></table></figure></p>
+<p>Expose 该Deployment，生成my-nginx 服务<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl expose deploy my-nginx</span><br><span class="line">$ kubectl <span class="builtin-name">get</span> services</span><br><span class="line">NAME        <span class="built_in"> TYPE </span>       CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE</span><br><span class="line">kubernetes   ClusterIP   10.254.0.1      &lt;none&gt;        443/TCP   1d</span><br><span class="line">my-nginx     ClusterIP   10.254.32.162   &lt;none&gt;        80/TCP    56s</span><br></pre></td></tr></table></figure></p>
+<p>然后创建另外一个Pod，查看/etc/resolv.conf是否包含kubelet配置的–cluster-dns 和–cluster-domain，是否能够将服务my-nginx 解析到上面显示的CLUSTER-IP 10.254.32.162上<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$ cat &gt; pod-nginx.yaml&lt;&lt;EOF</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx:1.7.9</span><br><span class="line">    ports:</span><br><span class="line">    - containerPort: 80</span><br><span class="line">EOF</span><br><span class="line">$ kubectl create -f pod-nginx.yaml</span><br><span class="line">pod <span class="string">"nginx"</span> created</span><br><span class="line">$ kubectl exec  nginx -i -t -- /bin/bash</span><br><span class="line">root@nginx:/# cat /etc/resolv.conf</span><br><span class="line">nameserver 10.254.0.2</span><br><span class="line">search default.svc.cluster.local. svc.cluster.local. cluster.local.</span><br><span class="line">options ndots:5</span><br><span class="line">root@nginx:/#<span class="built_in"> ping </span>my-nginx</span><br><span class="line">PING my-nginx.default.svc.cluster.local (10.254.32.162): 48 data bytes</span><br><span class="line">^C--- my-nginx.default.svc.cluster.local<span class="built_in"> ping </span>statistics ---</span><br><span class="line">14 packets transmitted, 0 packets received, 100% packet loss</span><br><span class="line"></span><br><span class="line">root@nginx:/#<span class="built_in"> ping </span>kubernetes</span><br><span class="line">PING kubernetes.default.svc.cluster.local (10.254.0.1): 48 data bytes</span><br><span class="line">^C--- kubernetes.default.svc.cluster.local<span class="built_in"> ping </span>statistics ---</span><br><span class="line">6 packets transmitted, 0 packets received, 100% packet loss</span><br><span class="line"></span><br><span class="line">root@nginx:/#<span class="built_in"> ping </span>kube-dns.kube-system.svc.cluster.local</span><br><span class="line">PING kube-dns.kube-system.svc.cluster.local (10.254.0.2): 48 data bytes</span><br><span class="line">^C--- kube-dns.kube-system.svc.cluster.local<span class="built_in"> ping </span>statistics ---</span><br><span class="line">2 packets transmitted, 0 packets received, 100% packet loss</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>接下文：<a href="100008.html">手动搭建高可用的kubernetes集群(四)</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/07/100008.html" class="pre-post btn btn-default" title='二进制搭建高可用的kubernetes集群(四)'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">二进制搭建高可用的kubernetes集群(四)</span>
+        </a>
+    
+    
+        <a href="/archives/2018/07/100006.html" class="next-post btn btn-default" title='二进制搭建高可用的kubernetes集群(二)'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">二进制搭建高可用的kubernetes集群(二)</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#7-kube-apiserver-高可用"><span class="toc-text">7. kube-apiserver 高可用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装haproxy"><span class="toc-text">安装haproxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置haproxy"><span class="toc-text">配置haproxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动haproxy"><span class="toc-text">启动haproxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kube-controller-manager-和kube-scheduler的高可用"><span class="toc-text">kube-controller-manager 和kube-scheduler的高可用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-部署Node-节点"><span class="toc-text">8. 部署Node 节点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#环境变量"><span class="toc-text">环境变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开启路由转发"><span class="toc-text">开启路由转发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动docker"><span class="toc-text">启动docker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装和配置kubelet"><span class="toc-text">安装和配置kubelet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建kubelet-bootstapping-kubeconfig-文件"><span class="toc-text">创建kubelet bootstapping kubeconfig 文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建kubelet-的systemd-unit-文件"><span class="toc-text">创建kubelet 的systemd unit 文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动kubelet"><span class="toc-text">启动kubelet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通过kubelet-的TLS-证书请求"><span class="toc-text">通过kubelet 的TLS 证书请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置kube-proxy"><span class="toc-text">配置kube-proxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动kube-proxy"><span class="toc-text">启动kube-proxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#验证集群功能"><span class="toc-text">验证集群功能</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-部署kubedns-插件"><span class="toc-text">9. 部署kubedns 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#系统预定义的RoleBinding"><span class="toc-text">系统预定义的RoleBinding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置kube-dns-ServiceAccount"><span class="toc-text">配置kube-dns ServiceAccount</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置kube-dns-服务"><span class="toc-text">配置kube-dns 服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置kube-dns-Deployment"><span class="toc-text">配置kube-dns Deployment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行所有定义文件"><span class="toc-text">执行所有定义文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检查kubedns-功能"><span class="toc-text">检查kubedns 功能</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

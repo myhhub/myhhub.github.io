@@ -1,0 +1,428 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,azkaban">
+
+
+    <meta name="description" content="一、简介Azkaban主要通过界面上传配置文件来进行任务的调度。它有两个重要的概念：
+
+Job： 你需要执行的调度任务；
+Flow：一个获取多个Job及它们之间的依赖关系所组成的图表叫做Flow...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Azkaban Flow 1.0 的使用 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Azkaban Flow 1.0 的使用">
+            
+	            Azkaban Flow 1.0 的使用
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/azkaban/">azkaban</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/16</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1360</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>Azkaban主要通过界面上传配置文件来进行任务的调度。它有两个重要的概念：</p>
+<ul>
+<li><strong>Job</strong>： 你需要执行的调度任务；</li>
+<li><strong>Flow</strong>：一个获取多个Job及它们之间的依赖关系所组成的图表叫做Flow。</li>
+</ul>
+<p>目前 Azkaban 3.x 同时支持 Flow 1.0 和 Flow 2.0，本文主要讲解 Flow 1.0的使用，下一篇文章会讲解Flow 2.0的使用。</p>
+<h2 id="二、基本任务调度"><a href="#二、基本任务调度" class="headerlink" title="二、基本任务调度"></a>二、基本任务调度</h2><h3 id="2-1-新建项目"><a href="#2-1-新建项目" class="headerlink" title="2.1 新建项目"></a>2.1 新建项目</h3><p>在Azkaban主界面可以创建对应的项目：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-create-project.png"> </div>
+
+<h3 id="2-2-任务配置"><a href="#2-2-任务配置" class="headerlink" title="2.2 任务配置"></a>2.2 任务配置</h3><p>新建任务配置文件<code>Hello-Azkaban.job</code>，内容如下。这里的任务很简单，就是输出一句<code>&#39;Hello Azkaban!&#39;</code> ：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">command.job</span></span><br><span class="line">type=command</span><br><span class="line">command=echo 'Hello Azkaban!'</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-打包上传"><a href="#2-3-打包上传" class="headerlink" title="2.3 打包上传"></a>2.3 打包上传</h3><p>将<code>Hello-Azkaban.job</code>打包为<code>zip</code>压缩文件：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-zip.png"> </div>
+
+<p>通过Web UI 界面上传：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-upload.png"> </div>
+
+<p>上传成功后可以看到对应的Flows：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-flows.png"> </div>
+
+<h3 id="2-4-执行任务"><a href="#2-4-执行任务" class="headerlink" title="2.4 执行任务"></a>2.4 执行任务</h3><p>点击页面上的<code>Execute Flow</code>执行任务：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-execute.png"> </div>
+
+<h3 id="2-5-执行结果"><a href="#2-5-执行结果" class="headerlink" title="2.5 执行结果"></a>2.5 执行结果</h3><p>点击<code>detail</code>可以查看到任务的执行日志：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-successed.png"> </div>
+
+<div align="center"> <img src="/img/bigdata/azkaban-log.png"> </div>
+
+<h2 id="三、多任务调度"><a href="#三、多任务调度" class="headerlink" title="三、多任务调度"></a>三、多任务调度</h2><h3 id="3-1-依赖配置"><a href="#3-1-依赖配置" class="headerlink" title="3.1 依赖配置"></a>3.1 依赖配置</h3><p>这里假设我们有五个任务（TaskA——TaskE）,D 任务需要在A，B，C任务执行完成后才能执行，而 E 任务则需要在 D 任务执行完成后才能执行，这种情况下需要使用<code>dependencies</code>属性定义其依赖关系。各任务配置如下：</p>
+<p><strong>Task-A.job</strong>   :</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=echo 'Task A'</span><br></pre></td></tr></table></figure>
+<p><strong>Task-B.job</strong>   :</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=echo 'Task B'</span><br></pre></td></tr></table></figure>
+<p><strong>Task-C.job</strong>   :</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=echo 'Task C'</span><br></pre></td></tr></table></figure>
+<p><strong>Task-D.job</strong>   : </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=echo 'Task D'</span><br><span class="line">dependencies=Task-A,Task-B,Task-C</span><br></pre></td></tr></table></figure>
+<p><strong>Task-E.job</strong>   :</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=echo 'Task E'</span><br><span class="line">dependencies=Task-D</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-压缩上传"><a href="#3-2-压缩上传" class="headerlink" title="3.2 压缩上传"></a>3.2 压缩上传</h3><p>压缩后进行上传，这里需要注意的是一个Project只能接收一个压缩包，这里我还沿用上面的Project，默认后面的压缩包会覆盖前面的压缩包：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-task-abcde-zip.png"> </div>
+
+<h3 id="3-3-依赖关系"><a href="#3-3-依赖关系" class="headerlink" title="3.3 依赖关系"></a>3.3 依赖关系</h3><p>多个任务存在依赖时，默认采用最后一个任务的文件名作为Flow的名称，其依赖关系如图：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-dependencies.png"> </div>
+
+<h3 id="3-4-执行结果"><a href="#3-4-执行结果" class="headerlink" title="3.4 执行结果"></a>3.4 执行结果</h3><div align="center"> <img src="/img/bigdata/azkaban-task-abcde.png"> </div>
+
+<p>从这个案例可以看出，Flow1.0无法通过一个job文件来完成多个任务的配置，但是Flow 2.0 就很好的解决了这个问题。</p>
+<h2 id="四、调度HDFS作业"><a href="#四、调度HDFS作业" class="headerlink" title="四、调度HDFS作业"></a>四、调度HDFS作业</h2><p>步骤与上面的步骤一致，这里以查看HDFS上的文件列表为例。命令建议采用完整路径，配置文件如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=/usr/app/hadoop-2.6.0-cdh5.15.2/bin/hadoop fs -ls /</span><br></pre></td></tr></table></figure>
+<p>执行结果：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-hdfs.png"> </div>
+
+<h2 id="五、调度MR作业"><a href="#五、调度MR作业" class="headerlink" title="五、调度MR作业"></a>五、调度MR作业</h2><p>MR作业配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=/usr/app/hadoop-2.6.0-cdh5.15.2/bin/hadoop jar /usr/app/hadoop-2.6.0-cdh5.15.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0-cdh5.15.2.jar pi 3 3</span><br></pre></td></tr></table></figure>
+<p>执行结果：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-mr.png"> </div>
+
+<h2 id="六、调度Hive作业"><a href="#六、调度Hive作业" class="headerlink" title="六、调度Hive作业"></a>六、调度Hive作业</h2><p>作业配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">type=command</span><br><span class="line">command=/usr/app/hive-1.1.0-cdh5.15.2/bin/hive -f 'test.sql'</span><br></pre></td></tr></table></figure>
+<p>其中<code>test.sql</code>内容如下，创建一张雇员表，然后查看其结构：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> hive;</span><br><span class="line"><span class="keyword">use</span> hive;</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> <span class="keyword">if</span> <span class="keyword">exists</span> emp;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> emp(</span><br><span class="line">empno <span class="built_in">int</span>,</span><br><span class="line">ename <span class="keyword">string</span>,</span><br><span class="line">job <span class="keyword">string</span>,</span><br><span class="line">mgr <span class="built_in">int</span>,</span><br><span class="line">hiredate <span class="keyword">string</span>,</span><br><span class="line">sal <span class="keyword">double</span>,</span><br><span class="line">comm <span class="keyword">double</span>,</span><br><span class="line">deptno <span class="built_in">int</span></span><br><span class="line">) <span class="keyword">ROW</span> <span class="keyword">FORMAT</span> <span class="keyword">DELIMITED</span> <span class="keyword">FIELDS</span> <span class="keyword">TERMINATED</span> <span class="keyword">BY</span> <span class="string">'\t'</span>;</span><br><span class="line"><span class="comment">-- 查看emp表的信息</span></span><br><span class="line">desc emp;</span><br></pre></td></tr></table></figure>
+<p>打包的时候将<code>job</code>文件与<code>sql</code>文件一并进行打包：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-hive.png"> </div>
+
+<p>执行结果如下：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-hive-result.png"> </div>
+
+<h2 id="七、在线修改作业配置"><a href="#七、在线修改作业配置" class="headerlink" title="七、在线修改作业配置"></a>七、在线修改作业配置</h2><p>在测试时，我们可能需要频繁修改配置，如果每次修改都要重新打包上传，这会比较麻烦。所以Azkaban支持配置的在线修改，点击需要修改的Flow，就可以进入详情页面：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-project-edit.png"> </div>
+
+<p>在详情页面点击<code>Eidt</code>按钮可以进入编辑页面：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-edit.png"> </div>
+
+<p>在编辑页面可以新增配置或者修改配置：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-click-edit.png"> </div>
+
+<h2 id="附：可能出现的问题"><a href="#附：可能出现的问题" class="headerlink" title="附：可能出现的问题"></a>附：可能出现的问题</h2><p>如果出现以下异常，多半是因为执行主机内存不足，Azkaban要求执行主机的可用内存必须大于3G才能执行任务：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cannot request memory (Xms 0 kb, Xmx 0 kb) from system for job</span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/azkaban-memory.png"> </div>
+
+<p>如果你的执行主机没办法增大内存，那么可以通过修改<code>plugins/jobtypes/</code>目录下的<code>commonprivate.properties</code> 文件来关闭内存检查，配置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">memCheck.enabled=false</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100443.html" class="pre-post btn btn-default" title='Azkaban Flow 2.0的使用'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Azkaban Flow 2.0的使用</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100441.html" class="next-post btn btn-default" title='Azkaban简介'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Azkaban简介</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、简介"><span class="toc-text">一、简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、基本任务调度"><span class="toc-text">二、基本任务调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-新建项目"><span class="toc-text">2.1 新建项目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-任务配置"><span class="toc-text">2.2 任务配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-打包上传"><span class="toc-text">2.3 打包上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-执行任务"><span class="toc-text">2.4 执行任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-执行结果"><span class="toc-text">2.5 执行结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、多任务调度"><span class="toc-text">三、多任务调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-依赖配置"><span class="toc-text">3.1 依赖配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-压缩上传"><span class="toc-text">3.2 压缩上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-依赖关系"><span class="toc-text">3.3 依赖关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-执行结果"><span class="toc-text">3.4 执行结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、调度HDFS作业"><span class="toc-text">四、调度HDFS作业</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、调度MR作业"><span class="toc-text">五、调度MR作业</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、调度Hive作业"><span class="toc-text">六、调度Hive作业</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七、在线修改作业配置"><span class="toc-text">七、在线修改作业配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附：可能出现的问题"><span class="toc-text">附：可能出现的问题</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

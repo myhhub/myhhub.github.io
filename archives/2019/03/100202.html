@@ -1,0 +1,441 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="web,javascript">
+
+
+    <meta name="description" content="前言随着 Web 的发展，用户对于 Web 的实时推送要求也越来越高 ，比如，工业运行监控、Web 在线通讯、即时报价系统、在线游戏等，都需要将后台发生的变化主动地、实时地传送到浏览器端，而不需...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>全面阐析Web实时推送技术 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="全面阐析Web实时推送技术">
+            
+	            全面阐析Web实时推送技术
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/front/">前端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/javascript/">javascript</a> <a class="tag-link" href="/tags/web/">web</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/03/01</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1497</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着 Web 的发展，用户对于 Web 的实时推送要求也越来越高 ，比如，工业运行监控、Web 在线通讯、即时报价系统、在线游戏等，都需要将后台发生的变化主动地、实时地传送到浏览器端，而不需要用户手动地刷新页面。本文对过去和现在流行的 Web 实时推送技术进行了比较与总结。</p>
+<h2 id="一、双向通信"><a href="#一、双向通信" class="headerlink" title="一、双向通信"></a>一、双向通信</h2><p>HTTP 协议有一个缺陷：通信只能由客户端发起。举例来说，我们想了解今天的天气，只能是客户端向服务器发出请求，服务器返回查询结果。HTTP 协议做不到服务器主动向客户端推送信息。这种单向请求的特点，注定了如果服务器有连续的状态变化，客户端要获知就非常麻烦。<strong>在WebSocket协议之前，有三种实现双向通信的方式：轮询（polling）、长轮询（long-polling）和iframe流（streaming）</strong>。</p>
+<h3 id="1-轮询（polling）"><a href="#1-轮询（polling）" class="headerlink" title="1.轮询（polling）"></a>1.轮询（polling）</h3><p><img src="/img/fronts/7269656e742f737472697025.png" alt="image"></p>
+<p>轮询是客户端和服务器之间会一直进行连接，每隔一段时间就询问一次。其缺点也很明显：连接数会很多，一个接受，一个发送。而且<strong>每次发送请求都会有Http的Header，会很耗流量，也会消耗CPU的利用率</strong>。</p>
+<ul>
+<li>优点：实现简单，无需做过多的更改</li>
+<li>缺点：轮询的间隔过长，会导致用户不能及时接收到更新的数据；轮询的间隔过短，会导致查询请求过多，增加服务器端的负担</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.html</span></span><br><span class="line">&lt;div id=<span class="string">"clock"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">let</span> clockDiv = <span class="built_in">document</span>.getElementById(<span class="string">'clock'</span>);</span><br><span class="line">    setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">let</span> xhr = <span class="keyword">new</span> XMLHttpRequest;</span><br><span class="line">        xhr.open(<span class="string">'GET'</span>,<span class="string">'/clock'</span>,<span class="literal">true</span>);</span><br><span class="line">        xhr.onreadystatechange = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(xhr.readyState == <span class="number">4</span> &amp;&amp; xhr.status == <span class="number">200</span>)&#123;</span><br><span class="line">                <span class="built_in">console</span>.log(xhr.responseText);</span><br><span class="line">                clockDiv.innerHTML = xhr.responseText;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        xhr.send();</span><br><span class="line">    &#125;,<span class="number">1000</span>);</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">/</span><span class="regexp">/轮询  服务端</span></span><br><span class="line"><span class="regexp">let express = require('express');</span></span><br><span class="line"><span class="regexp">let app = express();</span></span><br><span class="line"><span class="regexp">app.use(express.static(__dirname));</span></span><br><span class="line"><span class="regexp">app.get('/</span>clock<span class="string">',function(req,res)&#123;</span></span><br><span class="line"><span class="string">  res.end(new Date().toLocaleString());</span></span><br><span class="line"><span class="string">&#125;);</span></span><br><span class="line"><span class="string">app.listen(8080);</span></span><br></pre></td></tr></table></figure>
+<p>启动本地服务，打开<code>http://localhost:8080/1.html</code>,得到如下结果：</p>
+<p><img src="/img/fronts/6f2d6f7269656e742f7374726970.gif" alt="image"></p>
+<h3 id="2-长轮询（long-polling）"><a href="#2-长轮询（long-polling）" class="headerlink" title="2.长轮询（long-polling）"></a>2.长轮询（long-polling）</h3><p><img src="/img/fronts/69656e742f737472697025.png" alt="image"></p>
+<p>长轮询是对轮询的改进版，客户端发送HTTP给服务器之后，看有没有新消息，如果没有新消息，就一直等待。当有新消息的时候，才会返回给客户端。在某种程度上减小了网络带宽和CPU利用率等问题。由于http数据包的头部数据量往往很大（通常有400多个字节），但是真正被服务器需要的数据却很少（有时只有10个字节左右），这样的数据包在网络上周期性的传输，难免<strong>对网络带宽是一种浪费</strong>。</p>
+<ul>
+<li>优点：比 Polling 做了优化，有较好的时效性</li>
+<li>缺点：保持连接会消耗资源; 服务器没有返回有效数据，程序超时。</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2.html  服务端代码同上</span></span><br><span class="line">&lt;<span class="selector-tag">div</span> id=<span class="string">"clock"</span>&gt;&lt;/div&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">let clockDiv = document.getElementById(<span class="string">'clock'</span>)</span><br><span class="line">function send() &#123;</span><br><span class="line">  let xhr = new XMLHttpRequest()</span><br><span class="line">  xhr.open(<span class="string">'GET'</span>, <span class="string">'/clock'</span>, true)</span><br><span class="line">  xhr<span class="selector-class">.timeout</span> = <span class="number">2000</span> <span class="comment">// 超时时间，单位是毫秒</span></span><br><span class="line">  xhr<span class="selector-class">.onreadystatechange</span> = function() &#123;</span><br><span class="line">    <span class="keyword">if</span> (xhr<span class="selector-class">.readyState</span> == <span class="number">4</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (xhr<span class="selector-class">.status</span> == <span class="number">200</span>) &#123;</span><br><span class="line">        <span class="comment">//如果返回成功了，则显示结果</span></span><br><span class="line">        clockDiv<span class="selector-class">.innerHTML</span> = xhr.responseText</span><br><span class="line">      &#125;</span><br><span class="line">      send() <span class="comment">//不管成功还是失败都会发下一次请求</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  xhr<span class="selector-class">.ontimeout</span> = function() &#123;</span><br><span class="line">    send()</span><br><span class="line">  &#125;</span><br><span class="line">  xhr.send()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">send</span><span class="params">()</span></span></span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-iframe流（streaming）"><a href="#3-iframe流（streaming）" class="headerlink" title="3.iframe流（streaming）"></a>3.iframe流（streaming）</h3><p><img src="/img/fronts/d6f7269656e742f737472697025.png" alt="image"></p>
+<p>iframe流方式是在页面中插入一个隐藏的iframe，利用其src属性在服务器和客户端之间创建一条长连接，服务器向iframe传输数据（通常是HTML，内有负责插入信息的javascript），来实时更新页面。</p>
+<ul>
+<li>优点：消息能够实时到达；浏览器兼容好</li>
+<li>缺点：服务器维护一个长连接会增加开销；IE、chrome、Firefox会显示加载没有完成，图标会不停旋转。</li>
+</ul>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 3.html</span></span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;div id=<span class="string">"clock"</span>&gt;&lt;/div&gt;</span><br><span class="line">    &lt;iframe src=<span class="string">"/clock"</span> style=<span class="string">"display:none"</span>&gt;&lt;/iframe&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line"><span class="comment">//iframe流 </span></span><br><span class="line"><span class="keyword">let</span> express = <span class="keyword">require</span>(<span class="string">'express'</span>)</span><br><span class="line"><span class="keyword">let</span> app = express()</span><br><span class="line">app.<span class="keyword">use</span>(express.<span class="keyword">static</span>(__dirname))</span><br><span class="line">app.get(<span class="string">'/clock'</span>, <span class="function"><span class="keyword">function</span><span class="params">(req, res)</span> </span>&#123;</span><br><span class="line">  setInterval(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> date = <span class="keyword">new</span> Date().toLocaleString()</span><br><span class="line">    res.write(`</span><br><span class="line">       &lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">         <span class="keyword">parent</span>.document.getElementById(<span class="string">'clock'</span>).innerHTML = <span class="string">"$&#123;date&#125;"</span>;<span class="comment">//改变父窗口dom元素</span></span><br><span class="line">       &lt;/script&gt;</span><br><span class="line">     `)</span><br><span class="line">  &#125;, <span class="number">1000</span>)</span><br><span class="line">&#125;)</span><br><span class="line">app.listen(<span class="number">8080</span>)</span><br></pre></td></tr></table></figure>
+<p>启动本地服务，打开<code>http://localhost:8080/3.html</code>,得到如下结果：<br><img src="/img/fronts/175746f2d6f7269656e742f7374726970.gif" alt="image"></p>
+<p>上述代码中，客户端只请求一次，然而服务端却是源源不断向客户端发送数据，这样服务器维护一个长连接会增加开销。</p>
+<p>以上我们介绍了三种实时推送技术，然而各自的缺点很明显，使用起来并不理想，接下来我们着重介绍另一种技术–websocket,它是比较理想的双向通信技术。</p>
+<h2 id="二、WebSocket"><a href="#二、WebSocket" class="headerlink" title="二、WebSocket"></a>二、WebSocket</h2><h3 id="1-什么是websocket"><a href="#1-什么是websocket" class="headerlink" title="1.什么是websocket"></a>1.什么是websocket</h3><p>WebSocket是一种全新的协议，随着HTML5草案的不断完善，越来越多的现代浏览器开始全面支持WebSocket技术了，它将TCP的Socket（套接字）应用在了webpage上，从而使通信双方建立起一个保持在活动状态连接通道。</p>
+<p>一旦Web服务器与客户端之间建立起WebSocket协议的通信连接，之后所有的通信都依靠这个专用协议进行。通信过程中可互相发送JSON、XML、HTML或图片等任意格式的数据。<strong>由于是建立在HTTP基础上的协议，因此连接的发起方仍是客户端，而一旦确立WebSocket通信连接，不论服务器还是客户端，任意一方都可直接向对方发送报文</strong>。</p>
+<p>初次接触 WebSocket 的人，都会问同样的问题：我们已经有了 HTTP 协议，为什么还需要另一个协议？</p>
+<h3 id="2-HTTP的局限性"><a href="#2-HTTP的局限性" class="headerlink" title="2.HTTP的局限性"></a>2.HTTP的局限性</h3><ul>
+<li>HTTP是半双工协议，也就是说，在同一时刻数据只能单向流动，客户端向服务器发送请求(单向的)，然后服务器响应请求(单向的)。</li>
+<li>服务器不能主动推送数据给浏览器。这就会导致一些高级功能难以实现，诸如聊天室场景就没法实现。</li>
+</ul>
+<h3 id="3-WebSocket的特点"><a href="#3-WebSocket的特点" class="headerlink" title="3.WebSocket的特点"></a>3.WebSocket的特点</h3><ul>
+<li>支持双向通信，实时性更强</li>
+<li>可以发送文本，也可以发送二进制数据</li>
+<li>减少通信量：只要建立起WebSocket连接，就希望一直保持连接状态。和HTTP相比，不但每次连接时的总开销减少，而且由于WebSocket的首部信息很小，通信量也相应减少了</li>
+</ul>
+<p><img src="/img/fronts/f2d6f7269656e742f737472697025.png" alt="image"></p>
+<p>相对于传统的HTTP每次请求-应答都需要客户端与服务端建立连接的模式，WebSocket是类似Socket的TCP长连接的通讯模式，一旦WebSocket连接建立后，后续数据都以帧序列的形式传输。在客户端断开WebSocket连接或Server端断掉连接前，不需要客户端和服务端重新发起连接请求。<strong>在海量并发和客户端与服务器交互负载流量大的情况下，极大的节省了网络带宽资源的消耗，有明显的性能优势，且客户端发送和接受消息是在同一个持久连接上发起，实时性优势明显</strong>。</p>
+<p>接下来我看下websocket如何实现客户端与服务端双向通信：</p>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// websocket.html</span></span><br><span class="line">&lt;div id=<span class="string">"clock"</span>&gt;&lt;/div&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">let</span> clockDiv = document.getElementById(<span class="string">'clock'</span>)</span><br><span class="line"><span class="keyword">let</span> socket = <span class="keyword">new</span> WebSocket(<span class="string">'ws://localhost:9999'</span>)</span><br><span class="line"><span class="comment">//当连接成功之后就会执行回调函数</span></span><br><span class="line">socket.onopen = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  console.log(<span class="string">'客户端连接成功'</span>)</span><br><span class="line">  <span class="comment">//再向服务 器发送一个消息</span></span><br><span class="line">  socket.send(<span class="string">'hello'</span>) <span class="comment">//客户端发的消息内容 为hello</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//绑定事件是用加属性的方式</span></span><br><span class="line">socket.onmessage = <span class="function"><span class="keyword">function</span><span class="params">(event)</span> </span>&#123;</span><br><span class="line">  clockDiv.innerHTML = event.data</span><br><span class="line">  console.log(<span class="string">'收到服务器端的响应'</span>, event.data)</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"><span class="comment">// websocket.js</span></span><br><span class="line"><span class="keyword">let</span> express = <span class="keyword">require</span>(<span class="string">'express'</span>)</span><br><span class="line"><span class="keyword">let</span> app = express()</span><br><span class="line">app.<span class="keyword">use</span>(express.<span class="keyword">static</span>(__dirname))</span><br><span class="line"><span class="comment">//http服务器</span></span><br><span class="line">app.listen(<span class="number">3000</span>)</span><br><span class="line"><span class="keyword">let</span> WebSocketServer = <span class="keyword">require</span>(<span class="string">'ws'</span>).Server</span><br><span class="line"><span class="comment">//用ws模块启动一个websocket服务器,监听了9999端口</span></span><br><span class="line"><span class="keyword">let</span> wsServer = <span class="keyword">new</span> WebSocketServer(&#123; port: <span class="number">9999</span> &#125;)</span><br><span class="line"><span class="comment">//监听客户端的连接请求  当客户端连接服务器的时候，就会触发connection事件</span></span><br><span class="line"><span class="comment">//socket代表一个客户端,不是所有客户端共享的，而是每个客户端都有一个socket</span></span><br><span class="line">wsServer.on(<span class="string">'connection'</span>, <span class="function"><span class="keyword">function</span><span class="params">(socket)</span> </span>&#123;</span><br><span class="line">  <span class="comment">//每一个socket都有一个唯一的ID属性</span></span><br><span class="line">  console.log(socket)</span><br><span class="line">  console.log(<span class="string">'客户端连接成功'</span>)</span><br><span class="line">  <span class="comment">//监听对方发过来的消息</span></span><br><span class="line">  socket.on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span><span class="params">(message)</span> </span>&#123;</span><br><span class="line">    console.log(<span class="string">'接收到客户端的消息'</span>, message)</span><br><span class="line">    socket.send(<span class="string">'服务器回应:'</span> + message)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>启动本地服务，打开<code>http://localhost:3000/websocket.html</code>,得到如下结果：<br><img src="/img/fronts/f7269656e742f737472697025.png" alt="image"></p>
+<h2 id="三、Web-实时推送技术的比较"><a href="#三、Web-实时推送技术的比较" class="headerlink" title="三、Web 实时推送技术的比较"></a>三、Web 实时推送技术的比较</h2><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>类型</th>
+<th>技术实现</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>轮询Polling</td>
+<td>client→server</td>
+<td>客户端循环请求</td>
+<td>1、实现简单 2、 支持跨域</td>
+<td>1、浪费带宽和服务器资源 2、 一次请求信息大半是无用（完整http头信息） 3、有延迟 4、大部分无效请求</td>
+<td>适于小型应用</td>
+</tr>
+<tr>
+<td>长轮询Long-Polling</td>
+<td>client→server</td>
+<td>服务器hold住连接，一直到有数据或者超时才返回，减少重复请求次数</td>
+<td>1、实现简单 2、不会频繁发请求 3、节省流量 4、延迟低</td>
+<td>1、服务器hold住连接，会消耗资源 2、一次请求信息大半是无用</td>
+<td>WebQQ、Hi网页版、Facebook IM</td>
+</tr>
+<tr>
+<td>长连接iframe</td>
+<td>client→server</td>
+<td>在页面里嵌入一个隐蔵iframe，将这个 iframe 的 src 属性设为对一个长连接的请求，服务器端就能源源不断地往客户端输入数据。</td>
+<td>1、数据实时送达 2、不发无用请求，一次链接，多次“推送”</td>
+<td>1、服务器增加开销 2、无法准确知道连接状态 3、IE、chrome等一直会处于loading状态</td>
+<td>Gmail聊天</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>server⇌client</td>
+<td>new WebSocket()</td>
+<td>1、支持双向通信，实时性更强 2、可发送二进制文件3、减少通信量</td>
+<td>1、浏览器支持程度不一致 2、不支持断开重连</td>
+<td>网络游戏、银行交互和支付</td>
+</tr>
+</tbody>
+</table>
+<p>综上所述：Websocket协议不仅解决了HTTP协议中服务端的被动性，即通信只能由客户端发起，也解决了数据同步有延迟的问题，同时还带来了明显的性能优势，所以websocket<br>是Web 实时推送技术的比较理想的方案，但如果要兼容低版本浏览器，可以考虑用轮询来实现。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="http://www.ruanyifeng.com/blog/2017/05/websocket.html" target="_blank" rel="noopener">WebSocket 教程</a></li>
+<li><a href="http://video.zhufengpeixun.cn/" target="_blank" rel="noopener">珠峰前端架构课</a></li>
+<li><a href="https://waylau.com/web-real-time-push-technology/" target="_blank" rel="noopener">Web 实时推送技术的总结</a></li>
+<li><a href="https://github.com/kaola-fed/blog/issues/277" target="_blank" rel="noopener">WebSocket（1）： 服务端“实时推送”的演变</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/31297574" target="_blank" rel="noopener">长连接/websocket/SSE等主流服务器推送技术比较</a></li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/03/100203.html" class="pre-post btn btn-default" title='全面阐析网页JavaScript Ajax原理'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">全面阐析网页JavaScript Ajax原理</span>
+        </a>
+    
+    
+        <a href="/archives/2019/02/100201.html" class="next-post btn btn-default" title='全面阐析HTTP/2和HTTP/3特性'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">全面阐析HTTP/2和HTTP/3特性</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、双向通信"><span class="toc-text">一、双向通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-轮询（polling）"><span class="toc-text">1.轮询（polling）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-长轮询（long-polling）"><span class="toc-text">2.长轮询（long-polling）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-iframe流（streaming）"><span class="toc-text">3.iframe流（streaming）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、WebSocket"><span class="toc-text">二、WebSocket</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-什么是websocket"><span class="toc-text">1.什么是websocket</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-HTTP的局限性"><span class="toc-text">2.HTTP的局限性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-WebSocket的特点"><span class="toc-text">3.WebSocket的特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Web-实时推送技术的比较"><span class="toc-text">三、Web 实时推送技术的比较</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章"><span class="toc-text">参考文章</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

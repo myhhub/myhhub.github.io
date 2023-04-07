@@ -1,0 +1,455 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="qt,qxorm,orm">
+
+
+    <meta name="description" content="ORMORM 全称是 Object Relational Mapping（对象关系映射），是一种程序设计技术，用于实现面向对象编程语言里不同类型系统的数据之间的转换。从效果上说，它其实是创建了一...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>QxOrm使用教程(ORM for C++ 对象关系映射) | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="QxOrm使用教程(ORM for C++ 对象关系映射)">
+            
+	            QxOrm使用教程(ORM for C++ 对象关系映射)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/orm/">orm</a> <a class="tag-link" href="/tags/qt/">qt</a> <a class="tag-link" href="/tags/qxorm/">qxorm</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/03/16</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>751</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="ORM"><a href="#ORM" class="headerlink" title="ORM"></a>ORM</h1><p>ORM 全称是 Object Relational Mapping（对象关系映射），是一种程序设计技术，用于实现面向对象编程语言里不同类型系统的数据之间的转换。从效果上说，它其实是创建了一个可在编程语言里使用的“虚拟对象数据库”。</p>
+<p>面向对象是从软件工程基本原则（如耦合、聚合、封装）的基础上发展起来的，而关系数据库则是从数学理论发展而来的，两套理论存在显著的区别。为了解决这个不匹配的现象，对象关系映射技术应运而生。</p>
+<p>简单理解，ORM 就是在数据库和对象之间作了一个映射：</p>
+<ul>
+<li><p>数据库的表（table） –&gt; 类（class）</p>
+</li>
+<li><p>记录（record，行数据）–&gt; 对象（object）</p>
+</li>
+<li><p>字段（field）–&gt; 对象的属性（attribute）</p>
+</li>
+</ul>
+<h2 id="ORM-的优缺点"><a href="#ORM-的优缺点" class="headerlink" title="ORM 的优缺点"></a>ORM 的优缺点</h2><p><strong>优点：</strong></p>
+<ul>
+<li>ORM 提供了一种面向对象的查询语言，这使得开发者可以专注于对象模型，而不必关心数据库结构或 SQL 语义。</li>
+<li>ORM 提供了大量的服务，开发者只需要关注业务逻辑，而不是重复的 CRUD（Create、Read、Update、Delete）操作，这可以减少大量的代码。</li>
+<li>ORM 将迫使你使用 MVC 风格，这通常会使代码更加简洁、更容易理解。</li>
+<li>ORM 有现成的工具，很多功能可以自动完成，比如预处理、事务等。</li>
+<li>ORM 对数据库进行了抽象，因此从一种数据库切换到另一种（例如：从 MySQL  到 PostgreSQL）会很容易。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>无论是什么 ORM 框架，都需要花费相当大的精力去学习和理解。</li>
+<li>ORM 抽象掉了数据库层，开发者无法了解底层数据库（和 SQL）的相关操作。</li>
+<li>对于复杂的查询，ORM 要么难以实现，要么性能不如原生的 SQL。</li>
+</ul>
+<h1 id="主流的-ORM-框架"><a href="#主流的-ORM-框架" class="headerlink" title="主流的 ORM 框架"></a>主流的 ORM 框架</h1><p>目前为止，C++ 中主流的 ORM 框架有以下几个：</p>
+<ul>
+<li>LiteSQL：<a href="https://litesql.org/" target="_blank" rel="noopener">https://litesql.org/</a></li>
+<li>ODB：<a href="https://www.codesynthesis.com/products/odb/" target="_blank" rel="noopener">https://www.codesynthesis.com/products/odb/</a></li>
+<li>QxOrm：<a href="https://www.qxorm.com/qxorm_en/home.html" target="_blank" rel="noopener">https://www.qxorm.com/qxorm_en/home.html</a></li>
+<li>Wt::Dbo：<a href="https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html" target="_blank" rel="noopener">https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html</a></li>
+</ul>
+<p>其中，LiteSQL 和 ODB 不依赖于特定的框架，而 QxOrm 依赖于 Qt，Wt::Dbo 依赖于 Wt。</p>
+<p>综合考虑，如果是纯 C++ 开发，可以选择使用 ODB。它拥有大量的用户群体，（相比 LiteSQL）技术支持好，（相比 QxOrm）编译时间短，（相比 Wt::Dbo）提供了更多的特性，更重要的是它易于使用，并且提供了很全面的文档。</p>
+<p>当然，如果是 Qt 开发，也可以选择使用 QxOrm。它几乎支持所有的数据库，并且也有良好的文档。除此之外，它还提供了一个图形编辑器 - QxEntityEditor，可以很方便地以图形方式来管理数据模型。</p>
+<h1 id="关于-QxOrm"><a href="#关于-QxOrm" class="headerlink" title="关于 QxOrm"></a>关于 QxOrm</h1><p>QxOrm 是一个 C++ 库，旨在为 C++/Qt 开发人员提供对象关系映射（ORM）功能（类似于 Java 中的 Hibernate，.Net 中的 NHibernate）。</p>
+<ul>
+<li><strong>主页：</strong><a href="http://www.qxorm.com/qxorm_en/home.html" target="_blank" rel="noopener">http://www.qxorm.com/qxorm_en/home.html</a></li>
+<li><strong>下载：</strong><a href="http://www.qxorm.com/qxorm_en/download.html" target="_blank" rel="noopener">http://www.qxorm.com/qxorm_en/download.html</a></li>
+<li><strong>手册：</strong><a href="http://www.qxorm.com/qxorm_en/manual.html" target="_blank" rel="noopener">http://www.qxorm.com/qxorm_en/manual.html</a></li>
+<li><strong>在线类文档：</strong><a href="http://www.qxorm.com/doxygen/html/index.html" target="_blank" rel="noopener">http://www.qxorm.com/doxygen/html/index.html</a></li>
+<li><strong>GitHub：</strong><a href="https://github.com/QxOrm/QxOrm" target="_blank" rel="noopener">https://github.com/QxOrm/QxOrm</a></li>
+</ul>
+<p>其主要特性包括：</p>
+<ul>
+<li>持久性：支持最常见的数据库，如 SQLite、MySQL、PostgreSQL、Oracle、MS SQL Server、MongoDB（具有 1-1、1-n、n-1 和 n-n 关系）。</li>
+<li>序列化：JSON、二进制和 XML 格式。</li>
+<li>反射（或内省）：动态访问类定义、检索属性和调用类方法。</li>
+<li>HTTP Web Server：独立的多线程 HTTP 1.1 web 服务器（支持 SSL/TLS、持久连接、cookie、会话、分块响应、URL 分发器/路由）。</li>
+<li>JSON API：与 C++/Qt 以外的其他技术的互操作性（REST web 服务、QML 应用程序、脚本语言）。</li>
+</ul>
+<p>默认情况下，QxOrm 库只依赖 QtCore 和 QtSql 模块。如果启用 QxOrm HTTP web server 特性，那么还将依赖于 QtNetwork 模块。除此之外，有些特性还需要依赖 boost（默认禁用）。</p>
+<h1 id="编译-QxOrm"><a href="#编译-QxOrm" class="headerlink" title="编译 QxOrm"></a>编译 QxOrm</h1><p>进入 QxOrm <a href="https://github.com/QxOrm/QxOrm/releases" target="_blank" rel="noopener">下载页面</a> ，选择最新版本进行下载，目前最新为 <a href="https://github.com/QxOrm/QxOrm/archive/1.4.8.zip" target="_blank" rel="noopener">QxOrm 1.4.8</a> 。下载完成之后，将 QxOrm 的 zip 包解压缩。</p>
+<p>对一些重点目录的介绍一下：</p>
+<ul>
+<li><strong>doc：</strong>介绍 QxOrm 的相关文档。</li>
+<li><strong>include：</strong>包含了 QxOrm 的所有头文件（.h）。</li>
+<li><strong>lib：</strong>库目录，用于存放编译后的 .lib 和 .dll 文件。</li>
+<li><strong>src：</strong>包含了 QxOrm 的所有源文件（.cpp）。</li>
+<li><strong>test：</strong>包含了 QxOrm 相关的示例程序。</li>
+</ul>
+<p>有关 QxOrm 的各个历史版本以及各版本的一些特性，都记录在 changes.txt 文件中，感兴趣的话可以大概看一看。</p>
+<p>由于源码包中提供了 CMakeLists.txt、QxOrm.pro 和 QxOrm.sln，所以无论你使用 CMake 还是 Qt Creator，亦或者是 Visual Studio，都能够快速编译 QxOrm。</p>
+<p>以 Qt Creator 为例，打开 QxOrm.pro 并进行编译。成功之后，对应的库会生成到 QxOrm/lib 目录下。</p>
+<p>默认情况下，这会生成共享库（动态链接库）；倘若要生成静态链接库，需要启用 QxOrm.pri 中的 _QX_STATIC_BUILD 编译选项。</p>
+<h1 id="QxOrm-使用"><a href="#QxOrm-使用" class="headerlink" title="QxOrm 使用"></a>QxOrm 使用</h1><p>QxOrm 几乎支持所有的主流数据库，比如 SQLite、MySQL、PostgreSQL、Oracle、MS SQL Server、MongoDB 等。为了快速了解它的用法，我们以 SQLite 为例，来介绍一些常见的数据库操作（例如：增删改查）。</p>
+<p>先来创建一个名为 User 的项目，项目所在目录与 QxOrm 解压目录同级，可以根据自己的需要调整。项目完整源代码<a href="https://github.com/myhhub/QxOrm-project" target="_blank" rel="noopener">下载地址</a>。</p>
+<h2 id="项目文件"><a href="#项目文件" class="headerlink" title="项目文件"></a><strong>项目文件</strong></h2><p>项目文件由 User.pro 表示，它包含了项目中所有的文件列表（头文件、源文件），以及所有依赖项（QxOrm.pri 文件包含了与 Qt 和 boost 库的所有依赖项）：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># QxOrm 的通用配置，包含了 Qt 和 boost 库依赖</span></span><br><span class="line">include($<span class="variable">$PWD</span>/<span class="built_in">..</span>/<span class="built_in">..</span>/QxOrm/QxOrm.pri)</span><br><span class="line"></span><br><span class="line">CONFIG += console</span><br><span class="line">DEFINES += _BUILDING_USER</span><br><span class="line"></span><br><span class="line"><span class="comment"># 预编译头文件</span></span><br><span class="line">!contains(DEFINES, _QX_NO_PRECOMPILED_HEADER) &#123;</span><br><span class="line">    PRECOMPILED_HEADER = precompiled.h</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># QxOrm 库相关配置</span></span><br><span class="line">INCLUDEPATH += $<span class="variable">$PWD</span>/<span class="built_in">..</span>/<span class="built_in">..</span>/QxOrm/include</span><br><span class="line">LIBS += -L$<span class="variable">$PWD</span>/<span class="built_in">..</span>/<span class="built_in">..</span>/QxOrm/lib</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置生成的目标名称、添加依赖库</span></span><br><span class="line">CONFIG(debug, debug|release) &#123;</span><br><span class="line">    TARGET = Userd</span><br><span class="line">    LIBS += -lQxOrmd</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    TARGET = User</span><br><span class="line">    LIBS += -lQxOrm</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件列表</span></span><br><span class="line">HEADERS += \</span><br><span class="line">    precompiled.h \</span><br><span class="line">    export.h \</span><br><span class="line">    user.h</span><br><span class="line"></span><br><span class="line">SOURCES += \</span><br><span class="line">    main.cpp \</span><br><span class="line">    user.cpp</span><br></pre></td></tr></table></figure>
+<p>这里有一个重要的常量 - _BUILDING_USER，通过它可以知道项目是否正在编译（参见 export.h 和 Windows 下的 DLL 机制 - 导入或导出函数、类…）。</p>
+<h2 id="export-h-文件"><a href="#export-h-文件" class="headerlink" title="export.h 文件"></a>export.h 文件</h2><p>如果使用过 DLL，相信对此文件并不陌生，它可以管理类、函数 … 的导出/导入。</p>
+<p>QxOrm 使用了相同的机制来提供某些功能：因此对于使用 QxOrm 库的所有项目，export.h 文件是必需的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> EXPORT_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EXPORT_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> _BUILDING_USER</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> USER_DLL_EXPORT  QX_DLL_EXPORT_HELPER</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> USER_DLL_EXPORT  QX_DLL_IMPORT_HELPER</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> _BUILDING_USER</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> QX_REGISTER_HPP_USER  QX_REGISTER_HPP_EXPORT_DLL</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> QX_REGISTER_CPP_USER  QX_REGISTER_CPP_EXPORT_DLL</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> QX_REGISTER_HPP_USER  QX_REGISTER_HPP_IMPORT_DLL</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> QX_REGISTER_CPP_USER  QX_REGISTER_CPP_IMPORT_DLL</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// EXPORT_H</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="预编译头文件"><a href="#预编译头文件" class="headerlink" title="预编译头文件"></a>预编译头文件</h2><p>预编译头文件的作用在于：提高编译速度。换句话说，使用它能够减少项目的编译时间。</p>
+<p>QxOrm 使用元编程的概念来提供许多功能，元编程在编译时成本很高，因此使用 precompiled.h 文件可以更快地编译项目：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> PRECOMPILED_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PRECOMPILED_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QxOrm.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"export.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// PRECOMPILED_H</span></span></span><br></pre></td></tr></table></figure>
+<p>此外，还有一个优点：文件 QxOrm.h 包含了 Qt 和 boost 库的基本功能，因此，不需要再编写像 #include &lt;QtCore/QString.h&gt; 这样的语句来使用 Qt 的 QString 类；同样地，也不需要编写像 #include &lt;boost/shared_ptr.hpp&gt; 这样的语句来使用 boost 库的智能指针。</p>
+<h2 id="定义-User-类"><a href="#定义-User-类" class="headerlink" title="定义 User 类"></a>定义 User 类</h2><p>在 C++ 代码中，User 类对应的是数据库中的 User 表，而类的属性对应的是表中的一个字段（列）。因此，C++ 源代码中的一个 User 类实例对应 User 表中的一条记录（行），这种机制使得 C++ 源代码更易于开发和维护。</p>
+<p>为 User 类定义三个属性，id、name 和 age：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> USER_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> USER_H</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">USER_DLL_EXPORT</span> <span class="title">User</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    User() : id(<span class="number">0</span>) &#123; &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~User() &#123; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">long</span> id;</span><br><span class="line">    QString name;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">QX_REGISTER_HPP_USER(User, qx::trait::no_base_class_defined, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// USER_H</span></span></span><br></pre></td></tr></table></figure>
+<p>QX_REGISTER_HPP_USER 宏是必须的，用于将 User 类注册到 QxOrm 的上下文中：</p>
+<ul>
+<li><strong>参数一：</strong>表示要注册的当前类 - User。</li>
+<li><strong>参数二：</strong>基类，如果没有基类，则使用 qx::trait::no_base_class_defined。</li>
+<li><strong>参数三：</strong>用于序列化的类版本。</li>
+</ul>
+<p>在 user.cpp 文件中，需要实现 qx::register_class()，它是一个设置函数：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"precompiled.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"user.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;QxOrm_Impl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">QX_REGISTER_CPP_USER(User)</span><br><span class="line"></span><br><span class="line">namespace <span class="class">qx </span>&#123;</span><br><span class="line">    template <span class="params">&lt;&gt;</span> void register_class(QxClass<span class="params">&lt;User&gt;</span> &amp; t)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 注册 User::id &lt;=&gt; 数据库中的主键</span></span><br><span class="line">        t.id(&amp;<span class="symbol">User::</span>id, <span class="string">"id"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册 User::name 属性，使用的 key 是 name，version 是 1。</span></span><br><span class="line">        t.data(&amp;<span class="symbol">User::</span>name, <span class="string">"name"</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册 User::age 属性，使用的 key 是 age。</span></span><br><span class="line">        t.data(&amp;<span class="symbol">User::</span>age, <span class="string">"age"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>和 QX_REGISTER_HPP_USER  相同，QX_REGISTER_CPP_USER 宏也是必需的，用于将 User 类注册到 QxOrm 的上下文中。</p>
+<h2 id="基本应用"><a href="#基本应用" class="headerlink" title="基本应用"></a>基本应用</h2><p>现在，是时候一展身手了。通过 User 类，来了解 QxOrm 中的一些基本操作：</p>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#include "precompiled.h"</span></span><br><span class="line"><span class="comment">#include "user.h"</span></span><br><span class="line"><span class="comment">#include &lt;QxOrm_Impl.h&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    QCoreApplication a(argc, argv);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化参数，用于和数据库交互</span></span><br><span class="line">    qx::QxSqlDatabase::getSingleton()-&gt;setDriverName(<span class="string">"QSQLITE"</span>);</span><br><span class="line">    qx::QxSqlDatabase::getSingleton()-&gt;setDatabaseName(<span class="string">"./Users.db"</span>);</span><br><span class="line">    qx::QxSqlDatabase::getSingleton()-&gt;setHostName(<span class="string">"localhost"</span>);</span><br><span class="line">    qx::QxSqlDatabase::getSingleton()-&gt;setUserName(<span class="string">"root"</span>);</span><br><span class="line">    qx::QxSqlDatabase::getSingleton()-&gt;setPassword(<span class="string">""</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在数据库中创建 User 表</span></span><br><span class="line">    QSqlError daoError = qx::dao::create_table&lt;User&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建 3 个用户</span></span><br><span class="line">    <span class="comment">// 可以使用 std 和 Qt 智能指针：std::shared_ptr、QSharedPointer 等...</span></span><br><span class="line">    typedef  QSharedPointer&lt;User&gt; UserPtr;</span><br><span class="line">    UserPtr u1;</span><br><span class="line">    u1.reset(<span class="keyword">new</span> User());</span><br><span class="line">    u1-&gt;name = <span class="string">"Jack Ma"</span>;</span><br><span class="line">    u1-&gt;age = <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">    UserPtr u2;</span><br><span class="line">    u2.reset(<span class="keyword">new</span> User());</span><br><span class="line">    u2-&gt;name = <span class="string">"Pony"</span>;</span><br><span class="line">    u2-&gt;age = <span class="number">25</span>;</span><br><span class="line"></span><br><span class="line">    UserPtr u3;</span><br><span class="line">    u3.reset(<span class="keyword">new</span> User());</span><br><span class="line">    u3-&gt;name = <span class="string">"Waleon"</span>;</span><br><span class="line">    u3-&gt;age = <span class="number">18</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将所有用户插入容器中</span></span><br><span class="line">    <span class="comment">// 可以使用 std、boost、Qt 和 qx::QxCollection&lt;Key，Value&gt; 中的许多容器</span></span><br><span class="line">    typedef QVector&lt;UserPtr&gt; VectorUser;</span><br><span class="line">    VectorUser users;</span><br><span class="line">    users.push_back(u1);</span><br><span class="line">    users.push_back(u2);</span><br><span class="line">    users.push_back(u3);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将容器中的所有用户插入到数据库中</span></span><br><span class="line">    <span class="comment">// p1、p2、p3 的 id 属性会自动更新</span></span><br><span class="line">    daoError = qx::dao::insert(users);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 修改第二个用户的信息，并更新到数据库中</span></span><br><span class="line">    u2-&gt;name = <span class="string">"Pony modified"</span>;</span><br><span class="line">    u2-&gt;age = <span class="number">38</span>;</span><br><span class="line">    daoError = qx::dao::update(u2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从数据库中删除第一个用户</span></span><br><span class="line">    daoError = qx::dao::delete_by_id(u1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算用户的数量</span></span><br><span class="line">    <span class="keyword">long</span> userCount = qx::dao::count&lt;User&gt;();</span><br><span class="line">    qDebug() &lt;&lt; <span class="string">"User Count: "</span> &lt;&lt; userCount;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将 id 为 3 的用户取出，并传给一个新变量</span></span><br><span class="line">    UserPtr userTmp;</span><br><span class="line">    userTmp.reset(<span class="keyword">new</span> User());</span><br><span class="line">    userTmp-&gt;id = <span class="number">3</span>;</span><br><span class="line">    daoError = qx::dao::fetch_by_id(userTmp);</span><br><span class="line">    qDebug() &lt;&lt; <span class="string">"User Tmp: "</span> &lt;&lt; userTmp-&gt;id &lt;&lt; userTmp-&gt;name &lt;&lt; userTmp-&gt;age;</span><br><span class="line"></span><br><span class="line"><span class="comment">#if _QX_SERIALIZE_XML</span></span><br><span class="line">    <span class="comment">// 将容器中的用户导出到 XML 文件中（序列化）</span></span><br><span class="line">    qx::serialization::xml::to_file(users, <span class="string">"./export_users.xml"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将 XML 中的用户导入至新容器</span></span><br><span class="line">    VectorUser usersXmlTmp;</span><br><span class="line">    qx::serialization::xml::from_file(usersXmlTmp, <span class="string">"./export_users.xml"</span>);</span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#ifndef _QX_NO_JSON</span></span><br><span class="line">    <span class="comment">// 将容器中的用户导出到 Json 文件中（序列化）</span></span><br><span class="line">    qx::serialization::json::to_file(users, <span class="string">"./export_users.json"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将 Json 文件中的用户导入至新容器</span></span><br><span class="line">    VectorUser usersJsonTmp;</span><br><span class="line">    qx::serialization::json::from_file(usersJsonTmp, <span class="string">"./export_users.json"</span>);</span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 克隆一个用户</span></span><br><span class="line">    UserPtr uClone = qx::clone_to_qt_shared_ptr(*u1);</span><br><span class="line">    qDebug() &lt;&lt; <span class="string">"Clone from u1: "</span> &lt;&lt; uClone-&gt;id &lt;&lt; uClone-&gt;name &lt;&lt; uClone-&gt;age;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 按类名（factory）创建新用户</span></span><br><span class="line">    qx::any uAny = qx::create(<span class="string">"User"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将用户插入到 qx::cache</span></span><br><span class="line">    qx::cache::set(<span class="string">"users"</span>, users);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从 qx::cache 中删除所有元素</span></span><br><span class="line">    qx::cache::clear();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 内存泄漏</span></span><br><span class="line">    User *user = <span class="keyword">new</span> User();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> a.exec();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里重点介绍一下 QxOrm_Impl.h，它的作用是检测内存泄露。如果使用 QxMemLeak 模块或 boost::serialization 引擎，应该在所有的 *.cpp 中包含它；否则，它便是可选的（非必须）。</p>
+<h2 id="运行程序"><a href="#运行程序" class="headerlink" title="运行程序"></a>运行程序</h2><p>运行程序，除了会打印一系列的输出信息之外，还会生成相应的数据库文件和 JSON 文件。</p>
+<p>QxOrm 不会隐藏 SQL 查询（默认情况下，所有的语句都会显示），所以在控制台中可以看到执行过程。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[QxOrm] qx::QxSqlDatabase : <span class="keyword">create</span> <span class="keyword">new</span> <span class="keyword">database</span> <span class="keyword">connection</span> <span class="keyword">in</span> <span class="keyword">thread</span> <span class="string">'0x2554'</span> <span class="keyword">with</span> <span class="keyword">key</span> <span class="string">'&#123;652e45d3-7186-4bd6-81d1-9ff32fcff744&#125;'</span></span><br><span class="line">[QxOrm] <span class="keyword">sql</span> <span class="keyword">query</span> (total: <span class="number">31.8</span> ms, db_exec: <span class="number">0</span> ms) : <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">User</span> (<span class="keyword">id</span> <span class="built_in">INTEGER</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> PRIMARY <span class="keyword">KEY</span> AUTOINCREMENT, <span class="keyword">name</span> <span class="built_in">TEXT</span>, age <span class="built_in">INTEGER</span>)</span><br><span class="line">[QxOrm] <span class="keyword">sql</span> <span class="keyword">query</span> (total: <span class="number">12</span> ms, db_exec: <span class="number">1.91</span> ms) : <span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">User</span> (<span class="keyword">name</span>, age) <span class="keyword">VALUES</span> (:<span class="keyword">name</span>, :age)</span><br><span class="line">[QxOrm] <span class="keyword">sql</span> <span class="keyword">query</span> (total: <span class="number">9.35</span> ms, db_exec: <span class="number">0.511</span> ms) : <span class="keyword">UPDATE</span> <span class="keyword">User</span> <span class="keyword">SET</span> <span class="keyword">id</span> = :<span class="keyword">id</span>, <span class="keyword">name</span> = :<span class="keyword">name</span>, age = :age <span class="keyword">WHERE</span> <span class="keyword">id</span> = :id_bis</span><br><span class="line">[QxOrm] <span class="keyword">sql</span> <span class="keyword">query</span> (total: <span class="number">8.49</span> ms, db_exec: <span class="number">8.43</span> ms) : <span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="keyword">User</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = :<span class="keyword">id</span></span><br><span class="line">[QxOrm] <span class="keyword">sql</span> <span class="keyword">query</span> (total: <span class="number">0.125</span> ms, db_exec: <span class="number">0.0994</span> ms) : <span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*) <span class="keyword">FROM</span> <span class="keyword">User</span></span><br><span class="line"><span class="keyword">User</span> <span class="keyword">Count</span>:  <span class="number">2</span></span><br><span class="line">[QxOrm] <span class="keyword">sql</span> <span class="keyword">query</span> (total: <span class="number">0.153</span> ms, db_exec: <span class="number">0.068</span> ms) : <span class="keyword">SELECT</span> User.id <span class="keyword">AS</span> User_id_0, User.name <span class="keyword">AS</span> User_name_0, User.age <span class="keyword">AS</span> User_age_0 <span class="keyword">FROM</span> <span class="keyword">User</span> <span class="keyword">WHERE</span> User.id = :<span class="keyword">id</span></span><br><span class="line"><span class="keyword">User</span> Tmp:  <span class="number">3</span> <span class="string">"Rose"</span> <span class="number">18</span></span><br><span class="line"><span class="keyword">Clone</span> <span class="keyword">from</span> u1:  <span class="number">1</span> <span class="string">"Jack Ma"</span> <span class="number">30</span></span><br></pre></td></tr></table></figure>
+<p>如果要查看数据库 Users.db 的信息，可以使用数据库可视化工具（例如：Navicat Premium）。</p>
+<p>JSON 文件是通过序列化生成的，打开 export_users.json，将会看到相应的数据。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"age"</span>: <span class="number">30</span>,</span><br><span class="line">        <span class="attr">"id"</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"Jack Ma"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"age"</span>: <span class="number">38</span>,</span><br><span class="line">        <span class="attr">"id"</span>: <span class="number">2</span>,</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"Pony modified"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"age"</span>: <span class="number">18</span>,</span><br><span class="line">        <span class="attr">"id"</span>: <span class="number">3</span>,</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"Rose"</span></span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h1 id="文献资料"><a href="#文献资料" class="headerlink" title="文献资料"></a>文献资料</h1><p>QxOrm网站提供了一个<a href="https://www.qxorm.com/qxorm_en/manual.html" target="_blank" rel="noopener">用户手册</a>。</p>
+<p>本文档的目的是提供用户指南，以学习如何使用QxOrm库功能。本手册适用于正在寻找一种解决方案来管理C ++ / Qt中的持久数据层的开发人员和软件架构师。要理解本文档，需要具备C ++和数据库的技术技能。</p>
+<p><strong>注意：</strong>可以使用<strong>QxEntityEditor应用程序</strong>（用于QxOrm库的图形编辑器，数据模型设计器和源代码生成器）快速轻松地定义本手册/用户指南中描述的所有功能。QxOrm网站上提供了另一个<a href="https://www.qxorm.com/qxorm_en/manual_qxee.html" target="_blank" rel="noopener">专门针对QxEntityEditor应用程序的文档</a>。</p>
+<h1 id="数据模型管理工具"><a href="#数据模型管理工具" class="headerlink" title="数据模型管理工具"></a>数据模型管理工具</h1><p>QxEntityEditor是QxOrm库的图形编辑器：<strong>QxEntityEditor提供了一种图形方法来管理数据模型</strong>。QxEntityEditor是多平台的（适用于Windows，Linux和Mac OS X），并为所有环境生成本机代码：台式机（Windows，Linux，Mac OS X），嵌入式和移动（Android，iOS，Windows Phone，Raspberry Pi等） ）。 QxOrm网站上提供<a href="https://www.qxorm.com/qxorm_en/manual_qxee.html" target="_blank" rel="noopener">了QxEntityEditor应用程序的用户手册（文档）</a>。</p>
+<p>QxEntityEditor基于插件，并提供了多种导入/导出数据模型的方式：</p>
+<ul>
+<li>自动生成C ++持久类（在QxOrm上下文中注册）；</li>
+<li>自动为SQLite，MySQL，PostgreSQL，Oracle和MS SQL Server生成DDL SQL脚本（数据库架构）；</li>
+<li>管理每个项目版本（ALTER TABLE，ADD COLUMN，DROP INDEX等）的模式演变；</li>
+<li>使用 QxService模块通过网络传输数据模型并快速创建客户/服务器应用程序;</li>
+<li>导入用于SQLite，MySQL，PostgreSQL，Oracle和MS SQL Server数据库的现有数据库结构（使用ODBC连接或本机驱动程序）；</li>
+<li>因为每个项目都是不同的，所以QxEntityEditor提供了几种自定义生成文件的方法（尤其是javascript引擎和集成的调试器）。</li>
+</ul>
+<h1 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h1><p>由于 QxOrm 可以自动对 Entity 对象与数据库中的 Table 进行属性与字段的映射，所以在实际项目中几乎不需要编写数据访问层的代码，这在很大程度上提高了我们的开发效率。</p>
+<p>但 QxOrm 不能解决 SQL 和数据库的所有问题（没有一种工具是万能的），所以有时也需要使用 Qt 的 QtSql 引擎来编写自己的 SQL 查询或存储过程。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/03/100648.html" class="pre-post btn btn-default" title='C/C++宏 详解'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">C/C++宏 详解</span>
+        </a>
+    
+    
+        <a href="/archives/2021/03/100646.html" class="next-post btn btn-default" title='Log4Qt使用教程(Log4j for C++ 构建系统日志)'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Log4Qt使用教程(Log4j for C++ 构建系统日志)</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ORM"><span class="toc-text">ORM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ORM-的优缺点"><span class="toc-text">ORM 的优缺点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#主流的-ORM-框架"><span class="toc-text">主流的 ORM 框架</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#关于-QxOrm"><span class="toc-text">关于 QxOrm</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编译-QxOrm"><span class="toc-text">编译 QxOrm</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#QxOrm-使用"><span class="toc-text">QxOrm 使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#项目文件"><span class="toc-text">项目文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#export-h-文件"><span class="toc-text">export.h 文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#预编译头文件"><span class="toc-text">预编译头文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定义-User-类"><span class="toc-text">定义 User 类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本应用"><span class="toc-text">基本应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行程序"><span class="toc-text">运行程序</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#文献资料"><span class="toc-text">文献资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据模型管理工具"><span class="toc-text">数据模型管理工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结束语"><span class="toc-text">结束语</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

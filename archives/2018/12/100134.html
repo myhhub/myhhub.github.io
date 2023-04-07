@@ -1,0 +1,371 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,安装,metrics,监控">
+
+
+    <meta name="description" content="kubernetes 集群资源监控之前可以通过 heapster 来获取数据，在 1.11 开始开始逐渐废弃 heapster 了，采用 metrics-server 来代替，metrics-s...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>kubernetes监控组件Metrics Server安装 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="kubernetes监控组件Metrics Server安装">
+            
+	            kubernetes监控组件Metrics Server安装
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/metrics/">metrics</a> <a class="tag-link" href="/tags/install/">安装</a> <a class="tag-link" href="/tags/monitor/">监控</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/25</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1563</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>kubernetes 集群资源监控之前可以通过 heapster 来获取数据，在 1.11 开始开始逐渐废弃 heapster 了，采用 metrics-server 来代替，metrics-server 是集群的核心监控数据的聚合器，它从 kubelet 公开的 Summary API 中采集指标信息，metrics-server 是扩展的 APIServer，依赖于<a href="https://github.com/kubernetes/kube-aggregator" target="_blank" rel="noopener">kube-aggregator</a>，因为我们需要在 APIServer 中开启相关参数。</p>
+<p>查看 APIServer 参数配置，确保你的 APIServer 启动参数中包含下的一些参数配置。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">...</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--requestheader-client-ca-file=/etc/kubernetes/certs/proxy-ca.crt</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--proxy-client-cert-file=/etc/kubernetes/certs/proxy.crt</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--proxy-client-key-file=/etc/kubernetes/certs/proxy.key</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--requestheader-allowed-names=aggregator</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--requestheader-extra-headers-prefix=X-Remote-Extra-</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--requestheader-group-headers=X-Remote-Group</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--requestheader-username-headers=X-Remote-User</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--enable-aggregator-routing=true</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果您未在 master 节点上运行 kube-proxy，则必须确保 kube-apiserver 启动参数中包含<code>--enable-aggregator-routing=true</code></p>
+</blockquote>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>我们可以直接使用 metrics-server 官方提供的资源清单文件直接安装，地址：<a href="https://github.com/kubernetes-incubator/metrics-server/tree/master/deploy" target="_blank" rel="noopener">https://github.com/kubernetes-incubator/metrics-server/tree/master/deploy</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> kubernetes 1.7</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl create -f 1.7/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> kubernetes &gt; 1.8</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl create -f 1.8+/</span></span><br></pre></td></tr></table></figure>
+<p>当然我们可以使用 Helm 来安装，我们可以将 metrics-server 的 Chart 包 fetch 到集群中，查看模板，去了解如何部署应用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> helm fetch stable/metrics-server</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tar -xvf metrics-server-2.7.1.tgz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> metrics-server</span></span><br></pre></td></tr></table></figure>
+<p>我们可以使用微软的镜像来覆盖默认的 gcr.io 镜像，如下命名安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> helm install --name metric --namespace kube-system --<span class="built_in">set</span> image.repository=gcr.azk8s.cn/google_containers/metrics-server-amd64 .</span></span><br><span class="line">NAME:   metric</span><br><span class="line">LAST DEPLOYED: Wed May 22 01:30:53 2019</span><br><span class="line">NAMESPACE: kube-system</span><br><span class="line">STATUS: DEPLOYED</span><br><span class="line"></span><br><span class="line">RESOURCES:</span><br><span class="line">==&gt; v1/ServiceAccount</span><br><span class="line">NAME                   SECRETS  AGE</span><br><span class="line">metric-metrics-server  1        1s</span><br><span class="line"></span><br><span class="line">==&gt; v1/ClusterRole</span><br><span class="line">NAME                                     AGE</span><br><span class="line">system:metrics-server-aggregated-reader  1s</span><br><span class="line">system:metric-metrics-server             1s</span><br><span class="line"></span><br><span class="line">==&gt; v1/ClusterRoleBinding</span><br><span class="line">NAME                                         AGE</span><br><span class="line">metric-metrics-server:system:auth-delegator  1s</span><br><span class="line">system:metric-metrics-server                 1s</span><br><span class="line"></span><br><span class="line">==&gt; v1beta1/RoleBinding</span><br><span class="line">NAME                               AGE</span><br><span class="line">metric-metrics-server-auth-reader  1s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Service</span><br><span class="line">NAME                   TYPE       CLUSTER-IP      EXTERNAL-IP  PORT(S)  AGE</span><br><span class="line">metric-metrics-server  ClusterIP  10.103.214.219  &lt;none&gt;       443/TCP  1s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Deployment</span><br><span class="line">NAME                   DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE</span><br><span class="line">metric-metrics-server  1        1        1           0          1s</span><br><span class="line"></span><br><span class="line">==&gt; v1beta1/APIService</span><br><span class="line">NAME                    AGE</span><br><span class="line">v1beta1.metrics.k8s.io  1s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Pod(related)</span><br><span class="line">NAME                                    READY  STATUS             RESTARTS  AGE</span><br><span class="line">metric-metrics-server-697bd98b8b-kvg2d  0/1    ContainerCreating  0         1s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">NOTES:</span><br><span class="line">The metric server has been deployed.</span><br><span class="line"></span><br><span class="line">In a few minutes you should be able to list metrics using the following</span><br><span class="line">command:</span><br><span class="line"></span><br><span class="line">  kubectl get --raw "/apis/metrics.k8s.io/v1beta1/nodes"</span><br></pre></td></tr></table></figure>
+<p>等部署完成后，可以查看 Pod 日志是否正常：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pods -n kube-system -l release=metric</span></span><br><span class="line">NAME                                     READY     STATUS    RESTARTS   AGE</span><br><span class="line">metric-metrics-server-697bd98b8b-kvg2d   1/1       Running   0          58m</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs -f metric-metrics-server-697bd98b8b-kvg2d -n kube-system</span></span><br><span class="line">I0521 17:31:54.580374       1 serving.go:273] Generated self-signed cert (/tmp/apiserver.crt, /tmp/apiserver.key)</span><br><span class="line">[restful] 2019/05/21 17:31:55 log.go:33: [restful/swagger] listing is available at https://:8443/swaggerapi</span><br><span class="line">[restful] 2019/05/21 17:31:55 log.go:33: [restful/swagger] https://:8443/swaggerui/ is mapped to folder /swagger-ui/</span><br><span class="line">I0521 17:31:55.112171       1 serve.go:96] Serving securely on [::]:8443</span><br><span class="line">E0521 17:32:55.229771       1 manager.go:111] unable to fully collect metrics: [unable to fully scrape metrics from source kubelet_summary:ydzs-node2: unable to fetch metrics from kubelet ydzs-node2 (ydzs-node2): Get https://ydzs-node2:10250/stats/summary/: dial tcp: lookup ydzs-node2 on 10.96.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ydzs-master: unable to fetch metrics from kubelet ydzs-master (ydzs-master): Get https://ydzs-master:10250/stats/summary/: dial tcp: lookup ydzs-master on 10.96.0.10:53: no such host, unable to fully scrape metrics from source kubelet_summary:ydzs-node1: unable to fetch metrics from kubelet ydzs-node1 (ydzs-node1): Get https://ydzs-node1:10250/stats/summary/: dial tcp: lookup ydzs-node1 on 10.96.0.10:53: no such host]</span><br></pre></td></tr></table></figure>
+<p>我们可以发现 Pod 中出现了一些错误信息：<code>xxx: no such host</code>，我们看到这个错误信息一般就可以确定是 DNS 解析不了造成的，我们可以看到 metrics-server 会通过 kubelet 的 10250 端口获取信息，使用的是 hostname，我们部署集群的时候在节点的 /etc/hosts 里面添加了节点的 hostname 和 ip 的映射，但是是我们的 metrics-server 的 Pod 内部并没有这个 hosts 信息，当然也就不识别 hostname 了，要解决这个问题，有两种方法：</p>
+<p>第一种方法就是在集群内部的 DNS 服务里面添加上 hostname 的解析，比如我们这里集群中使用的是 CoreDNS，我们就可以去修改下 CoreDNS 的 Configmap 信息，添加上 hosts 信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl edit configmap coredns -n kube-system</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">data:</span><br><span class="line">  Corefile: |</span><br><span class="line">    .:53 &#123;</span><br><span class="line">        errors</span><br><span class="line">        health</span><br><span class="line">        hosts &#123;  # 添加集群节点hosts隐射信息</span><br><span class="line">          10.151.30.11 ydzs-master</span><br><span class="line">          10.151.30.22 ydzs-node1</span><br><span class="line">          10.151.30.23 ydzs-node2</span><br><span class="line">          fallthrough</span><br><span class="line">        &#125;</span><br><span class="line">        kubernetes cluster.local in-addr.arpa ip6.arpa &#123;</span><br><span class="line">           pods insecure</span><br><span class="line">           upstream</span><br><span class="line">           fallthrough in-addr.arpa ip6.arpa</span><br><span class="line">        &#125;</span><br><span class="line">        prometheus :9153</span><br><span class="line">        proxy . /etc/resolv.conf</span><br><span class="line">        cache 30</span><br><span class="line">        reload</span><br><span class="line">    &#125;</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  creationTimestamp: 2019-05-18T11:07:46Z</span><br><span class="line">  name: coredns</span><br><span class="line">  namespace: kube-system</span><br></pre></td></tr></table></figure>
+<p>这样当在集群内部访问集群的 hostname 的时候就可以解析到对应的 ip 了，另外一种方法就是在 metrics-server 的启动参数中修改<code>kubelet-preferred-address-types</code>参数，如下：（custom-values.yaml）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">image:</span></span><br><span class="line"><span class="attr">  repository:</span> <span class="string">gcr.azk8s.cn/google_containers/metrics-server-amd64</span></span><br><span class="line"></span><br><span class="line"><span class="attr">args:</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--kubelet-preferred-address-types=InternalIP</span></span><br></pre></td></tr></table></figure>
+<p>我们这里使用第二种方式，然后重新安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> helm delete metric --purge</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> helm install --name metric --namespace kube-system -f custom-values.yaml .</span></span><br><span class="line">......</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pods -n kube-system |grep metric</span></span><br><span class="line">metric-metrics-server-58fc94d9f-jlxcb            1/1       Running   0          47s</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs -f metric-metrics-server-58fc94d9f-jlxcb -n kube-system</span></span><br><span class="line">I0521 17:54:32.873326       1 serving.go:273] Generated self-signed cert (/tmp/apiserver.crt, /tmp/apiserver.key)</span><br><span class="line">[restful] 2019/05/21 17:54:34 log.go:33: [restful/swagger] listing is available at https://:8443/swaggerapi</span><br><span class="line">[restful] 2019/05/21 17:54:34 log.go:33: [restful/swagger] https://:8443/swaggerui/ is mapped to folder /swagger-ui/</span><br><span class="line">I0521 17:54:34.668940       1 serve.go:96] Serving securely on [::]:8443</span><br><span class="line"></span><br><span class="line">E0521 17:55:34.650303       1 manager.go:111] unable to fully collect metrics: [unable to fully scrape metrics from source kubelet_summary:ydzs-master: unable to fetch metrics from kubelet ydzs-master (10.151.30.11): Get https://10.151.30.11:10250/stats/summary/: x509: cannot validate certificate for 10.151.30.11 because it doesn't contain any IP SANs, unable to fully scrape metrics from source kubelet_summary:ydzs-node2: unable to fetch metrics from kubelet ydzs-node2 (10.151.30.23): Get https://10.151.30.23:10250/stats/summary/: x509: cannot validate certificate for 10.151.30.23 because it doesn't contain any IP SANs, unable to fully scrape metrics from source kubelet_summary:ydzs-node1: unable to fetch metrics from kubelet ydzs-node1 (10.151.30.22): Get https://10.151.30.22:10250/stats/summary/: x509: cannot validate certificate for 10.151.30.22 because it doesn't contain any IP SANs]</span><br></pre></td></tr></table></figure>
+<p>因为部署集群的时候，CA 证书并没有把各个节点的 IP 签上去，所以这里 metrics-server 通过 IP 去请求时，提示签的证书没有对应的 IP（错误：x509: cannot validate certificate for 192.168.33.11 because it doesn’t contain any IP SANs），我们可以添加一个<code>--kubelet-insecure-tls</code>参数跳过证书校验：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">image:</span></span><br><span class="line"><span class="attr">  repository:</span> <span class="string">gcr.azk8s.cn/google_containers/metrics-server-amd64</span></span><br><span class="line"></span><br><span class="line"><span class="attr">args:</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--kubelet-insecure-tls</span></span><br><span class="line"><span class="bullet">-</span> <span class="bullet">--kubelet-preferred-address-types=InternalIP</span></span><br></pre></td></tr></table></figure>
+<p>然后再<code>重新安装</code>即可成功!</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl get apiservice | grep metrics</span></span><br><span class="line">v1beta1.metrics.k8s.io                 2019-05-21T18:03:03Z</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get --raw <span class="string">"/apis/metrics.k8s.io/v1beta1/nodes"</span></span></span><br><span class="line">&#123;"kind":"NodeMetricsList","apiVersion":"metrics.k8s.io/v1beta1","metadata":&#123;"selfLink":"/apis/metrics.k8s.io/v1beta1/nodes"&#125;,"items":[&#123;"metadata":&#123;"name":"ydzs-master","selfLink":"/apis/metrics.k8s.io/v1beta1/nodes/ydzs-master","creationTimestamp":"2019-05-22T22:11:16Z"&#125;,"timestamp":"2019-05-22T22:11:01Z","window":"30s","usage":&#123;"cpu":"516674270n","memory":"2555172Ki"&#125;&#125;,&#123;"metadata":&#123;"name":"ydzs-node1","selfLink":"/apis/metrics.k8s.io/v1beta1/nodes/ydzs-node1","creationTimestamp":"2019-05-22T22:11:16Z"&#125;,"timestamp":"2019-05-22T22:11:05Z","window":"30s","usage":&#123;"cpu":"413218279n","memory":"3417680Ki"&#125;&#125;]&#125;</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl top nodes</span></span><br><span class="line">NAME          CPU(cores)   CPU%      MEMORY(bytes)   MEMORY%</span><br><span class="line">ydzs-master   496m         24%       2443Mi          66%</span><br><span class="line">ydzs-node1    412m         10%       3338Mi          43%</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>本篇文章使用的集群版本为 kubernetes v1.11.0 版本，采用 Kubeadm 方式安装。</p>
+</blockquote>
+<p>在安装的过程中或多或少可能会有一些问题，最好的办法就是一步一步的去排错，出现了错误不要着急，最重要的就是分析错误日志信息，很多错误日志提示其实已经非常明显了。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100135.html" class="pre-post btn btn-default" title='JavaScript错误的正确处理方式'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">JavaScript错误的正确处理方式</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100133.html" class="next-post btn btn-default" title='Jenkins Pipeline脚本Groovy语言使用说明'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Jenkins Pipeline脚本Groovy语言使用说明</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

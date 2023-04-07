@@ -1,0 +1,429 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,python,字节码">
+
+
+    <meta name="description" content="一. 前言
+Python 代码先被编译为字节码后，再由Python虚拟机来执行字节码， Python的字节码是一种类似汇编指令的中间语言， 一个Python语句会对应若干字节码指令，虚拟机一条一...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>python字节码还原成源码 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="python字节码还原成源码">
+            
+	            python字节码还原成源码
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/python/">python</a> <a class="tag-link" href="/tags/bytecode/">字节码</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/01/17</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1541</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-前言"><a href="#一-前言" class="headerlink" title="一. 前言"></a>一. 前言</h2><blockquote>
+<p>Python 代码先被编译为字节码后，再由Python虚拟机来执行字节码， Python的字节码是一种类似汇编指令的中间语言， 一个Python语句会对应若干字节码指令，虚拟机一条一条执行字节码指令， 从而完成程序执行。<br>Python dis 模块支持对Python代码进行反汇编， 生成字节码指令。</p>
+</blockquote>
+<p><code>dis.dis()</code>将CPython字节码转为可读的伪代码(类似于汇编代码)。结构如下：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">7</span>           <span class="number">0</span> LOAD_CONST               <span class="number">1</span> (<span class="number">0</span>)</span><br><span class="line">            <span class="number">3</span> STORE_FAST               <span class="number">1</span> (local1)</span><br><span class="line"> </span><br><span class="line"><span class="number">8</span>           <span class="number">6</span> LOAD_CONST               <span class="number">2</span> (<span class="number">101</span>)</span><br><span class="line">            <span class="number">9</span> STORE_GLOBAL             <span class="number">0</span> (global1)</span><br><span class="line"> </span><br><span class="line"><span class="number">9</span>          <span class="number">12</span> LOAD_FAST                <span class="number">1</span> (local1)</span><br><span class="line">           <span class="number">15</span> PRINT_ITEM</span><br><span class="line">           <span class="number">16</span> LOAD_FAST                <span class="number">0</span> (arg1)</span><br><span class="line">           <span class="number">19</span> PRINT_ITEM</span><br><span class="line">           <span class="number">20</span> LOAD_GLOBAL              <span class="number">0</span> (global1)</span><br><span class="line">           <span class="number">23</span> PRINT_ITEM</span><br><span class="line">           <span class="number">24</span> PRINT_NEWLINE</span><br><span class="line">           <span class="number">25</span> LOAD_CONST               <span class="number">0</span> (None)</span><br><span class="line">           <span class="number">28</span> RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<p>其实就是这样的结构：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">源码行号 |<span class="string"> 指令在函数中的偏移 </span>|<span class="string"> 指令符号 </span>|<span class="string"> 指令参数 </span>|<span class="string"> 实际参数值</span></span><br></pre></td></tr></table></figure>
+<h2 id="二-变量"><a href="#二-变量" class="headerlink" title="二. 变量"></a>二. 变量</h2><h3 id="1-const"><a href="#1-const" class="headerlink" title="1.const"></a>1.const</h3><p><code>LOAD_CONST</code>加载<code>const</code>变量，比如数值、字符串等等，一般用于传给函数的参数</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">55</span>       <span class="number">12</span> LOAD_GLOBAL              <span class="number">1</span> (test)</span><br><span class="line">         <span class="number">15</span> LOAD_FAST                <span class="number">0</span> (<span class="number">2</span>) #读取<span class="number">2</span></span><br><span class="line">         <span class="number">18</span> LOAD_CONST               <span class="number">1</span> ('output')</span><br><span class="line">         <span class="number">21</span> CALL_FUNCTION            <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>转为python代码就是：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">test</span><span class="params">(<span class="number">2</span>, <span class="string">'output'</span>)</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="2-局部变量"><a href="#2-局部变量" class="headerlink" title="2.局部变量"></a>2.局部变量</h3><p><code>LOAD_FAST</code>一般加载局部变量的值，也就是读取值，用于计算或者函数调用传参等。<br><code>STORE_FAST</code>一般用于保存值到局部变量。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">61</span>          <span class="number">77</span> LOAD_FAST                <span class="number">0</span> (n)</span><br><span class="line">             <span class="number">80</span> LOAD_FAST                <span class="number">3</span> (p)</span><br><span class="line">             <span class="number">83</span> INPLACE_DIVIDE</span><br><span class="line">             <span class="number">84</span> STORE_FAST               <span class="number">0</span> (n)</span><br></pre></td></tr></table></figure>
+<p>这段bytecode转为python就是：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">n</span> = <span class="built_in">n</span> / p</span><br></pre></td></tr></table></figure>
+<p>函数的形参也是局部变量，如何区分出是函数形参还是其他局部变量呢？</p>
+<p>形参没有初始化，也就是从函数开始到<code>LOAD_FAST</code>该变量的位置，如果没有看到<code>STORE_FAST</code>，那么该变量就是函数形参。</p>
+<p>而其他局部变量在使用之前肯定会使用<code>STORE_FAST</code>进行初始化。</p>
+<p>具体看下面的实例：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4</span>           <span class="number">0</span> LOAD_CONST               <span class="number">1</span> (<span class="number">0</span>)</span><br><span class="line">            <span class="number">3</span> STORE_FAST               <span class="number">1</span> (local1)</span><br><span class="line"> </span><br><span class="line"><span class="number">5</span>           <span class="number">6</span> LOAD_FAST                <span class="number">1</span> (local1)</span><br><span class="line">            <span class="number">9</span> PRINT_ITEM</span><br><span class="line">           <span class="number">10</span> LOAD_FAST                <span class="number">0</span> (arg1)</span><br><span class="line">           <span class="number">13</span> PRINT_ITEM</span><br><span class="line">           <span class="number">14</span> PRINT_NEWLINE</span><br><span class="line">           <span class="number">15</span> LOAD_CONST               <span class="number">0</span> (None)</span><br><span class="line">           <span class="number">18</span> RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<p>对应的python代码如下，对比一下就一目了然。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(arg1)</span>:</span></span><br><span class="line">    local1 = <span class="number">0</span></span><br><span class="line">    <span class="keyword">print</span> local1, arg1</span><br></pre></td></tr></table></figure>
+<h3 id="3-全局变量"><a href="#3-全局变量" class="headerlink" title="3.全局变量"></a>3.全局变量</h3><p><code>LOAD_GLOBAL</code>用来加载全局变量，包括指定函数名，类名，模块名等全局符号。</p>
+<p><code>STORE_GLOBAL</code>用来给全局变量赋值。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">8</span>           <span class="number">6</span> LOAD_CONST               <span class="number">2</span> (<span class="number">101</span>)</span><br><span class="line">            <span class="number">9</span> STORE_GLOBAL             <span class="number">0</span> (global1)</span><br><span class="line">            <span class="number">20</span> LOAD_GLOBAL              <span class="number">0</span> (global1)</span><br><span class="line">            <span class="number">23</span> PRINT_ITEM</span><br></pre></td></tr></table></figure>
+<p>对应的python代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> global1</span><br><span class="line">    global1 = <span class="number">101</span></span><br><span class="line">    <span class="keyword">print</span> <span class="keyword">global</span></span><br></pre></td></tr></table></figure>
+<h2 id="三-常用数据类型"><a href="#三-常用数据类型" class="headerlink" title="三. 常用数据类型"></a>三. 常用数据类型</h2><h3 id="1-list"><a href="#1-list" class="headerlink" title="1.list"></a>1.list</h3><p><code>BUILD_LIST</code>用于创建一个list结构。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">13</span>           <span class="number">0</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">3</span> LOAD_CONST               <span class="number">2</span> (<span class="number">2</span>)</span><br><span class="line">             <span class="number">6</span> BUILD_LIST               <span class="number">2</span></span><br><span class="line">             <span class="number">9</span> STORE_FAST               <span class="number">0</span> (k)</span><br></pre></td></tr></table></figure>
+<p>对应python代码是：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">k</span> = [<span class="number">1</span>, <span class="number">2</span>]</span><br></pre></td></tr></table></figure>
+<p>另外再看看一种常见的创建list的方式如下：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[x <span class="keyword">for</span> x <span class="keyword">in</span> xlist <span class="keyword">if</span> x!=<span class="number">0</span> ]</span><br></pre></td></tr></table></figure>
+<p>一个实例bytecode如下：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">22</span>         <span class="number">235</span> BUILD_LIST               <span class="number">0</span> <span class="comment">//创建list，为赋值给某变量，这种时候一般都是语法糖结构了</span></span><br><span class="line">           <span class="number">238</span> LOAD_FAST                <span class="number">3</span> (sieve)</span><br><span class="line">           <span class="number">241</span> GET_ITER</span><br><span class="line">       &gt;&gt;  <span class="number">242</span> FOR_ITER                <span class="number">24</span> (to <span class="number">269</span>)</span><br><span class="line">           <span class="number">245</span> STORE_FAST               <span class="number">4</span> (x)</span><br><span class="line">           <span class="number">248</span> LOAD_FAST                <span class="number">4</span> (x)</span><br><span class="line">           <span class="number">251</span> LOAD_CONST               <span class="number">2</span> (<span class="number">0</span>)</span><br><span class="line">           <span class="number">254</span> COMPARE_OP               <span class="number">3</span> (!=)</span><br><span class="line">           <span class="number">257</span> POP_JUMP_IF_FALSE      <span class="number">242</span> <span class="comment">//不满足条件contine</span></span><br><span class="line">           <span class="number">260</span> LOAD_FAST                <span class="number">4</span> (x)<span class="comment">//读取满足条件的x</span></span><br><span class="line">           <span class="number">263</span> LIST_APPEND              <span class="number">2</span> <span class="comment">//把每个满足条件的x存入list</span></span><br><span class="line">           <span class="number">266</span> JUMP_ABSOLUTE          <span class="number">242</span></span><br><span class="line">       &gt;&gt;  <span class="number">269</span> RETURN_VALUE</span><br></pre></td></tr></table></figure>
+<p>转为python代码是：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">for</span> x <span class="keyword">in</span> sieve <span class="keyword">if</span> x != <span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="2-dict"><a href="#2-dict" class="headerlink" title="2.dict"></a>2.dict</h3><p><code>BUILD_MAP</code>用于创建一个空的dict。<code>STORE_MAP</code>用于初始化dict的内容。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">13</span>           <span class="number">0</span> BUILD_MAP                <span class="number">1</span></span><br><span class="line">             <span class="number">3</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">6</span> LOAD_CONST               <span class="number">2</span> ('a')</span><br><span class="line">             <span class="number">9</span> STORE_MAP</span><br><span class="line">            <span class="number">10</span> STORE_FAST               <span class="number">0</span> (k)</span><br></pre></td></tr></table></figure>
+<p>对应的python代码是：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">k</span> = &#123;<span class="string">'a'</span>: <span class="number">1</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>再看看修改dict的bytecode：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">14</span>          <span class="number">13</span> LOAD_CONST               <span class="number">3</span> (<span class="number">2</span>)</span><br><span class="line">             <span class="number">16</span> LOAD_FAST                <span class="number">0</span> (k)</span><br><span class="line">             <span class="number">19</span> LOAD_CONST               <span class="number">4</span> ('b')</span><br><span class="line">             <span class="number">22</span> STORE_SUBSCR</span><br></pre></td></tr></table></figure>
+<p>对应的python代码是：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">k[<span class="string">'b'</span>] = <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-slice"><a href="#3-slice" class="headerlink" title="3.slice"></a>3.slice</h3><p><code>BUILD_SLICE</code>用于创建slice。对于list、元组、字符串都可以使用slice的方式进行访问。</p>
+<p>但是要注意<code>BUILD_SLICE</code>用于[x:y:z]这种类型的slice，结合<code>BINARY_SUBSCR</code>读取slice的值，结合<code>STORE_SUBSCR</code>用于修改slice的值。</p>
+<p>另外<code>SLICE+n</code>用于[a:b]类型的访问，<code>STORE_SLICE+n</code>用于[a:b]类型的修改，其中<code>n</code>表示如下：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">SLICE</span>+<span class="number">0</span>()</span><br><span class="line"><span class="symbol">Implements</span> <span class="symbol">TOS</span> = <span class="symbol">TOS</span>[:].</span><br><span class="line"> </span><br><span class="line"><span class="symbol">SLICE</span>+<span class="number">1</span>()</span><br><span class="line"><span class="symbol">Implements</span> <span class="symbol">TOS</span> = <span class="symbol">TOS1</span>[<span class="symbol">TOS</span>:].</span><br><span class="line"> </span><br><span class="line"><span class="symbol">SLICE</span>+<span class="number">2</span>()</span><br><span class="line"><span class="symbol">Implements</span> <span class="symbol">TOS</span> = <span class="symbol">TOS1</span>[:<span class="symbol">TOS</span>].</span><br><span class="line"> </span><br><span class="line"><span class="symbol">SLICE</span>+<span class="number">3</span>()</span><br><span class="line"><span class="symbol">Implements</span> <span class="symbol">TOS</span> = <span class="symbol">TOS2</span>[<span class="symbol">TOS1</span>:<span class="symbol">TOS</span>].</span><br></pre></td></tr></table></figure>
+<p>下面看具体实例：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">13</span>           <span class="number">0</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">              <span class="number">3</span> LOAD_CONST               <span class="number">2</span> (<span class="number">2</span>)</span><br><span class="line">              <span class="number">6</span> LOAD_CONST               <span class="number">3</span> (<span class="number">3</span>)</span><br><span class="line">              <span class="number">9</span> BUILD_LIST               <span class="number">3</span></span><br><span class="line">             <span class="number">12</span> STORE_FAST               <span class="number">0</span> (k1) <span class="comment">//k1 = [1, 2, 3]</span></span><br><span class="line"> </span><br><span class="line"> <span class="number">14</span>          <span class="number">15</span> LOAD_CONST               <span class="number">4</span> (<span class="number">10</span>)</span><br><span class="line">             <span class="number">18</span> BUILD_LIST               <span class="number">1</span></span><br><span class="line">             <span class="number">21</span> LOAD_FAST                <span class="number">0</span> (k1)</span><br><span class="line">             <span class="number">24</span> LOAD_CONST               <span class="number">5</span> (<span class="number">0</span>)</span><br><span class="line">             <span class="number">27</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">30</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">33</span> BUILD_SLICE              <span class="number">3</span></span><br><span class="line">             <span class="number">36</span> STORE_SUBSCR                    <span class="comment">//k1[0:1:1] = [10]</span></span><br><span class="line"> </span><br><span class="line"> <span class="number">15</span>          <span class="number">37</span> LOAD_CONST               <span class="number">6</span> (<span class="number">11</span>)</span><br><span class="line">             <span class="number">40</span> BUILD_LIST               <span class="number">1</span></span><br><span class="line">             <span class="number">43</span> LOAD_FAST                <span class="number">0</span> (k1)</span><br><span class="line">             <span class="number">46</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">49</span> LOAD_CONST               <span class="number">2</span> (<span class="number">2</span>)</span><br><span class="line">             <span class="number">52</span> STORE_SLICE+<span class="number">3</span>                   <span class="comment">//k1[1:2] = [11]</span></span><br><span class="line"> </span><br><span class="line"> <span class="number">16</span>          <span class="number">53</span> LOAD_FAST                <span class="number">0</span> (k1)</span><br><span class="line">             <span class="number">56</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">59</span> LOAD_CONST               <span class="number">2</span> (<span class="number">2</span>)</span><br><span class="line">             <span class="number">62</span> SLICE+<span class="number">3</span></span><br><span class="line">             <span class="number">63</span> STORE_FAST               <span class="number">1</span> (a)  <span class="comment">//a = k1[1:2]</span></span><br><span class="line"> </span><br><span class="line"> <span class="number">17</span>          <span class="number">66</span> LOAD_FAST                <span class="number">0</span> (k1)</span><br><span class="line">             <span class="number">69</span> LOAD_CONST               <span class="number">5</span> (<span class="number">0</span>)</span><br><span class="line">             <span class="number">72</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">75</span> LOAD_CONST               <span class="number">1</span> (<span class="number">1</span>)</span><br><span class="line">             <span class="number">78</span> BUILD_SLICE              <span class="number">3</span></span><br><span class="line">             <span class="number">81</span> BINARY_SUBSCR</span><br><span class="line">             <span class="number">82</span> STORE_FAST               <span class="number">2</span> (b) <span class="comment">//b = k1[0:1:1]</span></span><br></pre></td></tr></table></figure>
+<h2 id="四-循环"><a href="#四-循环" class="headerlink" title="四. 循环"></a>四. 循环</h2><p><code>SETUP_LOOP</code>用于开始一个循环。<code>SETUP_LOOP 26 (to 35)</code>中<code>35</code>表示循环退出点。</p>
+<h3 id="while循环"><a href="#while循环" class="headerlink" title="while循环"></a>while循环</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">23</span>           <span class="number">0</span> LOAD_CONST               <span class="number">1</span> (<span class="number">0</span>)</span><br><span class="line">             <span class="number">3</span> STORE_FAST               <span class="number">0</span> (i) <span class="comment">// i=0</span></span><br><span class="line"> </span><br><span class="line"><span class="number">24</span>           <span class="number">6</span> SETUP_LOOP              <span class="number">26</span> (to <span class="number">35</span>)</span><br><span class="line">       &gt;&gt;    <span class="number">9</span> LOAD_FAST                <span class="number">0</span> (i) <span class="comment">//循环起点</span></span><br><span class="line">            <span class="number">12</span> LOAD_CONST               <span class="number">2</span> (<span class="number">10</span>)</span><br><span class="line">            <span class="number">15</span> COMPARE_OP               <span class="number">0</span> (&lt;)</span><br><span class="line">            <span class="number">18</span> POP_JUMP_IF_FALSE       <span class="number">34</span>     <span class="comment">//while i &lt; 10:</span></span><br><span class="line"> </span><br><span class="line"><span class="number">25</span>          <span class="number">21</span> LOAD_FAST                <span class="number">0</span> (i)</span><br><span class="line">            <span class="number">24</span> LOAD_CONST               <span class="number">3</span> (<span class="number">1</span>)</span><br><span class="line">            <span class="number">27</span> INPLACE_ADD                    </span><br><span class="line">            <span class="number">28</span> STORE_FAST               <span class="number">0</span> (i) <span class="comment">// i += 1</span></span><br><span class="line">            <span class="number">31</span> JUMP_ABSOLUTE            <span class="number">9</span>    <span class="comment">// 回到循环起点</span></span><br><span class="line">       &gt;&gt;   <span class="number">34</span> POP_BLOCK</span><br><span class="line">       &gt;&gt;   <span class="number">35</span> LOAD_CONST               <span class="number">0</span> (None)</span><br></pre></td></tr></table></figure>
+<p>对应python代码是：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">i</span> = <span class="number">0</span></span><br><span class="line">    while <span class="selector-tag">i</span> &lt; <span class="number">10</span>:</span><br><span class="line">        <span class="selector-tag">i</span> += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="for-in结构"><a href="#for-in结构" class="headerlink" title="for in结构"></a>for in结构</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="number">238</span> LOAD_FAST                <span class="number">3</span> (sieve)#sieve是个<span class="type">list</span></span><br><span class="line">    <span class="number">241</span> GET_ITER                    <span class="comment">//开始迭代sieve</span></span><br><span class="line">&gt;&gt;  <span class="number">242</span> FOR_ITER                <span class="number">24</span> (to <span class="number">269</span>) <span class="comment">//继续iter下一个x</span></span><br><span class="line">    <span class="number">245</span> STORE_FAST               <span class="number">4</span> (x)</span><br><span class="line">    ...</span><br><span class="line">    <span class="number">266</span> JUMP_ABSOLUTE          <span class="number">242</span> <span class="comment">//循环</span></span><br></pre></td></tr></table></figure>
+<p>这是典型的for+in结构，转为python代码就是：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> <span class="string">sieve:</span></span><br></pre></td></tr></table></figure>
+<h2 id="五-if"><a href="#五-if" class="headerlink" title="五. if"></a>五. if</h2><p><code>POP_JUMP_IF_FALSE</code>和<code>JUMP_FORWARD</code>一般用于分支判断跳转。<code>POP_JUMP_IF_FALSE</code>表示条件结果为<code>FALSE</code>就跳转到目标偏移指令。<code>JUMP_FORWARD</code>直接跳转到目标偏移指令。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">23</span>           <span class="number">0</span> LOAD_CONST               <span class="number">1</span> (<span class="number">0</span>)</span><br><span class="line">             <span class="number">3</span> STORE_FAST               <span class="number">0</span> (i) <span class="comment">//i=0</span></span><br><span class="line"><span class="number">24</span>           <span class="number">6</span> LOAD_FAST                <span class="number">0</span> (i)</span><br><span class="line">             <span class="number">9</span> LOAD_CONST               <span class="number">2</span> (<span class="number">5</span>)</span><br><span class="line">            <span class="number">12</span> COMPARE_OP               <span class="number">0</span> (&lt;)</span><br><span class="line">            <span class="number">15</span> POP_JUMP_IF_FALSE       <span class="number">26</span></span><br><span class="line"> </span><br><span class="line"><span class="number">25</span>          <span class="number">18</span> LOAD_CONST               <span class="number">3</span> ('i &lt; <span class="number">5</span>')</span><br><span class="line">            <span class="number">21</span> PRINT_ITEM</span><br><span class="line">            <span class="number">22</span> PRINT_NEWLINE</span><br><span class="line">            <span class="number">23</span> JUMP_FORWARD            <span class="number">25</span> (to <span class="number">51</span>)</span><br><span class="line"> </span><br><span class="line"><span class="number">26</span>     &gt;&gt;   <span class="number">26</span> LOAD_FAST                <span class="number">0</span> (i)</span><br><span class="line">            <span class="number">29</span> LOAD_CONST               <span class="number">2</span> (<span class="number">5</span>)</span><br><span class="line">            <span class="number">32</span> COMPARE_OP               <span class="number">4</span> (&gt;)</span><br><span class="line">            <span class="number">35</span> POP_JUMP_IF_FALSE       <span class="number">46</span></span><br><span class="line"> </span><br><span class="line"><span class="number">27</span>          <span class="number">38</span> LOAD_CONST               <span class="number">4</span> ('i &gt; <span class="number">5</span>')</span><br><span class="line">            <span class="number">41</span> PRINT_ITEM</span><br><span class="line">            <span class="number">42</span> PRINT_NEWLINE</span><br><span class="line">            <span class="number">43</span> JUMP_FORWARD             <span class="number">5</span> (to <span class="number">51</span>)</span><br><span class="line"> </span><br><span class="line"><span class="number">29</span>     &gt;&gt;   <span class="number">46</span> LOAD_CONST               <span class="number">5</span> ('i = <span class="number">5</span>')</span><br><span class="line">            <span class="number">49</span> PRINT_ITEM</span><br><span class="line">            <span class="number">50</span> PRINT_NEWLINE</span><br><span class="line">       &gt;&gt;   <span class="number">51</span> LOAD_CONST               <span class="number">0</span> (None)</span><br></pre></td></tr></table></figure>
+<p>转为python代码是：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">i</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">if</span> <span class="selector-tag">i</span> &lt; <span class="number">5</span>:</span><br><span class="line">    print <span class="string">'i &lt; 5'</span></span><br><span class="line">elif <span class="selector-tag">i</span> &gt; <span class="number">5</span>:</span><br><span class="line">    print <span class="string">'i &gt; 5'</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print <span class="string">'i = 5'</span></span><br></pre></td></tr></table></figure>
+<h2 id="六-分辨函数"><a href="#六-分辨函数" class="headerlink" title="六. 分辨函数"></a>六. 分辨函数</h2><h3 id="1-函数范围"><a href="#1-函数范围" class="headerlink" title="1.函数范围"></a>1.函数范围</h3><p>前面介绍第二列表示指令在函数中的偏移地址，所以看到0就是函数开始，下一个0前一条指令就是函数结束位置，当然也可以通过<code>RETURN_VALUE</code>来确定函数结尾</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">54</span>         <span class="number">0</span> LOAD_FAST                <span class="number">1</span> (plist) <span class="comment">//函数开始</span></span><br><span class="line">           <span class="number">3</span> LOAD_CONST               <span class="number">0</span> (None)</span><br><span class="line">           <span class="number">6</span> COMPARE_OP               <span class="number">2</span> (==)</span><br><span class="line">           <span class="number">9</span> POP_JUMP_IF_FALSE        <span class="number">33</span></span><br><span class="line"> </span><br><span class="line"><span class="number">55</span>         ...</span><br><span class="line"> </span><br><span class="line"><span class="number">67</span>     &gt;&gt;  <span class="number">139</span> LOAD_FAST              <span class="number">2</span> (fs)</span><br><span class="line">           <span class="number">142</span> RETURN_VALUE</span><br><span class="line"><span class="number">70</span>         <span class="number">0</span> LOAD_CONST               <span class="number">1</span> ('FLAG') <span class="comment">//另一个函数开始</span></span><br><span class="line">           <span class="number">3</span> STORE_FAST               <span class="number">0</span> (flag)</span><br></pre></td></tr></table></figure>
+<h3 id="2-函数调用"><a href="#2-函数调用" class="headerlink" title="2.函数调用"></a>2.函数调用</h3><p>函数调用类似于<code>push+call</code>的汇编结构，压栈参数从左到右依次压入（当然不是<code>push</code>，而是读取指令<code>LOAD_xxxx</code>来指定参数）。</p>
+<p>函数名一般通过<code>LOAD_GLOBAL</code>指令指定，如果是模块函数或者类成员函数通过<code>LOAD_GLOBAL</code>+<code>LOAD_ATTR</code>来指定。</p>
+<p>先指定要调用的函数，然后压参数，最后通过<code>CALL_FUNCTION</code>调用。</p>
+<p><code>CALL_FUNCTION</code>后面的值表示有几个参数。</p>
+<p>支持嵌套调用：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">6</span>           <span class="number">0</span> LOAD_GLOBAL              <span class="number">0</span> (int) <span class="comment">//int函数</span></span><br><span class="line">              <span class="number">3</span> LOAD_GLOBAL              <span class="number">1</span> (math)<span class="comment">//math模块</span></span><br><span class="line">              <span class="number">6</span> LOAD_ATTR                <span class="number">2</span> (sqrt)<span class="comment">//sqrt函数</span></span><br><span class="line">              <span class="number">9</span> LOAD_FAST                <span class="number">0</span> (n) <span class="comment">//参数</span></span><br><span class="line">             <span class="number">12</span> CALL_FUNCTION            <span class="number">1</span></span><br><span class="line">             <span class="number">15</span> CALL_FUNCTION            <span class="number">1</span></span><br><span class="line">             <span class="number">18</span> STORE_FAST               <span class="number">2</span> (nroot)</span><br></pre></td></tr></table></figure>
+<p>这段<code>bytecode</code>转换成<code>python</code>代码就是</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nroot = <span class="keyword">int</span>(math.<span class="built_in">sqrt</span>(n)) <span class="comment">//其中n是一个局部变量或者函数参数，具体看上下文</span></span><br></pre></td></tr></table></figure>
+<h2 id="七-其他指令"><a href="#七-其他指令" class="headerlink" title="七. 其他指令"></a>七. 其他指令</h2><p>其他常见指令，一看就明白，就不具体分析了，更多详细内容请看<a href="https://docs.python.org/2/library/dis.html" target="_blank" rel="noopener">官方文档</a>。</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">INPLACE_POWER()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 ** TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_MULTIPLY()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 * TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_DIVIDE()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 / TOS when <span class="keyword">from</span> __future__ import division <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">in</span> effect.</span><br><span class="line"> </span><br><span class="line">INPLACE_FLOOR_DIVIDE()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 <span class="comment">// TOS.</span></span><br><span class="line"> </span><br><span class="line">INPLACE_TRUE_DIVIDE()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 / TOS when <span class="keyword">from</span> __future__ import division <span class="keyword">is</span> <span class="keyword">in</span> effect.</span><br><span class="line"> </span><br><span class="line">INPLACE_MODULO()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 % TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_ADD()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 + TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_SUBTRACT()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 - TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_LSHIFT()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 &lt;&lt; TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_RSHIFT()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 &gt;&gt; TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_AND()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 &amp; TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_XOR()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 ^ TOS.</span><br><span class="line"> </span><br><span class="line">INPLACE_OR()</span><br><span class="line"><span class="keyword">Implements</span> <span class="keyword">in</span>-place TOS = TOS1 | TOS.</span><br></pre></td></tr></table></figure>
+<p>基础运算还有一套对应的<code>BINARY_xxxx</code>指令，两者区别很简单。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">i</span> += <span class="number">1</span> <span class="comment">//使用INPLACE_xxx</span></span><br><span class="line"><span class="selector-tag">i</span> = <span class="selector-tag">i</span> + <span class="number">1</span> <span class="comment">//使用BINARY_xxxx</span></span><br></pre></td></tr></table></figure>
+<p><strong>参考资料</strong></p>
+<ol>
+<li><a href="https://docs.python.org/2/library/dis.html" target="_blank" rel="noopener">python dis官方文档</a></li>
+<li><a href="https://www.google.com/search?newwindow=1&amp;client=firefox-b-ab&amp;biw=1920&amp;bih=938&amp;ei=GUSGW4OeEor6wAOt8ZyQCw&amp;q=python+“ROT_THREE”&amp;oq=python+“ROT_THREE”&amp;gs_l=psy-ab.3..0i71k1l8.737846.738207.0.738259.3.3.0.0.0.0.0.0..0.0....0...1c.1.64.psy-ab..3.0.0....0.PcHujQY7ZAE" target="_blank" rel="noopener">google搜索dis指令</a></li>
+<li><a href="https://github.com/vstinner/bytecode" target="_blank" rel="noopener">https://github.com/vstinner/bytecode</a></li>
+<li><a href="https://blog.hakril.net/articles/2-understanding-python-execution-tracer.html" target="_blank" rel="noopener">https://blog.hakril.net/articles/2-understanding-python-execution-tracer.html</a></li>
+<li><a href="https://qingyunha.github.io/taotao/" target="_blank" rel="noopener">A Python Interpreter Written in Python</a></li>
+<li><a href="https://blog.csdn.net/qs9816/article/details/51661659" target="_blank" rel="noopener">https://blog.csdn.net/qs9816/article/details/51661659</a></li>
+<li><a href="https://github.com/Mysterie/uncompyle2" target="_blank" rel="noopener">https://github.com/Mysterie/uncompyle2</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/01/100163.html" class="pre-post btn btn-default" title='SparkStreaming实现生产数据零丢失实例(附源码)'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">SparkStreaming实现生产数据零丢失实例(附源码)</span>
+        </a>
+    
+    
+        <a href="/archives/2019/01/100161.html" class="next-post btn btn-default" title='各类常见漏洞大汇总'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">各类常见漏洞大汇总</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-前言"><span class="toc-text">一. 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-变量"><span class="toc-text">二. 变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-const"><span class="toc-text">1.const</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-局部变量"><span class="toc-text">2.局部变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-全局变量"><span class="toc-text">3.全局变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-常用数据类型"><span class="toc-text">三. 常用数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-list"><span class="toc-text">1.list</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-dict"><span class="toc-text">2.dict</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-slice"><span class="toc-text">3.slice</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-循环"><span class="toc-text">四. 循环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#while循环"><span class="toc-text">while循环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#for-in结构"><span class="toc-text">for in结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-if"><span class="toc-text">五. if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-分辨函数"><span class="toc-text">六. 分辨函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-函数范围"><span class="toc-text">1.函数范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-函数调用"><span class="toc-text">2.函数调用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七-其他指令"><span class="toc-text">七. 其他指令</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

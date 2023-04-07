@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,集群,高可用,kafka,zookeeper">
+
+
+    <meta name="description" content="一、Zookeeper集群搭建为保证集群高可用，Zookeeper集群的节点数最好是奇数，最少有三个节点，所以这里搭建一个三个节点的集群。
+1.1 下载 &amp; 解压下载对应版本Zookee...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>基于Zookeeper搭建Kafka高可用集群 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="基于Zookeeper搭建Kafka高可用集群">
+            
+	            基于Zookeeper搭建Kafka高可用集群
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/kafka/">kafka</a> <a class="tag-link" href="/tags/zookeeper/">zookeeper</a> <a class="tag-link" href="/tags/colony/">集群</a> <a class="tag-link" href="/tags/availability/">高可用</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/08</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1368</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、Zookeeper集群搭建"><a href="#一、Zookeeper集群搭建" class="headerlink" title="一、Zookeeper集群搭建"></a>一、Zookeeper集群搭建</h2><p>为保证集群高可用，Zookeeper集群的节点数最好是奇数，最少有三个节点，所以这里搭建一个三个节点的集群。</p>
+<h3 id="1-1-下载-amp-解压"><a href="#1-1-下载-amp-解压" class="headerlink" title="1.1 下载 &amp; 解压"></a>1.1 下载 &amp; 解压</h3><p>下载对应版本Zookeeper，这里我下载的版本<code>3.4.14</code>。官方下载地址：<a href="https://archive.apache.org/dist/zookeeper/" target="_blank" rel="noopener">https://archive.apache.org/dist/zookeeper/</a></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载</span></span><br><span class="line">wget https:<span class="regexp">//</span>archive.apache.org<span class="regexp">/dist/</span>zookeeper<span class="regexp">/zookeeper-3.4.14/</span>zookeeper-<span class="number">3.4</span>.<span class="number">14</span>.tar.gz</span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar -zxvf zookeeper-<span class="number">3.4</span>.<span class="number">14</span>.tar.gz</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-修改配置"><a href="#1-2-修改配置" class="headerlink" title="1.2 修改配置"></a>1.2 修改配置</h3><p>拷贝三份zookeeper安装包。分别进入安装目录的<code>conf</code>目录，拷贝配置样本<code>zoo_sample.cfg</code>为<code>zoo.cfg</code>并进行修改，修改后三份配置文件内容分别如下：</p>
+<p>zookeeper01配置：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tickTime</span>=<span class="number">2000</span></span><br><span class="line"><span class="attr">initLimit</span>=<span class="number">10</span></span><br><span class="line"><span class="attr">syncLimit</span>=<span class="number">5</span></span><br><span class="line"><span class="attr">dataDir</span>=/usr/local/zookeeper-cluster/data/<span class="number">01</span></span><br><span class="line"><span class="attr">dataLogDir</span>=/usr/local/zookeeper-cluster/log/<span class="number">01</span></span><br><span class="line"><span class="attr">clientPort</span>=<span class="number">2181</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># server.1 这个1是服务器的标识，可以是任意有效数字，标识这是第几个服务器节点，这个标识要写到dataDir目录下面myid文件里</span></span><br><span class="line"><span class="comment"># 指名集群间通讯端口和选举端口</span></span><br><span class="line"><span class="attr">server.1</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2287</span>:<span class="number">3387</span></span><br><span class="line"><span class="attr">server.2</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2288</span>:<span class="number">3388</span></span><br><span class="line"><span class="attr">server.3</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2289</span>:<span class="number">3389</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果是多台服务器，则集群中每个节点通讯端口和选举端口可相同，IP地址修改为每个节点所在主机IP即可。</p>
+</blockquote>
+<p>zookeeper02配置，与zookeeper01相比，只有<code>dataLogDir</code>和<code>dataLogDir</code>不同：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tickTime</span>=<span class="number">2000</span></span><br><span class="line"><span class="attr">initLimit</span>=<span class="number">10</span></span><br><span class="line"><span class="attr">syncLimit</span>=<span class="number">5</span></span><br><span class="line"><span class="attr">dataDir</span>=/usr/local/zookeeper-cluster/data/<span class="number">02</span></span><br><span class="line"><span class="attr">dataLogDir</span>=/usr/local/zookeeper-cluster/log/<span class="number">02</span></span><br><span class="line"><span class="attr">clientPort</span>=<span class="number">2182</span></span><br><span class="line"></span><br><span class="line"><span class="attr">server.1</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2287</span>:<span class="number">3387</span></span><br><span class="line"><span class="attr">server.2</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2288</span>:<span class="number">3388</span></span><br><span class="line"><span class="attr">server.3</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2289</span>:<span class="number">3389</span></span><br></pre></td></tr></table></figure>
+<p>zookeeper03配置，与zookeeper01，02相比，也只有<code>dataLogDir</code>和<code>dataLogDir</code>不同：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tickTime</span>=<span class="number">2000</span></span><br><span class="line"><span class="attr">initLimit</span>=<span class="number">10</span></span><br><span class="line"><span class="attr">syncLimit</span>=<span class="number">5</span></span><br><span class="line"><span class="attr">dataDir</span>=/usr/local/zookeeper-cluster/data/<span class="number">03</span></span><br><span class="line"><span class="attr">dataLogDir</span>=/usr/local/zookeeper-cluster/log/<span class="number">03</span></span><br><span class="line"><span class="attr">clientPort</span>=<span class="number">2183</span></span><br><span class="line"></span><br><span class="line"><span class="attr">server.1</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2287</span>:<span class="number">3387</span></span><br><span class="line"><span class="attr">server.2</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2288</span>:<span class="number">3388</span></span><br><span class="line"><span class="attr">server.3</span>=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2289</span>:<span class="number">3389</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>配置参数说明：</p>
+<ul>
+<li><strong>tickTime</strong>：用于计算的基础时间单元。比如session超时：N*tickTime；</li>
+<li><strong>initLimit</strong>：用于集群，允许从节点连接并同步到 master节点的初始化连接时间，以tickTime的倍数来表示；</li>
+<li><strong>syncLimit</strong>：用于集群， master主节点与从节点之间发送消息，请求和应答时间长度（心跳机制）；</li>
+<li><strong>dataDir</strong>：数据存储位置；</li>
+<li><strong>dataLogDir</strong>：日志目录；</li>
+<li><strong>clientPort</strong>：用于客户端连接的端口，默认2181</li>
+</ul>
+</blockquote>
+<h3 id="1-3-标识节点"><a href="#1-3-标识节点" class="headerlink" title="1.3 标识节点"></a>1.3 标识节点</h3><p>分别在三个节点的数据存储目录下新建<code>myid</code>文件,并写入对应的节点标识。Zookeeper集群通过<code>myid</code>文件识别集群节点，并通过上文配置的节点通信端口和选举端口来进行节点通信，选举出leader节点。</p>
+<p>创建存储目录：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># dataDir</span></span><br><span class="line">mkdir -vp  <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/zookeeper-cluster/</span>data/<span class="number">01</span></span><br><span class="line"><span class="meta"># dataDir</span></span><br><span class="line">mkdir -vp  <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/zookeeper-cluster/</span>data/<span class="number">02</span></span><br><span class="line"><span class="meta"># dataDir</span></span><br><span class="line">mkdir -vp  <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/zookeeper-cluster/</span>data/<span class="number">03</span></span><br></pre></td></tr></table></figure>
+<p>创建并写入节点标识到<code>myid</code>文件：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#server1</span></span><br><span class="line">echo <span class="string">"1"</span> &gt; <span class="regexp">/usr/</span>local<span class="regexp">/zookeeper-cluster/</span>data<span class="regexp">/01/myi</span>d</span><br><span class="line"><span class="comment">#server2</span></span><br><span class="line">echo <span class="string">"2"</span> &gt; <span class="regexp">/usr/</span>local<span class="regexp">/zookeeper-cluster/</span>data<span class="regexp">/02/myi</span>d</span><br><span class="line"><span class="comment">#server3</span></span><br><span class="line">echo <span class="string">"3"</span> &gt; <span class="regexp">/usr/</span>local<span class="regexp">/zookeeper-cluster/</span>data<span class="regexp">/03/myi</span>d</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-启动集群"><a href="#1-4-启动集群" class="headerlink" title="1.4 启动集群"></a>1.4 启动集群</h3><p>分别启动三个节点：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动节点1</span></span><br><span class="line"><span class="regexp">/usr/</span>app<span class="regexp">/zookeeper-cluster/</span>zookeeper01<span class="regexp">/bin/</span>zkServer.sh start</span><br><span class="line"><span class="comment"># 启动节点2</span></span><br><span class="line"><span class="regexp">/usr/</span>app<span class="regexp">/zookeeper-cluster/</span>zookeeper02<span class="regexp">/bin/</span>zkServer.sh start</span><br><span class="line"><span class="comment"># 启动节点3</span></span><br><span class="line"><span class="regexp">/usr/</span>app<span class="regexp">/zookeeper-cluster/</span>zookeeper03<span class="regexp">/bin/</span>zkServer.sh start</span><br></pre></td></tr></table></figure>
+<h3 id="1-5-集群验证"><a href="#1-5-集群验证" class="headerlink" title="1.5 集群验证"></a>1.5 集群验证</h3><p>使用jps查看进程，并且使用<code>zkServer.sh status</code>查看集群各个节点状态。如图三个节点进程均启动成功，并且两个节点为follower节点，一个节点为leader节点。</p>
+<div align="center"> <img src="/img/bigdata/zookeeper-cluster.png"> </div>
+
+
+
+<h2 id="二、Kafka集群搭建"><a href="#二、Kafka集群搭建" class="headerlink" title="二、Kafka集群搭建"></a>二、Kafka集群搭建</h2><h3 id="2-1-下载解压"><a href="#2-1-下载解压" class="headerlink" title="2.1 下载解压"></a>2.1 下载解压</h3><p>Kafka安装包官方下载地址：<a href="http://kafka.apache.org/downloads" target="_blank" rel="noopener">http://kafka.apache.org/downloads</a> ，本用例下载的版本为<code>2.2.0</code>，下载命令：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载</span></span><br><span class="line">wget https:<span class="regexp">//</span>www-eu.apache.org<span class="regexp">/dist/</span>kafka<span class="regexp">/2.2.0/</span>kafka_2.<span class="number">12</span>-<span class="number">2.2</span>.<span class="number">0</span>.tgz</span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar -xzf kafka_2.<span class="number">12</span>-<span class="number">2.2</span>.<span class="number">0</span>.tgz</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里j解释一下kafka安装包的命名规则：以<code>kafka_2.12-2.2.0.tgz</code>为例，前面的2.12代表Scala的版本号（Kafka采用Scala语言进行开发），后面的2.2.0则代表Kafka的版本号。</p>
+</blockquote>
+<h3 id="2-2-拷贝配置文件"><a href="#2-2-拷贝配置文件" class="headerlink" title="2.2 拷贝配置文件"></a>2.2 拷贝配置文件</h3><p>进入解压目录的<code>config</code>目录下 ，拷贝三份配置文件：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># <span class="selector-tag">cp</span> <span class="selector-tag">server</span><span class="selector-class">.properties</span> <span class="selector-tag">server-1</span><span class="selector-class">.properties</span></span><br><span class="line"># <span class="selector-tag">cp</span> <span class="selector-tag">server</span><span class="selector-class">.properties</span> <span class="selector-tag">server-2</span><span class="selector-class">.properties</span></span><br><span class="line"># <span class="selector-tag">cp</span> <span class="selector-tag">server</span><span class="selector-class">.properties</span> <span class="selector-tag">server-3</span><span class="selector-class">.properties</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-修改配置"><a href="#2-3-修改配置" class="headerlink" title="2.3 修改配置"></a>2.3 修改配置</h3><p>分别修改三份配置文件中的部分配置，如下：</p>
+<p>server-1.properties：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># The id of the broker. 集群中每个节点的唯一标识</span></span><br><span class="line"><span class="attr">broker.id</span>=<span class="number">0</span></span><br><span class="line"><span class="comment"># 监听地址</span></span><br><span class="line"><span class="attr">listeners</span>=PLAINTEXT://hadoop001:<span class="number">9092</span></span><br><span class="line"><span class="comment"># 数据的存储位置</span></span><br><span class="line"><span class="attr">log.dirs</span>=/usr/local/kafka-logs/<span class="number">00</span></span><br><span class="line"><span class="comment"># Zookeeper连接地址</span></span><br><span class="line"><span class="attr">zookeeper.connect</span>=hadoop001:<span class="number">2181</span>,hadoop001:<span class="number">2182</span>,hadoop001:<span class="number">2183</span></span><br></pre></td></tr></table></figure>
+<p>server-2.properties：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">broker.id</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">listeners</span>=PLAINTEXT://hadoop001:<span class="number">9093</span></span><br><span class="line"><span class="attr">log.dirs</span>=/usr/local/kafka-logs/<span class="number">01</span></span><br><span class="line"><span class="attr">zookeeper.connect</span>=hadoop001:<span class="number">2181</span>,hadoop001:<span class="number">2182</span>,hadoop001:<span class="number">2183</span></span><br></pre></td></tr></table></figure>
+<p>server-3.properties：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">broker.id</span>=<span class="number">2</span></span><br><span class="line"><span class="attr">listeners</span>=PLAINTEXT://hadoop001:<span class="number">9094</span></span><br><span class="line"><span class="attr">log.dirs</span>=/usr/local/kafka-logs/<span class="number">02</span></span><br><span class="line"><span class="attr">zookeeper.connect</span>=hadoop001:<span class="number">2181</span>,hadoop001:<span class="number">2182</span>,hadoop001:<span class="number">2183</span></span><br></pre></td></tr></table></figure>
+<p>这里需要说明的是<code>log.dirs</code>指的是数据日志的存储位置，确切的说，就是分区数据的存储位置，而不是程序运行日志的位置。程序运行日志的位置是通过同一目录下的<code>log4j.properties</code>进行配置的。</p>
+<h3 id="2-4-启动集群"><a href="#2-4-启动集群" class="headerlink" title="2.4 启动集群"></a>2.4 启动集群</h3><p>分别指定不同配置文件，启动三个Kafka节点。启动后可以使用jps查看进程，此时应该有三个zookeeper进程和三个kafka进程。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-server-start<span class="selector-class">.sh</span> config/server-<span class="number">1</span>.properties</span><br><span class="line">bin/kafka-server-start<span class="selector-class">.sh</span> config/server-<span class="number">2</span>.properties</span><br><span class="line">bin/kafka-server-start<span class="selector-class">.sh</span> config/server-<span class="number">3</span>.properties</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-创建测试主题"><a href="#2-5-创建测试主题" class="headerlink" title="2.5 创建测试主题"></a>2.5 创建测试主题</h3><p>创建测试主题：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">bin/kafka</span><span class="literal">-</span><span class="comment">topics</span><span class="string">.</span><span class="comment">sh</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">create</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">bootstrap</span><span class="literal">-</span><span class="comment">server</span> <span class="comment">hadoop001:9092</span> <span class="comment">\</span></span><br><span class="line"><span class="comment">					</span><span class="literal">-</span><span class="literal">-</span><span class="comment">replication</span><span class="literal">-</span><span class="comment">factor</span> <span class="comment">3</span> <span class="comment">\</span></span><br><span class="line"><span class="comment">					</span><span class="literal">-</span><span class="literal">-</span><span class="comment">partitions</span> <span class="comment">1</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">topic</span> <span class="comment">my</span><span class="literal">-</span><span class="comment">replicated</span><span class="literal">-</span><span class="comment">topic</span></span><br></pre></td></tr></table></figure>
+<p>创建后可以使用以下命令查看创建的主题信息：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">bin/kafka</span><span class="literal">-</span><span class="comment">topics</span><span class="string">.</span><span class="comment">sh</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">describe</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">bootstrap</span><span class="literal">-</span><span class="comment">server</span> <span class="comment">hadoop001:9092</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">topic</span> <span class="comment">my</span><span class="literal">-</span><span class="comment">replicated</span><span class="literal">-</span><span class="comment">topic</span></span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="/img/bigdata/kafka-cluster-shell.png"> </div>
+
+
+
+<p>可以看到分区0的有0,1,2三个副本，且三个副本都是可用副本，都在ISR(in-sync Replica 同步副本)列表中，其中1为首领副本，此时代表集群已经搭建成功。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100388.html" class="pre-post btn btn-default" title='大数据hadoop常用软件安装指南'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop常用软件安装指南</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100386.html" class="next-post btn btn-default" title='Zookeeper单机环境和集群环境搭建'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Zookeeper单机环境和集群环境搭建</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Zookeeper集群搭建"><span class="toc-text">一、Zookeeper集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-下载-amp-解压"><span class="toc-text">1.1 下载 &amp; 解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-修改配置"><span class="toc-text">1.2 修改配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-标识节点"><span class="toc-text">1.3 标识节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-启动集群"><span class="toc-text">1.4 启动集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-集群验证"><span class="toc-text">1.5 集群验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Kafka集群搭建"><span class="toc-text">二、Kafka集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-下载解压"><span class="toc-text">2.1 下载解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-拷贝配置文件"><span class="toc-text">2.2 拷贝配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-修改配置"><span class="toc-text">2.3 修改配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-启动集群"><span class="toc-text">2.4 启动集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-创建测试主题"><span class="toc-text">2.5 创建测试主题</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

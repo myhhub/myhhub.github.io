@@ -1,0 +1,805 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="c++,cmake,qt">
+
+
+    <meta name="description" content="本章的主要内容有：
+
+将单个源码文件编译为可执行文件
+切换生成器
+构建和连接静态库与动态库
+用条件语句控制编译
+向用户显示选项
+指定编译器
+切换构建类型
+设置编译器选项
+为语言设定标准
+使用控制...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>CMake 完整使用教程 之二 从可执行文件到库 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="CMake 完整使用教程 之二 从可执行文件到库">
+            
+	            CMake 完整使用教程 之二 从可执行文件到库
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c++</a> <a class="tag-link" href="/tags/cmake/">cmake</a> <a class="tag-link" href="/tags/qt/">qt</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/03/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>738</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>本章的主要内容有：</p>
+<ul>
+<li>将单个源码文件编译为可执行文件</li>
+<li>切换生成器</li>
+<li>构建和连接静态库与动态库</li>
+<li>用条件语句控制编译</li>
+<li>向用户显示选项</li>
+<li>指定编译器</li>
+<li>切换构建类型</li>
+<li>设置编译器选项</li>
+<li>为语言设定标准</li>
+<li>使用控制流进行构造</li>
+</ul>
+<p>本章的示例将指导您完成构建代码所需的基本任务：编译可执行文件、编译库、根据用户输入执行构建操作等等。CMake是一个构建系统生成器，特别适合于独立平台和编译器。除非另有说明，否则所有配置都独立于操作系统，它们可以在GNU/Linux、macOS和Windows的系统下运行。</p>
+<p>本书的示例主要为C++项目设计，并使用C++示例进行了演示，但CMake也可以用于其他语言的项目，包括C和Fortran。我们会尝试一些有意思的配置，其中包含了一些C++、C和Fortran语言示例。您可以根据自己喜好，选择性了解。有些示例是定制的，以突出在选择特定语言时需要面临的挑战。</p>
+<h1 id="1-1-将单个源文件编译为可执行文件"><a href="#1-1-将单个源文件编译为可执行文件" class="headerlink" title="1.1 将单个源文件编译为可执行文件"></a>1.1 将单个源文件编译为可执行文件</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-01" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-01</a> 中找到，包含C++、C和Fortran示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>本节示例中，我们将演示如何运行CMake配置和构建一个简单的项目。该项目由单个源文件组成，用于生成可执行文件。我们将用C++讨论这个项目，您在GitHub示例库中可以找到C和Fortran的例子。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>我们希望将以下源代码编译为单个可执行文件：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">say_hello</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"Hello, CMake world!"</span>); &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; say_hello() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>除了源文件之外，我们还需要向CMake提供项目配置描述。该描述使用CMake完成，完整的文档可以在 <a href="https://cmake.org/cmake/help/latest/" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/</a> 找到。我们把CMake指令放入一个名为<code>CMakeLists.txt</code>的文件中。</p>
+<p><strong>NOTE</strong>:<em>文件的名称区分大小写，必须命名为<code>CMakeLists.txt</code>，CMake才能够解析。</em></p>
+<p>具体步骤如下：</p>
+<ol>
+<li><p>用编辑器打开一个文本文件，将这个文件命名为<code>CMakeLists.txt</code>。</p>
+</li>
+<li><p>第一行，设置CMake所需的最低版本。如果使用的CMake版本低于该版本，则会发出致命错误：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二行，声明了项目的名称(<code>recipe-01</code>)和支持的编程语言(CXX代表C++)：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">01</span> LANGUAGES CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>指示CMake创建一个新目标：可执行文件<code>hello-world</code>。这个可执行文件是通过编译和链接源文件<code>hello-world.cpp</code>生成的。CMake将为编译器使用默认设置，并自动选择生成工具：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(hello-world hello-world.cpp)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将该文件与源文件<code>hello-world.cpp</code>放在相同的目录中。记住，它只能被命名为<code>CMakeLists.txt</code>。</p>
+</li>
+<li><p>现在，可以通过创建<code>build</code>目录，在<code>build</code>目录下来配置项目：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">$</span> <span class="comment">mkdir</span> <span class="literal">-</span><span class="comment">p</span> <span class="comment">build</span></span><br><span class="line"><span class="comment">$</span> <span class="comment">cd</span> <span class="comment">build</span></span><br><span class="line"><span class="comment">$</span> <span class="comment">cmake</span> <span class="string">.</span><span class="string">.</span></span><br><span class="line"></span><br><span class="line"><span class="literal">-</span><span class="literal">-</span> <span class="comment">The</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">identification</span> <span class="comment">is</span> <span class="comment">GNU</span> <span class="comment">8</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">0</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Check</span> <span class="comment">for</span> <span class="comment">working</span> <span class="comment">CXX</span> <span class="comment">compiler:</span> <span class="comment">/usr/bin/c</span><span class="literal">+</span><span class="literal">+</span></span><br><span class="line"><span class="literal">-</span><span class="literal">-</span> <span class="comment">Check</span> <span class="comment">for</span> <span class="comment">working</span> <span class="comment">CXX</span> <span class="comment">compiler:</span> <span class="comment">/usr/bin/c</span><span class="literal">+</span><span class="literal">+</span> <span class="literal">-</span><span class="literal">-</span> <span class="comment">works</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">ABI</span> <span class="comment">info</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">ABI</span> <span class="comment">info</span> <span class="literal">-</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compile</span> <span class="comment">features</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compile</span> <span class="comment">features</span> <span class="literal">-</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Configuring</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Generating</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Build</span> <span class="comment">files</span> <span class="comment">have</span> <span class="comment">been</span> <span class="comment">written</span> <span class="comment">to:</span> <span class="comment">/home/user/cmake</span><span class="literal">-</span><span class="comment">cookbook/chapter</span><span class="literal">-</span><span class="comment">01/recipe</span><span class="literal">-</span><span class="comment">01/cxx</span><span class="literal">-</span><span class="comment">example/build</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果一切顺利，项目的配置已经在<code>build</code>目录中生成。我们现在可以编译可执行文件：</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cmake --build .</span><br><span class="line"></span><br><span class="line">Scanning dependencies <span class="keyword">of</span> target hello-world</span><br><span class="line">[ <span class="number">50</span><span class="comment">%] Building CXX object CMakeFiles/hello-world.dir/hello-world.cpp.o</span></span><br><span class="line">[<span class="number">100</span><span class="comment">%] Linking CXX executable hello-world</span></span><br><span class="line">[<span class="number">100</span><span class="comment">%] Built target hello-world</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>示例中，我们使用了一个简单的<code>CMakeLists.txt</code>来构建“Hello world”可执行文件：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">01</span> LANGUAGES CXX)</span></span></span><br><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(hello-world hello-world.cpp)</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong>:<em>CMake语言不区分大小写，但是参数区分大小写。</em></p>
+<p><strong>TIPS</strong>:<em>CMake中，C++是默认的编程语言。不过，我们还是建议使用<code>LANGUAGES</code>选项在<code>project</code>命令中显式地声明项目的语言。</em></p>
+<p>要配置项目并生成构建器，我们必须通过命令行界面(CLI)运行CMake。CMake CLI提供了许多选项，<code>cmake -help</code>将输出以显示列出所有可用选项的完整帮助信息，我们将在书中对这些选项进行更多地了解。正如您将从<code>cmake -help</code>的输出中显示的内容，它们中的大多数选项会让你您访问CMake手册，查看详细信息。通过下列命令生成构建器：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br></pre></td></tr></table></figure>
+<p>这里，我们创建了一个目录<code>build</code>(生成构建器的位置)，进入<code>build</code>目录，并通过指定<code>CMakeLists.txt</code>的位置(本例中位于父目录中)来调用CMake。可以使用以下命令行来实现相同的效果：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>cmake -H. -Bbuild</span><br></pre></td></tr></table></figure>
+<p>该命令是跨平台的，使用了<code>-H</code>和<code>-B</code>为CLI选项。<code>-H</code>表示当前目录中搜索根<code>CMakeLists.txt</code>文件。<code>-Bbuild</code>告诉CMake在一个名为<code>build</code>的目录中生成所有的文件。</p>
+<p><strong>NOTE</strong>:<em><code>cmake -H. -Bbuild</code>也属于CMake标准使用方式: <a href="https://cmake.org/pipermail/cmake-developers/2018-January/030520.html" target="_blank" rel="noopener">https://cmake.org/pipermail/cmake-developers/2018-January/030520.html</a> 。不过，我们将在本书中使用传统方法(创建一个构建目录，进入其中，并通过将CMake指向<code>CMakeLists.txt</code>的位置来配置项目)。</em></p>
+<p>运行<code>cmake</code>命令会输出一系列状态消息，显示配置信息：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">$</span> <span class="comment">cmake</span> <span class="string">.</span><span class="string">.</span></span><br><span class="line"></span><br><span class="line"><span class="literal">-</span><span class="literal">-</span> <span class="comment">The</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">identification</span> <span class="comment">is</span> <span class="comment">GNU</span> <span class="comment">8</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">0</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Check</span> <span class="comment">for</span> <span class="comment">working</span> <span class="comment">CXX</span> <span class="comment">compiler:</span> <span class="comment">/usr/bin/c</span><span class="literal">+</span><span class="literal">+</span></span><br><span class="line"><span class="literal">-</span><span class="literal">-</span> <span class="comment">Check</span> <span class="comment">for</span> <span class="comment">working</span> <span class="comment">CXX</span> <span class="comment">compiler:</span> <span class="comment">/usr/bin/c</span><span class="literal">+</span><span class="literal">+</span> <span class="literal">-</span><span class="literal">-</span> <span class="comment">works</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">ABI</span> <span class="comment">info</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">ABI</span> <span class="comment">info</span> <span class="literal">-</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compile</span> <span class="comment">features</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compile</span> <span class="comment">features</span> <span class="literal">-</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Configuring</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Generating</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Build</span> <span class="comment">files</span> <span class="comment">have</span> <span class="comment">been</span> <span class="comment">written</span> <span class="comment">to:</span> <span class="comment">/home/user/cmake</span><span class="literal">-</span><span class="comment">cookbook/chapter</span><span class="literal">-</span><span class="comment">01/recipe</span><span class="literal">-</span><span class="comment">01/cxx</span><span class="literal">-</span><span class="comment">example/build</span></span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong>:<em>在与<code>CMakeLists.txt</code>相同的目录中执行<code>cmake .</code>，原则上足以配置一个项目。然而，CMake会将所有生成的文件写到项目的根目录中。这将是一个源代码内构建，通常是不推荐的，因为这会混合源代码和项目的目录树。我们首选的是源外构建。</em></p>
+<p>CMake是一个构建系统生成器。将描述构建系统(如：Unix Makefile、Ninja、Visual Studio等)应当如何操作才能编译代码。然后，CMake为所选的构建系统生成相应的指令。默认情况下，在GNU/Linux和macOS系统上，CMake使用Unix Makefile生成器。Windows上，Visual Studio是默认的生成器。在下一个示例中，我们将进一步研究生成器，并在第13章中重新讨论生成器。</p>
+<p>GNU/Linux上，CMake默认生成Unix Makefile来构建项目：</p>
+<ul>
+<li><code>Makefile</code>: <code>make</code>将运行指令来构建项目。</li>
+<li><code>CMakefile</code>：包含临时文件的目录，CMake用于检测操作系统、编译器等。此外，根据所选的生成器，它还包含特定的文件。</li>
+<li><code>cmake_install.cmake</code>：处理安装规则的CMake脚本，在项目安装时使用。</li>
+<li><code>CMakeCache.txt</code>：如文件名所示，CMake缓存。CMake在重新运行配置时使用这个文件。</li>
+</ul>
+<p>要构建示例项目，我们运行以下命令：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake <span class="comment">--build .</span></span><br></pre></td></tr></table></figure>
+<p>最后，CMake不强制指定构建目录执行名称或位置，我们完全可以把它放在项目路径之外。这样做同样有效：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p /tmp/someplace</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /tmp/someplace</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake /path/to/<span class="built_in">source</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake --build .</span></span><br></pre></td></tr></table></figure>
+<h2 id="更多信息"><a href="#更多信息" class="headerlink" title="更多信息"></a>更多信息</h2><p>官方文档 <a href="https://cmake.org/runningcmake/" target="_blank" rel="noopener">https://cmake.org/runningcmake/</a> 给出了运行CMake的简要概述。由CMake生成的构建系统，即上面给出的示例中的Makefile，将包含为给定项目构建目标文件、可执行文件和库的目标及规则。<code>hello-world</code>可执行文件是在当前示例中的唯一目标，运行以下命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ cmake --build . --target help</span><br><span class="line"></span><br><span class="line">The following are some of the valid targets <span class="keyword">for</span> this Makefile:</span><br><span class="line"><span class="built_in">..</span>. all (the<span class="built_in"> default </span><span class="keyword">if</span> <span class="literal">no</span> target is provided)</span><br><span class="line"><span class="built_in">..</span>. clean</span><br><span class="line"><span class="built_in">..</span>. depend</span><br><span class="line"><span class="built_in">..</span>. rebuild_cache</span><br><span class="line"><span class="built_in">..</span>. hello-world</span><br><span class="line"><span class="built_in">..</span>. edit_cache</span><br><span class="line"><span class="built_in">..</span>. hello-world.o</span><br><span class="line"><span class="built_in">..</span>. hello-world.i</span><br><span class="line"><span class="built_in">..</span>. hello-world.s</span><br></pre></td></tr></table></figure>
+<p>CMake生成的目标比构建可执行文件的目标要多。可以使用<code>cmake --build . --target &lt;target-name&gt;</code>语法，实现如下功能：</p>
+<ul>
+<li><strong>all</strong>(或Visual Studio generator中的ALL_BUILD)是默认目标，将在项目中构建所有目标。</li>
+<li><strong>clean</strong>，删除所有生成的文件。</li>
+<li><strong>rebuild_cache</strong>，将调用CMake为源文件生成依赖(如果有的话)。</li>
+<li><strong>edit_cache</strong>，这个目标允许直接编辑缓存。</li>
+</ul>
+<p>对于更复杂的项目，通过测试阶段和安装规则，CMake将生成额外的目标：</p>
+<ul>
+<li><strong>test</strong>(或Visual Studio generator中的<strong>RUN_TESTS</strong>)将在CTest的帮助下运行测试套件。我们将在第4章中详细讨论测试和CTest。</li>
+<li><strong>install</strong>，将执行项目安装规则。我们将在第10章中讨论安装规则。</li>
+<li><strong>package</strong>，此目标将调用CPack为项目生成可分发的包。打包和CPack将在第11章中讨论。</li>
+</ul>
+<h1 id="1-2-切换生成器"><a href="#1-2-切换生成器" class="headerlink" title="1.2 切换生成器"></a>1.2 切换生成器</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-02" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-02</a> 中找到，其中有一个C++、C和Fortran示例。该配置在CMake 3.5版(或更高版本)下测试没问题，并且已经在GNU/Linux、macOS和Windows上进行了测试。</em></p>
+<p>CMake是一个构建系统生成器，可以使用单个CMakeLists.txt为不同平台上的不同工具集配置项目。您可以在CMakeLists.txt中描述构建系统必须运行的操作，以配置并编译代码。基于这些指令，CMake将为所选的构建系统(Unix Makefile、Ninja、Visual Studio等等)生成相应的指令。我们将在第13章中重新讨论生成器。</p>
+<h2 id="准备工作-1"><a href="#准备工作-1" class="headerlink" title="准备工作"></a>准备工作</h2><p>CMake针对不同平台支持本地构建工具列表。同时支持命令行工具(如Unix Makefile和Ninja)和集成开发环境(IDE)工具。用以下命令，可在平台上找到生成器名单，以及已安装的CMake版本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> cmake --<span class="built_in">help</span></span></span><br></pre></td></tr></table></figure>
+<p>这个命令的输出，将列出CMake命令行界面上所有的选项，您会找到可用生成器的列表。例如，安装了CMake 3.11.2的GNU/Linux机器上的输出：</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Generators</span><br><span class="line">The following generators are available on this platform:</span><br><span class="line">Unix Makefiles = Generates standard UNIX makefiles.</span><br><span class="line">Ninja = Generates build.ninja files.</span><br><span class="line">Watcom WMake = Generates Watcom WMake makefiles.</span><br><span class="line">CodeBlocks - Ninja = Generates CodeBlocks project files.</span><br><span class="line">CodeBlocks - Unix Makefiles = Generates CodeBlocks project files.</span><br><span class="line">CodeLite - Ninja = Generates CodeLite project files.</span><br><span class="line">CodeLite - Unix Makefiles = Generates CodeLite project files.</span><br><span class="line">Sublime Text <span class="number">2</span> - Ninja = Generates Sublime Text <span class="number">2</span> project files.</span><br><span class="line">Sublime Text <span class="number">2</span> - Unix Makefiles = Generates Sublime Text <span class="number">2</span> project files.</span><br><span class="line">Kate - Ninja = Generates Kate project files.</span><br><span class="line">Kate - Unix Makefiles = Generates Kate project files.</span><br><span class="line">Eclipse CDT4 - Ninja = Generates Eclipse CDT <span class="number">4.0</span> project files.</span><br><span class="line">Eclipse CDT4 - Unix Makefiles= Generates Eclipse CDT <span class="number">4.0</span> project files.</span><br></pre></td></tr></table></figure>
+<p>使用此示例，我们将展示为项目切换生成器是多么<strong>EASY</strong>。</p>
+<h2 id="具体实施-1"><a href="#具体实施-1" class="headerlink" title="具体实施"></a>具体实施</h2><p>我们将重用前一节示例中的<code>hello-world.cpp</code>和<code>CMakeLists.txt</code>。惟一的区别在使用CMake时，因为现在必须显式地使用命令行方式，用<code>-G</code>切换生成器。</p>
+<ol>
+<li><p>首先，使用以下步骤配置项目:</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">$</span> <span class="comment">mkdir</span> <span class="literal">-</span><span class="comment">p</span> <span class="comment">build</span></span><br><span class="line"><span class="comment">$</span> <span class="comment">cd</span> <span class="comment">build</span></span><br><span class="line"><span class="comment">$</span> <span class="comment">cmake</span> <span class="literal">-</span><span class="comment">G</span> <span class="comment">Ninja</span> <span class="string">.</span><span class="string">.</span></span><br><span class="line"></span><br><span class="line"><span class="literal">-</span><span class="literal">-</span> <span class="comment">The</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">identification</span> <span class="comment">is</span> <span class="comment">GNU</span> <span class="comment">8</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">0</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Check</span> <span class="comment">for</span> <span class="comment">working</span> <span class="comment">CXX</span> <span class="comment">compiler:</span> <span class="comment">/usr/bin/c</span><span class="literal">+</span><span class="literal">+</span></span><br><span class="line"><span class="literal">-</span><span class="literal">-</span> <span class="comment">Check</span> <span class="comment">for</span> <span class="comment">working</span> <span class="comment">CXX</span> <span class="comment">compiler:</span> <span class="comment">/usr/bin/c</span><span class="literal">+</span><span class="literal">+</span> <span class="literal">-</span><span class="literal">-</span> <span class="comment">works</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">ABI</span> <span class="comment">info</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compiler</span> <span class="comment">ABI</span> <span class="comment">info</span> <span class="literal">-</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compile</span> <span class="comment">features</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Detecting</span> <span class="comment">CXX</span> <span class="comment">compile</span> <span class="comment">features</span> <span class="literal">-</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Configuring</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Generating</span> <span class="comment">done</span></span><br><span class="line"><span class="comment"></span><span class="literal">-</span><span class="literal">-</span> <span class="comment">Build</span> <span class="comment">files</span> <span class="comment">have</span> <span class="comment">been</span> <span class="comment">written</span> <span class="comment">to:</span> <span class="comment">/home/user/cmake</span><span class="literal">-</span><span class="comment">cookbook/chapter</span><span class="literal">-</span><span class="comment">01/recipe</span><span class="literal">-</span><span class="comment">02/cxx</span><span class="literal">-</span><span class="comment">exampl</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二步，构建项目：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cmake --build .</span><br><span class="line"></span><br><span class="line">[<span class="number">2</span>/<span class="number">2</span>] Linking CXX executable hello-world</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h2><p>与前一个配置相比，每一步的输出没什么变化。每个生成器都有自己的文件集，所以编译步骤的输出和构建目录的内容是不同的：</p>
+<ul>
+<li><code>build.ninja</code>和<code>rules.ninja</code>：包含Ninja的所有的构建语句和构建规则。</li>
+<li><code>CMakeCache.txt</code>：CMake会在这个文件中进行缓存，与生成器无关。</li>
+<li><code>CMakeFiles</code>：包含由CMake在配置期间生成的临时文件。</li>
+<li><code>cmake_install.cmake</code>：CMake脚本处理安装规则，并在安装时使用。</li>
+</ul>
+<p><code>cmake --build .</code>将<code>ninja</code>命令封装在一个跨平台的接口中。</p>
+<h2 id="更多信息-1"><a href="#更多信息-1" class="headerlink" title="更多信息"></a>更多信息</h2><p>我们将在第13章中讨论可选生成器和交叉编译。</p>
+<p>要了解关于生成器的更多信息，CMake官方文档是一个很好的选择: <a href="https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html</a></p>
+<h1 id="1-3-构建和链接静态库和动态库"><a href="#1-3-构建和链接静态库和动态库" class="headerlink" title="1.3 构建和链接静态库和动态库"></a>1.3 构建和链接静态库和动态库</h1><p><strong>NOTE</strong>: <em>这个示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-03" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-03</a> 找到，其中有C++和Fortran示例。该配置在CMake 3.5版(或更高版本)测试有效的，并且已经在GNU/Linux、macOS和Windows上进行了测试。</em></p>
+<p>项目中会有单个源文件构建的多个可执行文件的可能。项目中有多个源文件，通常分布在不同子目录中。这种实践有助于项目的源代码结构，而且支持模块化、代码重用和关注点分离。同时，这种分离可以简化并加速项目的重新编译。本示例中，我们将展示如何将源代码编译到库中，以及如何链接这些库。</p>
+<h2 id="准备工作-2"><a href="#准备工作-2" class="headerlink" title="准备工作"></a>准备工作</h2><p>回看第一个例子，这里并不再为可执行文件提供单个源文件，我们现在将引入一个类，用来包装要打印到屏幕上的消息。更新一下的<code>hello-world.cpp</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Message.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">Message <span class="title">say_hello</span><span class="params">(<span class="string">"Hello, CMake World!"</span>)</span></span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; say_hello &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="function">Message <span class="title">say_goodbye</span><span class="params">(<span class="string">"Goodbye, CMake World"</span>)</span></span>;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; say_goodbye &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Message</code>类包装了一个字符串，并提供重载过的<code>&lt;&lt;</code>操作，并且包括两个源码文件：<code>Message.hpp</code>头文件与<code>Message.cpp</code>源文件。<code>Message.hpp</code>中的接口包含以下内容：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iosfwd&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Message</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  Message(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;m) : message_(m) &#123;&#125;</span><br><span class="line">  <span class="keyword">friend</span> <span class="built_in">std</span>::ostream &amp;<span class="keyword">operator</span>&lt;&lt;(<span class="built_in">std</span>::ostream &amp;os, Message &amp;obj) &#123;</span><br><span class="line">    <span class="keyword">return</span> obj.printObject(os);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> message_;</span><br><span class="line">  <span class="built_in">std</span>::<span class="function">ostream &amp;<span class="title">printObject</span><span class="params">(<span class="built_in">std</span>::ostream &amp;os)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>Message.cpp</code>实现如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Message.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::ostream &amp;Message::printObject(<span class="built_in">std</span>::ostream &amp;os) &#123;</span><br><span class="line">  os &lt;&lt; <span class="string">"This is my very nice message: "</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  os &lt;&lt; message_;</span><br><span class="line">  <span class="keyword">return</span> os;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施-2"><a href="#具体实施-2" class="headerlink" title="具体实施"></a>具体实施</h2><p>这里有两个文件需要编译，所以<code>CMakeLists.txt</code>必须进行修改。本例中，先把它们编译成一个库，而不是直接编译成可执行文件:</p>
+<ol>
+<li><p>创建目标——静态库。库的名称和源码文件名相同，具体代码如下：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span></span><br><span class="line">  STATIC</span><br><span class="line">    <span class="keyword">Message</span>.hpp</span><br><span class="line">    <span class="keyword">Message</span>.cpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>hello-world</code>可执行文件的目标部分不需要修改：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(hello-world hello-world.cpp)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，将目标库链接到可执行目标：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">target_link_libraries</span><span class="params">(hello-world message)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对项目进行配置和构建。库编译完成后，将连接到<code>hello-world</code>可执行文件中：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -<span class="selector-tag">p</span> build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line">$ cmake --build .</span><br><span class="line"></span><br><span class="line">Scanning dependencies of target message</span><br><span class="line">[ <span class="number">25%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/message.dir/Message<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">[ <span class="number">50%</span>] Linking CXX static library libmessage.a</span><br><span class="line">[ <span class="number">50%</span>] Built target message</span><br><span class="line">Scanning dependencies of target hello-world</span><br><span class="line">[ <span class="number">75%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/hello-world.dir/hello-world<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">[<span class="number">100%</span>] Linking CXX executable hello-world</span><br><span class="line">[<span class="number">100%</span>] Built target hello-world</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ ./hello-world</span><br><span class="line"></span><br><span class="line">This <span class="keyword">is</span> <span class="keyword">my</span> very nice message:</span><br><span class="line">Hello, CMake World!</span><br><span class="line">This <span class="keyword">is</span> <span class="keyword">my</span> very nice message:</span><br><span class="line">Goodbye, CMake World</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h2><p>本节引入了两个新命令：</p>
+<ul>
+<li><code>add_library(message STATIC Message.hpp Message.cpp)</code>：生成必要的构建指令，将指定的源码编译到库中。<code>add_library</code>的第一个参数是目标名。整个<code>CMakeLists.txt</code>中，可使用相同的名称来引用库。生成的库的实际名称将由CMake通过在前面添加前缀<code>lib</code>和适当的扩展名作为后缀来形成。生成库是根据第二个参数(<code>STATIC</code>或<code>SHARED</code>)和操作系统确定的。</li>
+<li><code>target_link_libraries(hello-world message)</code>: 将库链接到可执行文件。此命令还确保<code>hello-world</code>可执行文件可以正确地依赖于消息库。因此，在消息库链接到<code>hello-world</code>可执行文件之前，需要完成消息库的构建。</li>
+</ul>
+<p>编译成功后，构建目录包含<code>libmessage.a</code>一个静态库(在GNU/Linux上)和<code>hello-world</code>可执行文件。</p>
+<p>CMake接受其他值作为<code>add_library</code>的第二个参数的有效值，我们来看下本书会用到的值：</p>
+<ul>
+<li><strong>STATIC</strong>：用于创建静态库，即编译文件的打包存档，以便在链接其他目标时使用，例如：可执行文件。</li>
+<li><strong>SHARED</strong>：用于创建动态库，即可以动态链接，并在运行时加载的库。可以在<code>CMakeLists.txt</code>中使用<code>add_library(message SHARED Message.hpp Message.cpp)</code>从静态库切换到动态共享对象(DSO)。</li>
+<li><strong>OBJECT</strong>：可将给定<code>add_library</code>的列表中的源码编译到目标文件，不将它们归档到静态库中，也不能将它们链接到共享对象中。如果需要一次性创建静态库和动态库，那么使用对象库尤其有用。我们将在本示例中演示。</li>
+<li><strong>MODULE</strong>：又为DSO组。与<code>SHARED</code>库不同，它们不链接到项目中的任何目标，不过可以进行动态加载。该参数可以用于构建运行时插件。</li>
+</ul>
+<p>CMake还能够生成特殊类型的库，这不会在构建系统中产生输出，但是对于组织目标之间的依赖关系，和构建需求非常有用：</p>
+<ul>
+<li><strong>IMPORTED</strong>：此类库目标表示位于项目外部的库。此类库的主要用途是，对现有依赖项进行构建。因此，<code>IMPORTED</code>库将被视为不可变的。我们将在本书的其他章节演示使用<code>IMPORTED</code>库的示例。参见: <a href="https://cmake.org/cmake/help/latest/manual/cmakebuildsystem.7.html#imported-targets" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmakebuildsystem.7.html#imported-targets</a></li>
+<li><strong>INTERFACE</strong>：与<code>IMPORTED</code>库类似。不过，该类型库可变，没有位置信息。它主要用于项目之外的目标构建使用。我们将在本章第5节中演示<code>INTERFACE</code>库的示例。参见: <a href="https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#interface-libraries" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#interface-libraries</a></li>
+<li><strong>ALIAS</strong>：顾名思义，这种库为项目中已存在的库目标定义别名。不过，不能为<code>IMPORTED</code>库选择别名。参见: <a href="https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#alias-libraries" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#alias-libraries</a></li>
+</ul>
+<p>本例中，我们使用<code>add_library</code>直接集合了源代码。后面的章节中，我们将使用<code>target_sources</code>汇集源码，特别是在第7章。请参见Craig Scott的这篇精彩博文: <a href="https://crascit.com/2016/01/31/enhanced-source-file-handling-with-target_sources/" target="_blank" rel="noopener">https://crascit.com/2016/01/31/enhanced-source-file-handling-with-target_sources/</a> ，其中有对<code>target_sources</code>命令的具体使用。</p>
+<h2 id="更多信息-2"><a href="#更多信息-2" class="headerlink" title="更多信息"></a>更多信息</h2><p>现在展示<code>OBJECT</code>库的使用，修改<code>CMakeLists.txt</code>，如下：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.5</span> FATAL_ERROR)</span><br><span class="line"><span class="keyword">project</span>(recipe-<span class="number">03</span> LANGUAGES CXX)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span>-objs</span><br><span class="line">	OBJECT</span><br><span class="line">		<span class="keyword">Message</span>.hpp</span><br><span class="line">		<span class="keyword">Message</span>.cpp</span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="comment"># this is only needed for older compilers</span></span><br><span class="line"><span class="comment"># but doesn't hurt either to have it</span></span><br><span class="line"><span class="keyword">set_target_properties</span>(<span class="keyword">message</span>-objs</span><br><span class="line">	PROPERTIES</span><br><span class="line">		POSITION_INDEPENDENT_CODE <span class="number">1</span></span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span>-shared</span><br><span class="line">	SHARED</span><br><span class="line">		$&lt;TARGET_OBJECTS:<span class="keyword">message</span>-objs&gt;</span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span>-static</span><br><span class="line">	STATIC</span><br><span class="line">		$&lt;TARGET_OBJECTS:<span class="keyword">message</span>-objs&gt;</span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="keyword">add_executable</span>(hello-world hello-world.cpp)</span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span>(hello-world <span class="keyword">message</span>-static)</span><br></pre></td></tr></table></figure>
+<p>首先，<code>add_library</code>改为<code>add_library(Message-objs OBJECT Message.hpp Message.cpp)</code>。此外，需要保证编译的目标文件与生成位置无关。可以通过使用<code>set_target_properties</code>命令，设置<code>message-objs</code>目标的相应属性来实现。</p>
+<p><strong>NOTE</strong>: <em>可能在某些平台和/或使用较老的编译器上，需要显式地为目标设置<code>POSITION_INDEPENDENT_CODE</code>属性。</em></p>
+<p>现在，可以使用这个对象库来获取静态库(<code>message-static</code>)和动态库(<code>message-shared</code>)。要注意引用对象库的生成器表达式语法:<code>$&lt;TARGET_OBJECTS:message-objs&gt;</code>。生成器表达式是CMake在生成时(即配置之后)构造，用于生成特定于配置的构建输出。参见: <a href="https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html</a> 。我们将在第5章中深入研究生成器表达式。最后，将<code>hello-world</code>可执行文件链接到消息库的静态版本。</p>
+<p>是否可以让CMake生成同名的两个库？换句话说，它们都可以被称为<code>message</code>，而不是<code>message-static</code>和<code>message-share</code>d吗？我们需要修改这两个目标的属性：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span>-shared</span><br><span class="line">  SHARED</span><br><span class="line">    $&lt;TARGET_OBJECTS:<span class="keyword">message</span>-objs&gt;</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set_target_properties</span>(<span class="keyword">message</span>-shared</span><br><span class="line">	PROPERTIES</span><br><span class="line">		OUTPUT_NAME <span class="string">"message"</span></span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="keyword">add_library</span>(<span class="keyword">message</span>-static</span><br><span class="line">	STATIC</span><br><span class="line">		$&lt;TARGET_OBJECTS:<span class="keyword">message</span>-objs&gt;</span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="keyword">set_target_properties</span>(<span class="keyword">message</span>-static</span><br><span class="line">	PROPERTIES</span><br><span class="line">		OUTPUT_NAME <span class="string">"message"</span></span><br><span class="line">	)</span><br></pre></td></tr></table></figure>
+<p>我们可以链接到DSO吗？这取决于操作系统和编译器：</p>
+<ol>
+<li>GNU/Linux和macOS上，不管选择什么编译器，它都可以工作。</li>
+<li>Windows上，不能与Visual Studio兼容，但可以与MinGW和MSYS2兼容。</li>
+</ol>
+<p>这是为什么呢？生成好的DSO组需要程序员限制符号的可见性。需要在编译器的帮助下实现，但不同的操作系统和编译器上，约定不同。CMake有一个机制来处理这个问题，我们将在第10章中解释它如何工作。</p>
+<h1 id="1-4-用条件句控制编译"><a href="#1-4-用条件句控制编译" class="headerlink" title="1.4 用条件句控制编译"></a>1.4 用条件句控制编译</h1><p><strong>NOTE</strong>:<em>这个示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-04" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-04</a> 找到，其中有一个C++示例。该配置在CMake 3.5版(或更高版本)测试有效的，并且已经在GNU/Linux、macOS和Windows上进行了测试。</em></p>
+<p>目前为止，看到的示例比较简单，CMake执行流是线性的：从一组源文件到单个可执行文件，也可以生成静态库或动态库。为了确保完全控制构建项目、配置、编译和链接所涉及的所有步骤的执行流，CMake提供了自己的语言。本节中，我们将探索条件结构<code>if-else- else-endif</code>的使用。</p>
+<p><strong>NOTE</strong>: <em>CMake语言相当庞杂，由基本的控制结构、特定于CMake的命令和使用新函数模块化扩展语言的基础设施组成。完整的概览可以在这里找到: <a href="https://cmake.org/cmake/help/latest/manual/cmake-language.7.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-language.7.html</a></em></p>
+<h2 id="具体实施-3"><a href="#具体实施-3" class="headerlink" title="具体实施"></a>具体实施</h2><p>从与上一个示例的的源代码开始，我们希望能够在不同的两种行为之间进行切换：</p>
+<ol>
+<li>将<code>Message.hpp</code>和<code>Message.cpp</code>构建成一个库(静态或动态)，然后将生成库链接到<code>hello-world</code>可执行文件中。</li>
+<li>将<code>Message.hpp</code>，<code>Message.cpp</code>和<code>hello-world.cpp</code>构建成一个可执行文件，但不生成任何一个库。</li>
+</ol>
+<p>让我们来看看如何使用<code>CMakeLists.txt</code>来实现：</p>
+<ol>
+<li><p>首先，定义最低CMake版本、项目名称和支持的语言：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">04</span> LANGUAGES CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们引入了一个新变量<code>USE_LIBRARY</code>，这是一个逻辑变量，值为<code>OFF</code>。我们还打印了它的值：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(USE_LIBRARY OFF)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Compile sources into a library? $&#123;USE_LIBRARY&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>CMake中定义<code>BUILD_SHARED_LIBS</code>全局变量，并设置为<code>OFF</code>。调用<code>add_library</code>并省略第二个参数，将构建一个静态库：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(BUILD_SHARED_LIBS OFF)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，引入一个变量<code>_sources</code>，包括<code>Message.hpp</code>和<code>Message.cpp</code>：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">list</span>(APPEND _sources <span class="keyword">Message</span>.hpp <span class="keyword">Message</span>.cpp)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，引入一个基于<code>USE_LIBRARY</code>值的<code>if-else</code>语句。如果逻辑为真，则<code>Message.hpp</code>和<code>Message.cpp</code>将打包成一个库：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(USE_LIBRARY)</span><br><span class="line">	<span class="comment"># add_library will create a static library</span></span><br><span class="line">	<span class="comment"># since BUILD_SHARED_LIBS is OFF</span></span><br><span class="line">	<span class="keyword">add_library</span>(<span class="keyword">message</span> <span class="variable">$&#123;_sources&#125;</span>)</span><br><span class="line">	<span class="keyword">add_executable</span>(hello-world hello-world.cpp)</span><br><span class="line">	<span class="keyword">target_link_libraries</span>(hello-world <span class="keyword">message</span>)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">	<span class="keyword">add_executable</span>(hello-world hello-world.cpp <span class="variable">$&#123;_sources&#125;</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们可以再次使用相同的命令集进行构建。由于<code>USE_LIBRARY</code>为<code>OFF</code>, <code>hello-world</code>可执行文件将使用所有源文件来编译。可以通过在GNU/Linux上，运行<code>objdump -x</code>命令进行验证。</p>
+</li>
+</ol>
+<h2 id="工作原理-2"><a href="#工作原理-2" class="headerlink" title="工作原理"></a>工作原理</h2><p>我们介绍了两个变量：<code>USE_LIBRARY</code>和<code>BUILD_SHARED_LIBS</code>。这两个变量都设置为<code>OFF</code>。如CMake语言文档中描述，逻辑真或假可以用多种方式表示：</p>
+<ul>
+<li>如果将逻辑变量设置为以下任意一种：<code>1</code>、<code>ON</code>、<code>YES</code>、<code>true</code>、<code>Y</code>或非零数，则逻辑变量为<code>true</code>。</li>
+<li>如果将逻辑变量设置为以下任意一种：<code>0</code>、<code>OFF</code>、<code>NO</code>、<code>false</code>、<code>N</code>、<code>IGNORE、NOTFOUND</code>、空字符串，或者以<code>-NOTFOUND</code>为后缀，则逻辑变量为<code>false</code>。</li>
+</ul>
+<p><code>USE_LIBRARY</code>变量将在第一个和第二个行为之间切换。<code>BUILD_SHARED_LIBS</code>是CMake的一个全局标志。因为CMake内部要查询<code>BUILD_SHARED_LIBS</code>全局变量，所以<code>add_library</code>命令可以在不传递<code>STATIC/SHARED/OBJECT</code>参数的情况下调用；如果为<code>false</code>或未定义，将生成一个静态库。</p>
+<p>这个例子说明，可以引入条件来控制CMake中的执行流。但是，当前的设置不允许从外部切换，不需要手动修改<code>CMakeLists.txt</code>。原则上，我们希望能够向用户开放所有设置，这样就可以在不修改构建代码的情况下调整配置，稍后将展示如何做到这一点。</p>
+<p><strong>NOTE</strong>:<em><code>else()</code>和<code>endif()</code>中的<code>()</code>，可能会让刚开始学习CMake代码的同学感到惊讶。其历史原因是，因为其能够指出指令的作用范围。例如，可以使用<code>if(USE_LIBRARY)…else(USE_LIBRARY)…endif(USE_LIBIRAY)</code>。这个格式并不唯一，可以根据个人喜好来决定使用哪种格式。</em></p>
+<p><strong>TIPS</strong>:<em><code>_sources</code>变量是一个局部变量，不应该在当前范围之外使用，可以在名称前加下划线。</em></p>
+<h1 id="1-5-向用户显示选项"><a href="#1-5-向用户显示选项" class="headerlink" title="1.5 向用户显示选项"></a>1.5 向用户显示选项</h1><p><strong>NOTE</strong>: <em>这个示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-05" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-05</a> 找到，其中有一个C++示例。该配置在CMake 3.5版(或更高版本)测试有效的，并且已经在GNU/Linux、macOS和Windows上进行了测试。</em></p>
+<p>前面的配置中，我们引入了条件句：通过硬编码的方式给定逻辑变量值。不过，这会影响用户修改这些变量。CMake代码没有向读者传达，该值可以从外部进行修改。推荐在<code>CMakeLists.txt</code>中使用<code>option()</code>命令，以选项的形式显示逻辑开关，用于外部设置，从而切换构建系统的生成行为。本节的示例将向您展示，如何使用这个命令。</p>
+<h2 id="具体实施-4"><a href="#具体实施-4" class="headerlink" title="具体实施"></a>具体实施</h2><p>看一下前面示例中的静态/动态库示例。与其硬编码<code>USE_LIBRARY</code>为<code>ON</code>或<code>OFF</code>，现在为其设置一个默认值，同时也可以从外部进行更改：</p>
+<ol>
+<li><p>用一个选项替换上一个示例的<code>set(USE_LIBRARY OFF)</code>命令。该选项将修改<code>USE_LIBRARY</code>的值，并设置其默认值为<code>OFF</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">option</span><span class="params">(USE_LIBRARY <span class="string">"Compile sources into a library"</span> OFF)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在，可以通过CMake的<code>-D</code>CLI选项，将信息传递给CMake来切换库的行为：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake -D USE_LIBRARY=<span class="keyword">ON</span> ..</span><br><span class="line"></span><br><span class="line">-- ...</span><br><span class="line">-- Compile sources into a <span class="keyword">library</span>? <span class="keyword">ON</span></span><br><span class="line">-- ...</span><br><span class="line"></span><br><span class="line">$ cmake --build .</span><br><span class="line"></span><br><span class="line">Scanning dependencies <span class="keyword">of</span> target <span class="keyword">message</span></span><br><span class="line">[ <span class="number">25</span>%] Building CXX <span class="keyword">object</span> CMakeFiles/<span class="keyword">message</span>.dir/<span class="keyword">Message</span>.cpp.o</span><br><span class="line">[ <span class="number">50</span>%] Linking CXX <span class="keyword">static</span> <span class="keyword">library</span> libmessage.a</span><br><span class="line">[ <span class="number">50</span>%] Built target <span class="keyword">message</span></span><br><span class="line">Scanning dependencies <span class="keyword">of</span> target hello-world</span><br><span class="line">[ <span class="number">75</span>%] Building CXX <span class="keyword">object</span> CMakeFiles/hello-world.dir/hello-world.cpp.o</span><br><span class="line">[<span class="number">100</span>%] Linking CXX executable hello-world</span><br><span class="line">[<span class="number">100</span>%] Built target hello-world</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>-D</code>开关用于为CMake设置任何类型的变量：逻辑变量、路径等等。</p>
+<h2 id="工作原理-3"><a href="#工作原理-3" class="headerlink" title="工作原理"></a>工作原理</h2><p><code>option</code>可接受三个参数：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">option</span><span class="params">(&lt;option_variable&gt; <span class="string">"help string"</span> [initial value])</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>&lt;option_variable&gt;</code>表示该选项的变量的名称。</li>
+<li><code>&quot;help string&quot;</code>记录选项的字符串，在CMake的终端或图形用户界面中可见。</li>
+<li><code>[initial value]</code>选项的默认值，可以是<code>ON</code>或<code>OFF</code>。</li>
+</ul>
+<h2 id="更多信息-3"><a href="#更多信息-3" class="headerlink" title="更多信息"></a>更多信息</h2><p>有时选项之间会有依赖的情况。示例中，我们提供生成静态库或动态库的选项。但是，如果没有将<code>USE_LIBRARY</code>逻辑设置为<code>ON</code>，则此选项没有任何意义。CMake提供<code>cmake_dependent_option()</code>命令用来定义依赖于其他选项的选项：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(CMakeDependentOption)</span><br><span class="line"></span><br><span class="line"><span class="comment"># second option depends on the value of the first</span></span><br><span class="line">cmake_dependent_option(</span><br><span class="line">	MAKE_STATIC_LIBRARY <span class="string">"Compile sources into a static library"</span> <span class="keyword">OFF</span></span><br><span class="line">	<span class="string">"USE_LIBRARY"</span> <span class="keyword">ON</span></span><br><span class="line">	)</span><br><span class="line">	</span><br><span class="line"><span class="comment"># third option depends on the value of the first</span></span><br><span class="line">cmake_dependent_option(</span><br><span class="line">	MAKE_SHARED_LIBRARY <span class="string">"Compile sources into a shared library"</span> <span class="keyword">ON</span></span><br><span class="line">	<span class="string">"USE_LIBRARY"</span> <span class="keyword">ON</span></span><br><span class="line">	)</span><br></pre></td></tr></table></figure>
+<p>如果<code>USE_LIBRARY</code>为<code>ON</code>，<code>MAKE_STATIC_LIBRARY</code>默认值为<code>OFF</code>，否则<code>MAKE_SHARED_LIBRARY</code>默认值为<code>ON</code>。可以这样运行：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -D <span class="attribute">USE_LIBRARY</span>=OFF -D <span class="attribute">MAKE_SHARED_LIBRARY</span>=ON <span class="built_in">..</span></span><br></pre></td></tr></table></figure>
+<p>这仍然不会构建库，因为<code>USE_LIBRARY</code>仍然为<code>OFF</code>。</p>
+<p>CMake有适当的机制，通过包含模块来扩展其语法和功能，这些模块要么是CMake自带的，要么是定制的。本例中，包含了一个名为<code>CMakeDependentOption</code>的模块。如果没有<code>include</code>这个模块，<code>cmake_dependent_option()</code>命令将不可用。参见 <a href="https://cmake.org/cmake/help/latest/module/CMakeDependentOption.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/module/CMakeDependentOption.html</a></p>
+<p><strong>TIPS</strong>:<em>手册中的任何模块都可以以命令行的方式使用<code>cmake --help-module &lt;name-of-module&gt;</code>。例如，<code>cmake --help-module CMakeDependentOption</code>将打印刚才讨论的模块的手册页(帮助页面)。</em></p>
+<h1 id="1-6-指定编译器"><a href="#1-6-指定编译器" class="headerlink" title="1.6 指定编译器"></a>1.6 指定编译器</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-06" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-06</a> 中找到，其中有一个C++/C示例。该配置在CMake 3.5版(或更高版本)下测试没问题，并且已经在GNU/Linux、macOS和Windows上进行了测试。</em></p>
+<p>目前为止，我们还没有过多考虑如何选择编译器。CMake可以根据平台和生成器选择编译器，还能将编译器标志设置为默认值。然而，我们通常控制编译器的选择。在后面的示例中，我们还将考虑构建类型的选择，并展示如何控制编译器标志。</p>
+<h2 id="具体实施-5"><a href="#具体实施-5" class="headerlink" title="具体实施"></a>具体实施</h2><p>如何选择一个特定的编译器？例如，如果想使用Intel或Portland Group编译器怎么办？CMake将语言的编译器存储在<code>CMAKE_&lt;LANG&gt;_COMPILER</code>变量中，其中<code>&lt;LANG&gt;</code>是受支持的任何一种语言，对于我们的目的是<code>CXX</code>、<code>C</code>或<code>Fortran</code>。用户可以通过以下两种方式之一设置此变量：</p>
+<ol>
+<li><p>使用CLI中的<code>-D</code>选项，例如：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -D <span class="attribute">CMAKE_CXX_COMPILER</span>=clang++ <span class="built_in">..</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过导出环境变量<code>CXX</code>(C++编译器)、<code>CC</code>(C编译器)和<code>FC</code>(Fortran编译器)。例如，使用这个命令使用<code>clang++</code>作为<code>C++</code>编译器：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ env <span class="attribute">CXX</span>=clang++ cmake <span class="built_in">..</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>到目前为止讨论的示例，都可以通过传递适当的选项，配置合适的编译器。</p>
+<p><strong>NOTE</strong>:<em>CMake了解运行环境，可以通过其CLI的<code>-D</code>开关或环境变量设置许多选项。前一种机制覆盖后一种机制，但是我们建议使用<code>-D</code>显式设置选项。显式优于隐式，因为环境变量可能被设置为不适合(当前项目)的值。</em></p>
+<p>我们在这里假设，其他编译器在标准路径中可用，CMake在标准路径中执行查找编译器。如果不是这样，用户将需要将完整的编译器可执行文件或包装器路径传递给CMake。</p>
+<p><strong>TIPS</strong>:<em>我们建议使用<code>-D CMAKE_&lt;LANG&gt;_COMPILER</code>CLI选项设置编译器，而不是导出<code>CXX</code>、<code>CC</code>和<code>FC</code>。这是确保跨平台并与非POSIX兼容的唯一方法。为了避免变量污染环境，这些变量可能会影响与项目一起构建的外部库环境。</em></p>
+<h2 id="工作原理-4"><a href="#工作原理-4" class="headerlink" title="工作原理"></a>工作原理</h2><p>配置时，CMake会进行一系列平台测试，以确定哪些编译器可用，以及它们是否适合当前的项目。一个合适的编译器不仅取决于我们所使用的平台，还取决于我们想要使用的生成器。CMake执行的第一个测试基于项目语言的编译器的名称。例如，<code>cc</code>是一个工作的<code>C</code>编译器，那么它将用作<code>C</code>项目的默认编译器。GNU/Linux上，使用Unix Makefile或Ninja时, GCC家族中的编译器很可能是<code>C++</code>、<code>C</code>和<code>Fortran</code>的默认选择。Microsoft Windows上，将选择Visual Studio中的<code>C++</code>和<code>C</code>编译器(前提是Visual Studio是生成器)。如果选择MinGW或MSYS Makefile作为生成器，则默认使用MinGW编译器。</p>
+<h2 id="更多信息-4"><a href="#更多信息-4" class="headerlink" title="更多信息"></a>更多信息</h2><p>我们的平台上的CMake，在哪里可以找到可用的编译器和编译器标志？CMake提供<code>--system-information</code>标志，它将把关于系统的所有信息转储到屏幕或文件中。要查看这个信息，请尝试以下操作：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$</span> cmake --<span class="keyword">system</span>-information information.txt</span><br></pre></td></tr></table></figure>
+<p>文件中(本例中是<code>information.txt</code>)可以看到<code>CMAKE_CXX_COMPILER</code>、<code>CMAKE_C_COMPILER</code>和<code>CMAKE_Fortran_COMPILER</code>的默认值，以及默认标志。我们将在下一个示例中看到相关的标志。</p>
+<p>CMake提供了额外的变量来与编译器交互：</p>
+<ul>
+<li><code>CMAKE_&lt;LANG&gt;_COMPILER_LOADED</code>:如果为项目启用了语言<code>&lt;LANG&gt;</code>，则将设置为<code>TRUE</code>。</li>
+<li><code>CMAKE_&lt;LANG&gt;_COMPILER_ID</code>:编译器标识字符串，编译器供应商所特有。例如，<code>GCC</code>用于GNU编译器集合，<code>AppleClang</code>用于macOS上的Clang, <code>MSVC</code>用于Microsoft Visual Studio编译器。注意，不能保证为所有编译器或语言定义此变量。</li>
+<li><code>CMAKE_COMPILER_IS_GNU&lt;LANG&gt;</code>:如果语言<code>&lt;LANG&gt;</code>是GNU编译器集合的一部分，则将此逻辑变量设置为<code>TRUE</code>。注意变量名的<code>&lt;LANG&gt;</code>部分遵循GNU约定：C语言为<code>CC</code>, C++语言为<code>CXX</code>, Fortran语言为<code>G77</code>。</li>
+<li><code>CMAKE_&lt;LANG&gt;_COMPILER_VERSION</code>:此变量包含一个字符串，该字符串给定语言的编译器版本。版本信息在<code>major[.minor[.patch[.tweak]]]</code>中给出。但是，对于<code>CMAKE_&lt;LANG&gt;_COMPILER_ID</code>，不能保证所有编译器或语言都定义了此变量。</li>
+</ul>
+<p>我们可以尝试使用不同的编译器，配置下面的示例<code>CMakeLists.txt</code>。这个例子中，我们将使用CMake变量来探索已使用的编译器(及版本)：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(<span class="name">VERSION</span> <span class="number">3.5</span> FATAL_ERROR)</span><br><span class="line">project(<span class="name">recipe-06</span> LANGUAGES C CXX)</span><br><span class="line"></span><br><span class="line">message(<span class="name">STATUS</span> <span class="string">"Is the C++ compiler loaded? $&#123;CMAKE_CXX_COMPILER_LOADED&#125;"</span>)</span><br><span class="line">if(<span class="name">CMAKE_CXX_COMPILER_LOADED</span>)</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"The C++ compiler ID is: $&#123;CMAKE_CXX_COMPILER_ID&#125;"</span>)</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"Is the C++ from GNU? $&#123;CMAKE_COMPILER_IS_GNUCXX&#125;"</span>)</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"The C++ compiler version is: $&#123;CMAKE_CXX_COMPILER_VERSION&#125;"</span>)</span><br><span class="line">endif()</span><br><span class="line"></span><br><span class="line">message(<span class="name">STATUS</span> <span class="string">"Is the C compiler loaded? $&#123;CMAKE_C_COMPILER_LOADED&#125;"</span>)</span><br><span class="line">if(<span class="name">CMAKE_C_COMPILER_LOADED</span>)</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"The C compiler ID is: $&#123;CMAKE_C_COMPILER_ID&#125;"</span>)</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"Is the C from GNU? $&#123;CMAKE_COMPILER_IS_GNUCC&#125;"</span>)</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"The C compiler version is: $&#123;CMAKE_C_COMPILER_VERSION&#125;"</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+<p>注意，这个例子不包含任何目标，没有要构建的东西，我们只关注配置步骤:</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"><span class="comment">-- Is the C++ compiler loaded? 1</span></span><br><span class="line"><span class="comment">-- The C++ compiler ID is: GNU</span></span><br><span class="line"><span class="comment">-- Is the C++ from GNU? 1</span></span><br><span class="line"><span class="comment">-- The C++ compiler version is: 8.1.0</span></span><br><span class="line"><span class="comment">-- Is the C compiler loaded? 1</span></span><br><span class="line"><span class="comment">-- The C compiler ID is: GNU</span></span><br><span class="line"><span class="comment">-- Is the C from GNU? 1</span></span><br><span class="line"><span class="comment">-- The C compiler version is: 8.1.0</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>当然，输出将取决于可用和已选择的编译器(及版本)。</p>
+<h1 id="1-7-切换构建类型"><a href="#1-7-切换构建类型" class="headerlink" title="1.7 切换构建类型"></a>1.7 切换构建类型</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-07" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-07</a> 中找到，包含一个C++/C示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>CMake可以配置构建类型，例如：Debug、Release等。配置时，可以为Debug或Release构建设置相关的选项或属性，例如：编译器和链接器标志。控制生成构建系统使用的配置变量是<code>CMAKE_BUILD_TYPE</code>。该变量默认为空，CMake识别的值为:</p>
+<ol>
+<li><strong>Debug</strong>：用于在没有优化的情况下，使用带有调试符号构建库或可执行文件。</li>
+<li><strong>Release</strong>：用于构建的优化的库或可执行文件，不包含调试符号。</li>
+<li><strong>RelWithDebInfo</strong>：用于构建较少的优化库或可执行文件，包含调试符号。</li>
+<li><strong>MinSizeRel</strong>：用于不增加目标代码大小的优化方式，来构建库或可执行文件。</li>
+</ol>
+<h2 id="具体实施-6"><a href="#具体实施-6" class="headerlink" title="具体实施"></a>具体实施</h2><p>示例中，我们将展示如何为项目设置构建类型：</p>
+<ol>
+<li><p>首先，定义最低CMake版本、项目名称和支持的语言：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">07</span> LANGUAGES C CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，设置一个默认的构建类型(本例中是Release)，并打印一条消息。要注意的是，该变量被设置为缓存变量，可以通过缓存进行编辑：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">if</span><span class="params">(NOT CMAKE_BUILD_TYPE)</span></span></span><br><span class="line">	set(CMAKE_BUILD_TYPE Release CACHE STRING <span class="string">"Build type"</span> FORCE)</span><br><span class="line"><span class="function"><span class="title">endif</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Build type: $&#123;CMAKE_BUILD_TYPE&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，打印出CMake设置的相应编译标志：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C flags, Debug configuration: $&#123;CMAKE_C_FLAGS_DEBUG&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C flags, Release configuration: $&#123;CMAKE_C_FLAGS_RELEASE&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C flags, Release configuration with Debug info: $&#123;CMAKE_C_FLAGS_RELWITHDEBINFO&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C flags, minimal Release configuration: $&#123;CMAKE_C_FLAGS_MINSIZEREL&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C++ flags, Debug configuration: $&#123;CMAKE_CXX_FLAGS_DEBUG&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C++ flags, Release configuration: $&#123;CMAKE_CXX_FLAGS_RELEASE&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C++ flags, Release configuration with Debug info: $&#123;CMAKE_CXX_FLAGS_RELWITHDEBINFO&#125;"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"C++ flags, minimal Release configuration: $&#123;CMAKE_CXX_FLAGS_MINSIZEREL&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>验证配置的输出:</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">-- Build type: <span class="keyword">Release</span></span><br><span class="line">-- <span class="keyword">C</span> flags, <span class="keyword">Debug</span> configuration: -g</span><br><span class="line">-- <span class="keyword">C</span> flags, <span class="keyword">Release</span> configuration: -O3 -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span> flags, <span class="keyword">Release</span> configuration with <span class="keyword">Debug</span> info: -O2 -g -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span> flags, minimal <span class="keyword">Release</span> configuration: -Os -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span>++ flags, <span class="keyword">Debug</span> configuration: -g</span><br><span class="line">-- <span class="keyword">C</span>++ flags, <span class="keyword">Release</span> configuration: -O3 -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span>++ flags, <span class="keyword">Release</span> configuration with <span class="keyword">Debug</span> info: -O2 -g -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span>++ flags, minimal <span class="keyword">Release</span> configuration: -Os -DNDEBUG</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>切换构建类型:</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -<span class="keyword">D</span> CMAKE_BUILD_TYPE=<span class="keyword">Debug</span> ..</span><br><span class="line"></span><br><span class="line">-- Build type: <span class="keyword">Debug</span></span><br><span class="line">-- <span class="keyword">C</span> flags, <span class="keyword">Debug</span> configuration: -g</span><br><span class="line">-- <span class="keyword">C</span> flags, <span class="keyword">Release</span> configuration: -O3 -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span> flags, <span class="keyword">Release</span> configuration with <span class="keyword">Debug</span> info: -O2 -g -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span> flags, minimal <span class="keyword">Release</span> configuration: -Os -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span>++ flags, <span class="keyword">Debug</span> configuration: -g</span><br><span class="line">-- <span class="keyword">C</span>++ flags, <span class="keyword">Release</span> configuration: -O3 -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span>++ flags, <span class="keyword">Release</span> configuration with <span class="keyword">Debug</span> info: -O2 -g -DNDEBUG</span><br><span class="line">-- <span class="keyword">C</span>++ flags, minimal <span class="keyword">Release</span> configuration: -Os -DNDEBUG</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-5"><a href="#工作原理-5" class="headerlink" title="工作原理"></a>工作原理</h2><p>我们演示了如何设置默认构建类型，以及如何(从命令行)覆盖它。这样，就可以控制项目，是使用优化，还是关闭优化启用调试。我们还看到了不同配置使用了哪些标志，这主要取决于选择的编译器。需要在运行CMake时显式地打印标志，也可以仔细阅读运行<code>CMake --system-information</code>的输出，以了解当前平台、默认编译器和语言的默认组合是什么。下一个示例中，我们将讨论如何为不同的编译器和不同的构建类型，扩展或调整编译器标志。</p>
+<h2 id="更多信息-5"><a href="#更多信息-5" class="headerlink" title="更多信息"></a>更多信息</h2><p>我们展示了变量<code>CMAKE_BUILD_TYPE</code>，如何切换生成构建系统的配置(这个链接中有说明: <a href="https://cmake.org/cmake/help/v3.5/variable/CMAKE_BUILD_TYPE.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/variable/CMAKE_BUILD_TYPE.html</a> )。Release和Debug配置中构建项目通常很有用，例如：评估编译器优化级别的效果。对于单配置生成器，如Unix Makefile、MSYS Makefile或Ninja，因为要对项目重新配置，这里需要运行CMake两次。不过，CMake也支持复合配置生成器。这些通常是集成开发环境提供的项目文件，最显著的是Visual Studio和Xcode，它们可以同时处理多个配置。可以使用<code>CMAKE_CONFIGURATION_TYPES</code>变量可以对这些生成器的可用配置类型进行调整，该变量将接受一个值列表(可从这个链接获得文档:<a href="https://cmake.org/cmake/help/v3.5/variable/CMAKE_CONFIGURATION_TYPES.html)。" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/variable/CMAKE_CONFIGURATION_TYPES.html)。</a></p>
+<p>下面是对Visual Studio的CMake调用:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake .. -G<span class="string">"Visual Studio 12 2017 Win64"</span> -D CMAKE_CONFIGURATION_TYPES=<span class="string">"Release;Debug"</span></span></span><br></pre></td></tr></table></figure>
+<p>将为Release和Debug配置生成一个构建树。然后，您可以使<code>--config</code>标志来决定构建这两个中的哪一个:</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">$</span> <span class="comment">cmake</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">build</span> <span class="string">.</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">config</span> <span class="comment">Release</span></span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong>:<em>当使用单配置生成器开发代码时，为Release版和Debug创建单独的构建目录，两者使用相同的源代码。这样，就可以在两者之间切换，而不用重新配置和编译。</em></p>
+<h1 id="1-8-设置编译器选项"><a href="#1-8-设置编译器选项" class="headerlink" title="1.8 设置编译器选项"></a>1.8 设置编译器选项</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-08" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-08</a> 中找到，有一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>前面的示例展示了如何探测CMake，从而获得关于编译器的信息，以及如何切换项目中的编译器。后一个任务是控制项目的编译器标志。CMake为调整或扩展编译器标志提供了很大的灵活性，您可以选择下面两种方法:</p>
+<ul>
+<li>CMake将编译选项视为目标属性。因此，可以根据每个目标设置编译选项，而不需要覆盖CMake默认值。</li>
+<li>可以使用<code>-D</code>CLI标志直接修改<code>CMAKE_&lt;LANG&gt;_FLAGS_&lt;CONFIG&gt;</code>变量。这将影响项目中的所有目标，并覆盖或扩展CMake默认值。</li>
+</ul>
+<p>本示例中，我们将展示这两种方法。</p>
+<h2 id="准备工作-3"><a href="#准备工作-3" class="headerlink" title="准备工作"></a>准备工作</h2><p>编写一个示例程序，计算不同几何形状的面积，<code>computer_area.cpp</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"geometry_circle.hpp"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"geometry_polygon.hpp"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"geometry_rhombus.hpp"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"geometry_square.hpp"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">using</span> <span class="keyword">namespace</span> geometry;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">double</span> radius = <span class="number">2.5293</span>;</span><br><span class="line">  <span class="keyword">double</span> A_circle = area::circle(radius);</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A circle of radius "</span> &lt;&lt; radius &lt;&lt; <span class="string">" has an area of "</span> &lt;&lt; A_circle</span><br><span class="line">            &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">int</span> nSides = <span class="number">19</span>;</span><br><span class="line">  <span class="keyword">double</span> side = <span class="number">1.29312</span>;</span><br><span class="line">  <span class="keyword">double</span> A_polygon = area::polygon(nSides, side);</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A regular polygon of "</span> &lt;&lt; nSides &lt;&lt; <span class="string">" sides of length "</span> &lt;&lt; side</span><br><span class="line">            &lt;&lt; <span class="string">" has an area of "</span> &lt;&lt; A_polygon &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">double</span> d1 = <span class="number">5.0</span>;</span><br><span class="line">  <span class="keyword">double</span> d2 = <span class="number">7.8912</span>;</span><br><span class="line">  <span class="keyword">double</span> A_rhombus = area::rhombus(d1, d2);</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A rhombus of major diagonal "</span> &lt;&lt; d1 &lt;&lt; <span class="string">" and minor diagonal "</span> &lt;&lt; d2</span><br><span class="line">            &lt;&lt; <span class="string">" has an area of "</span> &lt;&lt; A_rhombus &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">double</span> l = <span class="number">10.0</span>;</span><br><span class="line">  <span class="keyword">double</span> A_square = area::square(l);</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A square of side "</span> &lt;&lt; l &lt;&lt; <span class="string">" has an area of "</span> &lt;&lt; A_square</span><br><span class="line">  &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数的各种实现分布在不同的文件中，每个几何形状都有一个头文件和源文件。总共有4个头文件和5个源文件要编译：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├─ CMakeLists.txt</span><br><span class="line">├─ compute-areas.cpp</span><br><span class="line">├─ geometry_circle.cpp</span><br><span class="line">├─ geometry_circle.hpp</span><br><span class="line">├─ geometry_polygon.cpp</span><br><span class="line">├─ geometry_polygon.hpp</span><br><span class="line">├─ geometry_rhombus.cpp</span><br><span class="line">├─ geometry_rhombus.hpp</span><br><span class="line">├─ geometry_square.cpp</span><br><span class="line">└─ geometry_square.hpp</span><br></pre></td></tr></table></figure>
+<p>我们不会为所有文件提供清单，读者可以参考 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-08" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-08</a> 。</p>
+<h2 id="具体实施-7"><a href="#具体实施-7" class="headerlink" title="具体实施"></a>具体实施</h2><p>现在已经有了源代码，我们的目标是配置项目，并使用编译器标示进行实验:</p>
+<ol>
+<li><p>设置CMake的最低版本:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>声明项目名称和语言:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">08</span> LANGUAGES CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，打印当前编译器标志。CMake将对所有C++目标使用这些:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(<span class="string">"C++ compiler flags: $&#123;CMAKE_CXX_FLAGS&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为目标准备了标志列表，其中一些将无法在Windows上使用:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">list</span><span class="params">(APPEND flags <span class="string">"-fPIC"</span> <span class="string">"-Wall"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(NOT WIN32)</span></span></span><br><span class="line">  list(APPEND flags <span class="string">"-Wextra"</span> <span class="string">"-Wpedantic"</span>)</span><br><span class="line"><span class="function"><span class="title">endif</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加了一个新的目标——<code>geometry</code>库，并列出它的源依赖关系:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">add_library(geometry</span><br><span class="line">  STATIC</span><br><span class="line">    geometry_circle.cpp</span><br><span class="line">    geometry_circle.hpp</span><br><span class="line">    geometry_polygon.cpp</span><br><span class="line">    geometry_polygon.hpp</span><br><span class="line">    geometry_rhombus.cpp</span><br><span class="line">    geometry_rhombus.hpp</span><br><span class="line">    geometry_square.cpp</span><br><span class="line">    geometry_square.hpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为这个库目标设置了编译选项:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">target_compile_options</span>(geometry</span><br><span class="line">  PRIVATE</span><br><span class="line">    <span class="variable">$&#123;flags&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，将生成<code>compute-areas</code>可执行文件作为一个目标:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(compute-areas compute-areas.cpp)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>还为可执行目标设置了编译选项:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_compile_options(<span class="name">compute-areas</span></span><br><span class="line">  PRIVATE</span><br><span class="line">    <span class="string">"-fPIC"</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，将可执行文件链接到geometry库:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">target_link_libraries</span><span class="params">(compute-areas geometry)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="如何工作-1"><a href="#如何工作-1" class="headerlink" title="如何工作"></a>如何工作</h2><p>本例中，警告标志有<code>-Wall</code>、<code>-Wextra</code>和<code>-Wpedantic</code>，将这些标示添加到<code>geometry</code>目标的编译选项中； <code>compute-areas</code>和 <code>geometry</code>目标都将使用<code>-fPIC</code>标志。编译选项可以添加三个级别的可见性：<code>INTERFACE</code>、<code>PUBLIC</code>和<code>PRIVATE</code>。</p>
+<p>可见性的含义如下:</p>
+<ul>
+<li><strong>PRIVATE</strong>，编译选项会应用于给定的目标，不会传递给与目标相关的目标。我们的示例中， 即使<code>compute-areas</code>将链接到<code>geometry</code>库，<code>compute-areas</code>也不会继承<code>geometry</code>目标上设置的编译器选项。</li>
+<li><strong>INTERFACE</strong>，给定的编译选项将只应用于指定目标，并传递给与目标相关的目标。</li>
+<li><strong>PUBLIC</strong>，编译选项将应用于指定目标和使用它的目标。</li>
+</ul>
+<p>目标属性的可见性CMake的核心，我们将在本书中经常讨论这个话题。以这种方式添加编译选项，不会影响全局CMake变量<code>CMAKE_&lt;LANG&gt;_FLAGS_&lt;CONFIG&gt;</code>，并能更细粒度控制在哪些目标上使用哪些选项。</p>
+<p>我们如何验证，这些标志是否按照我们的意图正确使用呢？或者换句话说，如何确定项目在CMake构建时，实际使用了哪些编译标志？一种方法是，使用CMake将额外的参数传递给本地构建工具。本例中会设置环境变量<code>VERBOSE=1</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -<span class="selector-tag">p</span> build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line">$ cmake --build . -- VERBOSE=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">... lots of output ...</span><br><span class="line"></span><br><span class="line">[ <span class="number">14%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/geometry.dir/geometry_circle<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">/usr/bin/c++ -fPIC -Wall -Wextra -Wpedantic -o CMakeFiles/geometry.dir/geometry_circle<span class="selector-class">.cpp</span><span class="selector-class">.o</span> -c /home/bast/tmp/cmake-cookbook/chapter-<span class="number">01</span>/recipe-<span class="number">08</span>/cxx-example/geometry_circle.cpp</span><br><span class="line">[ <span class="number">28%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/geometry.dir/geometry_polygon<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">/usr/bin/c++ -fPIC -Wall -Wextra -Wpedantic -o CMakeFiles/geometry.dir/geometry_polygon<span class="selector-class">.cpp</span><span class="selector-class">.o</span> -c /home/bast/tmp/cmake-cookbook/chapter-<span class="number">01</span>/recipe-<span class="number">08</span>/cxx-example/geometry_polygon.cpp</span><br><span class="line">[ <span class="number">42%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/geometry.dir/geometry_rhombus<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">/usr/bin/c++ -fPIC -Wall -Wextra -Wpedantic -o CMakeFiles/geometry.dir/geometry_rhombus<span class="selector-class">.cpp</span><span class="selector-class">.o</span> -c /home/bast/tmp/cmake-cookbook/chapter-<span class="number">01</span>/recipe-<span class="number">08</span>/cxx-example/geometry_rhombus.cpp</span><br><span class="line">[ <span class="number">57%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/geometry.dir/geometry_square<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">/usr/bin/c++ -fPIC -Wall -Wextra -Wpedantic -o CMakeFiles/geometry.dir/geometry_square<span class="selector-class">.cpp</span><span class="selector-class">.o</span> -c /home/bast/tmp/cmake-cookbook/chapter-<span class="number">01</span>/recipe-<span class="number">08</span>/cxx-example/geometry_square.cpp</span><br><span class="line"></span><br><span class="line">... more output ...</span><br><span class="line"></span><br><span class="line">[ <span class="number">85%</span>] Building CXX <span class="selector-tag">object</span> CMakeFiles/compute-areas.dir/compute-areas<span class="selector-class">.cpp</span><span class="selector-class">.o</span></span><br><span class="line">/usr/bin/c++ -fPIC -o CMakeFiles/compute-areas.dir/compute-areas<span class="selector-class">.cpp</span><span class="selector-class">.o</span> -c /home/bast/tmp/cmake-cookbook/chapter-<span class="number">01</span>/recipe-<span class="number">08</span>/cxx-example/compute-areas.cpp</span><br><span class="line"></span><br><span class="line">... more output ...</span><br></pre></td></tr></table></figure>
+<p>输出确认编译标志，确认指令设置正确。</p>
+<p>控制编译器标志的第二种方法，不用对<code>CMakeLists.txt</code>进行修改。如果想在这个项目中修改<code>geometry</code>和<code>compute-areas</code>目标的编译器选项，可以使用CMake参数进行配置：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -D <span class="attribute">CMAKE_CXX_FLAGS</span>=<span class="string">"-fno-exceptions -fno-rtti"</span> <span class="built_in">..</span></span><br></pre></td></tr></table></figure>
+<p>这个命令将编译项目，禁用异常和运行时类型标识(RTTI)。</p>
+<p>也可以使用全局标志，可以使用<code>CMakeLists.txt</code>运行以下命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -D <span class="attribute">CMAKE_CXX_FLAGS</span>=<span class="string">"-fno-exceptions -fno-rtti"</span> <span class="built_in">..</span></span><br></pre></td></tr></table></figure>
+<p>这将使用<code>-fno-rtti - fpic - wall - Wextra - wpedantic</code>配置<code>geometry</code>目标，同时使用<code>-fno exception -fno-rtti - fpic</code>配置<code>compute-areas</code>。</p>
+<p><strong>NOTE</strong>:<em>本书中，我们推荐为每个目标设置编译器标志。使用<code>target_compile_options()</code>不仅允许对编译选项进行细粒度控制，而且还可以更好地与CMake的更高级特性进行集成。</em></p>
+<h2 id="更多信息-6"><a href="#更多信息-6" class="headerlink" title="更多信息"></a>更多信息</h2><p>大多数时候，编译器有特性标示。当前的例子只适用于<code>GCC</code>和<code>Clang</code>；其他供应商的编译器不确定是否会理解(如果不是全部)这些标志。如果项目是真正跨平台，那么这个问题就必须得到解决，有三种方法可以解决这个问题。</p>
+<p>最典型的方法是将所需编译器标志列表附加到每个配置类型CMake变量<code>CMAKE_&lt;LANG&gt;_FLAGS_&lt;CONFIG&gt;</code>。标志确定设置为给定编译器有效的标志，因此将包含在<code>if-endif</code>子句中，用于检查<code>CMAKE_&lt;LANG&gt;_COMPILER_ID</code>变量，例如：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES GNU)</span><br><span class="line">  list(<span class="name">APPEND</span> CMAKE_CXX_FLAGS <span class="string">"-fno-rtti"</span> <span class="string">"-fno-exceptions"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CMAKE_CXX_FLAGS_DEBUG <span class="string">"-Wsuggest-final-types"</span> <span class="string">"-Wsuggest-final-methods"</span> <span class="string">"-Wsuggest-override"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CMAKE_CXX_FLAGS_RELEASE <span class="string">"-O3"</span> <span class="string">"-Wno-unused"</span>)</span><br><span class="line">endif()</span><br><span class="line">if(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES Clang)</span><br><span class="line">  list(<span class="name">APPEND</span> CMAKE_CXX_FLAGS <span class="string">"-fno-rtti"</span> <span class="string">"-fno-exceptions"</span> <span class="string">"-Qunused-arguments"</span> <span class="string">"-fcolor-diagnostics"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CMAKE_CXX_FLAGS_DEBUG <span class="string">"-Wdocumentation"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CMAKE_CXX_FLAGS_RELEASE <span class="string">"-O3"</span> <span class="string">"-Wno-unused"</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+<p>更细粒度的方法是，不修改<code>CMAKE_&lt;LANG&gt;_FLAGS_&lt;CONFIG&gt;</code>变量，而是定义特定的标志列表：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">set(<span class="name">COMPILER_FLAGS</span>)</span><br><span class="line">set(<span class="name">COMPILER_FLAGS_DEBUG</span>)</span><br><span class="line">set(<span class="name">COMPILER_FLAGS_RELEASE</span>)</span><br><span class="line"></span><br><span class="line">if(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES GNU)</span><br><span class="line">  list(<span class="name">APPEND</span> CXX_FLAGS <span class="string">"-fno-rtti"</span> <span class="string">"-fno-exceptions"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CXX_FLAGS_DEBUG <span class="string">"-Wsuggest-final-types"</span> <span class="string">"-Wsuggest-final-methods"</span> <span class="string">"-Wsuggest-override"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CXX_FLAGS_RELEASE <span class="string">"-O3"</span> <span class="string">"-Wno-unused"</span>)</span><br><span class="line">endif()</span><br><span class="line"></span><br><span class="line">if(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES Clang)</span><br><span class="line">  list(<span class="name">APPEND</span> CXX_FLAGS <span class="string">"-fno-rtti"</span> <span class="string">"-fno-exceptions"</span> <span class="string">"-Qunused-arguments"</span> <span class="string">"-fcolor-diagnostics"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CXX_FLAGS_DEBUG <span class="string">"-Wdocumentation"</span>)</span><br><span class="line">  list(<span class="name">APPEND</span> CXX_FLAGS_RELEASE <span class="string">"-O3"</span> <span class="string">"-Wno-unused"</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+<p>稍后，使用生成器表达式来设置编译器标志的基础上，为每个配置和每个目标生成构建系统:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">target_compile_option(compute-areas</span><br><span class="line">  PRIVATE</span><br><span class="line">    $&#123;CXX_FLAGS&#125;</span><br><span class="line">    <span class="string">"<span class="variable">$&lt;</span><span class="variable">$&lt;</span>CONFIG:Debug&gt;:$&#123;CXX_FLAGS_DEBUG&#125;&gt;"</span></span><br><span class="line">    <span class="string">"<span class="variable">$&lt;</span><span class="variable">$&lt;</span>CONFIG:Release&gt;:$&#123;CXX_FLAGS_RELEASE&#125;&gt;"</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>当前示例中展示了这两种方法，我们推荐后者(特定于项目的变量和<code>target_compile_options</code>)。</p>
+<p>两种方法都有效，并在许多项目中得到广泛应用。不过，每种方式都有缺点。<code>CMAKE_&lt;LANG&gt;_COMPILER_ID</code>不能保证为所有编译器都定义。此外，一些标志可能会被弃用，或者在编译器的较晚版本中引入。与<code>CMAKE_&lt;LANG&gt;_COMPILER_ID</code>类似，<code>CMAKE_&lt;LANG&gt;_COMPILER_VERSION</code>变量不能保证为所有语言和供应商都提供定义。尽管检查这些变量的方式非常流行，但我们认为更健壮的替代方法是检查所需的标志集是否与给定的编译器一起工作，这样项目中实际上只使用有效的标志。结合特定于项目的变量、<code>target_compile_options</code>和生成器表达式，会让解决方案变得非常强大。我们将在第7章的第3节中展示，如何使用<code>check-and-set</code>模式。</p>
+<h1 id="1-9-为语言设定标准"><a href="#1-9-为语言设定标准" class="headerlink" title="1.9 为语言设定标准"></a>1.9 为语言设定标准</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-09" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-09</a> 中找到，包含一个C++和Fortran示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>编程语言有不同的标准，即提供改进的语言版本。启用新标准是通过设置适当的编译器标志来实现的。前面的示例中，我们已经展示了如何为每个目标或全局进行配置。3.1版本中，CMake引入了一个独立于平台和编译器的机制，用于为<code>C++</code>和<code>C</code>设置语言标准：为目标设置<code>&lt;LANG&gt;_STANDARD</code>属性。</p>
+<h2 id="准备工作-4"><a href="#准备工作-4" class="headerlink" title="准备工作"></a>准备工作</h2><p>对于下面的示例，需要一个符合<code>C++14</code>标准或更高版本的<code>C++</code>编译器。此示例代码定义了动物的多态，我们使用<code>std::unique_ptr</code>作为结构中的基类：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Animal&gt; cat = Cat(<span class="string">"Simon"</span>);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Animal&gt; dog = Dog(<span class="string">"Marlowe);</span></span><br></pre></td></tr></table></figure>
+<p>没有为各种子类型显式地使用构造函数，而是使用工厂方法的实现。工厂方法使用<code>C++11</code>的可变参数模板实现。它包含继承层次结构中每个对象的创建函数映射：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="built_in">std</span>::function&lt;<span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Animal&gt;(<span class="keyword">const</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> &amp;)&gt; CreateAnimal;</span><br></pre></td></tr></table></figure>
+<p>基于预先分配的标签来分派它们，创建对象:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Animal&gt; simon = farm.create(<span class="string">"CAT"</span>, <span class="string">"Simon"</span>);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Animal&gt; marlowe = farm.create(<span class="string">"DOG"</span>, <span class="string">"Marlowe"</span>);</span><br></pre></td></tr></table></figure>
+<p>标签和创建功能在工厂使用前已注册:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Factory&lt;CreateAnimal&gt; farm;</span><br><span class="line">farm.subscribe(<span class="string">"CAT"</span>, [](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp; n) &#123; <span class="keyword">return</span> <span class="built_in">std</span>::make_unique&lt;Cat&gt;(n); &#125;);</span><br><span class="line">farm.subscribe(<span class="string">"DOG"</span>, [](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp; n) &#123; <span class="keyword">return</span> <span class="built_in">std</span>::make_unique&lt;Dog&gt;(n); &#125;);</span><br></pre></td></tr></table></figure>
+<p>使用<code>C++11 Lambda</code>函数定义创建函数，使用<code>std::make_unique</code>来避免引入裸指针的操作。这个工厂函数是在<code>C++14</code>中引入。</p>
+<p><strong>NOTE</strong>:<em>CMake的这一功能是在3.1版中添加的，并且还在更新。CMake的后续版本为<code>C++</code>标准的后续版本和不同的编译器，提供了越来越好的支持。我们建议您在文档页面上检查您选择的编译器是否受支持: <a href="https://cmake.org/cmake/help/latest/manual/cmake-compile-features.7.html#supported-compiler" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-compile-features.7.html#supported-compiler</a></em></p>
+<h2 id="具体实施-8"><a href="#具体实施-8" class="headerlink" title="具体实施"></a>具体实施</h2><p>将逐步构建<code>CMakeLists.txt</code>，并展示如何设置语言标准(本例中是<code>C++14</code>):</p>
+<ol>
+<li><p>声明最低要求的CMake版本，项目名称和语言:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">09</span> LANGUAGES CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>要求在Windows上导出所有库符号:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>需要为库添加一个目标，这将编译源代码为一个动态库:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">add_library(animals</span><br><span class="line">  SHARED</span><br><span class="line">    Animal.cpp</span><br><span class="line">    Animal.hpp</span><br><span class="line">    Cat.cpp</span><br><span class="line">    Cat.hpp</span><br><span class="line">    Dog.cpp</span><br><span class="line">    Dog.hpp</span><br><span class="line">    Factory.hpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在，为目标设置了<code>CXX_STANDARD</code>、<code>CXX_EXTENSIONS</code>和<code>CXX_STANDARD_REQUIRED</code>属性。还设置了<code>position_independent ent_code</code>属性，以避免在使用一些编译器构建DSO时出现问题:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set_target_properties</span>(animals</span><br><span class="line">  PROPERTIES</span><br><span class="line">    CXX_STANDARD <span class="number">14</span></span><br><span class="line">    CXX_EXTENSIONS <span class="keyword">OFF</span></span><br><span class="line">    CXX_STANDARD_REQUIRED <span class="keyword">ON</span></span><br><span class="line">    POSITION_INDEPENDENT_CODE <span class="number">1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，为”动物农场”的可执行文件添加一个新目标，并设置它的属性:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_executable</span>(animal-farm animal-farm.cpp)</span><br><span class="line"><span class="keyword">set_target_properties</span>(animal-farm</span><br><span class="line">  PROPERTIES</span><br><span class="line">    CXX_STANDARD <span class="number">14</span></span><br><span class="line">    CXX_EXTENSIONS <span class="keyword">OFF</span></span><br><span class="line">    CXX_STANDARD_REQUIRED <span class="keyword">ON</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，将可执行文件链接到库:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">target_link_libraries</span><span class="params">(animal-farm animals)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在，来看看猫和狗都说了什么:</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>mkdir -p build</span><br><span class="line"><span class="variable">$ </span>cd build</span><br><span class="line"><span class="variable">$ </span>cmake ..</span><br><span class="line"><span class="variable">$ </span>cmake --build .</span><br><span class="line"><span class="variable">$ </span>./animal-farm</span><br><span class="line"></span><br><span class="line">I<span class="string">'m Simon the cat!</span></span><br><span class="line"><span class="string">I'</span>m Marlowe the dog!</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-6"><a href="#工作原理-6" class="headerlink" title="工作原理"></a>工作原理</h2><p>步骤4和步骤5中，我们为动物和动物农场目标设置了一些属性:</p>
+<ul>
+<li><strong>CXX_STANDARD</strong>会设置我们想要的标准。</li>
+<li><strong>CXX_EXTENSIONS</strong>告诉CMake，只启用<code>ISO C++</code>标准的编译器标志，而不使用特定编译器的扩展。</li>
+<li><strong>CXX_STANDARD_REQUIRED</strong>指定所选标准的版本。如果这个版本不可用，CMake将停止配置并出现错误。当这个属性被设置为<code>OFF</code>时，CMake将寻找下一个标准的最新版本，直到一个合适的标志。这意味着，首先查找<code>C++14</code>，然后是<code>C++11</code>，然后是<code>C++98</code>。（译者注：目前会从<code>C++20</code>或<code>C++17</code>开始查找）</li>
+</ul>
+<p><strong>NOTE</strong>:<em>本书发布时，还没有<code>Fortran_STANDARD</code>可用，但是可以使用<code>target_compile_options</code>设置标准，可以参见: <a href="https://github.com/devcafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-09" target="_blank" rel="noopener">https://github.com/devcafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-09</a></em></p>
+<p><strong>TIPS</strong>:<em>如果语言标准是所有目标共享的全局属性，那么可以将<code>CMAKE_&lt;LANG&gt;_STANDARD</code>、<code>CMAKE_&lt;LANG&gt;_EXTENSIONS</code>和<code>CMAKE_&lt;LANG&gt;_STANDARD_REQUIRED</code>变量设置为相应的值。所有目标上的对应属性都将使用这些设置。</em></p>
+<h2 id="更多信息-7"><a href="#更多信息-7" class="headerlink" title="更多信息"></a>更多信息</h2><p>通过引入编译特性，CMake对语言标准提供了更精细的控制。这些是语言标准引入的特性，比如<code>C++11</code>中的可变参数模板和<code>Lambda</code>表达式，以及<code>C++14</code>中的自动返回类型推断。可以使用<code>target_compile_features()</code>命令要求为特定的目标提供特定的特性，CMake将自动为标准设置正确的编译器标志。也可以让CMake为可选编译器特性，生成兼容头文件。</p>
+<p><strong>TIPS</strong>:<em>我们建议阅读CMake在线文档，全面了解<code>cmake-compile-features</code>和如何处理编译特性和语言标准: <a href="https://cmake.org/cmake/help/latest/manual/cmake-compile-features.7.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/manual/cmake-compile-features.7.html</a> 。</em></p>
+<h1 id="1-10-使用控制流"><a href="#1-10-使用控制流" class="headerlink" title="1.10 使用控制流"></a>1.10 使用控制流</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-10" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-01/recipe-10</a> 中找到，有一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>本章前面的示例中，已经使用过<code>if-else-endif</code>。CMake还提供了创建循环的语言工具：<code>foreach endforeach</code>和<code>while-endwhile</code>。两者都可以与<code>break</code>结合使用，以便尽早从循环中跳出。本示例将展示如何使用<code>foreach</code>，来循环源文件列表。我们将应用这样的循环，在引入新目标的前提下，来为一组源文件进行优化降级。</p>
+<h2 id="准备工作-5"><a href="#准备工作-5" class="headerlink" title="准备工作"></a>准备工作</h2><p>将重用第8节中的几何示例，目标是通过将一些源代码汇集到一个列表中，从而微调编译器的优化。</p>
+<h2 id="具体实施-9"><a href="#具体实施-9" class="headerlink" title="具体实施"></a>具体实施</h2><p>下面是<code>CMakeLists.txt</code>中要的详细步骤:</p>
+<ol>
+<li><p>与示例8中一样，指定了CMake的最低版本、项目名称和语言，并声明了几何库目标:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">10</span> LANGUAGES CXX)</span></span></span><br><span class="line">add_library(geometry</span><br><span class="line">  STATIC</span><br><span class="line">    geometry_circle.cpp</span><br><span class="line">    geometry_circle.hpp</span><br><span class="line">    geometry_polygon.cpp</span><br><span class="line">    geometry_polygon.hpp</span><br><span class="line">    geometry_rhombus.cpp</span><br><span class="line">    geometry_rhombus.hpp</span><br><span class="line">    geometry_square.cpp</span><br><span class="line">    geometry_square.hpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>-O3</code>编译器优化级别编译库，对目标设置一个私有编译器选项:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_compile_options(<span class="name">geometry</span></span><br><span class="line">  PRIVATE</span><br><span class="line">  	-O3</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，生成一个源文件列表，以较低的优化选项进行编译:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">list(</span><br><span class="line">  APPEND sources_with_lower_optimization</span><br><span class="line">    geometry_circle.cpp</span><br><span class="line">    geometry_rhombus.cpp</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>循环这些源文件，将它们的优化级别调到<code>-O2</code>。使用它们的源文件属性完成:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Setting source properties using IN LISTS syntax:"</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">foreach</span><span class="params">(_source IN LISTS sources_with_lower_optimization)</span></span></span><br><span class="line">  set_source_files_properties($&#123;_source&#125; PROPERTIES COMPILE_FLAGS -O2)</span><br><span class="line">  message(STATUS <span class="string">"Appending -O2 flag for $&#123;_source&#125;"</span>)</span><br><span class="line"><span class="function"><span class="title">endforeach</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为了确保设置属性，再次循环并在打印每个源文件的<code>COMPILE_FLAGS</code>属性:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message(<span class="name">STATUS</span> <span class="string">"Querying sources properties using plain syntax:"</span>)</span><br><span class="line">foreach(<span class="name">_source</span> $&#123;sources_with_lower_optimization&#125;)</span><br><span class="line">  get_source_file_property(<span class="name">_flags</span> $&#123;_source&#125; COMPILE_FLAGS)</span><br><span class="line">  message(<span class="name">STATUS</span> <span class="string">"Source $&#123;_source&#125; has the following extra COMPILE_FLAGS: $&#123;_flags&#125;"</span>)</span><br><span class="line">endforeach()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，添加<code>compute-areas</code>可执行目标，并将<code>geometry</code>库连接上去:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(compute-areas compute-areas.cpp)</span></span></span><br><span class="line"><span class="function"><span class="title">target_link_libraries</span><span class="params">(compute-areas geometry)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>验证在配置步骤中正确设置了标志:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -<span class="selector-tag">p</span> build</span><br><span class="line">$ cd build</span><br><span class="line">$ cmake ..</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">-- Setting source properties using IN LISTS syntax:</span><br><span class="line">-- Appending -O2 flag <span class="keyword">for</span> geometry_circle.cpp</span><br><span class="line">-- Appending -O2 flag <span class="keyword">for</span> geometry_rhombus.cpp</span><br><span class="line">-- Querying sources properties using plain syntax:</span><br><span class="line">-- Source geometry_circle<span class="selector-class">.cpp</span> has the following extra COMPILE_FLAGS: -O2</span><br><span class="line">-- Source geometry_rhombus<span class="selector-class">.cpp</span> has the following extra COMPILE_FLAGS: -O2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，还使用<code>VERBOSE=1</code>检查构建步骤。将看到<code>-O2</code>标志添加在<code>-O3</code>标志之后，但是最后一个优化级别标志(在本例中是<code>-O2</code>)不同:</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">$</span> <span class="comment">cmake</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">build</span> <span class="string">.</span> <span class="literal">-</span><span class="literal">-</span> <span class="comment">VERBOSE=1</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-7"><a href="#工作原理-7" class="headerlink" title="工作原理"></a>工作原理</h2><p><code>foreach-endforeach</code>语法可用于在变量列表上，表示重复特定任务。本示例中，使用它来操作、设置和获取项目中特定文件的编译器标志。CMake代码片段中引入了另外两个新命令:</p>
+<ul>
+<li><code>set_source_files_properties(file PROPERTIES property value)</code>，它将属性设置为给定文件的传递值。与目标非常相似，文件在CMake中也有属性，允许对构建系统进行非常细粒度的控制。源文件的可用属性列表可以在这里找到: <a href="https://cmake.org/cmake/help/v3.5/manual/cmake-properties.7.html#source-file-properties" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/manual/cmake-properties.7.html#source-file-properties</a> 。</li>
+<li><code>get_source_file_property(VAR file property)</code>，检索给定文件所需属性的值，并将其存储在CMake<code>VAR</code>变量中。</li>
+</ul>
+<p><strong>NOTE</strong>:<em>CMake中，列表是用分号分隔的字符串组。列表可以由<code>list</code>或<code>set</code>命令创建。例如，<code>set(var a b c d e)</code>和<code>list(APPEND a b c d e)</code>都创建了列表<code>a;b;c;d;e</code>。</em></p>
+<p><strong>TIPS</strong>:<em>为了对一组文件降低优化，将它们收集到一个单独的目标(库)中，并为这个目标显式地设置优化级别，而不是附加一个标志，这样可能会更简洁，不过在本示例中，我们的重点是<code>foreach-endforeach</code>。</em></p>
+<h2 id="更多信息-8"><a href="#更多信息-8" class="headerlink" title="更多信息"></a>更多信息</h2><p><code>foreach()</code>的四种使用方式:</p>
+<ul>
+<li><code>foreach(loop_var arg1 arg2 ...)</code>: 其中提供循环变量和显式项列表。当为<code>sources_with_lower_optimization</code>中的项打印编译器标志集时，使用此表单。注意，如果项目列表位于变量中，则必须显式展开它；也就是说，<code>${sources_with_lower_optimization}</code>必须作为参数传递。</li>
+<li>通过指定一个范围，可以对整数进行循环，例如：<code>foreach(loop_var range total)</code>或<code>foreach(loop_var range start stop [step])</code>。</li>
+<li>对列表值变量的循环，例如：<code>foreach(loop_var IN LISTS [list1[...]])</code> 。参数解释为列表，其内容就会自动展开。</li>
+<li>对变量的循环，例如：<code>foreach(loop_var IN ITEMS [item1 [...]])</code>。参数的内容没有展开。</li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/03/100653.html" class="pre-post btn btn-default" title='CMake 完整使用教程 之三 检测环境'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之三 检测环境</span>
+        </a>
+    
+    
+        <a href="/archives/2021/03/100651.html" class="next-post btn btn-default" title='CMake 完整使用教程 之一 配置环境'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之一 配置环境</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-1-将单个源文件编译为可执行文件"><span class="toc-text">1.1 将单个源文件编译为可执行文件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-2-切换生成器"><span class="toc-text">1.2 切换生成器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-1"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-1"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何工作"><span class="toc-text">如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-1"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-3-构建和链接静态库和动态库"><span class="toc-text">1.3 构建和链接静态库和动态库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-2"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-2"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-1"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-2"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-4-用条件句控制编译"><span class="toc-text">1.4 用条件句控制编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-3"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-2"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-5-向用户显示选项"><span class="toc-text">1.5 向用户显示选项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-4"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-3"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-3"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-6-指定编译器"><span class="toc-text">1.6 指定编译器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-5"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-4"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-4"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-7-切换构建类型"><span class="toc-text">1.7 切换构建类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-6"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-5"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-5"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-8-设置编译器选项"><span class="toc-text">1.8 设置编译器选项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-3"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-7"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何工作-1"><span class="toc-text">如何工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-6"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-9-为语言设定标准"><span class="toc-text">1.9 为语言设定标准</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-4"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-8"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-6"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-7"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-10-使用控制流"><span class="toc-text">1.10 使用控制流</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-5"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-9"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-7"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-8"><span class="toc-text">更多信息</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

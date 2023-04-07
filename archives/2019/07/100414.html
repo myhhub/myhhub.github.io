@@ -1,0 +1,456 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,kafka,spark,streaming">
+
+
+    <meta name="description" content="一、版本说明Spark针对Kafka的不同版本，提供了两套整合方案：spark-streaming-kafka-0-8和spark-streaming-kafka-0-10，其主要区别如下：
+
+...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark Streaming 整合 Kafka | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark Streaming 整合 Kafka">
+            
+	            Spark Streaming 整合 Kafka
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/kafka/">kafka</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/streaming/">streaming</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1365</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、版本说明"><a href="#一、版本说明" class="headerlink" title="一、版本说明"></a>一、版本说明</h2><p>Spark针对Kafka的不同版本，提供了两套整合方案：<code>spark-streaming-kafka-0-8</code>和<code>spark-streaming-kafka-0-10</code>，其主要区别如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:left"><a href="https://spark.apache.org/docs/latest/streaming-kafka-0-8-integration.html" target="_blank" rel="noopener">spark-streaming-kafka-0-8</a></th>
+<th style="text-align:left"><a href="https://spark.apache.org/docs/latest/streaming-kafka-0-10-integration.html" target="_blank" rel="noopener">spark-streaming-kafka-0-10</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Kafka版本</td>
+<td style="text-align:left">0.8.2.1 or higher</td>
+<td style="text-align:left">0.10.0 or higher</td>
+</tr>
+<tr>
+<td style="text-align:left">AP状态</td>
+<td style="text-align:left">Deprecated<br>从Spark 2.3.0版本开始，Kafka 0.8支持已被弃用</td>
+<td style="text-align:left">Stable(稳定版)</td>
+</tr>
+<tr>
+<td style="text-align:left">语言支持</td>
+<td style="text-align:left">Scala, Java, Python</td>
+<td style="text-align:left">Scala, Java</td>
+</tr>
+<tr>
+<td style="text-align:left">Receiver DStream</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">Direct DStream</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">SSL / TLS Support</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">Offset Commit API(偏移量提交)</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">Dynamic Topic Subscription<br>(动态主题订阅)</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">Yes</td>
+</tr>
+</tbody>
+</table>
+<p>本文使用的Kafka版本为<code>kafka_2.12-2.2.0</code>，故采用第二种方式进行整合。</p>
+<h2 id="二、项目依赖"><a href="#二、项目依赖" class="headerlink" title="二、项目依赖"></a>二、项目依赖</h2><p>项目采用Maven进行构建，主要依赖如下：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">scala.version</span>&gt;</span>2.12<span class="tag">&lt;/<span class="name">scala.version</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="comment">&lt;!-- Spark Streaming--&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-streaming_$</span><span class="template-variable">&#123;scala.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$</span><span class="template-variable">&#123;spark.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="comment">&lt;!-- Spark Streaming整合Kafka依赖--&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-streaming-kafka-0-10_$</span><span class="template-variable">&#123;scala.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>完整源码见本仓库：<a href="https://github.com/myhhub/BigData-Notes/tree/master/code/spark/spark-streaming-kafka" target="_blank" rel="noopener">spark-streaming-kafka</a></p>
+</blockquote>
+<h2 id="三、整合Kafka"><a href="#三、整合Kafka" class="headerlink" title="三、整合Kafka"></a>三、整合Kafka</h2><p>通过调用<code>KafkaUtils</code>对象的<code>createDirectStream</code>方法来创建输入流，完整代码如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">import</span> org.apache.kafka.common.serialization.<span class="keyword">StringDeserializer</span></span><br><span class="line"><span class="keyword">import </span>org.apache.spark.SparkConf</span><br><span class="line"><span class="symbol">import</span> org.apache.spark.<span class="keyword">streaming.kafka010.ConsumerStrategies.Subscribe</span></span><br><span class="line"><span class="keyword">import </span>org.apache.spark.<span class="keyword">streaming.kafka010.LocationStrategies.PreferConsistent</span></span><br><span class="line"><span class="keyword">import </span>org.apache.spark.<span class="keyword">streaming.kafka010._</span></span><br><span class="line"><span class="keyword">import </span>org.apache.spark.<span class="keyword">streaming.&#123;Seconds, </span><span class="keyword">StreamingContext&#125;</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">/**</span></span><br><span class="line"><span class="keyword"> </span> * spark <span class="keyword">streaming </span>整合 kafka</span><br><span class="line">  */</span><br><span class="line"><span class="symbol">object</span> KafkaDirectStream &#123;</span><br><span class="line"></span><br><span class="line">  def main(args: Array[<span class="keyword">String]): </span>Unit = &#123;</span><br><span class="line"></span><br><span class="line">    val sparkConf = new SparkConf().setAppName(<span class="string">"KafkaDirectStream"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    val <span class="keyword">streamingContext </span>= new <span class="keyword">StreamingContext(sparkConf, </span>Seconds(<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">    val kafkaParams = <span class="meta">Map</span>[<span class="keyword">String, </span>Object](</span><br><span class="line">      <span class="comment">/*</span></span><br><span class="line"><span class="comment">       * 指定broker的地址清单，清单里不需要包含所有的broker地址，生产者会从给定的broker里查找其他broker的信息。</span></span><br><span class="line"><span class="comment">       * 不过建议至少提供两个broker的信息作为容错。</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="string">"bootstrap.servers"</span> -&gt; <span class="string">"hadoop001:9092"</span>,</span><br><span class="line">      <span class="comment">/*键的序列化器*/</span></span><br><span class="line">      <span class="string">"key.deserializer"</span> -&gt; classOf[<span class="keyword">StringDeserializer],</span></span><br><span class="line"><span class="keyword"> </span>     <span class="comment">/*值的序列化器*/</span></span><br><span class="line">      <span class="string">"value.deserializer"</span> -&gt; classOf[<span class="keyword">StringDeserializer],</span></span><br><span class="line"><span class="keyword"> </span>     <span class="comment">/*消费者所在分组的ID*/</span></span><br><span class="line">      <span class="string">"group.id"</span> -&gt; <span class="string">"spark-streaming-group"</span>,</span><br><span class="line">      <span class="comment">/*</span></span><br><span class="line"><span class="comment">       * 该属性指定了消费者在读取一个没有偏移量的分区或者偏移量无效的情况下该作何处理:</span></span><br><span class="line"><span class="comment">       * latest: 在偏移量无效的情况下，消费者将从最新的记录开始读取数据（在消费者启动之后生成的记录）</span></span><br><span class="line"><span class="comment">       * earliest: 在偏移量无效的情况下，消费者将从起始位置读取分区的记录</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="string">"auto.offset.reset"</span> -&gt; <span class="string">"latest"</span>,</span><br><span class="line">      <span class="comment">/*是否自动提交*/</span></span><br><span class="line">      <span class="string">"enable.auto.commit"</span> -&gt; (true: java.lang.<span class="keyword">Boolean)</span></span><br><span class="line"><span class="keyword"> </span>   )</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*可以同时订阅多个主题*/</span></span><br><span class="line">    val topics = Array(<span class="string">"spark-streaming-topic"</span>)</span><br><span class="line">    val <span class="keyword">stream </span>= KafkaUtils.createDirectStream[<span class="keyword">String, </span><span class="keyword">String](</span></span><br><span class="line"><span class="keyword"> </span>     <span class="keyword">streamingContext,</span></span><br><span class="line"><span class="keyword"> </span>     <span class="comment">/*位置策略*/</span></span><br><span class="line">      PreferConsistent,</span><br><span class="line">      <span class="comment">/*订阅主题*/</span></span><br><span class="line">      <span class="keyword">Subscribe[String, </span><span class="keyword">String](topics, </span>kafkaParams)</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*打印输入流*/</span></span><br><span class="line">    <span class="keyword">stream.map(record </span>=&gt; (record.key, record.value)).print()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">streamingContext.start()</span></span><br><span class="line"><span class="keyword"> </span>   <span class="keyword">streamingContext.awaitTermination()</span></span><br><span class="line"><span class="keyword"> </span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1-ConsumerRecord"><a href="#3-1-ConsumerRecord" class="headerlink" title="3.1 ConsumerRecord"></a>3.1 ConsumerRecord</h3><p>这里获得的输入流中每一个Record实际上是<code>ConsumerRecord&lt;K, V&gt;</code>的实例，其包含了Record的所有可用信息，源码如下：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerRecord</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> NO_TIMESTAMP = RecordBatch.NO_TIMESTAMP;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NULL_SIZE = <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NULL_CHECKSUM = <span class="number">-1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*主题名称*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String topic;</span><br><span class="line">    <span class="comment">/*分区编号*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> partition;</span><br><span class="line">    <span class="comment">/*偏移量*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> offset;</span><br><span class="line">    <span class="comment">/*时间戳*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> timestamp;</span><br><span class="line">    <span class="comment">/*时间戳代表的含义*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> TimestampType timestampType;</span><br><span class="line">    <span class="comment">/*键序列化器*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> serializedKeySize;</span><br><span class="line">    <span class="comment">/*值序列化器*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> serializedValueSize;</span><br><span class="line">    <span class="comment">/*值序列化器*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Headers headers;</span><br><span class="line">    <span class="comment">/*键*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="comment">/*值*/</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> V value;</span><br><span class="line">    .....   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-生产者属性"><a href="#3-2-生产者属性" class="headerlink" title="3.2 生产者属性"></a>3.2 生产者属性</h3><p>在示例代码中<code>kafkaParams</code>封装了Kafka消费者的属性，这些属性和Spark Streaming无关，是Kafka原生API中就有定义的。其中服务器地址、键序列化器和值序列化器是必选的，其他配置是可选的。其余可选的配置项如下：</p>
+<h4 id="1-fetch-min-byte"><a href="#1-fetch-min-byte" class="headerlink" title="1. fetch.min.byte"></a>1. fetch.min.byte</h4><p>消费者从服务器获取记录的最小字节数。如果可用的数据量小于设置值，broker会等待有足够的可用数据时才会把它返回给消费者。</p>
+<h4 id="2-fetch-max-wait-ms"><a href="#2-fetch-max-wait-ms" class="headerlink" title="2. fetch.max.wait.ms"></a>2. fetch.max.wait.ms</h4><p>broker返回给消费者数据的等待时间。</p>
+<h4 id="3-max-partition-fetch-bytes"><a href="#3-max-partition-fetch-bytes" class="headerlink" title="3. max.partition.fetch.bytes"></a>3. max.partition.fetch.bytes</h4><p>分区返回给消费者的最大字节数。</p>
+<h4 id="4-session-timeout-ms"><a href="#4-session-timeout-ms" class="headerlink" title="4. session.timeout.ms"></a>4. session.timeout.ms</h4><p>消费者在被认为死亡之前可以与服务器断开连接的时间。</p>
+<h4 id="5-auto-offset-reset"><a href="#5-auto-offset-reset" class="headerlink" title="5. auto.offset.reset"></a>5. auto.offset.reset</h4><p>该属性指定了消费者在读取一个没有偏移量的分区或者偏移量无效的情况下该作何处理：</p>
+<ul>
+<li>latest(默认值) ：在偏移量无效的情况下，消费者将从其启动之后生成的最新的记录开始读取数据；</li>
+<li>earliest ：在偏移量无效的情况下，消费者将从起始位置读取分区的记录。</li>
+</ul>
+<h4 id="6-enable-auto-commit"><a href="#6-enable-auto-commit" class="headerlink" title="6. enable.auto.commit"></a>6. enable.auto.commit</h4><p>是否自动提交偏移量，默认值是true,为了避免出现重复数据和数据丢失，可以把它设置为false。</p>
+<h4 id="7-client-id"><a href="#7-client-id" class="headerlink" title="7. client.id"></a>7. client.id</h4><p>客户端id，服务器用来识别消息的来源。</p>
+<h4 id="8-max-poll-records"><a href="#8-max-poll-records" class="headerlink" title="8. max.poll.records"></a>8. max.poll.records</h4><p>单次调用<code>poll()</code>方法能够返回的记录数量。</p>
+<h4 id="9-receive-buffer-bytes-和-send-buffer-byte"><a href="#9-receive-buffer-bytes-和-send-buffer-byte" class="headerlink" title="9. receive.buffer.bytes 和 send.buffer.byte"></a>9. receive.buffer.bytes 和 send.buffer.byte</h4><p>这两个参数分别指定TCP socket 接收和发送数据包缓冲区的大小，-1代表使用操作系统的默认值。</p>
+<h3 id="3-3-位置策略"><a href="#3-3-位置策略" class="headerlink" title="3.3 位置策略"></a>3.3 位置策略</h3><p>Spark Streaming中提供了如下三种位置策略，用于指定Kafka主题分区与Spark执行程序Executors之间的分配关系：</p>
+<ul>
+<li><p><strong>PreferConsistent</strong> : 它将在所有的Executors上均匀分配分区；</p>
+</li>
+<li><p><strong>PreferBrokers</strong> : 当Spark的Executor与Kafka Broker在同一机器上时可以选择该选项，它优先将该Broker上的首领分区分配给该机器上的Executor；</p>
+</li>
+<li><strong>PreferFixed</strong> : 可以指定主题分区与特定主机的映射关系，显示地将分区分配到特定的主机，其构造器如下：</li>
+</ul>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@Experimental</span></span><br><span class="line">def PreferFixed(<span class="attribute">hostMap</span>: collection.Map[TopicPartition, String]): LocationStrategy =</span><br><span class="line">  new PreferFixed(new ju.HashMap[TopicPartition, String](hostMap.asJava))</span><br><span class="line"></span><br><span class="line"><span class="variable">@Experimental</span></span><br><span class="line">def PreferFixed(<span class="attribute">hostMap</span>: ju.Map[TopicPartition, String]): LocationStrategy =</span><br><span class="line">  new PreferFixed(hostMap)</span><br></pre></td></tr></table></figure>
+<h3 id="3-4-订阅方式"><a href="#3-4-订阅方式" class="headerlink" title="3.4 订阅方式"></a>3.4 订阅方式</h3><p>Spark Streaming提供了两种主题订阅方式，分别为<code>Subscribe</code>和<code>SubscribePattern</code>。后者可以使用正则匹配订阅主题的名称。其构造器分别如下：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">  * @param 需要订阅的主题的集合</span><br><span class="line">  * @param Kafka消费者参数</span><br><span class="line">  * @param offsets(可选): 在初始启动时开始的偏移量。如果没有，则将使用保存的偏移量或auto.offset.reset属性的值</span><br><span class="line">  */</span><br><span class="line">def Subscribe[<span class="keyword">K</span>, V](</span><br><span class="line">    topics: ju.Collection[jl.<span class="keyword">String</span>],</span><br><span class="line">    kafkaParams: ju.<span class="keyword">Map</span>[<span class="keyword">String</span>, Object],</span><br><span class="line">    offsets: ju.<span class="keyword">Map</span>[TopicPartition, jl.Long]): ConsumerStrategy[<span class="keyword">K</span>, V] = &#123; ... &#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  * @param 需要订阅的正则</span><br><span class="line">  * @param Kafka消费者参数</span><br><span class="line">  * @param offsets(可选): 在初始启动时开始的偏移量。如果没有，则将使用保存的偏移量或auto.offset.reset属性的值</span><br><span class="line">  */</span><br><span class="line">def SubscribePattern[<span class="keyword">K</span>, V](</span><br><span class="line">    pattern: ju.regex.<span class="keyword">Pattern</span>,</span><br><span class="line">    kafkaParams: collection.<span class="keyword">Map</span>[<span class="keyword">String</span>, Object],</span><br><span class="line">    offsets: collection.<span class="keyword">Map</span>[TopicPartition, Long]): ConsumerStrategy[<span class="keyword">K</span>, V] = &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+<p>在示例代码中，我们实际上并没有指定第三个参数<code>offsets</code>，所以程序默认采用的是配置的<code>auto.offset.reset</code>属性的值latest，即在偏移量无效的情况下，消费者将从其启动之后生成的最新的记录开始读取数据。</p>
+<h3 id="3-5-提交偏移量"><a href="#3-5-提交偏移量" class="headerlink" title="3.5 提交偏移量"></a>3.5 提交偏移量</h3><p>在示例代码中，我们将<code>enable.auto.commit</code>设置为true，代表自动提交。在某些情况下，你可能需要更高的可靠性，如在业务完全处理完成后再提交偏移量，这时候可以使用手动提交。想要进行手动提交，需要调用Kafka原生的API :</p>
+<ul>
+<li><code>commitSync</code>:  用于异步提交；</li>
+<li><code>commitAsync</code>：用于同步提交。</li>
+</ul>
+<p>具体提交方式可以参见：<a href="100417.html">Kafka消费者详解</a></p>
+<h2 id="四、启动测试"><a href="#四、启动测试" class="headerlink" title="四、启动测试"></a>四、启动测试</h2><h3 id="4-1-创建主题"><a href="#4-1-创建主题" class="headerlink" title="4.1 创建主题"></a>4.1 创建主题</h3><h4 id="1-启动Kakfa"><a href="#1-启动Kakfa" class="headerlink" title="1. 启动Kakfa"></a>1. 启动Kakfa</h4><p>Kafka的运行依赖于zookeeper，需要预先启动，可以启动Kafka内置的zookeeper，也可以启动自己安装的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># zookeeper启动命令</span></span><br><span class="line">bin/zkServer.sh <span class="keyword">start</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 内置zookeeper启动命令</span></span><br><span class="line"><span class="keyword">bin</span>/zookeeper-<span class="keyword">server</span>-start.sh config/zookeeper.properties</span><br></pre></td></tr></table></figure>
+<p>启动单节点kafka用于测试：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># bin/kafka-server-start.sh config/server.properties</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-创建topic"><a href="#2-创建topic" class="headerlink" title="2. 创建topic"></a>2. 创建topic</h4><figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建用于测试主题</span></span><br><span class="line"><span class="string">bin/</span><span class="string">kafka-topics.</span><span class="string">sh </span><span class="built_in">--create</span> \</span><br><span class="line">                    <span class="built_in">--bootstrap-server</span> <span class="string">hadoop001:9092 </span>\</span><br><span class="line">                    <span class="built_in">--replication-factor</span> 1 \</span><br><span class="line">                    <span class="built_in">--partitions</span> 1  \</span><br><span class="line">                    <span class="built_in">--topic</span> <span class="string">spark-streaming-</span><span class="string">topic</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#</span> 查看所有主题</span><br><span class="line"> <span class="string">bin/</span><span class="string">kafka-topics.</span><span class="string">sh </span><span class="built_in">--list</span> <span class="built_in">--bootstrap-server</span> <span class="string">hadoop001:9092</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-创建生产者"><a href="#3-创建生产者" class="headerlink" title="3. 创建生产者"></a>3. 创建生产者</h4><p>这里创建一个Kafka生产者，用于发送测试数据：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bin/kafka-console-producer.sh </span>--<span class="keyword">broker-list </span>hadoop001:<span class="number">9092</span> --topic spark-<span class="keyword">streaming-topic</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-2-本地模式测试"><a href="#4-2-本地模式测试" class="headerlink" title="4.2 本地模式测试"></a>4.2 本地模式测试</h3><p>这里我直接使用本地模式启动Spark Streaming程序。启动后使用生产者发送数据，从控制台查看结果。</p>
+<p>从控制台输出中可以看到数据流已经被成功接收，由于采用<code>kafka-console-producer.sh</code>发送的数据默认是没有key的，所以key值为null。同时从输出中也可以看到在程序中指定的<code>groupId</code>和程序自动分配的<code>clientId</code>。</p>
+<div align="center"> <img src="/img/bigdata/spark-straming-kafka-console.png"> </div>
+
+
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://spark.apache.org/docs/latest/streaming-kafka-0-10-integration.html" target="_blank" rel="noopener">https://spark.apache.org/docs/latest/streaming-kafka-0-10-integration.html</a><br>l</li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100415.html" class="pre-post btn btn-default" title='Kafka简介'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Kafka简介</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100413.html" class="next-post btn btn-default" title='Spark Streaming 整合 Flume'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark Streaming 整合 Flume</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、版本说明"><span class="toc-text">一、版本说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、项目依赖"><span class="toc-text">二、项目依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、整合Kafka"><span class="toc-text">三、整合Kafka</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-ConsumerRecord"><span class="toc-text">3.1 ConsumerRecord</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-生产者属性"><span class="toc-text">3.2 生产者属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-fetch-min-byte"><span class="toc-text">1. fetch.min.byte</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-fetch-max-wait-ms"><span class="toc-text">2. fetch.max.wait.ms</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-max-partition-fetch-bytes"><span class="toc-text">3. max.partition.fetch.bytes</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-session-timeout-ms"><span class="toc-text">4. session.timeout.ms</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-auto-offset-reset"><span class="toc-text">5. auto.offset.reset</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-enable-auto-commit"><span class="toc-text">6. enable.auto.commit</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-client-id"><span class="toc-text">7. client.id</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-max-poll-records"><span class="toc-text">8. max.poll.records</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-receive-buffer-bytes-和-send-buffer-byte"><span class="toc-text">9. receive.buffer.bytes 和 send.buffer.byte</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-位置策略"><span class="toc-text">3.3 位置策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-订阅方式"><span class="toc-text">3.4 订阅方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-提交偏移量"><span class="toc-text">3.5 提交偏移量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、启动测试"><span class="toc-text">四、启动测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-创建主题"><span class="toc-text">4.1 创建主题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-启动Kakfa"><span class="toc-text">1. 启动Kakfa</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-创建topic"><span class="toc-text">2. 创建topic</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-创建生产者"><span class="toc-text">3. 创建生产者</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-本地模式测试"><span class="toc-text">4.2 本地模式测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

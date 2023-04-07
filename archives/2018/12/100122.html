@@ -1,0 +1,449 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,grafana,安装,监控">
+
+
+    <meta name="description" content="接上文：kubernetes集群监控之 三.Grafana 
+
+上面介绍了 Grafana 的使用，也测试了 Grafana 的报警功能，但是 Grafana 的报警功能目前还比较弱，只支持 G...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>kubernetes集群监控之 四.AlertManager | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="kubernetes集群监控之 四.AlertManager">
+            
+	            kubernetes集群监控之 四.AlertManager
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/grafana/">grafana</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/install/">安装</a> <a class="tag-link" href="/tags/monitor/">监控</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1577</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文：<a href="100121.html">kubernetes集群监控之 三.Grafana</a> </p>
+<hr>
+<p>上面介绍了 Grafana 的使用，也测试了 Grafana 的报警功能，但是 Grafana 的报警功能目前还比较弱，只支持 Graph 的图表的报警。今天来给大家介绍一个功能更加强大的报警工具：AlertManager。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>之前我们学习 Prometheus 的时候就了解到 Prometheus 包含一个报警模块，就是我们的 AlertManager，Alertmanager 主要用于接收 Prometheus 发送的告警信息，它支持丰富的告警通知渠道，而且很容易做到告警信息进行去重，降噪，分组等，是一款前卫的�警通知系统。</p>
+<div align="center"><img src="/img/posts/prometheus-architecture.png" alt="架��构"><br>架构</div>
+
+<p>接下来我们就来学习下 AlertManager 的具体使用方法。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>从官方文档<a href="https://prometheus.io/docs/alerting/configuration/" target="_blank" rel="noopener">https://prometheus.io/docs/alerting/configuration/</a>中我们可以看到下载<code>AlertManager</code>二进制文件后，可以通过下面的命令运行：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$</span> ./alertmanager --config.<span class="keyword">file</span>=simple.yml</span><br></pre></td></tr></table></figure>
+<p>其中<code>-config.file</code>参数是用来指定对应的配置文件的，由于我们这里同样要运行到 Kubernetes 集群中来，所以我们使用<code>docker</code>镜像的方式来安装，使用的镜像是：<code>prom/alertmanager:v0.15.3</code>。</p>
+<p>首先，指定配置文件，同样的，我们这里使用一个 ConfigMap 资源对象：(alertmanager-conf.yaml)</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">alert-config</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="string">config.yml:</span> <span class="string">|-</span></span><br><span class="line"><span class="attr">    global:</span></span><br><span class="line">      <span class="comment"># 在没有报警的情况下声明为已解决的时间</span></span><br><span class="line"><span class="attr">      resolve_timeout:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line">      <span class="comment"># 配置邮件发送信息</span></span><br><span class="line"><span class="attr">      smtp_smarthost:</span> <span class="string">'smtp.163.com:25'</span></span><br><span class="line"><span class="attr">      smtp_from:</span> <span class="string">'ych_1024@163.com'</span></span><br><span class="line"><span class="attr">      smtp_auth_username:</span> <span class="string">'ych_1024@163.com'</span></span><br><span class="line"><span class="attr">      smtp_auth_password:</span> <span class="string">'&lt;邮箱密码&gt;'</span></span><br><span class="line"><span class="attr">      smtp_hello:</span> <span class="string">'163.com'</span></span><br><span class="line"><span class="attr">      smtp_require_tls:</span> <span class="literal">false</span></span><br><span class="line">    <span class="comment"># 所有报警信息进入后的根路由，用来设置报警的分发策略</span></span><br><span class="line"><span class="attr">    route:</span></span><br><span class="line">      <span class="comment"># 这里的标签列表是接收到报警信息后的重新分组标签，例如，接收到的报警信息里面有许多具有 cluster=A 和 alertname=LatncyHigh 这样的标签的报警信息将会批量被聚合到一个分组里面</span></span><br><span class="line"><span class="attr">      group_by:</span> <span class="string">['alertname',</span> <span class="string">'cluster'</span><span class="string">]</span></span><br><span class="line">      <span class="comment"># 当一个新的报警分组被创建后，需要等待至少group_wait时间来初始化通知，这种方式可以确保您能有足够的时间为同一分组来获取多个警报，然后一起触发这个报警信息。</span></span><br><span class="line"><span class="attr">      group_wait:</span> <span class="number">30</span><span class="string">s</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># 当第一个报警发送后，等待'group_interval'时间来发送新的一组报警信息。</span></span><br><span class="line"><span class="attr">      group_interval:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># 如果一个报警信息已经发送成功了，等待'repeat_interval'时间来重新发送他们</span></span><br><span class="line"><span class="attr">      repeat_interval:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># 默认的receiver：如果一个报警没有被一个route匹配，则发送给默认的接收器</span></span><br><span class="line"><span class="attr">      receiver:</span> <span class="string">default</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># 上面所有的属性都由所有子路由继承，并且可以在每个子路由上进行覆盖。</span></span><br><span class="line"><span class="attr">      routes:</span></span><br><span class="line"><span class="attr">      - receiver:</span> <span class="string">email</span></span><br><span class="line"><span class="attr">        group_wait:</span> <span class="number">10</span><span class="string">s</span></span><br><span class="line"><span class="attr">        match:</span></span><br><span class="line"><span class="attr">          team:</span> <span class="string">node</span></span><br><span class="line"><span class="attr">    receivers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">'default'</span></span><br><span class="line"><span class="attr">      email_configs:</span></span><br><span class="line"><span class="attr">      - to:</span> <span class="string">'517554016@qq.com'</span></span><br><span class="line"><span class="attr">        send_resolved:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">'email'</span></span><br><span class="line"><span class="attr">      email_configs:</span></span><br><span class="line"><span class="attr">      - to:</span> <span class="string">'517554016@qq.com'</span></span><br><span class="line"><span class="attr">        send_resolved:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>这是 AlertManager 的配置文件，我们先直接创建这个 ConfigMap 资源对象：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f alertmanager-conf.yaml</span><br><span class="line">configmap <span class="string">"alert-config"</span> created</span><br></pre></td></tr></table></figure>
+<p>然后配置 AlertManager 的容器，我们可以直接在之前的 Prometheus 的 Pod 中添加这个容器，对应的 YAML 资源声明如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">  - name:</span> <span class="string">alertmanager</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">prom/alertmanager:v0.15.3</span></span><br><span class="line"><span class="attr">    imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">    args:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">"--config.file=/etc/alertmanager/config.yml"</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="attr">    - containerPort:</span> <span class="number">9093</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">    volumeMounts:</span></span><br><span class="line"><span class="attr">    - mountPath:</span> <span class="string">"/etc/alertmanager"</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">alertcfg</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      requests:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">100</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">256</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">100</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">256</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line"><span class="attr">- name:</span> <span class="string">alertcfg</span></span><br><span class="line"><span class="attr">  configMap:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">alert-config</span></span><br></pre></td></tr></table></figure>
+<p>这里我们将上面创建的 alert-config 这个 ConfigMap 资源对象以 Volume 的形式挂载到 <code>/etc/alertmanager</code>目录下去，然后在启动参数中指定了配置文件<code>--config.file=/etc/alertmanager/config.yml</code>，然后我们可以来更新这个 Prometheus 的 Pod：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f prome-deploy.yaml</span><br><span class="line">deployment<span class="selector-class">.extensions</span> <span class="string">"prometheus"</span> configured</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>当然我们也可以将 AlertManager 的配置文件内容直接放入到之前的 Prometheus 的 ConfigMap 的资源对象中，也可以用一个单独的 Pod 来运行 AlertManager 这个容器，完整的资源清单文件可以参考这里：<a href="https://github.com/myhhub/kubeapp/tree/master/prometheus" target="_blank" rel="noopener">https://github.com/myhhub/kubeapp/tree/master/prometheus</a></p>
+</blockquote>
+<p>AlertManager 的容器启动起来后，我们还需要在 Prometheus 中配置下 AlertManager 的地址，让 Prometheus 能够访问到 AlertManager，在 Prometheus 的 ConfigMap 资源清单中添加如下配置：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">alerting</span>:</span><br><span class="line">  <span class="attribute">alertmanagers</span>:</span><br><span class="line">    - <span class="attribute">static_configs</span>:</span><br><span class="line">      - <span class="attribute">targets</span>: [<span class="string">"localhost:9093"</span>]</span><br></pre></td></tr></table></figure>
+<p>更新这个资源对象后，稍等一小会儿，执行 reload 操作：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete -f prome-cm.yaml</span><br><span class="line">configmap <span class="string">"prometheus-config"</span> deleted</span><br><span class="line">$ kubectl create -f prome-cm.yaml</span><br><span class="line">configmap <span class="string">"prometheus-config"</span> created</span><br><span class="line"><span class="comment"># 隔一会儿后</span></span><br><span class="line">$ kubectl <span class="builtin-name">get</span> svc -n kube-ops</span><br><span class="line">NAME        <span class="built_in"> TYPE </span>      CLUSTER-IP     EXTERNAL-IP   PORT(S)                          AGE</span><br><span class="line">prometheus   NodePort   10.102.74.90   &lt;none&gt;        9090:30358/TCP                   3d</span><br><span class="line">$ curl -X POST <span class="string">"http://10.102.74.90:9090/-/reload"</span></span><br></pre></td></tr></table></figure>
+<p>更新完成后，我们查看 Pod 发现有错误，查看下 alertmanager 容器的日志，发现有如下错误信息：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> pods -n kube-ops</span><br><span class="line">NAME                          READY     STATUS             RESTARTS   AGE</span><br><span class="line">prometheus-56d64bf6f7-rpz9j   1/2       CrashLoopBackOff   491        1d</span><br><span class="line">$ kubectl logs -f prometheus-56d64bf6f7-rpz9j alertmanager -n kube-ops</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T10:33:51.830071513Z <span class="attribute">caller</span>=main.go:174 <span class="attribute">msg</span>=<span class="string">"Starting Alertmanager"</span> <span class="attribute">version</span>=<span class="string">"(version=0.15.3, branch=HEAD, revision=d4a7697cc90f8bce62efe7c44b63b542578ec0a1)"</span></span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T10:33:51.830362309Z <span class="attribute">caller</span>=main.go:175 <span class="attribute">build_context</span>=<span class="string">"(go=go1.11.2, user=root@4ecc17c53d26, date=20181109-15:40:48)"</span></span><br><span class="line"><span class="attribute">level</span>=error <span class="attribute">ts</span>=2018-11-28T10:33:51.830464639Z <span class="attribute">caller</span>=main.go:179 <span class="attribute">msg</span>=<span class="string">"Unable to create data directory"</span> <span class="attribute">err</span>=<span class="string">"mkdir data/: read-only file system"</span></span><br></pre></td></tr></table></figure>
+<p>这个是因为新版本<code>dockerfile</code>中的默认<code>WORKDIR</code>发生了变化，变成了<code>/etc/alertmanager</code>目录，默认情况下存储路径<code>--storage.path</code>是相对目录<code>data/</code>，因此，alertmanager 会在我们上面挂载的 ConfigMap 中去创建这个目录，所以会报错，我们可以通过覆盖<code>--storage.path</code>参数来解决这个问题，在容器启动参数中添加该参数：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- name: alertmanager</span><br><span class="line"><span class="symbol">  image:</span> prom/alertmanager:v0<span class="number">.15</span><span class="number">.3</span></span><br><span class="line"><span class="symbol">  imagePullPolicy:</span> IfNotPresent</span><br><span class="line"><span class="symbol">  args:</span></span><br><span class="line">  - <span class="string">"--config.file=/etc/alertmanager/config.yml"</span></span><br><span class="line">  - <span class="string">"--storage.path=/alertmanager/data"</span></span><br></pre></td></tr></table></figure>
+<p>重新更新 Pod，可以发现 Prometheus 已经是 Running 状态了：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f prome-deploy.yaml</span><br><span class="line">deployment.extensions <span class="string">"prometheus"</span> configured</span><br><span class="line">$ kubectl <span class="builtin-name">get</span> pods -n kube-ops</span><br><span class="line">NAME                          READY     STATUS      RESTARTS   AGE</span><br><span class="line">prometheus-646f457455-gr8x5   2/2       Running     0          3m</span><br><span class="line">$ kubectl logs -f prometheus-646f457455-gr8x5 alertmanager -n kube-ops</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:16.054633463Z <span class="attribute">caller</span>=main.go:174 <span class="attribute">msg</span>=<span class="string">"Starting Alertmanager"</span> <span class="attribute">version</span>=<span class="string">"(version=0.15.3, branch=HEAD, revision=d4a7697cc90f8bce62efe7c44b63b542578ec0a1)"</span></span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:16.054931931Z <span class="attribute">caller</span>=main.go:175 <span class="attribute">build_context</span>=<span class="string">"(go=go1.11.2, user=root@4ecc17c53d26, date=20181109-15:40:48)"</span></span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:16.351058702Z <span class="attribute">caller</span>=cluster.go:155 <span class="attribute">component</span>=cluster <span class="attribute">msg</span>=<span class="string">"setting advertise address explicitly"</span> <span class="attribute">addr</span>=10.244.2.217 <span class="attribute">port</span>=9094</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:16.456683857Z <span class="attribute">caller</span>=main.go:322 <span class="attribute">msg</span>=<span class="string">"Loading configuration file"</span> <span class="attribute">file</span>=/etc/alertmanager/config.yml</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:16.548558156Z <span class="attribute">caller</span>=cluster.go:570 <span class="attribute">component</span>=cluster <span class="attribute">msg</span>=<span class="string">"Waiting for gossip to settle..."</span> <span class="attribute">interval</span>=2s</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:16.556768564Z <span class="attribute">caller</span>=main.go:398 <span class="attribute">msg</span>=Listening <span class="attribute">address</span>=:9093</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:18.549158865Z <span class="attribute">caller</span>=cluster.go:595 <span class="attribute">component</span>=cluster <span class="attribute">msg</span>=<span class="string">"gossip not settled"</span> <span class="attribute">polls</span>=0 <span class="attribute">before</span>=0 <span class="attribute">now</span>=1 <span class="attribute">elapsed</span>=2.000272112s</span><br><span class="line"><span class="attribute">level</span>=info <span class="attribute">ts</span>=2018-11-28T11:03:26.558221484Z <span class="attribute">caller</span>=cluster.go:587 <span class="attribute">component</span>=cluster <span class="attribute">msg</span>=<span class="string">"gossip settled; proceeding"</span> <span class="attribute">elapsed</span>=10.009335611s</span><br></pre></td></tr></table></figure>
+<h2 id="报警规则"><a href="#报警规则" class="headerlink" title="报警规则"></a>报警规则</h2><p>现在我们只是把 AlertManager 容器运行起来了，也和 Prometheus 进行了关联，但是现在我们并不知道要做什么报警，因为没有任何地方告诉我们要报警，所以我们还需要配置一些报警规则来告诉我们对哪些数据进行报警。</p>
+<p>警报规则允许你基于 Prometheus 表达式语言的表达式来定义报警报条件，并在触发警报时发送通知给外部的接收者。</p>
+<p>同样在 Prometheus 的配置文件中添加如下报警规则配置：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">rule_files:</span></span><br><span class="line">  - <span class="meta-keyword">/etc/</span>prometheus/rules.yml</span><br></pre></td></tr></table></figure>
+<p>其中<code>rule_files</code>就是用来指定报警规则的，这里我们同样将<code>rules.yml</code>文件用 ConfigMap 的形式挂载到<code>/etc/prometheus</code>目录下面即可:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">prometheus-config</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="string">prometheus.yml:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    ...</span></span><br><span class="line"><span class="string">  rules.yml: |</span></span><br><span class="line"><span class="string"></span><span class="attr">    groups:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">test-rule</span></span><br><span class="line"><span class="attr">      rules:</span></span><br><span class="line"><span class="attr">      - alert:</span> <span class="string">NodeMemoryUsage</span></span><br><span class="line"><span class="attr">        expr:</span> <span class="string">(node_memory_MemTotal_bytes</span> <span class="bullet">-</span> <span class="string">(node_memory_MemFree_bytes</span> <span class="string">+</span> <span class="string">node_memory_Buffers_bytes</span> <span class="string">+</span> <span class="string">node_memory_Cached_bytes))</span> <span class="string">/</span> <span class="string">node_memory_MemTotal_bytes</span> <span class="string">*</span> <span class="number">100</span> <span class="string">&gt; 20</span></span><br><span class="line"><span class="string"></span><span class="attr">        for:</span> <span class="number">2</span><span class="string">m</span></span><br><span class="line"><span class="attr">        labels:</span></span><br><span class="line"><span class="attr">          team:</span> <span class="string">node</span></span><br><span class="line"><span class="attr">        annotations:</span></span><br><span class="line"><span class="attr">          summary:</span> <span class="string">"<span class="template-variable">&#123;&#123;$labels.instance&#125;&#125;</span>: High Memory usage detected"</span></span><br><span class="line"><span class="attr">          description:</span> <span class="string">"<span class="template-variable">&#123;&#123;$labels.instance&#125;&#125;</span>: Memory usage is above 20% (current value is: <span class="template-variable">&#123;&#123; $value &#125;&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+<p>上面我们定义了一个名为<code>NodeMemoryUsage</code>的报警规则，其中：</p>
+<ul>
+<li><code>for</code>语句会使 Prometheus 服务等待指定的时间, 然后执行查询表达式。</li>
+<li><code>labels</code>语句允许指定额外的标签列表，把它们附加在告警上。</li>
+<li><code>annotations</code>语句指定了另一组标签，它们不被当做告警实例的身份标识，它们经常用于存储一些额外的信息，用于报警信息的展示之类的。</li>
+</ul>
+<p>为了方便演示，我们将的表达式判断报警临界值设置为20，重新更新 ConfigMap 资源对象，由于我们在 Prometheus 的 Pod 中已经通过 Volume 的形式将 prometheus-config 这个一个 ConfigMap 对象挂载到了<code>/etc/prometheus</code>目录下面，所以更新后，该目录下面也会出现<code>rules.yml</code>文件，所以前面配置的<code>rule_files</code>路径也是正常的，更新完成后，重新执行<code>reload</code>操作，这个时候我们去 Prometheus 的 Dashboard 中切换到<code>alerts</code>路径下面就可以看到有报警配置规则的数据了：</p>
+<div align="center"><img src="/img/posts/prometheus-alerts.png" alt="prometheus alerts"><br>prometheus alerts</div>
+
+<p>我们可以看到页面中出现了我们刚刚定义的报警规则信息，而且报警信息中还有状态显示。一个报警信息在生命周期内有下面3种状态：</p>
+<ul>
+<li>inactive: 表示当前报警信息既不是firing状态也不是pending状态</li>
+<li>pending: 表示在设置的阈值时间范围内被激活了</li>
+<li>firing: 表示超过设置的阈值时间被激活了</li>
+</ul>
+<p>我们这里的状态现在是<code>firing</code>就表示这个报警已经被激活了，我们这里的报警信息有一个<code>team=node</code>这样的标签，而最上面我们配置 alertmanager 的时候就有如下的路由配置信息了：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">routes</span>:</span><br><span class="line">- <span class="attribute">receiver</span>: email</span><br><span class="line">  <span class="attribute">group_wait</span>: <span class="number">10s</span></span><br><span class="line">  <span class="attribute">match</span>:</span><br><span class="line">    <span class="attribute">team</span>: node</span><br></pre></td></tr></table></figure>
+<p>所以我们这里的报警信息会被<code>email</code>这个接收器来进行报警，我们上面配置的是邮箱，所以正常来说这个时候我们会收到一封如下的报警邮件：</p>
+<div align="center"><img src="/img/posts/prometheus-alert-email.png" alt="prometheus email receiver"><br>prometheus email receiver</div>
+
+<p>我们可以看到收到的邮件内容中包含一个<code>View In AlertManager</code>的链接，我们同样可以通过 NodePort 的形式去访问到 AlertManager 的 Dashboard 页面：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> svc -n kube-ops</span><br><span class="line">NAME        <span class="built_in"> TYPE </span>       CLUSTER-IP      EXTERNAL-IP   PORT(S)                          AGE</span><br><span class="line">prometheus   NodePort    10.102.74.90    &lt;none&gt;        9093:31788/TCP,9090:30358/TCP    34d</span><br></pre></td></tr></table></figure>
+<p>然后通过<code>&lt;任一Node节点&gt;:31788</code>进行访问，我们就可以查看到 AlertManager 的 Dashboard 页面：</p>
+<div align="center"><img src="/img/posts/prometheus-alertmanager-webui.png" alt="alertmanager webui"><br>alertmanager webui</div>
+
+<p>在这个页面中我们可以进行一些操作，比如过滤、分组等等，里面还有两个新的概念：Inhibition(抑制)和 Silences(静默)。</p>
+<ul>
+<li>Inhibition：如果某些其他警报已经触发了，则对于某些警报，Inhibition 是一个抑制通知的概念。例如：一个警报已经触发，它正在通知整个集群是不可达的时，Alertmanager 则可以配置成关心这个集群的其他警报无效。这可以防止与实际问题无关的数百或数千个触发警报的通知，Inhibition 需要通过上面的配置文件进行配置。</li>
+<li>Silences：静默是一个非常简单的方法，可以在给定时间内简单地忽略所有警报。Silences 基于 matchers配置，类似路由树。来到的警告将会被检查，判断它们是否和活跃的 Silences 相等或者正则表达式匹配。如果匹配成功，则不会将这些警报发送给接收者。</li>
+</ul>
+<p>由于全局配置中我们配置的<code>repeat_interval: 5m</code>，所以正常来说，上面的测试报警如果一直满足报警条件(CPU使用率大于20%)的话，那么每5分钟我们就可以收到一条报警邮件。</p>
+<p>现在我们添加一个 Silences，如下图所示，匹配 node02 节点的内存报警：</p>
+<div align="center"><img src="/img/posts/prometheus-alertmanager-silence.png" alt="prometheus alertmanager Silences"><br>prometheus alertmanager Silences</div>
+
+<p>添加完成后，等下一次的报警信息触发后，我们可以看到报警信息里面已经没有了节点 node02 的报警信息了：</p>
+<div align="center"><img src="/img/posts/promethues-alertmanager-email2.png" alt="promtheus alertmanager email"><br>promtheus alertmanager email</div>
+
+<p>由于我们上面添加的 Silences 是有过期时间的，所以在这个时间段过后，node02 的报警信息就会恢复了。</p>
+<h2 id="webhook接收器"><a href="#webhook接收器" class="headerlink" title="webhook接收器"></a>webhook接收器</h2><p>上面我们配置的是 AlertManager 自带的邮件报警模板，我们也说了 AlertManager 支持很多中报警接收器，比如 slack、微信之类的，其中最为灵活的方式当然是使用 webhook 了，我们可以定义一个 webhook 来接收报警信息，然后在 webhook 里面去进行处理，需要发送怎样的报警信息我们自定义就可以。</p>
+<p>比如我们这里用 Flask 编写了一个简单的处理钉钉报警的 webhook 的程序：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/', methods=['POST', 'GET'])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">'POST'</span>:</span><br><span class="line">        post_data = request.get_data()</span><br><span class="line">        send_alert(bytes2json(post_data))</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'success'</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'weclome to use prometheus alertmanager dingtalk webhook server!'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bytes2json</span><span class="params">(data_bytes)</span>:</span></span><br><span class="line">    data = data_bytes.decode(<span class="string">'utf8'</span>).replace(<span class="string">"'"</span>, <span class="string">'"'</span>)</span><br><span class="line">    <span class="keyword">return</span> json.loads(data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_alert</span><span class="params">(data)</span>:</span></span><br><span class="line">    token = os.getenv(<span class="string">'ROBOT_TOKEN'</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> token:</span><br><span class="line">        print(<span class="string">'you must set ROBOT_TOKEN env'</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    url = <span class="string">'https://oapi.dingtalk.com/robot/send?access_token=%s'</span> % token</span><br><span class="line">    send_data = &#123;</span><br><span class="line">        <span class="string">"msgtype"</span>: <span class="string">"text"</span>,</span><br><span class="line">        <span class="string">"text"</span>: &#123;</span><br><span class="line">            <span class="string">"content"</span>: data</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    req = requests.post(url, json=send_data)</span><br><span class="line">    result = req.json()</span><br><span class="line">    <span class="keyword">if</span> result[<span class="string">'errcode'</span>] != <span class="number">0</span>:</span><br><span class="line">        print(<span class="string">'notify dingtalk error: %s'</span> % result[<span class="string">'errcode'</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    app.run(host=<span class="string">'0.0.0.0'</span>, port=<span class="number">5000</span>)</span><br></pre></td></tr></table></figure>
+<p>代码非常简单，通过一个 ROBOT_TOKEN 的环境变量传入群机器人的 TOKEN，然后直接将 webhook 发送过来的数据直接以文本的形式转发给群机器人。</p>
+<blockquote>
+<p>大家可以根据自己的需求来定制报警数据，上述代码仓库地址：<a href="https://github.com/myhhub/alertmanager-dingtalk-hook" target="_blank" rel="noopener">github.com/myhhub/alertmanager-dingtalk-hook</a></p>
+</blockquote>
+<p>当然我们得将上面这个服务部署到集群中来，对应的资源清单如下：(dingtalk-hook.yaml)</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">dingtalk-hook</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        app:</span> <span class="string">dingtalk-hook</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">dingtalk-hook</span></span><br><span class="line"><span class="attr">        image:</span> <span class="string">myhhub/alertmanager-dingtalk-hook:v0.2</span></span><br><span class="line"><span class="attr">        imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - containerPort:</span> <span class="number">5000</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">        env:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">ROBOT_TOKEN</span></span><br><span class="line"><span class="attr">          valueFrom:</span></span><br><span class="line"><span class="attr">            secretKeyRef:</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">dingtalk-secret</span></span><br><span class="line"><span class="attr">              key:</span> <span class="string">token</span></span><br><span class="line"><span class="attr">        resources:</span></span><br><span class="line"><span class="attr">          requests:</span></span><br><span class="line"><span class="attr">            cpu:</span> <span class="number">50</span><span class="string">m</span></span><br><span class="line"><span class="attr">            memory:</span> <span class="number">100</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">          limits:</span></span><br><span class="line"><span class="attr">            cpu:</span> <span class="number">50</span><span class="string">m</span></span><br><span class="line"><span class="attr">            memory:</span> <span class="number">100</span><span class="string">Mi</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">dingtalk-hook</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-ops</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">dingtalk-hook</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">hook</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">5000</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="string">http</span></span><br></pre></td></tr></table></figure>
+<p>要注意上面我们声明了一个 ROBOT_TOKEN 的环境变量，由于这是一个相对于私密的信息，所以我们这里从一个 Secret 对象中去获取，通过如下命令创建一个名为 dingtalk-secret 的 Secret 对象，然后部署上面的资源对象即可：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create<span class="built_in"> secret </span>generic dingtalk-secret <span class="attribute">--from-literal</span>=token=替换成钉钉群聊的机器人TOKEN -n kube-ops</span><br><span class="line">secret <span class="string">"dingtalk-secret"</span> created</span><br><span class="line">$ kubectl create -f dingtalk-hook.yaml</span><br><span class="line">deployment.extensions <span class="string">"dingtalk-hook"</span> created</span><br><span class="line">service <span class="string">"dingtalk-hook"</span> created</span><br><span class="line">$ kubectl <span class="builtin-name">get</span> pods -n kube-ops</span><br><span class="line">NAME                            READY     STATUS      RESTARTS   AGE</span><br><span class="line">dingtalk-hook-c4fcd8cd6-6r2b6   1/1       Running     0          45m</span><br><span class="line"><span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span></span><br></pre></td></tr></table></figure>
+<p>部署成功后，现在我们就可以给 AlertManager 配置一个 webhook 了，在上面的配置中增加一个路由接收器</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  <span class="attribute">routes</span>:</span><br><span class="line">  - <span class="attribute">receiver</span>: webhook</span><br><span class="line">    <span class="attribute">match</span>:</span><br><span class="line">      <span class="attribute">filesystem</span>: node</span><br><span class="line"><span class="attribute">receivers</span>:</span><br><span class="line">- <span class="attribute">name</span>: <span class="string">'webhook'</span></span><br><span class="line">  <span class="attribute">webhook_configs</span>:</span><br><span class="line">  - <span class="attribute">url</span>: <span class="string">'http://dingtalk-hook:5000'</span></span><br><span class="line">    <span class="attribute">send_resolved</span>: true</span><br></pre></td></tr></table></figure>
+<p>我们这里配置了一个名为 webhook 的接收器，地址为：<code>http://dingtalk-hook:5000</code>，这个地址当然就是上面我们部署的钉钉的 webhook 的接收程序的 Service 地址。</p>
+<p>然后我们也在报警规则中添加一条关于节点文件系统使用情况的报警规则，注意 labels 标签要带上<code>filesystem=node</code>，这样报警信息就会被 webook 这一个接收器所匹配：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- alert: NodeFilesystemUsage</span><br><span class="line"><span class="symbol">  expr:</span> (node_filesystem_size_bytes&#123;device=<span class="string">"rootfs"</span>&#125; - node_filesystem_free_bytes&#123;device=<span class="string">"rootfs"</span>&#125;) / node_filesystem_size_bytes&#123;device=<span class="string">"rootfs"</span>&#125; * <span class="number">100</span> &gt; <span class="number">10</span></span><br><span class="line"><span class="symbol">  for:</span> <span class="number">2</span>m</span><br><span class="line"><span class="symbol">  labels:</span></span><br><span class="line"><span class="symbol">    filesystem:</span> node</span><br><span class="line"><span class="symbol">  annotations:</span></span><br><span class="line"><span class="symbol">    summary:</span> <span class="string">"&#123;&#123;$labels.instance&#125;&#125;: High Filesystem usage detected"</span></span><br><span class="line"><span class="symbol">    description:</span> <span class="string">"&#123;&#123;$labels.instance&#125;&#125;: Filesystem usage is above 10% (current value is: &#123;&#123; $value &#125;&#125;"</span></span><br></pre></td></tr></table></figure>
+<p>更新 AlertManager 和 Prometheus 的 ConfigMap 资源对象（先删除再创建），更新完成后，隔一会儿执行 reload 操作是更新生效：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> svc -n kube-ops</span><br><span class="line">NAME           <span class="built_in"> TYPE </span>       CLUSTER-IP      EXTERNAL-IP   PORT(S)                          AGE</span><br><span class="line">prometheus      NodePort    10.102.74.90    &lt;none&gt;        9093:31788/TCP,9090:30358/TCP    34d</span><br><span class="line">$ curl -X POST <span class="string">"http://10.102.74.90:9093/-/reload"</span></span><br><span class="line">$ curl -X POST <span class="string">"http://10.102.74.90:9090/-/reload"</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>AlertManager 和 Prometheus 都可以通过上面的 reload 操作进行重新加载</p>
+</blockquote>
+<p>都完成更新后，再次去 Prometheus 的 Alert 路径下面查看报警信息：</p>
+<div align="center"><img src="/img/posts/prometheus-alerts2.png" alt="prometheus alerts"><br>prometheus alerts</div>
+
+<p>隔一会儿关于这个节点文件系统的报警就会被触发了，由于这个报警信息包含一个<code>filesystem=node</code>的 label 标签，所以会被路由到<code>webhook</code>这个接收器中，也就是上面我们自定义的这个 dingtalk-hook，触发后可以观察这个 Pod 的日志：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl logs -f dingtalk-hook-cc677c46d-gf26f -n kube-ops</span><br><span class="line"> * Serving Flask app <span class="string">"app"</span> (lazy loading)</span><br><span class="line"> * Environment: production</span><br><span class="line">   WARNING: Do not use the development server in a production environment.</span><br><span class="line">   Use a production WSGI server instead.</span><br><span class="line"> * Debug mode: off</span><br><span class="line"> * Running on http://<span class="number">0.0.0.0:5000</span>/ (Press CTRL+C to quit)</span><br><span class="line"></span><br><span class="line"><span class="number">10.244.2.217</span> - - <span class="string">[28/Nov/2018 17:14:09]</span> <span class="string">"<span class="keyword">POST</span> / HTTP/1.1"</span> <span class="number">200</span> -</span><br></pre></td></tr></table></figure>
+<p>可以看到 POST 请求已经成功了，同时这个时候正常来说就可以收到一条钉钉消息了：</p>
+<div align="center"><img src="/img/posts/alertmanager-dingtalk-message.png" alt="alertmanager dingtalk message"><br>alertmanager dingtalk message</div>
+
+<p>由于我们程序中是用一个非常简单的文本形式直接转发的，所以这里报警信息不够友好，没关系，有了这个示例我们完全就可以根据自己的需要来定制消息模板了，可以参考钉钉自定义机器人文档：<a href="https://open-doc.dingtalk.com/microapp/serverapi2/qf2nxq" target="_blank" rel="noopener">https://open-doc.dingtalk.com/microapp/serverapi2/qf2nxq</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100092.html" class="pre-post btn btn-default" title='深入理解kubernetes Pod之 一.浅析YAML基本语法'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">深入理解kubernetes Pod之 一.浅析YAML基本语法</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100121.html" class="next-post btn btn-default" title='kubernetes集群监控之 三.Grafana'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">kubernetes集群监控之 三.Grafana</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#报警规则"><span class="toc-text">报警规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#webhook接收器"><span class="toc-text">webhook接收器</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,cdh,安装">
+
+
+    <meta name="description" content="1、概述Cloudera版本（Cloudera’s Distribution Including Apache Hadoop，简称“CDH”），基于Web的用户界面,支持大多数Hadoop组件，...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据平台CDH6.2离线搭建 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据平台CDH6.2离线搭建">
+            
+	            大数据平台CDH6.2离线搭建
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/cdh/">cdh</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/install/">安装</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/11/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1605</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h1><p>Cloudera版本（Cloudera’s Distribution Including Apache Hadoop，简称“CDH”），基于Web的用户界面,支持大多数Hadoop组件，包括HDFS、MapReduce、Hive、Pig、 Hbase、Zookeeper、Sqoop,简化了大数据平台的安装、使用难度。<br>CDH的优点：版本划分清晰，更新速度快，支持Kerberos安全认证，支持多种安装方式（如Yum、rpm等）。<br>CDH分为Cloudera Manager管理平台和CDH parcel（parcel包含各种组件的安装包）。这里采用CDH6.2.0。<br>Cloudera Manger下载地址:<a href="https://archive.cloudera.com/cm6/6.2.0/redhat7/yum/RPMS/x86_64/" target="_blank" rel="noopener">https://archive.cloudera.com/cm6/6.2.0/redhat7/yum/RPMS/x86_64/</a><br>CDH6.2.0安装包地址：<a href="https://archive.cloudera.com/cdh6/6.2.0/parcels/" target="_blank" rel="noopener">https://archive.cloudera.com/cdh6/6.2.0/parcels/</a><br>由于操作系统为CentOS7，需要下载以下文件：</p>
+<div align="center"><img src="/img/posts/1217276-20190517000318835-1698304856.png" alt="img"></div>
+
+<p>上述文件整理资料百度云下载地址：<br><a href="https://pan.baidu.com/s/1Dm5Elf9uQqn14BUbgU3AFQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1Dm5Elf9uQqn14BUbgU3AFQ</a> 提取码: mws3 </p>
+<h1 id="2-安装步骤"><a href="#2-安装步骤" class="headerlink" title="2. 安装步骤"></a>2. 安装步骤</h1><p>说明：以下操作都是在root用户下进行的</p>
+<h2 id="2-1-环境准备"><a href="#2-1-环境准备" class="headerlink" title="2.1 环境准备"></a>2.1 环境准备</h2><h3 id="2-1-1-准备虚拟机（根据自己的系统资源分配虚拟机资源）"><a href="#2-1-1-准备虚拟机（根据自己的系统资源分配虚拟机资源）" class="headerlink" title="2.1.1. 准备虚拟机（根据自己的系统资源分配虚拟机资源）"></a>2.1.1. 准备虚拟机（根据自己的系统资源分配虚拟机资源）</h3><div align="center"><img src="/img/posts/1217276-20190604104442174-1446095927.png" alt="img"></div>
+
+<h3 id="2-1-2-静态IP设置（每个节点）"><a href="#2-1-2-静态IP设置（每个节点）" class="headerlink" title="2.1.2. 静态IP设置（每个节点）"></a>2.1.2. 静态IP设置（每个节点）</h3><p>vim /etc/sysconfig/network-scripts/ifcfg-ens192</p>
+<p>service network restart 重启网络生效</p>
+<p>yum install -y net-tools ifconfig查看设置</p>
+<h3 id="2-1-3-编辑-etc-hosts文件（每个节点）"><a href="#2-1-3-编辑-etc-hosts文件（每个节点）" class="headerlink" title="2.1.3. 编辑/etc/hosts文件（每个节点）"></a>2.1.3. 编辑/etc/hosts文件（每个节点）</h3><p>vim /etc/hosts</p>
+<div align="center"><img src="/img/posts/1217276-20190604104626346-906937740.png" alt="img"></div>
+
+<h3 id="2-1-4-关闭防火墙、禁止防火墙开机自启（每个节点）"><a href="#2-1-4-关闭防火墙、禁止防火墙开机自启（每个节点）" class="headerlink" title="2.1.4. 关闭防火墙、禁止防火墙开机自启（每个节点）"></a>2.1.4. 关闭防火墙、禁止防火墙开机自启（每个节点）</h3><ul>
+<li>systemctl stop firewalld 关闭防火墙</li>
+<li>systemctl disable firewalld 禁止防火墙开机自启</li>
+<li>vim /etc/selinux/config —&gt; SELINUX=disabled (修改)</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604104652962-129126841.png" alt="img"></div>
+
+<h3 id="2-1-5-ssh无密码登录"><a href="#2-1-5-ssh无密码登录" class="headerlink" title="2.1.5. ssh无密码登录"></a>2.1.5. ssh无密码登录</h3><ul>
+<li>manager节点执行ssh-keygen -t rsa 一路回车到结束，在/root/.ssh/下面会生成一个公钥文件id_rsa.pub</li>
+<li>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys 将公钥追加到authorized_keys</li>
+<li>chmod 600 ~/.ssh/authorized_keys 修改权限</li>
+<li>将~/.ssh从当前节点分发到其他各个节点。如：scp -r ~/.ssh/ root@node1:~/.ssh/</li>
+<li>ssh 各个节点互相登陆</li>
+</ul>
+<h3 id="2-1-6-配置NTP服务（所有节点）"><a href="#2-1-6-配置NTP服务（所有节点）" class="headerlink" title="2.1.6. 配置NTP服务（所有节点）"></a>2.1.6. 配置NTP服务（所有节点）</h3><ul>
+<li>修改时区（改为中国标准时区）ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</li>
+<li>安装ntp yum -y install ntp</li>
+<li>ntp主机配置 vim /etc/ntp.conf</li>
+<li>manager节点</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604104904631-987407793.png" alt="img"></div>
+
+<p>其余节点</p>
+<div align="center"><img src="/img/posts/1217276-20190604105000980-1809551441.png" alt="img"></div>
+
+<ul>
+<li>重新启动 ntp 服务：service ntpd restart</li>
+<li>设置开机自启：systemctl enable ntpd.service</li>
+<li>ntpdc -c loopinfo #查看与时间同步服务器的时间偏差</li>
+<li>ntpq -p #查看当前同步的时间服务器</li>
+<li>ntpstat #查看状态</li>
+<li>配置成功状态（服务开启后前面出现*说明成功）：</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604105052113-1431192055.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604105056724-2035461368.png" alt="img"></div>
+
+<h3 id="2-1-7-修改Linux-swappiness参数-所有节点）"><a href="#2-1-7-修改Linux-swappiness参数-所有节点）" class="headerlink" title="2.1.7. 修改Linux swappiness参数(所有节点）"></a>2.1.7. 修改Linux swappiness参数(所有节点）</h3><p>为了避免服务器使用swap功能而影响服务器性能，一般都会把vm.swappiness修改为0（cloudera建议10以下）</p>
+<div align="center"><img src="/img/posts/1217276-20190604105548044-440569374.png" alt="img"></div>
+
+<ul>
+<li>上述方法rhel6有效，rhel7.2中:tuned服务会动态调整系统参数</li>
+<li>查找tuned中配置，直接修改配置</li>
+<li>cd /usr/lib/tuned/</li>
+<li>grep “vm.swappiness” * -R 查询出后依次修改</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604105622464-1469720812.png" alt="img"></div>
+
+<p>修改完确认:</p>
+<div align="center"><img src="/img/posts/1217276-20190604105634051-627255069.png" alt="img"></div>
+
+<p>参考：sysctl修改内核参数 重启不生效 <a href="https://blog.csdn.net/ygtlovezf/article/details/79014299" target="_blank" rel="noopener">https://blog.csdn.net/ygtlovezf/article/details/79014299</a></p>
+<h3 id="2-1-8-禁用透明页-所有节点）"><a href="#2-1-8-禁用透明页-所有节点）" class="headerlink" title="2.1.8. 禁用透明页(所有节点）"></a>2.1.8. 禁用透明页(所有节点）</h3><p>echo never &gt; /sys/kernel/mm/transparent_hugepage/defrag<br>echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled<br>永久生效 在/etc/rc.local 添加上面命令</p>
+<div align="center"><img src="/img/posts/1217276-20190604105726598-915666414.png" alt="img"></div>
+
+<p>给与可执行权限：chmod +x /etc/rc.d/rc.local</p>
+<h3 id="2-1-9-JDK安装（所有节点）"><a href="#2-1-9-JDK安装（所有节点）" class="headerlink" title="2.1.9. JDK安装（所有节点）"></a>2.1.9. JDK安装（所有节点）</h3><ul>
+<li>rpm -qa | grep java # 查询已安装的java</li>
+<li>yum remove java* # 卸载</li>
+<li>rpm -ivh oracle-j2sdk1.8-1.8.0+update181-1.x86_64.rpm</li>
+<li>vi /etc/profile 末尾添加</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604105817464-1363555496.png" alt="img"></div>
+
+<ul>
+<li>source /etc/profile</li>
+<li>java -version验证</li>
+</ul>
+<h3 id="2-1-10-创建-usr-share-java目录，将mysql-jdbc包放过去（所有节点）"><a href="#2-1-10-创建-usr-share-java目录，将mysql-jdbc包放过去（所有节点）" class="headerlink" title="2.1.10. 创建/usr/share/java目录，将mysql-jdbc包放过去（所有节点）"></a>2.1.10. 创建/usr/share/java目录，将mysql-jdbc包放过去（所有节点）</h3><ul>
+<li>mkdir -p /usr/share/java</li>
+<li>mv /opt/mysql-j/mysql-connector-java-5.1.34.jar /usr/share/java/</li>
+<li>mysql-connector-java-5.1.34.jar 一定要命名为mysql-connector-java.jar</li>
+</ul>
+<h3 id="2-1-11-为保证防火墙、虚拟机参数修改后生效，各节点机器需要重启-reboot"><a href="#2-1-11-为保证防火墙、虚拟机参数修改后生效，各节点机器需要重启-reboot" class="headerlink" title="2.1.11. 为保证防火墙、虚拟机参数修改后生效，各节点机器需要重启 reboot"></a>2.1.11. 为保证防火墙、虚拟机参数修改后生效，各节点机器需要重启 reboot</h3><h3 id="2-1-12-Mysql安装"><a href="#2-1-12-Mysql安装" class="headerlink" title="2.1.12. Mysql安装"></a>2.1.12. Mysql安装</h3><ul>
+<li>卸载mariadb：rpm -qa|grep mariadb</li>
+<li>rpm -e –nodeps mariadb-libs-5.5.60-1.el7_5.x86_64</li>
+<li>cd /opt/mysql/</li>
+<li>tar -xvf ./mysql-5.7.19-1.el7.x86_64.rpm-bundle.tar</li>
+<li>rpm -ivh mysql-community-common-5.7.19-1.el7.x86_64.rpm</li>
+<li>rpm -ivh mysql-community-libs-5.7.19-1.el7.x86_64.rpm</li>
+<li>rpm -ivh mysql-community-client-5.7.19-1.el7.x86_64.rpm</li>
+<li>rpm -ivh mysql-community-server-5.7.19-1.el7.x86_64.rpm</li>
+<li>rpm -ivh mysql-community-libs-compat-5.7.19-1.el7.x86_64.rpm</li>
+<li>MYSQL配置:</li>
+<li>mysqld –initialize –user=mysql # 初始化mysql使mysql目录的拥有者为mysql用户</li>
+<li>cat /var/log/mysqld.log # 最后一行将会有随机生成的密码</li>
+<li>systemctl start mysqld.service # 设置mysql服务自启</li>
+<li>mysql -uroot –p 如果不能登陆</li>
+<li>设置免密登录并重启mysql服务</li>
+<li>vi /etc/my.cnf</li>
+<li>systemctl restart mysqld</li>
+<li><p>#登录</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">　　　　$&gt;mysql -u root</span><br><span class="line">　　　　mysql&gt;use mysql;</span><br><span class="line">　　　　mysql&gt;update<span class="built_in"> user </span><span class="builtin-name">set</span> authentication_string = password(‘123456’), password_expired = ‘N’, password_last_changed = now() where<span class="built_in"> user </span>= ‘root’;</span><br><span class="line">　　　　mysql&gt;exit;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建库(后续安装服务等使用)</p>
+</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604110100371-764480641.png" alt="img"></div>
+
+<h3 id="2-1-13-安装Httpd服务（manager）"><a href="#2-1-13-安装Httpd服务（manager）" class="headerlink" title="2.1.13. 安装Httpd服务（manager）"></a>2.1.13. 安装Httpd服务（manager）</h3><ul>
+<li>yum install httpd</li>
+<li>service httpd start</li>
+<li>systemctl enable httpd.service 设置httpd服务开机自启</li>
+</ul>
+<h3 id="2-1-14-防止出现莫名错误，事先安装以下插件（所有节点）"><a href="#2-1-14-防止出现莫名错误，事先安装以下插件（所有节点）" class="headerlink" title="2.1.14. 防止出现莫名错误，事先安装以下插件（所有节点）"></a>2.1.14. 防止出现莫名错误，事先安装以下插件（所有节点）</h3><ul>
+<li>yum install cloudera-manager-daemons cloudera-manager-agent cloudera-manager-server –skip-broken –nogpgcheck</li>
+</ul>
+<h3 id="2-1-15-配置Cloudera-Manager包yum源（manager节点）"><a href="#2-1-15-配置Cloudera-Manager包yum源（manager节点）" class="headerlink" title="2.1.15. 配置Cloudera Manager包yum源（manager节点）"></a>2.1.15. 配置Cloudera Manager包yum源（manager节点）</h3><ul>
+<li>mkdir -p /var/www/html/cloudera-repos/</li>
+<li>将下载的cm包文件移到此目录下:</li>
+<li>mv cm6 /var/www/html/cloudera-repos/</li>
+<li>cd /var/www/html/cloudera-repos/cm6/</li>
+<li>创建repodata： createrepo .</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604110207629-832224385.png" alt="img"></div>
+
+<ul>
+<li>vim /etc/yum.repos.d/cloudera-manager.repo</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604110232191-1450979901.png" alt="img"></div>
+
+<p><strong>注意路径：<a href="http://manager/cloudera-repos/cm6/" target="_blank" rel="noopener">http://manager/cloudera-repos/cm6/</a></strong></p>
+<ul>
+<li>yum clean all</li>
+<li>yum makecache</li>
+</ul>
+<h3 id="2-1-16-导入GPG-key（如果没有这步操作，很可能cloudera服务安装失败）manager节点"><a href="#2-1-16-导入GPG-key（如果没有这步操作，很可能cloudera服务安装失败）manager节点" class="headerlink" title="2.1.16.导入GPG key（如果没有这步操作，很可能cloudera服务安装失败）manager节点"></a>2.1.16.导入GPG key（如果没有这步操作，很可能cloudera服务安装失败）manager节点</h3><ul>
+<li>rpm –import <a href="https://archive.cloudera.com/cm6/6.2.0/redhat7/yum/RPM-GPG-KEY-cloudera" target="_blank" rel="noopener">https://archive.cloudera.com/cm6/6.2.0/redhat7/yum/RPM-GPG-KEY-cloudera</a></li>
+</ul>
+<h3 id="2-1-17-安装-Cloudera-Manager（manager节点）"><a href="#2-1-17-安装-Cloudera-Manager（manager节点）" class="headerlink" title="2.1.17. 安装 Cloudera Manager（manager节点）"></a>2.1.17. 安装 Cloudera Manager（manager节点）</h3><ul>
+<li>sudo yum install cloudera-manager-daemons cloudera-manager-agent cloudera-manager-server</li>
+<li>安装完CM后/opt/ 下会出现cloudera目录</li>
+<li>mv /opt/parcels/* /opt/cloudera/parcel-repo # 将parcel包移动到指定位置</li>
+<li>在/opt/cloudera/parcel-repo执行以下命令：</li>
+<li>sha1sum CDH-6.2.0-1.cdh6.2.0.p0.967373-el7.parcel | awk ‘{ print $1 }’ &gt; CDH-6.2.0-1.cdh6.2.0.p0.967373-el7.parcel.sha</li>
+</ul>
+<div align="center"><img src="/img/posts/1217276-20190604110335997-936222394.png" alt="img"></div>
+
+<ul>
+<li>执行初始化脚本:</li>
+<li>/opt/cloudera/cm/schema/scm_prepare_database.sh mysql cmserver cmserveruser password</li>
+<li>打开server服务:</li>
+<li>service cloudera-scm-server start</li>
+<li>静候几分钟，打开<a href="http://manager:7180" target="_blank" rel="noopener">http://manager:7180</a></li>
+</ul>
+<h2 id="2-2-其他服务安装"><a href="#2-2-其他服务安装" class="headerlink" title="2.2 其他服务安装"></a>2.2 其他服务安装</h2><h3 id="2-2-1-登录cm-WEB界面"><a href="#2-2-1-登录cm-WEB界面" class="headerlink" title="2.2.1 登录cm WEB界面"></a>2.2.1 登录cm WEB界面</h3><p><a href="http://xn--ip-wz2cm89g:7180/cmf/login" target="_blank" rel="noopener">http://主机ip:7180/cmf/login</a> 访问CM<br>用户名admin<br>密码admin<br>遇到问题：7180服务没有启动<br>解决方法：</p>
+<div align="center"><img src="/img/posts/1217276-20190604111531044-2041710164.png" alt="img"></div>
+
+<p>查看端口服务，未启动</p>
+<div align="center"><img src="/img/posts/1217276-20190604111544202-1892248918.png" alt="img"></div>
+
+<p>cm服务启动显示正常。<br>我在刚启动服务后7180没有启动，没找到什么原因，后来 晾了它一晚上，第二天一查端口，居然启动了，可能是cm服务要启动的东西太多，主机一时没启动。</p>
+<div align="center"><img src="/img/posts/1217276-20190604111602958-1605128146.png" alt="img"></div>
+
+<p>启动成功！</p>
+<h3 id="2-2-2-具体安装步骤"><a href="#2-2-2-具体安装步骤" class="headerlink" title="2.2.2 具体安装步骤"></a>2.2.2 具体安装步骤</h3><h4 id="WELCOME"><a href="#WELCOME" class="headerlink" title="WELCOME"></a>WELCOME</h4><div align="center"><img src="/img/posts/1217276-20190604111920576-741881107.png" alt="img"></div>
+
+
+
+<h4 id="Accept-License"><a href="#Accept-License" class="headerlink" title="Accept License"></a>Accept License</h4><div align="center"><img src="/img/posts/1217276-20190604111933390-655824944.png" alt="img"></div>
+
+<h4 id="Select-Edition"><a href="#Select-Edition" class="headerlink" title="Select Edition"></a>Select Edition</h4><p>版本选择免费版，已经够用。</p>
+<div align="center"><img src="/img/posts/1217276-20190604111954212-298338927.png" alt="img"></div>
+
+<h4 id="Welcome-Add-Cluster-Installation"><a href="#Welcome-Add-Cluster-Installation" class="headerlink" title="Welcome (Add Cluster - Installation)"></a>Welcome (Add Cluster - Installation)</h4><div align="center"><img src="/img/posts/1217276-20190604112008147-1861344032.png" alt="img"></div>
+
+<h4 id="Specify-Hosts"><a href="#Specify-Hosts" class="headerlink" title="Specify Hosts"></a>Specify Hosts</h4><p>主机是自己规划安装agent的主机</p>
+<div align="center"><img src="/img/posts/1217276-20190604112025480-101815659.png" alt="img"></div>
+
+<h4 id="Select-Repository"><a href="#Select-Repository" class="headerlink" title="Select Repository"></a>Select Repository</h4><div align="center"><img src="/img/posts/1217276-20190604112035674-418301578.png" alt="img"></div>
+
+<h4 id="JDK-安装选项"><a href="#JDK-安装选项" class="headerlink" title="JDK 安装选项"></a>JDK 安装选项</h4><div align="center"><img src="/img/posts/1217276-20190604112046729-67354487.png" alt="img"></div>
+
+<h4 id="Enter-Login-Credentials"><a href="#Enter-Login-Credentials" class="headerlink" title="Enter Login Credentials"></a>Enter Login Credentials</h4><div align="center"><img src="/img/posts/1217276-20190604112057951-2106021543.png" alt="img"></div>
+
+<h4 id="Install-Agents"><a href="#Install-Agents" class="headerlink" title="Install Agents"></a>Install Agents</h4><p>最到考验网速的时候了，该页面使用js进行刷新，千万别手动刷新，手动刷新的话安装列表中之前已经功成的会消失，未成功的显示，未成功即使安装成功了，cm会管理不到之前已经成功但刷新后未显示的主机，在安装集群时只能选择本次显示的（原因未知）。网速过慢的话安装会失败，一定要耐心等待，别做无关操作。</p>
+<div align="center"><img src="/img/posts/1217276-20190604112120278-348741632.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604112126313-2125554292.png" alt="img"></div>
+
+<h4 id="失败重试直到成功，再次说明，耐心等待。"><a href="#失败重试直到成功，再次说明，耐心等待。" class="headerlink" title="失败重试直到成功，再次说明，耐心等待。"></a>失败重试直到成功，再次说明，耐心等待。</h4><div align="center"><img src="/img/posts/1217276-20190604112138629-790888187.png" alt="img"></div>
+
+<p>n次失败之后终于安装成功！</p>
+<h4 id="Install-Parcels"><a href="#Install-Parcels" class="headerlink" title="Install Parcels"></a>Install Parcels</h4><div align="center"><img src="/img/posts/1217276-20190604112205316-1631890690.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604112214460-1870000346.png" alt="img"></div>
+
+<p>安装成功！等了有将近半天的时候。。。</p>
+<div align="center"><img src="/img/posts/1217276-20190604112225181-1228670935.png" alt="img"></div>
+
+<h4 id="Inspect-Hosts"><a href="#Inspect-Hosts" class="headerlink" title="Inspect Hosts"></a>Inspect Hosts</h4><div align="center"><img src="/img/posts/1217276-20190604112238845-67420776.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604112249688-1868191017.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604112256970-2066137896.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604112305014-620460378.png" alt="img"></div>
+
+<p>问题处理：<br>时钟同步是由于我恢复过一次镜像，在手动同步一下即可。<br>服务端启动（恢复镜像居然没启动)</p>
+<div align="center"><img src="/img/posts/1217276-20190604112323373-763174515.png" alt="img"></div>
+
+<p>各台同步</p>
+<div align="center"><img src="/img/posts/1217276-20190604112335684-57084026.png" alt="img"></div>
+
+<p>虚拟内存设置：<br>Cloudera 建议将 /proc/sys/vm/swappiness 设置为0-10。当前设置为 30。使用 sysctl 命令在运行时更改该设置并编辑 /etc/sysctl.conf，以在重启后保存该设置。您可以继续进行安装，但 Cloudera Manager 可能会报告您的主机由于交换而运行状况不良。以下主机将受到影响：</p>
+<p>查看详细信息<br>cdh[171-174]<br>解决：<br>临时解决<br>通过echo 10 &gt; /proc/sys/vm/swappiness即可解决。<br>永久解决<br>sysctl -w vm.swappiness=10<br>echo vm.swappiness = 10 &gt;&gt; /etc/sysctl.conf</p>
+<p>透明大页问题：<br>已启用透明大页面压缩，可能会导致重大性能问题。请运行“echo never &gt; /sys/kernel/mm/transparent_hugepage/defrag”和“echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled”以禁用此设置，然后将同一命令添加到 /etc/rc.local 等初始化脚本中，以便在系统重启时予以设置。以下主机将受到影响:<br>查看详细信息<br>cdh[171-174]<br>处理：<br>大内存页禁用<br>echo never&gt;/sys/kernel/mm/transparent_hugepage/defrag<br>echo never&gt;/sys/kernel/mm/transparent_hugepage/enabled</p>
+<p>升级软件依赖版本<br>Starting with CDH 6, PostgreSQL-backed Hue requires the Psycopg2 version to be at least 2.5.4, see the documentation for more information. This warning can be ignored if hosts will not run CDH 6, or will not run Hue with PostgreSQL. The following hosts have an incompatible Psycopg2 version of ‘2.5.1’:<br>查看详细信息<br>cdh[171-174]<br>本次忽略<br>处理完成：</p>
+<div align="center"><img src="/img/posts/1217276-20190604112818096-463024600.png" alt="img"></div>
+
+<h2 id="2-3-大数据组件安装"><a href="#2-3-大数据组件安装" class="headerlink" title="2.3 大数据组件安装"></a>2.3 大数据组件安装</h2><p>正式安装前拍个快照</p>
+<h4 id="Select-Services"><a href="#Select-Services" class="headerlink" title="Select Services"></a>Select Services</h4><div align="center"><img src="/img/posts/1217276-20190604113156413-1538965957.png" alt="img"></div>
+
+<h4 id="自定义角色分配"><a href="#自定义角色分配" class="headerlink" title="自定义角色分配"></a>自定义角色分配</h4><div align="center"><img src="/img/posts/1217276-20190604113210471-1682138309.png" alt="img"></div>
+
+<h4 id="数据库设置"><a href="#数据库设置" class="headerlink" title="数据库设置"></a>数据库设置</h4><div align="center"><img src="/img/posts/1217276-20190604113236949-705688341.png" alt="img"></div>
+
+<p>这里测试了一晚上。。。</p>
+<p>审核更改（可以自己更改目录，我使用的是默认）</p>
+<div align="center"><img src="/img/posts/1217276-20190604113252553-40655355.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604113303024-1996158719.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604113352918-1029159197.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604113401164-1716247806.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604113406852-516642711.png" alt="img"></div>
+
+<div align="center"><img src="/img/posts/1217276-20190604113609676-1681357250.png" alt="img"></div>
+
+<h4 id="cdh管理界面，大功告成："><a href="#cdh管理界面，大功告成：" class="headerlink" title="cdh管理界面，大功告成："></a>cdh管理界面，大功告成：</h4><div align="center"><img src="/img/posts/1217276-20190604113623652-1006722876.png" alt="img"></div>
+
+<p>第一次进入后，许多服务标红，查看后是agent与cm失去连接。<br>#ntpstat（所有节点）<br>只有cm启动，其余莫名停止。<br>#systemctl start ntpd（停止节点）<br>#ntpdate -u cdh1（ntp服务端）<br>在失去的节点 执行<br>service cloudera-scm-agent restart（停止节点）<br>重启 正常启动不报错<br>注<br>service cloudera-scm-agent status（查看 agent 状态）</p>
+<hr>
+<p><strong>参考资料</strong></p>
+<p><a href="https://blog.csdn.net/wolf_333/article/details/89071203" target="_blank" rel="noopener">https://blog.csdn.net/wolf_333/article/details/89071203</a></p>
+<p><a href="http://www.cnblogs.com/mylovelulu/p/10384732.html" target="_blank" rel="noopener">http://www.cnblogs.com/mylovelulu/p/10384732.html</a></p>
+<p><a href="https://blog.csdn.net/qq_40127822/article/details/84441869" target="_blank" rel="noopener">https://blog.csdn.net/qq_40127822/article/details/84441869</a></p>
+<p><a href="https://www.cnblogs.com/raphael5200/p/5293960.html" target="_blank" rel="noopener">https://www.cnblogs.com/raphael5200/p/5293960.html</a></p>
+<p><a href="https://www.cnblogs.com/Archmage/p/7570716.html" target="_blank" rel="noopener">https://www.cnblogs.com/Archmage/p/7570716.html</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/11/100083.html" class="pre-post btn btn-default" title='浅析Java反射'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">浅析Java反射</span>
+        </a>
+    
+    
+        <a href="/archives/2018/11/100089.html" class="next-post btn btn-default" title='大数据平台Hadoop的完全分布式部署'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据平台Hadoop的完全分布式部署</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1、概述"><span class="toc-text">1、概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-安装步骤"><span class="toc-text">2. 安装步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-环境准备"><span class="toc-text">2.1 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-准备虚拟机（根据自己的系统资源分配虚拟机资源）"><span class="toc-text">2.1.1. 准备虚拟机（根据自己的系统资源分配虚拟机资源）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-静态IP设置（每个节点）"><span class="toc-text">2.1.2. 静态IP设置（每个节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-3-编辑-etc-hosts文件（每个节点）"><span class="toc-text">2.1.3. 编辑/etc/hosts文件（每个节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-4-关闭防火墙、禁止防火墙开机自启（每个节点）"><span class="toc-text">2.1.4. 关闭防火墙、禁止防火墙开机自启（每个节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-5-ssh无密码登录"><span class="toc-text">2.1.5. ssh无密码登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-6-配置NTP服务（所有节点）"><span class="toc-text">2.1.6. 配置NTP服务（所有节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-7-修改Linux-swappiness参数-所有节点）"><span class="toc-text">2.1.7. 修改Linux swappiness参数(所有节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-8-禁用透明页-所有节点）"><span class="toc-text">2.1.8. 禁用透明页(所有节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-9-JDK安装（所有节点）"><span class="toc-text">2.1.9. JDK安装（所有节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-10-创建-usr-share-java目录，将mysql-jdbc包放过去（所有节点）"><span class="toc-text">2.1.10. 创建/usr/share/java目录，将mysql-jdbc包放过去（所有节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-11-为保证防火墙、虚拟机参数修改后生效，各节点机器需要重启-reboot"><span class="toc-text">2.1.11. 为保证防火墙、虚拟机参数修改后生效，各节点机器需要重启 reboot</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-12-Mysql安装"><span class="toc-text">2.1.12. Mysql安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-13-安装Httpd服务（manager）"><span class="toc-text">2.1.13. 安装Httpd服务（manager）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-14-防止出现莫名错误，事先安装以下插件（所有节点）"><span class="toc-text">2.1.14. 防止出现莫名错误，事先安装以下插件（所有节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-15-配置Cloudera-Manager包yum源（manager节点）"><span class="toc-text">2.1.15. 配置Cloudera Manager包yum源（manager节点）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-16-导入GPG-key（如果没有这步操作，很可能cloudera服务安装失败）manager节点"><span class="toc-text">2.1.16.导入GPG key（如果没有这步操作，很可能cloudera服务安装失败）manager节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-17-安装-Cloudera-Manager（manager节点）"><span class="toc-text">2.1.17. 安装 Cloudera Manager（manager节点）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-其他服务安装"><span class="toc-text">2.2 其他服务安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-登录cm-WEB界面"><span class="toc-text">2.2.1 登录cm WEB界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-具体安装步骤"><span class="toc-text">2.2.2 具体安装步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#WELCOME"><span class="toc-text">WELCOME</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Accept-License"><span class="toc-text">Accept License</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Select-Edition"><span class="toc-text">Select Edition</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Welcome-Add-Cluster-Installation"><span class="toc-text">Welcome (Add Cluster - Installation)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Specify-Hosts"><span class="toc-text">Specify Hosts</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Select-Repository"><span class="toc-text">Select Repository</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JDK-安装选项"><span class="toc-text">JDK 安装选项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Enter-Login-Credentials"><span class="toc-text">Enter Login Credentials</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Install-Agents"><span class="toc-text">Install Agents</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#失败重试直到成功，再次说明，耐心等待。"><span class="toc-text">失败重试直到成功，再次说明，耐心等待。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Install-Parcels"><span class="toc-text">Install Parcels</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inspect-Hosts"><span class="toc-text">Inspect Hosts</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-大数据组件安装"><span class="toc-text">2.3 大数据组件安装</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Select-Services"><span class="toc-text">Select Services</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自定义角色分配"><span class="toc-text">自定义角色分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据库设置"><span class="toc-text">数据库设置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cdh管理界面，大功告成："><span class="toc-text">cdh管理界面，大功告成：</span></a></li></ol></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

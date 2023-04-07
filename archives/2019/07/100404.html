@@ -1,0 +1,513 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,spark">
+
+
+    <meta name="description" content="一、作业提交1.1  spark-submitSpark所有模式均使用spark-submit命令提交作业，其格式如下：
+12345678./bin/spark-submit \  --clas...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark部署模式与作业提交 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark部署模式与作业提交">
+            
+	            Spark部署模式与作业提交
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/10</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1366</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、作业提交"><a href="#一、作业提交" class="headerlink" title="一、作业提交"></a>一、作业提交</h2><h3 id="1-1-spark-submit"><a href="#1-1-spark-submit" class="headerlink" title="1.1  spark-submit"></a>1.1  spark-submit</h3><p>Spark所有模式均使用<code>spark-submit</code>命令提交作业，其格式如下：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.<span class="meta-keyword">/bin/</span>spark-submit \</span><br><span class="line">  --class <span class="params">&lt;main-class&gt;</span> \        <span class="meta"># 应用程序主入口类</span></span><br><span class="line">  --master <span class="params">&lt;master-url&gt;</span> \       <span class="meta"># 集群的Master Url</span></span><br><span class="line">  --deploy-mode <span class="params">&lt;deploy-mode&gt;</span> \ <span class="meta"># 部署模式</span></span><br><span class="line">  --conf <span class="params">&lt;key&gt;</span>=<span class="params">&lt;value&gt;</span> \        <span class="meta"># 可选配置       </span></span><br><span class="line">  ... <span class="meta"># other options    </span></span><br><span class="line">  <span class="params">&lt;application-jar&gt;</span> \           <span class="meta"># Jar包路径 </span></span><br><span class="line">  [application-arguments]       <span class="meta">#传递给主入口类的参数</span></span><br></pre></td></tr></table></figure>
+<p>需要注意的是：在集群环境下，<code>application-jar</code>必须能被集群中所有节点都能访问，可以是HDFS上的路径；也可以是本地文件系统路径，如果是本地文件系统路径，则要求集群中每一个机器节点上的相同路径都存在该Jar包。</p>
+<h3 id="1-2-deploy-mode"><a href="#1-2-deploy-mode" class="headerlink" title="1.2 deploy-mode"></a>1.2 deploy-mode</h3><p>deploy-mode有<code>cluster</code>和<code>client</code>两个可选参数，默认为<code>client</code>。这里以Spark On Yarn模式对两者的区别进行说明 ：</p>
+<ul>
+<li>在cluster模式下，Spark Drvier在应用程序的Master进程内运行，该进程由群集上的YARN管理，提交作业的客户端可以在启动应用程序后关闭；</li>
+<li>在client模式下，Spark Drvier在提交作业的客户端进程中运行，Master进程仅用于从YARN请求资源。</li>
+</ul>
+<h3 id="1-3-master-url"><a href="#1-3-master-url" class="headerlink" title="1.3 master-url"></a>1.3 master-url</h3><p>master-url的所有可选参数如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>Master URL</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>local</code></td>
+<td>使用一个线程本地运行Spark</td>
+</tr>
+<tr>
+<td><code>local[K]</code></td>
+<td>使用 K 个 worker 线程本地运行 Spark</td>
+</tr>
+<tr>
+<td><code>local[K,F]</code></td>
+<td>使用 K 个 worker 线程本地运行 , 第二个参数为Task的失败重试次数</td>
+</tr>
+<tr>
+<td><code>local[*]</code></td>
+<td>使用与CPU核心数一样的线程数在本地运行Spark</td>
+</tr>
+<tr>
+<td><code>local[*,F]</code></td>
+<td>使用与CPU核心数一样的线程数在本地运行Spark<br>第二个参数为Task的失败重试次数</td>
+</tr>
+<tr>
+<td><code>spark://HOST:PORT</code></td>
+<td>连接至指定的 standalone 集群的 master 节点。端口号默认是 7077。</td>
+</tr>
+<tr>
+<td><code>spark://HOST1:PORT1,HOST2:PORT2</code></td>
+<td>如果standalone集群采用Zookeeper实现高可用，则必须包含由zookeeper设置的所有master主机地址。</td>
+</tr>
+<tr>
+<td><code>mesos://HOST:PORT</code></td>
+<td>连接至给定的Mesos集群。端口默认是 5050。对于使用了 ZooKeeper 的 Mesos cluster 来说，使用 <code>mesos://zk://...</code>来指定地址，使用 <code>--deploy-mode cluster</code>模式来提交。</td>
+</tr>
+<tr>
+<td><code>yarn</code></td>
+<td>连接至一个 YARN 集群，集群由配置的 <code>HADOOP_CONF_DIR</code> 或者 <code>YARN_CONF_DIR</code> 来决定。使用<code>--deploy-mode</code>参数来配置<code>client</code> 或<code>cluster</code> 模式。</td>
+</tr>
+</tbody>
+</table>
+<p>下面主要介绍三种常用部署模式及对应的作业提交方式。</p>
+<h2 id="二、Local模式"><a href="#二、Local模式" class="headerlink" title="二、Local模式"></a>二、Local模式</h2><p>Local模式下提交作业最为简单，不需要进行任何配置，提交命令如下：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 本地模式提交应用</span><br><span class="line">spark-submit \</span><br><span class="line">--class org.apache.spark.examples.SparkPi \</span><br><span class="line">--master local[<span class="number">2</span>] \</span><br><span class="line">/usr/app/spark<span class="number">-2.4</span><span class="number">.0</span>-bin-hadoop2<span class="number">.6</span>/examples/jars/spark-examples_2<span class="number">.11</span><span class="number">-2.4</span><span class="number">.0</span>.jar \</span><br><span class="line"><span class="number">100</span>   # 传给SparkPi的参数</span><br></pre></td></tr></table></figure>
+<p><code>spark-examples_2.11-2.4.0.jar</code>是Spark提供的测试用例包，<code>SparkPi</code>用于计算Pi值，执行结果如下：</p>
+<div align="center"> <img src="/img/bigdata/spark-pi.png"> </div>
+
+
+
+<h2 id="三、Standalone模式"><a href="#三、Standalone模式" class="headerlink" title="三、Standalone模式"></a>三、Standalone模式</h2><p>Standalone是Spark提供的一种内置的集群模式，采用内置的资源管理器进行管理。下面按照如图所示演示1个Mater和2个Worker节点的集群配置，这里使用两台主机进行演示：</p>
+<ul>
+<li>hadoop001： 由于只有两台主机，所以hadoop001既是Master节点，也是Worker节点;</li>
+<li>hadoop002 ： Worker节点。</li>
+</ul>
+<div align="center"> <img src="/img/bigdata/spark-jqms.png"> </div>
+
+<h3 id="3-1-环境配置"><a href="#3-1-环境配置" class="headerlink" title="3.1 环境配置"></a>3.1 环境配置</h3><p>首先需要保证Spark已经解压在两台主机的相同路径上。然后进入hadoop001的<code>${SPARK_HOME}/conf/</code>目录下，拷贝配置样本并进行相关配置：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="selector-tag">cp</span> <span class="selector-tag">spark-env</span><span class="selector-class">.sh</span><span class="selector-class">.template</span> <span class="selector-tag">spark-env</span><span class="selector-class">.sh</span></span><br></pre></td></tr></table></figure>
+<p>在<code>spark-env.sh</code>中配置JDK的目录，完成后将该配置使用scp命令分发到hadoop002上：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JDK安装位置</span></span><br><span class="line"><span class="attr">JAVA_HOME</span>=/usr/java/jdk1.<span class="number">8.0</span>_201</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-集群配置"><a href="#3-2-集群配置" class="headerlink" title="3.2 集群配置"></a>3.2 集群配置</h3><p>在<code>${SPARK_HOME}/conf/</code>目录下，拷贝集群配置样本并进行相关配置：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># cp slaves.template slaves</span></span><br></pre></td></tr></table></figure>
+<p>指定所有Worker节点的主机名：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># A Spark Worker will be started on each of the machines listed below.</span></span><br><span class="line">hadoop001</span><br><span class="line">hadoop002</span><br></pre></td></tr></table></figure>
+<p>这里需要注意以下三点：</p>
+<ul>
+<li>主机名与IP地址的映射必须在<code>/etc/hosts</code>文件中已经配置，否则就直接使用IP地址；</li>
+<li>每个主机名必须独占一行；</li>
+<li>Spark的Master主机是通过SSH访问所有的Worker节点，所以需要预先配置免密登录。</li>
+</ul>
+<h3 id="3-3-启动"><a href="#3-3-启动" class="headerlink" title="3.3 启动"></a>3.3 启动</h3><p>使用<code>start-all.sh</code>代表启动Master和所有Worker服务。</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./sbin/<span class="literal">start</span>-<span class="literal">master</span>.sh</span><br></pre></td></tr></table></figure>
+<p>访问8080端口，查看Spark的Web-UI界面,，此时应该显示有两个有效的工作节点：</p>
+<div align="center"> <img src="/img/bigdata/spark-Standalone-web-ui.png"> </div>
+
+<h3 id="3-4-提交作业"><a href="#3-4-提交作业" class="headerlink" title="3.4 提交作业"></a>3.4 提交作业</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以client模式提交到standalone集群 </span></span><br><span class="line">spark-submit \</span><br><span class="line"><span class="params">--class</span> org.apache.spark.examples.SparkPi \</span><br><span class="line"><span class="params">--master</span> spark:<span class="string">//hadoop001</span><span class="function">:7077</span> \</span><br><span class="line"><span class="params">--executor-memory</span> 2G \</span><br><span class="line"><span class="params">--total-executor-cores</span> 10 \</span><br><span class="line"><span class="string">/usr/app/spark-2.4.0-bin-hadoop2.6/examples/jars/spark-examples_2.11-2.4.0.jar</span> \</span><br><span class="line">100</span><br><span class="line"></span><br><span class="line"><span class="comment"># 以cluster模式提交到standalone集群 </span></span><br><span class="line">spark-submit \</span><br><span class="line"><span class="params">--class</span> org.apache.spark.examples.SparkPi \</span><br><span class="line"><span class="params">--master</span> spark:<span class="string">//207.184.161.138</span><span class="function">:7077</span> \</span><br><span class="line"><span class="params">--deploy-mode</span> cluster \</span><br><span class="line"><span class="params">--supervise</span> \  <span class="comment"># 配置此参数代表开启监督，如果主应用程序异常退出，则自动重启Driver</span></span><br><span class="line"><span class="params">--executor-memory</span> 2G \</span><br><span class="line"><span class="params">--total-executor-cores</span> 10 \</span><br><span class="line"><span class="string">/usr/app/spark-2.4.0-bin-hadoop2.6/examples/jars/spark-examples_2.11-2.4.0.jar</span> \</span><br><span class="line">100</span><br></pre></td></tr></table></figure>
+<h3 id="3-5-可选配置"><a href="#3-5-可选配置" class="headerlink" title="3.5 可选配置"></a>3.5 可选配置</h3><p>在虚拟机上提交作业时经常出现一个的问题是作业无法申请�足够的资源：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Initial job has not accepted any resources; </span><br><span class="line">check your cluster UI to ensure that workers are registered and have sufficient resources</span><br></pre></td></tr></table></figure></p>
+<div align="center"> <img src="/img/bigdata/spark-rcbz2.png"> </div>
+
+<p><br></p>
+<p>这时候可以查看Web UI，我这里是内存空间不足：提交命令中要求作业的<code>executor-memory</code>是2G，但是实际的工作节点的<code>Memory</code>只有1G，这时候你可以修改<code>--executor-memory</code>，也可以修改 Woker 的<code>Memory</code>，其默认值为主机所有可用内存值减去1G。</p>
+<div align="center"> <img src="/img/bigdata/spark-rcbz.png"> </div>   
+
+<p><br></p>
+<p>关于Master和Woker节点的所有可选配置如下，可以在<code>spark-env.sh</code>中进行对应的配置：    </p>
+<table>
+<thead>
+<tr>
+<th>Environment Variable（环境变量）</th>
+<th>Meaning（含义）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SPARK_MASTER_HOST</code></td>
+<td>master 节点地址</td>
+</tr>
+<tr>
+<td><code>SPARK_MASTER_PORT</code></td>
+<td>master 节点地址端口（默认：7077）</td>
+</tr>
+<tr>
+<td><code>SPARK_MASTER_WEBUI_PORT</code></td>
+<td>master 的 web UI 的端口（默认：8080）</td>
+</tr>
+<tr>
+<td><code>SPARK_MASTER_OPTS</code></td>
+<td>仅用于 master 的配置属性，格式是 “-Dx=y”（默认：none）,所有属性可以参考官方文档：<a href="https://spark.apache.org/docs/latest/spark-standalone.html#spark-standalone-mode" target="_blank" rel="noopener">spark-standalone-mode</a></td>
+</tr>
+<tr>
+<td><code>SPARK_LOCAL_DIRS</code></td>
+<td>spark 的临时存储的目录，用于暂存map的输出和持久化存储RDDs。多个目录用逗号分隔</td>
+</tr>
+<tr>
+<td><code>SPARK_WORKER_CORES</code></td>
+<td>spark worker节点可以使用CPU Cores的数量。（默认：全部可用）</td>
+</tr>
+<tr>
+<td><code>SPARK_WORKER_MEMORY</code></td>
+<td>spark worker节点可以使用的内存数量（默认：全部的内存减去1GB）；</td>
+</tr>
+<tr>
+<td><code>SPARK_WORKER_PORT</code></td>
+<td>spark worker节点的端口（默认： random（随机））</td>
+</tr>
+<tr>
+<td><code>SPARK_WORKER_WEBUI_PORT</code></td>
+<td>worker 的 web UI 的 Port（端口）（默认：8081）</td>
+</tr>
+<tr>
+<td><code>SPARK_WORKER_DIR</code></td>
+<td>worker运行应用程序的目录，这个目录中包含日志和暂存空间（default：SPARK_HOME/work）</td>
+</tr>
+<tr>
+<td><code>SPARK_WORKER_OPTS</code></td>
+<td>仅用于 worker 的配置属性，格式是 “-Dx=y”（默认：none）。所有属性可以参考官方文档：<a href="https://spark.apache.org/docs/latest/spark-standalone.html#spark-standalone-mode" target="_blank" rel="noopener">spark-standalone-mode</a></td>
+</tr>
+<tr>
+<td><code>SPARK_DAEMON_MEMORY</code></td>
+<td>分配给 spark master 和 worker 守护进程的内存。（默认： 1G）</td>
+</tr>
+<tr>
+<td><code>SPARK_DAEMON_JAVA_OPTS</code></td>
+<td>spark master 和 worker 守护进程的 JVM 选项，格式是 “-Dx=y”（默认：none）</td>
+</tr>
+<tr>
+<td><code>SPARK_PUBLIC_DNS</code></td>
+<td>spark master 和 worker 的公开 DNS 名称。（默认：none）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三、Spark-on-Yarn模式"><a href="#三、Spark-on-Yarn模式" class="headerlink" title="三、Spark on Yarn模式"></a>三、Spark on Yarn模式</h2><p>Spark支持将作业提交到Yarn上运行，此时不需要启动Master节点，也不需要启动Worker节点。</p>
+<h3 id="3-1-配置"><a href="#3-1-配置" class="headerlink" title="3.1 配置"></a>3.1 配置</h3><p>在<code>spark-env.sh</code>中配置hadoop的配置目录的位置，可以使用<code>YARN_CONF_DIR</code>或<code>HADOOP_CONF_DIR</code>进行指定：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">YARN_CONF_DIR=/usr/app/hadoop<span class="number">-2.6</span><span class="number">.0</span>-cdh5<span class="number">.15</span><span class="number">.2</span>/etc/hadoop</span><br><span class="line"># JDK安装位置</span><br><span class="line">JAVA_HOME=/usr/java/jdk1<span class="number">.8</span><span class="number">.0</span>_201</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-2-启动"><a href="#3-2-启动" class="headerlink" title="3.2 启动"></a>3.2 启动</h3><p>必须要保证Hadoop已经启动，这里包括YARN和HDFS都需要启动，因为在计算过程中Spark会使用HDFS存储临时文件，如果HDFS没有启动，则会抛出异常。</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># start-yarn.sh</span></span><br><span class="line"><span class="meta"># start-dfs.sh</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-3-提交应用"><a href="#3-3-提交应用" class="headerlink" title="3.3 提交应用"></a>3.3 提交应用</h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以client模式提交到yarn集群 </span></span><br><span class="line">spark-submit <span class="string">\</span></span><br><span class="line">--<span class="class"><span class="keyword">class</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">spark</span>.<span class="title">examples</span>.<span class="title">SparkPi</span> \</span></span><br><span class="line">--master yarn <span class="string">\</span></span><br><span class="line">--deploy-mode client <span class="string">\</span></span><br><span class="line">--executor-memory <span class="number">2</span>G <span class="string">\</span></span><br><span class="line">--num-executors <span class="number">10</span> <span class="string">\</span></span><br><span class="line">/usr/app/spark-<span class="number">2.4</span>.<span class="number">0</span>-bin-hadoop2.<span class="number">6</span>/examples/jars/spark-examples_2.<span class="number">11</span>-<span class="number">2.4</span>.<span class="number">0.jar</span> <span class="string">\</span></span><br><span class="line"><span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#  以cluster模式提交到yarn集群 </span></span><br><span class="line">spark-submit <span class="string">\</span></span><br><span class="line">--<span class="class"><span class="keyword">class</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">spark</span>.<span class="title">examples</span>.<span class="title">SparkPi</span> \</span></span><br><span class="line">--master yarn <span class="string">\</span></span><br><span class="line">--deploy-mode cluster <span class="string">\</span></span><br><span class="line">--executor-memory <span class="number">2</span>G <span class="string">\</span></span><br><span class="line">--num-executors <span class="number">10</span> <span class="string">\</span></span><br><span class="line">/usr/app/spark-<span class="number">2.4</span>.<span class="number">0</span>-bin-hadoop2.<span class="number">6</span>/examples/jars/spark-examples_2.<span class="number">11</span>-<span class="number">2.4</span>.<span class="number">0.jar</span> <span class="string">\</span></span><br><span class="line"><span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100405.html" class="pre-post btn btn-default" title='Spark累加器与广播变量'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark累加器与广播变量</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100403.html" class="next-post btn btn-default" title='Spark Transformation 和 Action 常用算子'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark Transformation 和 Action 常用算子</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、作业提交"><span class="toc-text">一、作业提交</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-spark-submit"><span class="toc-text">1.1  spark-submit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-deploy-mode"><span class="toc-text">1.2 deploy-mode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-master-url"><span class="toc-text">1.3 master-url</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Local模式"><span class="toc-text">二、Local模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Standalone模式"><span class="toc-text">三、Standalone模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-环境配置"><span class="toc-text">3.1 环境配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-集群配置"><span class="toc-text">3.2 集群配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-启动"><span class="toc-text">3.3 启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-提交作业"><span class="toc-text">3.4 提交作业</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-可选配置"><span class="toc-text">3.5 可选配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Spark-on-Yarn模式"><span class="toc-text">三、Spark on Yarn模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-配置"><span class="toc-text">3.1 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-启动"><span class="toc-text">3.2 启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-提交应用"><span class="toc-text">3.3 提交应用</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

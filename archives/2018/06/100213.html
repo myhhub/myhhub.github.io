@@ -1,0 +1,482 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="docker,compose">
+
+
+    <meta name="description" content="接上文: Docker基础之 六.网络模式
+
+介绍Docker Compose是Docker官方编排（Orchestration）项目之一，负责快速的部署分布式应用。其代码目前在https://...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Docker基础之 七.Docker Compose | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Docker基础之 七.Docker Compose">
+            
+	            Docker基础之 七.Docker Compose
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/compose/">compose</a> <a class="tag-link" href="/tags/docker/">docker</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/06/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1759</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100212.html">Docker基础之 六.网络模式</a></p>
+<hr>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><code>Docker Compose</code>是<code>Docker</code>官方编排（Orchestration）项目之一，负责快速的部署分布式应用。其代码目前在<a href="https://github.com/docker/compose" target="_blank" rel="noopener">https://github.com/docker/compose</a> 上开源。Compose 定位是 「定义和运行多个 Docker 容器的应用（Defining and running multi-container Docker applications）」，其前身是开源项目<code>Fig</code>。</p>
+<p>前面我们已经学习过使用一个<code>Dockerfile</code>模板文件，可以很方便的定义一个单独的应用容器。然而，在日常工作中，经常会碰到需要多个容器相互配合来完成某项任务的情况。例如要实现一个 Web 项目，除了 Web 服务容器本身，往往还需要再加上后端的数据库服务容器或者缓存服务容器，甚至还包括负载均衡容器等。Compose 恰好满足了这样的需求。它允许用户通过一个单独的 <code>docker-compose.yml</code>模板文件（YAML 格式）来定义一组相关联的应用容器为一个项目（project）。</p>
+<p>Compose 中有两个重要的概念：</p>
+<ul>
+<li>服务 (service)：一个应用的容器，实际上可以包括若干运行相同镜像的容器实例。</li>
+<li>项目 (project)：由一组关联的应用容器组成的一个完整业务单元，在 docker-compose.yml 文件中定义。</li>
+</ul>
+<p>Compose 的默认管理对象是项目，通过子命令对项目中的一组容器进行便捷地生命周期管理。Compose 项目由 Python 编写，实现上调用了 Docker 服务提供的 API 来对容器进行管理。所以只要所操作的平台支持 Docker API，就可以在其上利用 Compose 来进行编排管理。</p>
+<h2 id="安装与卸载"><a href="#安装与卸载" class="headerlink" title="安装与卸载"></a>安装与卸载</h2><p><code>Compose</code>支持 Linux、macOS、Windows 10 三大平台。Compose 可以通过 Python 的包管理工具<code>pip</code>进行安装，也可以直接下载编译好的二进制文件使用，甚至能够直接在 Docker 容器中运行。前两种方式是传统方式，适合本地环境下安装使用；最后一种方式则不破坏系统环境，更适合云计算场景。Docker for Mac 、Docker for Windows 自带 docker-compose 二进制文件，安装 Docker 之后可以直接使用。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose --version</span><br><span class="line">docker-compose version <span class="number">1.17</span><span class="number">.1</span>, build <span class="number">6</span>d101fb</span><br></pre></td></tr></table></figure>
+<h3 id="二进制安装"><a href="#二进制安装" class="headerlink" title="二进制安装"></a>二进制安装</h3><p>在 Linux 上的也安装十分简单，从 官方 GitHub Release 处直接下载编译好的二进制文件即可。例如，在 Linux 64 位系统上直接下载对应的二进制包。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo curl -L <span class="symbol">https:</span>/<span class="regexp">/github.com/docker</span><span class="regexp">/compose/releases</span><span class="regexp">/download/</span><span class="number">1.17</span>.<span class="number">1</span>/docker-compose-<span class="string">`uname -s`</span>-<span class="string">`uname -m`</span> &gt; <span class="regexp">/usr/local</span><span class="regexp">/bin/docker</span>-compose</span><br><span class="line">$ sudo chmod +x /usr/local/bin/docker-compose</span><br></pre></td></tr></table></figure>
+<h3 id="PIP-安装"><a href="#PIP-安装" class="headerlink" title="PIP 安装"></a>PIP 安装</h3><blockquote>
+<p>注： x86_64 架构的 Linux 建议按照上边的方法下载二进制包进行安装，如果您计算机的架构是 ARM (例如，树莓派)，再使用 pip 安装。</p>
+</blockquote>
+<p>这种方式是将 Compose 当作一个 Python 应用来从 pip 源中安装。执行安装命令：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo pip install -U docker-compose</span><br><span class="line">Collecting docker-compose</span><br><span class="line">  Downloading docker-compose-<span class="number">1.17</span>.<span class="number">1</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span> (<span class="number">149</span>kB): <span class="number">149</span>kB downloaded</span><br><span class="line">...</span><br><span class="line">Successfully installed docker-compose cached-property requests texttable websocket-client docker-py dockerpty six enum34 backports<span class="selector-class">.ssl-match-hostname</span> ipaddress</span><br></pre></td></tr></table></figure>
+<p>bash 补全命令：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -L https:<span class="regexp">//</span>raw.githubusercontent.com<span class="regexp">/docker/</span>compose<span class="regexp">/1.8.0/</span>contrib<span class="regexp">/completion/</span>bash<span class="regexp">/docker-compose &gt; /</span>etc<span class="regexp">/bash_completion.d/</span>docker-compose</span><br></pre></td></tr></table></figure>
+<h3 id="容器中执行"><a href="#容器中执行" class="headerlink" title="容器中执行"></a>容器中执行</h3><p>Compose 既然是一个 Python 应用，自然也可以直接用容器来执行它。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl -L https:<span class="regexp">//gi</span>thub.com<span class="regexp">/docker/</span>compose<span class="regexp">/releases/</span>download<span class="regexp">/1.8.0/</span>run.sh &gt; <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span>docker-compose</span><br><span class="line">$ chmod +x <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span>docker-compose</span><br></pre></td></tr></table></figure>
+<p>实际上，查看下载的<code>run.sh</code>脚本内容，如下:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">set</span> -e</span><br><span class="line"></span><br><span class="line"><span class="attribute">VERSION</span>=<span class="string">"1.8.0"</span></span><br><span class="line"><span class="attribute">IMAGE</span>=<span class="string">"docker/compose:<span class="variable">$VERSION</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Setup options for connecting to docker hostif [ -z "$DOCKER_HOST" ]; then</span></span><br><span class="line">    <span class="attribute">DOCKER_HOST</span>=<span class="string">"/var/run/docker.sock"</span>fiif [ -S <span class="string">"<span class="variable">$DOCKER_HOST</span>"</span> ]; then</span><br><span class="line">    <span class="attribute">DOCKER_ADDR</span>=<span class="string">"-v <span class="variable">$DOCKER_HOST</span>:<span class="variable">$DOCKER_HOST</span> -e DOCKER_HOST"</span>else</span><br><span class="line">    <span class="attribute">DOCKER_ADDR</span>=<span class="string">"-e DOCKER_HOST -e DOCKER_TLS_VERIFY -e DOCKER_CERT_PATH"</span>fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># Setup volume mounts for compose config and contextif [ "$(pwd)" != '/' ]; then</span></span><br><span class="line">    <span class="attribute">VOLUMES</span>=<span class="string">"-v <span class="variable">$(pwd)</span>:<span class="variable">$(pwd)</span>"</span>fiif [ -n <span class="string">"<span class="variable">$COMPOSE_FILE</span>"</span> ]; then</span><br><span class="line">    <span class="attribute">compose_dir</span>=$(dirname <span class="variable">$COMPOSE_FILE</span>)fi# TODO: also check --file argumentif [ -n <span class="string">"<span class="variable">$compose_dir</span>"</span> ]; then</span><br><span class="line">    <span class="attribute">VOLUMES</span>=<span class="string">"<span class="variable">$VOLUMES</span> -v <span class="variable">$compose_dir</span>:<span class="variable">$compose_dir</span>"</span>fiif [ -n <span class="string">"<span class="variable">$HOME</span>"</span> ]; then</span><br><span class="line">    <span class="attribute">VOLUMES</span>=<span class="string">"<span class="variable">$VOLUMES</span> -v <span class="variable">$HOME</span>:<span class="variable">$HOME</span> -v <span class="variable">$HOME</span>:/root"</span> # mount <span class="variable">$HOME</span> <span class="keyword">in</span> /root <span class="keyword">to</span> share docker.configfi</span><br><span class="line"><span class="comment"># Only allocate tty if we detect oneif [ -t 1 ]; then</span></span><br><span class="line">    <span class="attribute">DOCKER_RUN_OPTIONS</span>=<span class="string">"-t"</span>fiif [ -t 0 ]; then</span><br><span class="line">    <span class="attribute">DOCKER_RUN_OPTIONS</span>=<span class="string">"<span class="variable">$DOCKER_RUN_OPTIONS</span> -i"</span>fi</span><br><span class="line">exec docker <span class="builtin-name">run</span> --rm <span class="variable">$DOCKER_RUN_OPTIONS</span> <span class="variable">$DOCKER_ADDR</span> <span class="variable">$COMPOSE_OPTIONS</span> <span class="variable">$VOLUMES</span> -w <span class="string">"<span class="variable">$(pwd)</span>"</span> <span class="variable">$IMAGE</span> <span class="string">"<span class="variable">$@</span>"</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，它其实是下载了<code>docker/compose</code>镜像并运行。</p>
+<h3 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h3><p>如果是二进制包方式安装的，删除二进制文件即可。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo rm <span class="regexp">/usr/</span>local<span class="regexp">/bin/</span>docker-compose</span><br></pre></td></tr></table></figure>
+<p>如果是通过 pip 安装的，则执行如下命令即可删除。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>sudo pip uninstall docker-compose</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>下面我们用 Python 来建立一个能够记录页面访问次数的 web 网站。 新建文件夹，在该目录中编写<code>app.py</code>文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">cache = redis.Redis(host=<span class="string">'redis'</span>, port=<span class="number">6379</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_hit_count</span><span class="params">()</span>:</span></span><br><span class="line">    retries = <span class="number">5</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> cache.incr(<span class="string">'hits'</span>)</span><br><span class="line">        <span class="keyword">except</span> redis.exceptions.ConnectionError <span class="keyword">as</span> exc:</span><br><span class="line">            <span class="keyword">if</span> retries == <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">raise</span> exc</span><br><span class="line">            retries -= <span class="number">1</span></span><br><span class="line">            time.sleep(<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></span><br><span class="line">    count = get_hit_count()</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Hello World! I have been seen &#123;&#125; times.\n'</span>.format(count)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    app.run(host=<span class="string">"0.0.0.0"</span>, debug=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>接着编写<code>Dockerfile</code>文件，内容为:</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span>-alpine</span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> . /code</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /code</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install redis flask</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"python"</span>, <span class="string">"app.py"</span>]</span></span><br></pre></td></tr></table></figure>
+<p>然后是编写<code>docker-compose.yml</code>文件，这个是 Compose 使用的主模板文件。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  web:</span>    </span><br><span class="line"><span class="attr">  build:</span> <span class="string">.</span>    </span><br><span class="line"><span class="attr">  ports:</span>    </span><br><span class="line"><span class="bullet">  -</span> <span class="string">"5000:5000"</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="bullet">       -</span> <span class="string">.:/code</span></span><br><span class="line"><span class="attr">  redis:</span>    </span><br><span class="line"><span class="attr">  image:</span> <span class="string">"redis:alpine"</span></span><br></pre></td></tr></table></figure>
+<p>运行 compose 项目:</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>docker-compose up</span><br></pre></td></tr></table></figure>
+<p>此时访问本地 5000 端口，每次刷新页面，计数就会加 1。</p>
+<h3 id="Compose-命令"><a href="#Compose-命令" class="headerlink" title="Compose 命令"></a>Compose 命令</h3><p>对于 Compose 来说，大部分命令的对象既可以是项目本身，也可以指定为项目中的服务或者容器。如果没有特别的说明，命令对象将是项目，这意味着项目中所有的服务都会受到命令影响。</p>
+<p>执行<strong>docker-compose [COMMAND] –help</strong>或者<strong>docker-compose help [COMMAND]</strong>可以查看具体某个命令的使用格式。</p>
+<p>docker-compose 命令的基本的使用格式是:</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose <span class="string">[-f=&lt;arg&gt;...]</span> <span class="string">[options]</span> <span class="string">[COMMAND]</span> <span class="string">[ARGS...]</span></span><br></pre></td></tr></table></figure>
+<p>命令选项：</p>
+<ul>
+<li>-f, –file FILE 指定使用的 Compose 模板文件，默认为 docker-compose.yml，可以多次指定。</li>
+<li>-p, –project-name NAME 指定项目名称，默认将使用所在目录名称作为项目名。</li>
+<li>–x-networking 使用 Docker 的可拔插网络后端特性</li>
+<li>–x-network-driver DRIVER 指定网络后端的驱动，默认为 bridge</li>
+<li>–verbose 输出更多调试信息。</li>
+<li>-v, –version 打印版本并退出。</li>
+</ul>
+<p>build 格式为<strong>docker-compose build [options] [SERVICE…]</strong>。 构建（重新构建）项目中的服务容器。服务容器一旦构建后，将会带上一个标记名，例如对于 web 项目中的一个 db 容器，可能是 web_db。可以随时在项目目录下运行<code>docker-compose build</code>来重新构建服务。选项包括：</p>
+<ul>
+<li>–force-rm 删除构建过程中的临时容器。</li>
+<li>–no-cache 构建镜像过程中不使用 cache（这将加长构建过程）。</li>
+<li>–pull 始终尝试通过 pull 来获取更新版本的镜像。</li>
+</ul>
+<p>config: 验证 Compose 文件格式是否正确，若正确则显示配置，若格式错误显示错误原因。</p>
+<p>down：此命令将会停止 up 命令所启动的容器，并移除网络</p>
+<p>exec：进入指定的容器。</p>
+<p>help：获得一个命令的帮助。</p>
+<p>images：列出 Compose 文件中包含的镜像。</p>
+<p>kill：格式为<strong>docker-compose kill [options] [SERVICE…]</strong>。通过发送<code>SIGKILL</code>信号来强制停止服务容器。支持通过<code>-s</code>参数来指定发送的信号，例如通过如下指令发送<code>SIGINT</code>信号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker-compose <span class="built_in">kill</span> -s SIGINT</span></span><br></pre></td></tr></table></figure>
+<p>logs：格式为<strong>docker-compose logs [options] [SERVICE…]</strong>，查看服务容器的输出。默认情况下，docker-compose 将对不同的服务输出使用不同的颜色来区分。可以通过 <code>--no-color</code>来关闭颜色。该命令在调试问题的时候十分有用。</p>
+<p>pause：格式为<strong>docker-compose pause [SERVICE…]</strong>，暂停一个服务容器。</p>
+<p>port：格式为<strong>docker-compose port [options] SERVICE PRIVATE_PORT</strong>，打印某个容器端口所映射的公共端口。选项：</p>
+<ul>
+<li>–protocol=proto 指定端口协议，tcp（默认值）或者 udp。</li>
+<li>–index=index 如果同一服务存在多个容器，指定命令对象容器的序号（默认为 1）。</li>
+</ul>
+<p>ps：格式为<strong>docker-compose ps [options] [SERVICE…]</strong>，列出项目中目前的所有容器。选项：</p>
+<ul>
+<li><code>-q</code>只打印容器的 ID 信息。</li>
+</ul>
+<p>pull：格式为<code>docker-compose pull [options] [SERVICE...]</code>，拉取服务依赖的镜像。选项：</p>
+<ul>
+<li>–ignore-pull-failures 忽略拉取镜像过程中的错误。</li>
+</ul>
+<p>push：推送服务依赖的镜像到 Docker 镜像仓库。</p>
+<p>restart：格式为<strong>docker-compose restart [options] [SERVICE…]</strong>，重启项目中的服务。选项：</p>
+<ul>
+<li>-t, –timeout TIMEOUT 指定重启前停止容器的超时（默认为 10 秒）。</li>
+</ul>
+<p>rm：格式为<strong>docker-compose rm [options] [SERVICE…]</strong>,删除所有（停止状态的）服务容器。推荐先执行 <code>docker-compose stop</code>命令来停止容器。选项：</p>
+<ul>
+<li>-f, –force 强制直接删除，包括非停止状态的容器。一般尽量不要使用该选项。</li>
+<li>-v 删除容器所挂载的数据卷。</li>
+</ul>
+<p>run：格式为<strong>docker-compose run [options] [-p PORT…] [-e KEY=VAL…] SERVICE [COMMAND] [ARGS…]</strong>，在指定服务上执行一个命令。例如：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose <span class="builtin-name">run</span> ubuntu<span class="built_in"> ping </span>docker.com</span><br></pre></td></tr></table></figure>
+<p>将会启动一个 ubuntu 服务容器，并执行 ping docker.com 命令。默认情况下，如果存在关联，则所有关联的服务将会自动被启动，除非这些服务已经在运行中。</p>
+<p>该命令类似启动容器后运行指定的命令，相关卷、链接等等都将会按照配置自动创建。</p>
+<p>给定命令将会覆盖原有的自动运行命令； 不会自动创建端口，以避免冲突。</p>
+<p>如果不希望自动启动关联的容器，可以使用<code>--no-deps</code>选项，例如:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose run --<span class="keyword">no</span>-deps web <span class="keyword">python</span> manage.<span class="keyword">py</span> <span class="keyword">shell</span></span><br></pre></td></tr></table></figure>
+<p>将不会启动 web 容器所关联的其它容器,选项：</p>
+<ul>
+<li>-d 后台运行容器。</li>
+<li>–name NAME 为容器指定一个名字。</li>
+<li>–entrypoint CMD 覆盖默认的容器启动指令。</li>
+<li>-e KEY=VAL 设置环境变量值，可多次使用选项来设置多个环境变量。</li>
+<li>-u, –user=”” 指定运行容器的用户名或者 uid。</li>
+<li>–no-deps 不自动启动关联的服务容器。</li>
+<li>–rm 运行命令后自动删除容器，d 模式下将忽略。</li>
+<li>-p, –publish=[] 映射容器端口到本地主机。</li>
+<li>–service-ports 配置服务端口并映射到本地主机。</li>
+<li>-T 不分配伪 tty，意味着依赖 tty 的指令将无法运行。</li>
+</ul>
+<p>scale：格式为<strong>docker-compose scale [options] [SERVICE=NUM…]</strong>，设置指定服务运行的容器个数。 通过 service=num 的参数来设置数量。例如：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose scale <span class="attribute">web</span>=3 <span class="attribute">db</span>=2</span><br></pre></td></tr></table></figure>
+<p>将启动 3 个容器运行 web 服务，2 个容器运行 db 服务。</p>
+<p>一般的，当指定数目多于该服务当前实际运行容器，将新创建并启动容器；反之，将停止容器。选项：</p>
+<ul>
+<li>-t, –timeout TIMEOUT 停止容器时候的超时（默认为 10 秒）。</li>
+</ul>
+<p>start：格式为<strong>docker-compose start [SERVICE…]</strong>，启动已经存在的服务容器。</p>
+<p>stop：格式为<strong>docker-compose stop [options] [SERVICE…]</strong>, 停止已经处于运行状态的容器，但不删除它。通过<code>docker-compose start</code>可以再次启动这些容器。选项：</p>
+<ul>
+<li>-t, –timeout TIMEOUT 停止容器时候的超时（默认为 10 秒）。</li>
+</ul>
+<p>top：查看各个服务容器内运行的进程。</p>
+<p>unpause：格式为<strong>docker-compose unpause [SERVICE…]</strong>，恢复处于暂停状态中的服务。</p>
+<p>up：格式为<strong>docker-compose up [options] [SERVICE…]</strong>，该命令十分强大，它将尝试自动完成包括构建镜像，（重新）创建服务，启动服务，并关联服务相关容器的一系列操作。链接的服务都将会被自动启动，除非已经处于运行状态。 可以说，大部分时候都可以直接通过该命令来启动一个项目。</p>
+<p>默认情况，<code>docker-compose up</code>启动的容器都在前台，控制台将会同时打印所有容器的输出信息，可以很方便进行调试。 当通过 Ctrl-C 停止命令时，所有容器将会停止。</p>
+<p>如果使用<code>docker-compose up -d</code>，将会在后台启动并运行所有的容器。一般推荐生产环境下使用该选项。</p>
+<p>默认情况，如果服务容器已经存在，<code>docker-compose up</code>将会尝试停止容器，然后重新创建（保持使用 volumes-from 挂载的卷），以保证新启动的服务匹配 docker-compose.yml 文件的最新内容。如果用户不希望容器被停止并重新创建，可以使用 <code>docker-compose up --no-recreate</code>。这样将只会启动处于停止状态的容器，而忽略已经运行的服务。</p>
+<p>如果用户只想重新部署某个服务，可以使用<code>docker-compose up --no-deps -d &lt;SERVICE_NAME&gt;</code>来重新创建服务并后台停止旧服务，启动新服务，并不会影响到其所依赖的服务。选项：</p>
+<ul>
+<li>-d 在后台运行服务容器。</li>
+<li>–no-color 不使用颜色来区分不同的服务的控制台输出。</li>
+<li>–no-deps 不启动服务所链接的容器。</li>
+<li>–force-recreate 强制重新创建容器，不能与<code>--no-recreate</code>同时使用。 <code>--no-recreate</code>如果容器已经存在了，则不重新创建，不能与 <code>--force-recreate</code>同时使用。 <code>--no-build</code>不自动构建缺失的服务镜像。</li>
+<li>-t, –timeout TIMEOUT 停止容器时候的超时（默认为 10 秒）。</li>
+</ul>
+<hr>
+<p>接下文: <a href="100214.html">Docker基础之 八.Docker Machine</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/06/100214.html" class="pre-post btn btn-default" title='Docker基础之 八.Docker Machine'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Docker基础之 八.Docker Machine</span>
+        </a>
+    
+    
+        <a href="/archives/2018/06/100212.html" class="next-post btn btn-default" title='Docker基础之 六.网络模式'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Docker基础之 六.网络模式</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与卸载"><span class="toc-text">安装与卸载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#二进制安装"><span class="toc-text">二进制安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PIP-安装"><span class="toc-text">PIP 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#容器中执行"><span class="toc-text">容器中执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卸载"><span class="toc-text">卸载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用"><span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Compose-命令"><span class="toc-text">Compose 命令</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,集群,storm">
+
+
+    <meta name="description" content="一、集群规划这里搭建一个3节点的Storm集群：三台主机上均部署Supervisor和LogViewer服务。同时为了保证高可用，除了在hadoop001上部署主Nimbus服务外，还在hado...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Storm集群环境搭建 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Storm集群环境搭建">
+            
+	            Storm集群环境搭建
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/storm/">storm</a> <a class="tag-link" href="/tags/colony/">集群</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/07</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1369</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、集群规划"><a href="#一、集群规划" class="headerlink" title="一、集群规划"></a>一、集群规划</h2><p>这里搭建一个3节点的Storm集群：三台主机上均部署<code>Supervisor</code>和<code>LogViewer</code>服务。同时为了保证高可用，除了在hadoop001上部署主<code>Nimbus</code>服务外，还在hadoop002上部署备用的<code>Nimbus</code>服务。<code>Nimbus</code>服务由Zookeeper集群进行协调管理，如果主<code>Nimbus</code>不可用，则备用<code>Nimbus</code>会成为新的主<code>Nimbus</code>。</p>
+<div align="center"> <img src="/img/bigdata/storm-jqgh.png"> </div>
+
+<h2 id="二、前置条件"><a href="#二、前置条件" class="headerlink" title="二、前置条件"></a>二、前置条件</h2><p>Storm 运行依赖于Java 7+ 和 Python 2.6.6 +，所以需要预先安装这两个软件。同时为了保证高可用，这里我们不采用Storm内置的Zookeeper，而采用外置的Zookeeper集群。由于这三个软件在多个框架中都有依赖，其安装步骤单独整理至 ：</p>
+<ul>
+<li><a href="100371.html">Linux环境下JDK安装</a></li>
+<li><a href="100372.html">Linux环境下Python安装</a></li>
+<li><a href="100386.html">Zookeeper单机环境和集群环境搭建</a></li>
+</ul>
+<h2 id="三、集群搭建"><a href="#三、集群搭建" class="headerlink" title="三、集群搭建"></a>三、集群搭建</h2><h3 id="1-下载并解压"><a href="#1-下载并解压" class="headerlink" title="1. 下载并解压"></a>1. 下载并解压</h3><p>下载安装包，之后进行解压。官方下载地址：<a href="http://storm.apache.org/downloads.html" target="_blank" rel="noopener">http://storm.apache.org/downloads.html</a> </p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 解压</span><br><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-zxvf</span> <span class="selector-tag">apache-storm-1</span><span class="selector-class">.2</span><span class="selector-class">.2</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-配置环境变量"><a href="#2-配置环境变量" class="headerlink" title="2. 配置环境变量"></a>2. 配置环境变量</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># vim /etc/profile</span></span><br></pre></td></tr></table></figure>
+<p>添加环境变量：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">STORM_HOME</span>=/usr/app/apache-storm-1.2.2</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$STORM_HOME</span>/bin:$PATH</span><br></pre></td></tr></table></figure>
+<p>使得配置的环境变量生效：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">source</span> <span class="regexp">/etc/</span>profile</span><br></pre></td></tr></table></figure>
+<h3 id="3-集群配置"><a href="#3-集群配置" class="headerlink" title="3. 集群配置"></a>3. 集群配置</h3><p>修改<code>${STORM_HOME}/conf/storm.yaml</code>文件，配置如下：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta"># Zookeeper集群的主机列表</span></span><br><span class="line"><span class="symbol">storm.zookeeper.servers:</span></span><br><span class="line">     - <span class="string">"hadoop001"</span></span><br><span class="line">     - <span class="string">"hadoop002"</span></span><br><span class="line">     - <span class="string">"hadoop003"</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># Nimbus的节点列表</span></span><br><span class="line"><span class="symbol">nimbus.seeds:</span> [<span class="string">"hadoop001"</span>,<span class="string">"hadoop002"</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta"># Nimbus和Supervisor需要使用本地磁盘上来存储少量状态（如jar包，配置文件等）</span></span><br><span class="line"><span class="symbol">storm.local.dir:</span> <span class="string">"/home/storm"</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># workers进程的端口，每个worker进程会使用一个端口来接收消息</span></span><br><span class="line"><span class="symbol">supervisor.slots.ports:</span></span><br><span class="line">     - <span class="number">6700</span></span><br><span class="line">     - <span class="number">6701</span></span><br><span class="line">     - <span class="number">6702</span></span><br><span class="line">     - <span class="number">6703</span></span><br></pre></td></tr></table></figure>
+<p><code>supervisor.slots.ports</code>参数用来配置workers进程接收消息的端口，默认每个supervisor节点上会启动4个worker，当然你也可以按照自己的需要和服务器性能进行设置，假设只想启动2个worker的话，此处配置2个端口即可。</p>
+<h3 id="4-安装包分发"><a href="#4-安装包分发" class="headerlink" title="4. 安装包分发"></a>4. 安装包分发</h3><p>将Storm的安装包分发到其他服务器，分发后建议在这两台服务器上也配置一下Storm的环境变量。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -r /usr/app/apache-storm-<span class="number">1.2</span>.<span class="number">2</span>/ root<span class="variable">@hadoop002</span><span class="symbol">:/usr/app/</span></span><br><span class="line">scp -r /usr/app/apache-storm-<span class="number">1.2</span>.<span class="number">2</span>/ root<span class="variable">@hadoop003</span><span class="symbol">:/usr/app/</span></span><br></pre></td></tr></table></figure>
+<h2 id="四-启动集群"><a href="#四-启动集群" class="headerlink" title="四. 启动集群"></a>四. 启动集群</h2><h3 id="4-1-启动ZooKeeper集群"><a href="#4-1-启动ZooKeeper集群" class="headerlink" title="4.1 启动ZooKeeper集群"></a>4.1 启动ZooKeeper集群</h3><p>分别到三台服务器上启动ZooKeeper服务：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zkServer<span class="selector-class">.sh</span> start</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-启动Storm集群"><a href="#4-2-启动Storm集群" class="headerlink" title="4.2 启动Storm集群"></a>4.2 启动Storm集群</h3><p>因为要启动多个进程，所以统一采用后台进程的方式启动。进入到<code>${STORM_HOME}/bin</code>目录下，执行下面的命令：</p>
+<p><strong>hadoop001 &amp; hadoop002 ：</strong></p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 启动主节点 nimbus</span></span><br><span class="line">nohup sh storm nimbus <span class="meta">&amp;</span></span><br><span class="line"><span class="meta"># 启动从节点 supervisor </span></span><br><span class="line">nohup sh storm supervisor <span class="meta">&amp;</span></span><br><span class="line"><span class="meta"># 启动UI界面 ui  </span></span><br><span class="line">nohup sh storm ui <span class="meta">&amp;</span></span><br><span class="line"><span class="meta"># 启动日志查看服务 logviewer </span></span><br><span class="line">nohup sh storm logviewer <span class="meta">&amp;</span></span><br></pre></td></tr></table></figure>
+<p><strong>hadoop003 ：</strong></p>
+<p>hadoop003上只需要启动<code>supervisor</code>服务和<code>logviewer</code>服务：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 启动从节点 supervisor </span></span><br><span class="line">nohup sh storm supervisor <span class="meta">&amp;</span></span><br><span class="line"><span class="meta"># 启动日志查看服务 logviewer </span></span><br><span class="line">nohup sh storm logviewer <span class="meta">&amp;</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-3-查看集群"><a href="#4-3-查看集群" class="headerlink" title="4.3 查看集群"></a>4.3 查看集群</h3><p>使用<code>jps</code>查看进程，三台服务器的进程应该分别如下：</p>
+<div align="center"> <img src="/img/bigdata/storm-jq-shell.png"> </div>
+
+
+
+<p><br></p>
+<p>访问hadoop001或hadoop002的<code>8080</code>端口，界面如下。可以看到有一主一备2个<code>Nimbus</code>和3个<code>Supervisor</code>，并且每个<code>Supervisor</code>有四个<code>slots</code>，即四个可用的<code>worker</code>进程，此时代表集群已经搭建成功。</p>
+<div align="center"> <img src="/img/bigdata/storm-jqdj1.png"> </div>
+
+
+
+<h2 id="五、高可用验证"><a href="#五、高可用验证" class="headerlink" title="五、高可用验证"></a>五、高可用验证</h2><p>这里手动模拟主<code>Nimbus</code>异常的情况，在hadoop001上使用<code>kill</code>命令杀死<code>Nimbus</code>的线程，此时可以看到hadoop001上的<code>Nimbus</code>已经处于<code>offline</code>状态，而hadoop002上的<code>Nimbus</code>则成为新的<code>Leader</code>。</p>
+<div align="center"> <img src="/img/bigdata/stormjqdj2.png"> </div>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100381.html" class="pre-post btn btn-default" title='HBase基本环境搭建'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">HBase基本环境搭建</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100379.html" class="next-post btn btn-default" title='Storm单机版本环境搭建'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Storm单机版本环境搭建</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、集群规划"><span class="toc-text">一、集群规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、前置条件"><span class="toc-text">二、前置条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、集群搭建"><span class="toc-text">三、集群搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-下载并解压"><span class="toc-text">1. 下载并解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-配置环境变量"><span class="toc-text">2. 配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-集群配置"><span class="toc-text">3. 集群配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-安装包分发"><span class="toc-text">4. 安装包分发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-启动集群"><span class="toc-text">四. 启动集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-启动ZooKeeper集群"><span class="toc-text">4.1 启动ZooKeeper集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-启动Storm集群"><span class="toc-text">4.2 启动Storm集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-查看集群"><span class="toc-text">4.3 查看集群</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、高可用验证"><span class="toc-text">五、高可用验证</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="微服务">
+
+
+    <meta name="description" content="一、服务拆分的前提 说到微服务，服务拆分是绕不过去的话题，但是微服务不是说拆就能拆的，有很多的前提条件。
+首先要有一个持续集成的平台，使得服务在拆分的过程中，功能的一致性，这种一致性不能通过人的...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>浅析微服务拆分 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="浅析微服务拆分">
+            
+	            浅析微服务拆分
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/microservices/">微服务</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/10/25</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1624</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、服务拆分的前提"><a href="#一、服务拆分的前提" class="headerlink" title="一、服务拆分的前提"></a><strong>一、服务拆分的前提</strong></h2><p> 说到微服务，服务拆分是绕不过去的话题，但是微服务不是说拆就能拆的，有很多的前提条件。</p>
+<p>首先要有一个持续集成的平台，使得服务在拆分的过程中，功能的一致性，这种一致性不能通过人的经验来，而需要经过大量的回归测试集，并且持续的拆分，持续的演进，持续的集成，从而保证系统时刻处于可以验证交付的状态，而非闭门拆分一段时间，最终谁也不知道功能最终究竟有没有bug，因而需要另外一个月的时间专门修改bug。</p>
+<p>其次在接入层，API和UI要动静分离，API由API网关统一的管理，这样后端无论如何拆分，可以保证对于前端来讲，统一的入口，而且可以实现拆分过程中的灰度发布，路由分发，流量切分，从而保证拆分的平滑进行。而且拆分后的微服务之间，为了高性能，是不建议每次调用都进行认证鉴权的，而是在API网关上做统一的认证鉴权，一旦进入网关，服务之间的调用就是可信的。</p>
+<p>其三对于数据库，需要进行良好的设计，不应该有大量的联合查询，而是将数据库当成一个简单的key-value查询，复杂的联合查询通过应用层，或者通过Elasticsearch进行。如果数据库表之间耦合的非常严重，其实服务拆分是拆不出来的。</p>
+<p>其四要做应用的无状态化，只有无状态的应用，才能横向扩展，这样拆分才有意义。</p>
+<h2 id="二、服务拆分的时机"><a href="#二、服务拆分的时机" class="headerlink" title="二、服务拆分的时机"></a><strong>二、服务拆分的时机</strong></h2><p>满足了服务拆分的前提之后，那先拆哪个模块，后拆哪个模块呢？什么情况下一个模块应该拆分出来呢？</p>
+<p>微服务拆分绝非一个大跃进运动，由高层发起，把一个应用拆分的七零八落的，最终大大增加运维成本，但是并不会带来收益。</p>
+<p>微服务拆分的过程，应该是一个由痛点驱动的，是业务真正遇到了快速迭代和高并发的问题，如果不拆分，将对于业务的发展带来影响，只有这个时候，微服务的拆分是有确定收益的，增加的运维成本才是值得的。</p>
+<p><strong>微服务解决的问题之一，就是快速迭代。</strong></p>
+<p>互联网产品的特点就是迭代速度快，一般一年半就能决出胜负，第一一统天下，第二被第一收购，其他死翘翘。所以快速上线，快速迭代，就是生命线，而且一旦成功就是百亿身家，所以无论付出多大运维成本，使用微服务架构都是值得的。</p>
+<p>这也就是为什么大部分使用微服务架构的都是互联网企业，因为对于这些企业来讲收益明显。而对于很多传统的应用，半年更新一次，企业运营相对平稳，IT系统的好坏对于业务没有关键性影响，在他们眼中，微服务化改造带来的效果，还不如开发多加几次班。</p>
+<p><strong>微服务拆分时机一：提交代码频繁出现大量冲突</strong></p>
+<p>微服务对于快速迭代的效果，首先是开发独立，如果是一单体应用，几百人开发一个模块，如果使用GIT做代码管理，则经常会遇到的事情就是代码提交冲突。</p>
+<p>同样一个模块，你也改，他也改，几百人根本没办法沟通。所以当你想提交一个代码的时候，发现和别人提交的冲突了，于是因为你是后提交的人，你有责任去merge代码，好不容易merge成功了，等再次提交的时候，发现又冲突了，你是不是很恼火。随着团队规模越大，冲突概率越大。</p>
+<p>所以应该拆分成不同的模块，每十个人左右维护一个模块，也即一个工程，首先代码冲突的概率小多了，而且有了冲突，一个小组一吼，基本上问题就解决了。</p>
+<p>每个模块对外提供接口，其他依赖模块可以不用关注具体的实现细节，只需要保证接口正确就可以。</p>
+<p><strong>微服务拆分时机二：小功能要积累到大版本才能上线，上线开总监级别大会</strong></p>
+<p>微服务对于快速迭代的效果，首先是上线独立。如果没有拆分微服务，每次上线都是一件很痛苦的事情。当你修改了一个边角的小功能，但是你不敢马上上线，因为你依赖的其他模块才开发了一半，你要等他，等他好了，也不敢马上上线，因为另一个被依赖的模块也开发了一半，当所有的模块都耦合在一起，互相依赖，谁也没办法独立上线，而是需要总监协调各个团队，大家开大会，约定一个时间点，无论大小功能，死活都要这天上线。</p>
+<p>这种模式导致上线的时候，单次上线的需求列表非常长，这样风险比较大，可能小功能的错误会导致大功能的上线不正常，将如此长的功能，需要一点点check，非常小心，这样上线时间长，影响范围大。因而这种的迭代速度快不了，顶多一个月一次就不错了。</p>
+<p>服务拆分后，在接口稳定的情况下，不同的模块可以独立上线。这样上线的次数增多，单次上线的需求列表变小，可以随时回滚，风险变小，时间变短，影响面小，从而迭代速度加快。</p>
+<p>对于接口要升级部分，保证灰度，先做接口新增，而非原接口变更，当注册中心中监控到的调用情况，发现接口已经不用了，再删除。</p>
+<p><strong>微服务解决的问题之二，就是高并发。</strong></p>
+<p>互联网一个产品的特点就是在短期内要积累大量的用户，这甚至比营收和利润还重要，如果没有大量的用户基数，融资都会有问题。</p>
+<p>因而对于并发量不大的系统，进行微服务化的驱动力差一些，如果只有不多的用户在线，多线程就能解决问题，最多做好无状态化，前面部署个负载均衡，单体应用部署多份。</p>
+<p><strong>微服务拆分时机三：横向扩展流程复杂，主要业务和次要业务耦合</strong></p>
+<p>单体应用无状态化之后，虽然通过部署多份，可以承载一定的并发量，但是资源非常浪费。因为有的业务是需要扩容的，例如下单和支付，有的业务是不需要扩容的，例如注册。如果一起扩容，消耗的资源可能是拆分后的几倍，成本可能多出几个亿。而且由于配置复杂，在同一个工程里面，往往在配置文件中是这样组织的，这一块是这个模块的，下一块是另一个模块的，这样扩容的时候，一些边角的业务，也是需要对配置进行详细审核，否则不敢贸然扩容。</p>
+<p><strong>微服务拆分时机四：熔断降级全靠if-else</strong></p>
+<p>在高并发场景下，我们希望一个请求如果不成功，不要占用资源，应该尽快失败，尽快返回，而且希望当一些边角的业务不正常的情况下，主要业务流程不受影响。这就需要熔断策略，也即当A调用B，而B总是不正常的时候，为了让B不要波及到A，可以对B的调用进行熔断，也即A不调用B，而是返回暂时的fallback数据，当B正常的时候，再放开熔断，进行正常的调用。</p>
+<p>有时候为了保证核心业务流程，边角的业务流程，如评论，库存数目等，人工设置为降级的状态，也即默认不调用，将所有的资源用于大促的下单和支付流程。</p>
+<p>如果核心业务流程和边角业务流程在同一个进程中，就需要使用大量的if-else语句，根据下发的配置来判断是否熔断或者降级，这会使得配置异常复杂，难以维护。</p>
+<p>如果核心业务和边角业务分成两个进程，就可以使用标准的熔断降级策略，配置在某种情况下，放弃对另一个进程的调用，可以进行统一的维护。</p>
+<h2 id="三、服务拆分的方法"><a href="#三、服务拆分的方法" class="headerlink" title="三、服务拆分的方法"></a><strong>三、服务拆分的方法</strong></h2><p>好了，当你觉得要将一个程序的某个部分拆分出来的时候，有什么方法可以保障平滑吗？</p>
+<p>首先要做的，就是原有工程代码的标准化，我们常称为“任何人接手任何一个模块都能看到熟悉的面孔”</p>
+<p>例如打开一个java工程，应该有以下的package：</p>
+<ul>
+<li>API接口包：所有的接口定义都在这里，对于内部的调用，也要实现接口，这样一旦要拆分出去，对于本地的接口调用，就可以变为远程的接口调用</li>
+<li>访问外部服务包：如果这个进程要访问其他进程，对于外部访问的封装都在这里，对于单元测试来讲，对于这部分的Mock，可以使得不用依赖第三方，就能进行功能测试。对于服务拆分，调用其他的服务，也是在这里。</li>
+<li>数据库DTO：如果要访问数据库，在这里定义原子的数据结构</li>
+<li>访问数据库包：访问数据库的逻辑全部在这个包里面</li>
+<li>服务与商务逻辑：这里实现主要的商业逻辑，拆分也是从这里拆分出来。</li>
+<li>外部服务：对外提供服务的逻辑在这里，对于接口的提供方，要实现在这里。</li>
+</ul>
+<p>另外是测试文件夹，每个类都应该有单元测试，要审核单元测试覆盖率，模块内部应该通过Mock的方法实现集成测试。</p>
+<p>接下来是配置文件夹，配置profile，配置分为几类：</p>
+<ul>
+<li>内部配置项(启动后不变，改变需要重启)</li>
+<li>集中配置项(配置中心，可动态下发)</li>
+<li>外部配置项(外部依赖，和环境相关)</li>
+</ul>
+<p>当一个工程的结构非常标准化之后，接下来在原有服务中，先独立功能模块 ，规范输入输出，形成服务内部的分离。在分离出新的进程之前，先分离出新的jar，只要能够分离出新的jar，基本也就实现了松耦合。</p>
+<p>接下来，应该新建工程，新启动一个进程，尽早的注册到注册中心，开始提供服务，这个时候，新的工程中的代码逻辑可以先没有，只是转调用原来的进程接口。</p>
+<p>为什么要越早独立越好呢？哪怕还没实现逻辑先独立呢？因为服务拆分的过程是渐进的，伴随着新功能的开发，新需求的引入，这个时候，对于原来的接口，也会有新的需求进行修改，如果你想把业务逻辑独立出来，独立了一半，新需求来了，改旧的，改新的都不合适，新的还没独立提供服务，旧的如果改了，会造成从旧工程迁移到新工程，边迁移边改变，合并更加困难。如果尽早独立，所有的新需求都进入新的工程，所有调用方更新的时候，都改为调用新的进程，对于老进程的调用会越来越少，最终新进程将老进程全部代理。</p>
+<p>接下来就可以将老工程中的逻辑逐渐迁移到新工程，由于代码迁移不能保证逻辑的完全正确，因而需要持续集成，灰度发布，微服务框架能够在新老接口之间切换。</p>
+<p>最终当新工程稳定运行，并且在调用监控中，已经没有对于老工程的调用的时候，就可以将老工程下线了。</p>
+<h2 id="四、服务拆分的规范"><a href="#四、服务拆分的规范" class="headerlink" title="四、服务拆分的规范"></a><strong>四、服务拆分的规范</strong></h2><p>微服务拆分之后，工程会比较的多，如果没有一定的规范，将会非常混乱，难以维护。</p>
+<p>首先人们经常问的一个问题是，服务拆分之后，原来都在一个进程里面的函数调用，现在变成了A调用B调用C调用D调用E，会不会因为调用链路过长而使得相应变慢呢？</p>
+<p><strong>服务拆分的规范一：服务拆分最多三层，两次调用</strong></p>
+<p>服务拆分是为了横向扩展，因而应该横向拆分，而非纵向拆成一串的。也即应该将商品和订单拆分，而非下单的十个步骤拆分，然后一个调用一个。</p>
+<p>纵向的拆分最多三层：</p>
+<ul>
+<li>基础服务层：用于屏蔽数据库，缓存层，提供原子的对象查询接口，有这一层，为了数据层做一定改变的时候，例如分库分表，数据库扩容，缓存替换等，对于上层透明，上层仅仅调用这一层的接口，不直接访问数据库和缓存。</li>
+<li>组合服务层：这一层调用基础服务层，完成较为复杂的业务逻辑，实现分布式事务也多在这一层</li>
+<li>Controller层：接口层，调用组合服务层对外</li>
+</ul>
+<p><strong>服务拆分的规范二：仅仅单向调用，严禁循环调用</strong></p>
+<p>微服务拆分后，服务之间的依赖关系复杂，如果循环调用，升级的时候就很头疼，不知道应该先升级哪个，后升级哪个，难以维护。</p>
+<p>因而层次之间的调用规定如下：</p>
+<ul>
+<li>基础服务层主要做数据库的操作和一些简单的业务逻辑，不允许调用其他任何服务。</li>
+<li>组合服务层，可以调用基础服务层，完成复杂的业务逻辑，可以调用组合服务层，不允许循环调用，不允许调用Controller层服务</li>
+<li>Controller层，可以调用组合业务层服务，不允许被其他服务调用</li>
+</ul>
+<p>如果出现循环调用，例如A调用B，B也调用A，则分成Controller层和组合服务层两层，A调用B的下层，B调用A的下层。也可以使用消息队列，将同步调用，改为异步调用。</p>
+<p><strong>服务拆分的规范三：将串行调用改为并行调用，或者异步化</strong></p>
+<p>如果有的组合服务处理流程的确很长，需要调用多个外部服务，应该考虑如何通过消息队列，实现异步化和解耦。</p>
+<p>例如下单之后，要刷新缓存，要通知仓库等，这些都不需要再下单成功的时候就要做完，而是可以发一个消息给消息队列，异步通知其他服务。</p>
+<p>而且使用消息队列的好处是，你只要发送一个消息，无论下游依赖方有一个，还是有十个，都是一条消息搞定，只不过多几个下游监听消息即可。</p>
+<p>对于下单必须同时做完的，例如扣减库存和优惠券等，可以进行并行调用，这样处理时间会大大缩短，不是多次调用的时间之和，而是最长的那个系统调用时间。</p>
+<p><strong>服务拆分的规范四：接口应该实现幂等</strong></p>
+<p>微服务拆分之后，服务之间的调用当出现错误的时候，一定会重试，但是为了不要下两次单，支付两次，需要所有的接口实现幂等。</p>
+<p>幂等一般需要设计一个幂等表来实现，幂等表中的主键或者唯一键可以是transaction id，或者business id，可以通过这个id的唯一性标识一个唯一的操作。</p>
+<p>也有幂等操作使用状态机，当一个调用到来的时候，往往触发一个状态的变化，当下次调用到来的时候，发现已经不是这个状态，就说明上次已经调用过了。</p>
+<p>状态的变化需要是一个原子操作，也即并发调用的时候，只有一次可以执行。可以使用分布式锁，或者乐观锁CAS操作实现。</p>
+<p><strong>服务拆分的规范五：接口数据定义严禁内嵌，透传</strong></p>
+<p>微服务接口之间传递数据，往往通过数据结构，如果数据结构透传，从底层一直到上层使用同一个数据结构，或者上层的数据结构内嵌底层的数据结构，当数据结构中添加或者删除一个字段的时候，波及的面会非常大。</p>
+<p>因而接口数据定义，在每两个接口之间约定，严禁内嵌和透传，即便差不多，也应该重新定义，这样接口数据定义的改变，影响面仅仅在调用方和被调用方，当接口需要更新的时候，比较可控，也容易升级。</p>
+<p><strong>服务拆分的规范六：规范化工程名</strong></p>
+<p>微服务拆分后，工程名非常多，开发人员，开发团队也非常多，如何让一个开发人员看到一个工程名，或者jar的名称，就大概知道是干什么的，需要一个规范化的约定。</p>
+<p>例如出现pay就是支付，出现order就是下单，出现account就是用户。</p>
+<p>再如出现compose就是组合层，controller就是接口层，basic就是基础服务层。</p>
+<p>出现api就是接口定义，impl就是实现。</p>
+<p>pay-compose-api就是支付组合层接口定义。</p>
+<p>account-basic-impl就是用户基础服务层的实现。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/10/100067.html" class="pre-post btn btn-default" title='VB6开发的软件破解'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">VB6开发的软件破解</span>
+        </a>
+    
+    
+        <a href="/archives/2018/10/100065.html" class="next-post btn btn-default" title='去ILDasm SuppressIldasmAttribute限制'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">去ILDasm SuppressIldasmAttribute限制</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、服务拆分的前提"><span class="toc-text">一、服务拆分的前提</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、服务拆分的时机"><span class="toc-text">二、服务拆分的时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、服务拆分的方法"><span class="toc-text">三、服务拆分的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、服务拆分的规范"><span class="toc-text">四、服务拆分的规范</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

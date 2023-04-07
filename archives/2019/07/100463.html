@@ -1,0 +1,402 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink">
+
+
+    <meta name="description" content="一、Flink介绍既然有了Apache Spark，为什么还要使用Apache Flink？
+因为Flink是一个纯流式计算引擎，而类似于Spark这种微批的引擎，只是Flink流式引擎的一个特...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink介绍 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink介绍">
+            
+	            Flink介绍
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1356</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一、Flink介绍"><a href="#一、Flink介绍" class="headerlink" title="一、Flink介绍"></a>一、Flink介绍</h1><p>既然有了Apache Spark，为什么还要使用Apache Flink？</p>
+<p>因为Flink是一个纯流式计算引擎，而类似于Spark这种微批的引擎，只是Flink流式引擎的一个特例。</p>
+<p>Flink是一款分布式的计算引擎，它可以用来做批处理，即处理静态的数据集、历史的数据集;也可以用来做流处理，即实时地处理一些实时数据流，实时地产生数据的结果;也可以用来做一些基于事件的应用，比如说滴滴通过Flink CEP实现实时监测用户及司机的行为流来判断用户或司机的行为是否正当。</p>
+<p>使用官网的一句话来介绍 Flink 就是 <strong>“Stateful Computations Over Streams”</strong>，即数据流上的有状态的计算。这里面有两个关键字，一个是Streams，Flink认为有界数据集是无界数据流的一种特例，所以说有界数据集也是一种数据流，事件流也是一种数据流。Everything is streams，即Flink可以用来处理任何的数据，可以支持批处理、流处理、AI、MachineLearning等等。</p>
+<p>另外一个关键词是Stateful，即有状态计算。有状态计算是最近几年来越来越被用户需求的一个功能。举例说明状态的含义，比如说一个网站一天内访问UV数，那么这个UV数便为状态。Flink提供了内置的对状态的一致性的处理，即如果任务发生了Failover，其状态不会丢失、不会被多算少算，同时提供了非常高的性能。</p>
+<p>那Flink的受欢迎离不开它身上还有很多的标签，其中包括性能优秀(尤其在流计算领域)、高可扩展性、支持容错，是一种纯内存式的一个计算引擎，做了内存管理方面的大量优化，另外也支持eventime的处理、支持超大状态的Job(在阿里巴巴中作业的state大小超过TB的是非常常见的)、支持exactly-once的处理。</p>
+<h2 id="基本特性"><a href="#基本特性" class="headerlink" title="基本特性"></a>基本特性</h2><p><strong>流处理特性</strong></p>
+<ul>
+<li>支持高吞吐、低延迟、高性能的流处理</li>
+<li>支持带有事件时间的窗口（Window）操作</li>
+<li>支持有状态计算的Exactly-once语义</li>
+<li>支持高度灵活的窗口（Window）操作，支持基于time、count、session，以及data-driven的窗口操作</li>
+<li>支持具有Backpressure功能的持续流模型</li>
+<li>支持基于轻量级分布式快照（Snapshot）实现的容错</li>
+<li>一个运行时同时支持Batch on Streaming处理和Streaming处理</li>
+<li>Flink在JVM内部实现了自己的内存管理</li>
+<li>支持迭代计算</li>
+<li>支持程序自动优化：避免特定情况下Shuffle、排序等昂贵操作，中间结果有必要进行缓存</li>
+</ul>
+<p><strong>API支持</strong></p>
+<ul>
+<li>对Streaming数据类应用，提供DataStream API</li>
+<li>对批处理类应用，提供DataSet API（支持Java/Scala）</li>
+</ul>
+<p><strong>Libraries支持</strong></p>
+<ul>
+<li>支持机器学习（FlinkML）</li>
+<li>支持图分析（Gelly）</li>
+<li>支持关系数据处理（Table）</li>
+<li>支持复杂事件处理（CEP）</li>
+</ul>
+<p><strong>整合支持</strong></p>
+<ul>
+<li>支持Flink on YARN</li>
+<li>支持HDFS</li>
+<li>支持来自Kafka的输入数据</li>
+<li>支持Apache HBase</li>
+<li>支持Hadoop程序</li>
+<li>支持Tachyon</li>
+<li>支持ElasticSearch</li>
+<li>支持RabbitMQ</li>
+<li>支持Apache Storm</li>
+<li>支持S3</li>
+<li>支持XtreemFS</li>
+</ul>
+<h2 id="Flink-基石"><a href="#Flink-基石" class="headerlink" title="Flink 基石"></a>Flink 基石</h2><p>Apache Flink 之所以能越来越受欢迎，我们认为离不开它最重要的四个基石：Checkpoint、State、Time、Window。</p>
+<p>首先是Checkpoint机制，这是Flink最重要的一个特性。Flink基于Chandy-Lamport算法实现了一个分布式的一致性的快照，从而提供了一致性的语义。Chandy-Lamport算法实际上在1985年的时候已经被提出来，但并没有被很广泛的应用，而Flink则把这个算法发扬光大了。Spark最近在实现Continue streaming，Continue streaming的目的是为了降低它处理的延时，其也需要提供这种一致性的语义，最终采用Chandy-Lamport这个算法，说明Chandy-Lamport算法在业界得到了一定的肯定。</p>
+<p>提供了一致性的语义之后，Flink为了让用户在编程时能够更轻松、更容易地去管理状态，还提供了一套非常简单明了的State API，包括里面的有ValueState、ListState、MapState，近期添加了BroadcastState，使用State API能够自动享受到这种一致性的语义。</p>
+<p>除此之外，Flink还实现了Watermark的机制，能够支持基于事件的时间的处理，或者说基于系统时间的处理，能够容忍数据的延时、容忍数据的迟到、容忍乱序的数据。</p>
+<p>另外流计算中一般在对流数据进行操作之前都会先进行开窗，即基于一个什么样的窗口上做这个计算。Flink提供了开箱即用的各种窗口，比如滑动窗口、滚动窗口、会话窗口以及非常灵活的自定义的窗口。</p>
+<h2 id="Flink-API"><a href="#Flink-API" class="headerlink" title="Flink API"></a>Flink API</h2><p>Flink分层API主要有三层，如下图：</p>
+<p><img src="/img/flink/7742f37d651x-s_309458349.png" alt="img"></p>
+<p>最底层是ProcessFunction，它能够提供非常灵活的功能，它能够访问各种各样的State，用来注册一些timer，利用timer回调的机制能够实现一些基于事件驱动的一些应用。</p>
+<p>之上是DataStream API，最上层是SQL/Table API的一种High-level API。</p>
+<h2 id="Flink的用途"><a href="#Flink的用途" class="headerlink" title="Flink的用途"></a>Flink的用途</h2><p>Flink能用来做什么?回顾一下Flink up前几站的分享，有非常多的嘉宾分享了他们在自己公司里面基于Flink做的一些实践，包括携程、唯品会、饿了么、滴滴、头条等等。他们的应用场景包括实时的机器学习，实时的统计分析，实时的异常监测等等。这些实践案例的共同点就是都用来做实时性的任务。</p>
+<h2 id="Flink-Title的变化"><a href="#Flink-Title的变化" class="headerlink" title="Flink Title的变化"></a>Flink Title的变化</h2><p>早期Flink是这样介绍自己的:“我是一个开源的流批统一的计算引擎”，当时跟Spark有点类似。后来Spark改成了一长串的文字，里面有各种各样的形容词：“我是一个分布式的、高性能的、高可用的、高精确的流计算系统”。最近Spark又进行了修改：“我是一个数据流上的有状态的计算”。</p>
+<p>通过观察这个变化，可以发现Flink社区重心的变迁，即社区现在主要精力是放在打造它的流计算引擎上。先在流计算领域扎根，领先其他对手几年，然后借助社区的力量壮大社区，再借助社区的力量扩展它的生态。</p>
+<p>阿里巴巴Flink是这样介绍自己的：“Flink是一个大数据量处理的统一的引擎”。这个“统一的引擎”包括流处理、批处理、AI、MachineLearning、图计算等等。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Flink 同时支持了流处理和批处理，目前流计算的模型已经相对比较成熟和领先，也经历了各个公司大规模生产的验证。社区在接下来将继续加强流计算方面的性能和功能，包括对 Flink SQL 扩展更丰富的功能和引入更多的优化。另一方面也将加大力量提升批处理、机器学习等生态上的能力。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100464.html" class="pre-post btn btn-default" title='Flink概念'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink概念</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100484.html" class="next-post btn btn-default" title='jira使用教程'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">jira使用教程</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、Flink介绍"><span class="toc-text">一、Flink介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本特性"><span class="toc-text">基本特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-基石"><span class="toc-text">Flink 基石</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-API"><span class="toc-text">Flink API</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink的用途"><span class="toc-text">Flink的用途</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-Title的变化"><span class="toc-text">Flink Title的变化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,汇编">
+
+
+    <meta name="description" content="主要介绍什么是逆向分析，以及逆向分析过程中常用的汇编指令。
+软件逆向的定义：软件逆向工程是通过反汇编和调试等手段，分析计算机程序的二进制可执行代码从而获得程序的算法细节和实现原理的技术。
+研究对...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>逆向分析之 一.常见的汇编指令 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="逆向分析之 一.常见的汇编指令">
+            
+	            逆向分析之 一.常见的汇编指令
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/assemble/">汇编</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/28</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1561</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>主要介绍什么是逆向分析，以及逆向分析过程中常用的汇编指令。</p>
+<h3 id="软件逆向的定义："><a href="#软件逆向的定义：" class="headerlink" title="软件逆向的定义："></a><strong>软件逆向的定义：</strong></h3><p>软件逆向工程是通过反汇编和调试等手段，分析计算机程序的二进制可执行代码从而获得程序的算法细节和实现原理的技术。</p>
+<p>研究对象：没有公开源代码的计算机程序，主要是已经经过编译的二进制可执行代码（如win32平台上的PE文件，包括exe，dll等文件格式）。</p>
+<h3 id="软件逆向的分类："><a href="#软件逆向的分类：" class="headerlink" title="软件逆向的分类："></a><strong>软件逆向的分类：</strong></h3><p>（1）  系统级逆向：大范围分析观察，整体把握</p>
+<p>（2）  代码级逆向：程序二进制码中提取设计理念和算法</p>
+<h3 id="软件逆向步骤："><a href="#软件逆向步骤：" class="headerlink" title="软件逆向步骤："></a><strong>软件逆向步骤：</strong></h3><p>（1）  研究保护方法，去除保护功能：解码/反汇编（目标二进制代码）</p>
+<p>（2）  反汇编目标软件，定位功能函数：中间语言翻译（汇编或类汇编代码）</p>
+<p>（3）  分析汇编代码：数据流分析（各级中间语言）</p>
+<p>（4）  修改汇编代码或还原高级源代码：其他分析和优化（高级抽象代码）</p>
+<h3 id="软件逆向工具："><a href="#软件逆向工具：" class="headerlink" title="软件逆向工具："></a><strong>软件逆向工具：</strong></h3><p>（1）  Ollydbg：动态追踪工具，插件较好较多</p>
+<p>（2）  Windbg：用户态和内核态调试工具</p>
+<p>（3）  IDA：交互式反汇编器</p>
+<p>（4）  PEID：著名的查壳工具</p>
+<p>（5）  C32Asm：反汇编程序，可直接修改软件内部代码，有十六进制编辑模式</p>
+<h3 id="软件逆向的主要应用："><a href="#软件逆向的主要应用：" class="headerlink" title="软件逆向的主要应用："></a><strong>软件逆向的主要应用：</strong></h3><p>（1）  软件破解：破解软件的版权让用户不支付授权费用就可以使用软件的全部功能。</p>
+<p>（2）  病毒和恶意程序的分析：恶意程序的传播机制和危害并设计出解，分析病毒解决办法。</p>
+<p>（3）  系统漏洞分析：分析漏洞原理，设计补丁程序或者编写利用程序（Exploit）</p>
+<p>（4）  分析不公开的文件格式，协议等</p>
+<p>（5）  分析windows或mac平台上的硬件驱动程序编写linux下的相应驱动</p>
+<p>（6）  挖掘消费电子产品的潜能</p>
+<p>（7）  挖掘操作系统未文档化的API，发现更多内幕</p>
+<p>（8）  计算机犯罪取证</p>
+<hr>
+<h3 id="软件开发基础知识："><a href="#软件开发基础知识：" class="headerlink" title="软件开发基础知识："></a><strong>软件开发基础知识：</strong></h3><p>目前通用的编程语言有两种形式：汇编语言和高级语言</p>
+<p>汇编语言的实质和机器语言是相同的，都是直接对硬件操作，只不过指令采用英文缩写的标识符，更容易识别和记忆。汇编程序通常由三部分组成：指令，伪指令，宏指令。</p>
+<p>高级语言所编写的程序不能直接被计算机识别，必须经过转换（目标代码即机器码）才能被执行，按照转换方式可将他们分为两类：</p>
+<p>（1）  解释类：边翻译边执行</p>
+<p>（2）  编译类：先翻译在执行</p>
+<p>C语言的特点：</p>
+<p>（1）  c语言允许直接访问物理地址，可以直接对硬件进行操作</p>
+<p>（2）  c语言程序代码质量高，程序执行效率高</p>
+<p>（3）  c语言使用范围大，可移植性好</p>
+<hr>
+<h3 id="常见的汇编指令："><a href="#常见的汇编指令：" class="headerlink" title="常见的汇编指令："></a><strong>常见的汇编指令：</strong></h3><p>（1）汇编大多是指汇编语言，汇编程序。把汇编语言翻译成机器语言的过程称为汇编。在汇编语言中，用符号代替机器语言的二进制码，就把机器语言变成了汇编语言。</p>
+<p>（2）用汇编语言编写的程序，机器不能直接识别，要由一种程序将汇编语言翻译成机器语言，这种起翻译作用的程序叫汇编程序，汇编程序是系统软件中语言处理的系统软件。</p>
+<p>（3）由于汇编更接近机器语言，能够直接对硬件进行操作，生成的程序与其他的语言相比具有更高的运行速度，占用更小的内存，因此在一些对于时效性要求很高的程序，许多大型程序的核心模块以及工业控制方面大量应用。</p>
+<p>（4）关于汇编语言的种类，可以说有多少中不同内核的CPU，就有多少种汇编语言。</p>
+<p>（5）不同内核的CPU，必须有对应的汇编语言编译器将汇编语言编写的程序编译成对应CPU的机器语言代码，CPU才能正确识别和执行这些代码。</p>
+<p>（6）不同架构的CPU的汇编指令集并不相同。</p>
+<p>（7）不同的汇编程序有不同的汇编语言规定。</p>
+<p>（8）常用的汇编程序有ASM，MASM，TASM，OPTASM等。</p>
+<p><strong>寄存器：</strong></p>
+<p>寄存器是存储信息的单元或者说是器件，这里讨论的寄存器都是CPU中的寄存器，位于CPU内部，而内存位于CPU外部。</p>
+<p>对于一个汇编程序员来说，CPU中主要可以使用的也就是寄存器而已，汇编程序员可以使用指令来读写CPU中的寄存器，从而实现对于CPU的控制，当然，不同的CPU，寄存器的个数和结构都是不一样的。</p>
+<p>8086 CPU中寄存器总共为14个，且均为16位（32位和64位均已16位为基础）</p>
+<p>即 AX BX  CX  DX SP  BP  SI DI  IP  FLAG CS  DS  SS  ES共14个。这14个寄存器按照一定的方式又分为通用寄存器，控制寄存器，段寄存器。</p>
+<p><strong>通用寄存器：</strong></p>
+<p>AX，BX，CX，DX称作为数据寄存器：</p>
+<p>AX：累加寄存器，也称为累加器</p>
+<p>BX：基地址寄存器</p>
+<p>CX：计数器寄存器</p>
+<p>DX：数据寄存器</p>
+<p>SP和BP又称作为指针寄存器：</p>
+<p>​       SP：堆栈指针寄存器</p>
+<p>​       BP：基指针寄存器</p>
+<p>SI和DI又称作为变址寄存器：</p>
+<p>​       SI：源变址寄存器</p>
+<p>​       DI：目的变址寄存器</p>
+<p><strong>控制寄存器：</strong></p>
+<p>​       IP：指令指针寄存器</p>
+<p>​       FLAG：标志寄存器</p>
+<p><strong>段寄存器：</strong></p>
+<p>​       CS：代码段寄存器</p>
+<p>​       DS：数据段寄存器</p>
+<p>​       SS：堆栈段寄存器</p>
+<p>​       ES：附加段寄存器</p>
+<p><strong>堆栈：</strong></p>
+<p>​       堆栈都是一种数据项按序排序的数据结构，只能在一端（称为栈顶）对数据项进行插入和删除。主要功能是暂时存放数据和地址，通常用来保护断电和现场。</p>
+<p>​       堆：队列优先，先进先出</p>
+<p>​       栈：先进后出</p>
+<p>堆栈中定义了一些操作，两个最重要的是PUSH和POP。</p>
+<p>PUSH操作在堆栈的顶部加入一个元素，POP操作相反，在堆栈顶部移去一个元素，并将堆栈的大小减一。</p>
+<p>机器语言：用二进制编码表示每条指令，是计算机能直接识别和执行的语言。</p>
+<p>汇编语言：是用助记符，符号和数字等来表示指令的程序设计语言，它与机器语言指令是一一对应的。</p>
+<p>重点掌握常用指令功能及应用：</p>
+<p>​       常用传送指令</p>
+<p>​       加减法指令</p>
+<p>​       逻辑运算和移位指令</p>
+<p>​       控制转移指令</p>
+<p>​       字符（串）输入输出功能调用</p>
+<p>（1）  数据传送指令：MOV/XCHG，PUSH/POP，LEA</p>
+<p>（2）  算数运算类指令：ADD/ADC/INC，SUB/SBB/DEC/CMP/NEG，MUL/IMUL，DIV/IDIV</p>
+<p>（3）  位操作类指令：AND/OR/XOR/NOT/TEST</p>
+<p>（4）  控制转移类指令：JMP/JCC/LOOP，CALL/RET，INT n</p>
+<p>（5）  处理机控制类指令：NOP</p>
+<p>Inter 8086指令系统共有117条基本指令：</p>
+<p>可分为6个功能组：</p>
+<p>（1）  数据传送类指令</p>
+<p>（2）  算数运算类指令</p>
+<p>（3）  位操作类指令</p>
+<p>（4）  串操作类指令</p>
+<p>（5）  控制转移类指令</p>
+<p>（6）  处理机控制类指令</p>
+<p><strong>1.    数据传送类指令：</strong></p>
+<p>数据传送是计算机中最基本，最重要的一种操作，传送指令也是最常用的一类指令，传送指令把数据从一个位置传送到另一个位置。</p>
+<p>除标志寄存器传送指令外，均不影响标志位。</p>
+<p>重点掌握一下指令：</p>
+<p>MOV   XCHG   PUSH  POP   LEA</p>
+<p>（1）  传送指令MOV：把一个字节或操作数从源地址传送至目的地址。</p>
+<p>（2）  交换指令XCHG：把两个地方的数据进行互换。</p>
+<p>寄存器与寄存器之间对换数据</p>
+<p>寄存器与存储器之间对换数据</p>
+<p>不能在存储器与存储器之间对换数据</p>
+<p>（3）  进栈指令PUSH：</p>
+<p>Push r16/m16/seg  操作过程：1. SP&lt;-SP-2  2.SS:[SP]&lt;-r16/m16</p>
+<p>同理POP是出栈指令，操作与PUSH相反。</p>
+<p><strong>2.    算数运算类指令：</strong></p>
+<p>四则运算是计算机经常进行的一种操作，算术运算指令实现二进制（十进制）数据的四则运算。</p>
+<p>注意算术运算类指令对标志的影响</p>
+<p>掌握ADD/ADC/INC   ,  SUB/SBB/DEC/NEG/CMP</p>
+<p>熟悉 MUL/IMUL   ,  DIV/IDIV</p>
+<p>理解 CBW/CWD  ,  DAA/DAS ,  AAA/AAS/AAM/AAD</p>
+<p>（1）  加法指令ADD：</p>
+<p>功能：ADD指令将源与目的操作数相加，结果送到目的操作数</p>
+<p>ADD指令按状态标志的定义相应设置状态标志</p>
+<p>ADD reg, imm/reg/mem  reg&lt;-reg+imm/reg/mem</p>
+<p>（2）  带进位加法指令ADC：</p>
+<p>ADC指令将源与目的的操作数相加，在加上进位CF标志，结果送到目的操作数</p>
+<p>ADC指令按状态标志的定义相应设置状态标志</p>
+<p>ADC指令主要与ADD配合，实现多精度加法运算</p>
+<p>ADD reg , imm/reg/mem</p>
+<p>ADC mem , imm/reg</p>
+<p>（3）  增量指令INC：</p>
+<p>INC指令对操作数加1（增量）</p>
+<p>INC指令不影响进位CF标志，按定义设置其他状态标志</p>
+<p>INC reg/mem    reg/mem&lt;-reg/mem+1</p>
+<p>（4）  减法指令SUB：</p>
+<p>SUB指令将目的操作数减去源操作数，结果送到目的操作数</p>
+<p>SUB指令按照定义相应设置状态标志</p>
+<p>SUB reg , imm/reg/mem    reg&lt;-reg-imm/reg/mem</p>
+<p>（5）  带借位减法指令SBB：</p>
+<p>SBB指令将目的操作数减去源操作数，在减去借位CF（进位），结果送到目的操作数。</p>
+<p>SBB指令主要与SUB配合，实现多精度减法运算</p>
+<p>SBB reg , imm/reg/mem    reg&lt;-reg-imm/reg/mem-CF</p>
+<p>（6）  减量指令DEC：</p>
+<p>DEC指令对操作数减1（减量）</p>
+<p>DEC reg/mem    reg/mem&lt;-reg/mem-1</p>
+<p>INC指令和DEC指令都是单操作数指令，主要用于对计数器和地址指针的调整。</p>
+<p>（7）  求补指令NEG：</p>
+<p>NEG指令对操作数执行求补运算：用0减去操作数，然后结果返回操作数，求补运算也可以表达成，将操作数按位取反后加1</p>
+<p>NEG指令对标志的影响与用0作减法的SUB指令一样</p>
+<p>NEG reg/mem     reg/mem&lt;-0-reg/mem</p>
+<p>（8）  比较指令CMP：</p>
+<p>CMP指令将目的操作数减去源操作数，按照定义相应设置状态标志</p>
+<p>CMP指令执行的功能与SUB指令类似，但结果不回送目的操作数。</p>
+<p>CMP reg , imm/reg/mem    reg—imm/reg/mem</p>
+<p><strong>3.    位操作指令：</strong></p>
+<p>位操作指令以二进制为基本单位进行数据的操作，这是一类常用的指令。</p>
+<p>（1）逻辑运算指令：ADD(与)  OR(或)  XOR(异或)  NOT(非)   TEST(测试)</p>
+<p>（2）移位指令：SHL(逻辑左移)   SHR(逻辑右移)   SAL(算术左移)   SAR(算术右移)</p>
+<p>（3）循环移位指令：ROL(左循环移位)   ROR(右循环移位)   RCL(带进位左循环移位)   RCR(带进位右循环移位)</p>
+<p>1）逻辑运算指令ADD：对两个操作数执行逻辑与运算，结果送到目的操作数。ADD des , src     des&lt;-des^src</p>
+<p>2)逻辑运算指令OR：对两个操作数执行逻辑或运算，结果送到目的操作数，OR dest , src       dest&lt;-destv src</p>
+<p>3)逻辑运算指令XOR：对两个操作数执行逻辑异或运算，结果送到目的操作数。XOR dest , src</p>
+<p>4)逻辑运算指令NOT：对一个操作数执行逻辑非运算。NOT reg/mem，按位取反，原来的0的位变1，原来的1的位变0</p>
+<p><strong>4.    控制转移类指令：</strong></p>
+<p>用于实现分支，循环，过程等程序结构，是仅次于传送指令的常用指令。</p>
+<p>重点掌握：JMP/JCC/LOOP  ,   CALL/RET</p>
+<p>INT n/IRET 常用系统功能调用</p>
+<p>一般了解：LOOPZ/LOOPNZ   INTO</p>
+<p>（1）  无条件转移指令JMP：</p>
+<p>JMP label；程序转向label标号指定的地址（标号要在程序其他位置标出）</p>
+<p>只要执行无条件转移指令JMP，不需要任何条件，就使程序转到指定的目的地址处，从目标地址开始执行指令。</p>
+<p>操作数是要转移到的目标地址。</p>
+<p>转移原理：1.程序的执行地址，是由段寄存器CS和指令指针IP共同确定的，即当前指令的地址为CS：IP。2.程序的跳转是通过修改CS和IP的值来实现的。</p>
+<p>（2）  条件转移指令JCC：</p>
+<p>Jcc label  ； 条件满足，发生转移：IP&lt;-IP+8位位移量；条件不满足，顺序执行。</p>
+<p>指定的条件cc如果成立，程序转移到由标号label指定的目标地址去执行指令，条件不成立，则程序将顺序执行下一条指令。</p>
+<p>操作数label是短转移指令，要跳转的地址必须距当前IP地址-128~+127个单元的范围之内</p>
+<p>Jcc指令不影响标志，但要利用标志，根据利用的标志位不同，16条指令分为3种情况：</p>
+<p>1）       判断单个标志位状态</p>
+<p>2）       比较无符号数高低</p>
+<p>3）       比较有符号数大小</p>
+<p>（3）  循环指令LOOP：</p>
+<p>循环指令是一种特殊的转移指令，当满足某条件时，反复执行一系列操作，知道不满足为止。</p>
+<p>格式： LOOP label</p>
+<p>循环指令利用CX寄存器作为计数器</p>
+<p>（4）  子程序指令：</p>
+<p>子程序是完成特定功能的一段程序</p>
+<p>当主程序（调用程序）需要执行这个功能时，采用CALL调用指令转移到该子程序的起始处执行</p>
+<p>当运行完子程序功能后，采用RET返回指令回到主程序继续执行</p>
+<p>子程序通常是与主程序分开完成特定功能的一段程序，程序中有时要反复的实现相同的功能只不过参数不同而已，把仅参数不同功能重复的程序编写成为子程序，执行这个功能时，就可以调用该子程序，执行完成后在返回主程序。</p>
+<p>CALL指令分成4中类型：</p>
+<p>1）       CALL label； 段内调用，相对寻址。</p>
+<p>2）       CALL r16/m16；段内调用，间接寻址</p>
+<p>3）       CALL far ptr label；段间调用，直接寻址</p>
+<p>4）       CALL far ptr mem；段间调用，间接寻址</p>
+<p>（5）  中断指令：</p>
+<p>中断是一种改变程序执行顺序的方法，在程序运行时，遇到某些需要紧急处理的情况，如停电，数据的实时接收，溢出等，处理器暂停主程序的执行，转去执行中断处理程序。</p>
+<p>中断分类：内部中断，外部中断</p>
+<p>中断指令：INT</p>
+<p>INT i8</p>
+<p>IRET：中断返回指令，实现中断返回</p>
+<p>INTO：溢出中断指令</p>
+<p><strong>5.    处理机控制类指令：</strong></p>
+<p>对CPU状态进行控制的指令。</p>
+<p>NOP CS：SS：DS：ES</p>
+<p>LOCK  HLT  ESC  WAIT</p>
+<p>（1）  空操作指令NOP：不执行任何操作，但占用一个字节存储单元，空耗一个指令执行周期。</p>
+<p>（2）  NOP常用于程序调试，在需要预留指令空间时用NOP填充，代码空间多余时也可以用NOP填充，还可以用NOP实现软件延时。</p>
+<p>（3）  事实上，NOP和XCHG，AX，的指令代码一样都是90H</p>
+<p>（4）  段超越前缀指令：在允许段超越的存储器操作数之前，使用段超越前缀指令，将采用指定的段寄存器寻址操作数。</p>
+<p>CS：使用代码段的数据</p>
+<p>SS：使用堆栈段的数据</p>
+<p>DS：使用数据段的数据</p>
+<p>ES：使用附加段的数据</p>
+<p><strong>6.    伪指令</strong></p>
+<p>没有对应的机器码的指令，最终不被CPU所执行。伪指令是由编译器来执行的指令，编译器根据伪指令来进行相关的编译工作。</p>
+<p>segment和ends是一对成对使用的伪指令，这是在写可被编译器编译的汇编程序时，必须要用到的一对伪指令。</p>
+<p>segment和ends的功能是定义一个段，segment说明一个段开始，ends说明一个段结束。</p>
+<p>一个段必须有一个名称来标识，使用格式为：</p>
+<p>​        段名 segment</p>
+<p>​        段名 ends</p>
+<p>一个汇编程序是由多个段组成的，这些段被用来存放代码，数据或当作栈空间来使用。</p>
+<p>一个有意义的汇编程序中至少要有一个段，这个段用来存放代码。</p>
+<p>end是一个汇编程序的结束标记，编译器在编译汇编程序的过程中，如果碰到了伪指令end，就结束对源程序的编译。</p>
+<p>不要搞混end和ends</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100139.html" class="pre-post btn btn-default" title='逆向分析之 二.动态调试OllyDBG入门教程'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">逆向分析之 二.动态调试OllyDBG入门教程</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100142.html" class="next-post btn btn-default" title='软件代码的静态和动态分析'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">软件代码的静态和动态分析</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#软件逆向的定义："><span class="toc-text">软件逆向的定义：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软件逆向的分类："><span class="toc-text">软件逆向的分类：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软件逆向步骤："><span class="toc-text">软件逆向步骤：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软件逆向工具："><span class="toc-text">软件逆向工具：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软件逆向的主要应用："><span class="toc-text">软件逆向的主要应用：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软件开发基础知识："><span class="toc-text">软件开发基础知识：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常见的汇编指令："><span class="toc-text">常见的汇编指令：</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

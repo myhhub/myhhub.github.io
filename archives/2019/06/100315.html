@@ -1,0 +1,399 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop">
+
+
+    <meta name="description" content="一 JDK的安装
+下载JDK安装包,建议去Oracle官方下载,地址自行百度
+下载Hadoop2.6的安装包,建议官方下载,地址自行百度
+如果是在Windows端进行终端操作,建议使用XFTP与...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 九.Hadoop的伪分布式搭建 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 九.Hadoop的伪分布式搭建">
+            
+	            大数据hadoop之 九.Hadoop的伪分布式搭建
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/08</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1399</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-JDK的安装"><a href="#一-JDK的安装" class="headerlink" title="一 JDK的安装"></a>一 JDK的安装</h2><ol>
+<li>下载JDK安装包,建议去Oracle官方下载,地址自行百度</li>
+<li>下载Hadoop2.6的安装包,建议官方下载,地址自行百度</li>
+<li>如果是在Windows端进行终端操作,建议使用XFTP与XShell,有Free版本</li>
+<li>之后用XFTP将JDK安装包与Hadoop安装包上传到实验主机上</li>
+<li>将Java SDK解压,并将解压文件复制到/usr/lib/jvm中  </li>
+<li>配置环境变量</li>
+<li>如果系统中已经有默认的OpenJavaSDK的话,这里我们需要修改默认SDK</li>
+<li>检测JavaSDK是否成功安装</li>
+</ol>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#新安装的服务器,建议更新一下安装源列表,同时安装nano,用VI编辑不是太方便</span></span><br><span class="line"><span class="comment">#sudo aptitude update</span></span><br><span class="line"><span class="comment">#sudo aptitude upgrade</span></span><br><span class="line"><span class="comment">#sudo aptitude install nano</span></span><br><span class="line"></span><br><span class="line">chu888chu888@<span class="symbol">ubuntu1:</span>~$ tar xvfz jdk-<span class="number">8</span>u65-linux-x64.gz</span><br><span class="line">chu888chu888@<span class="symbol">ubuntu1:</span>~$ sudo cp -r jdk1.<span class="number">8.0_65</span>/ <span class="regexp">/usr/lib</span><span class="regexp">/jvm/</span></span><br><span class="line">chu888chu888@<span class="symbol">ubuntu1:</span>/usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>$ <span class="title">sudo</span> <span class="title">nano</span> /<span class="title">etc</span>/<span class="title">profile</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">#修改内容如下,注意大小写</span></span><br><span class="line"><span class="comment">#在环境变量中的配置中,有一点需要指出就是如果只是编辑~/.profile的话这个变量的生效只是针对当前用户的.</span></span><br><span class="line"><span class="comment">#如果想要其在全局生效的话,建议更新/etc/profile,这是一个全局的.</span></span><br><span class="line"></span><br><span class="line">export JAVA_HOME=<span class="regexp">/usr/lib</span><span class="regexp">/jvm/</span></span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=.:$&#123;JAVA_HOME&#125;/<span class="class"><span class="keyword">lib</span>:$&#123;<span class="title">JRE_HOME</span>&#125;/<span class="title">lib</span></span></span><br><span class="line">export PATH=$&#123;JAVA_HOME&#125;/<span class="symbol">bin:</span>$PATH</span><br><span class="line"></span><br><span class="line">chu888chu888@<span class="symbol">ubuntu1:</span>/usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>$ <span class="title">source</span> /<span class="title">etc</span>/<span class="title">profile</span> </span></span><br><span class="line">chu888chu888@<span class="symbol">ubuntu1:</span>/usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>$ <span class="title">env</span></span></span><br><span class="line">chu888chu888@<span class="symbol">ubuntu1:</span>/usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>$ <span class="title">java</span> -<span class="title">version</span></span></span><br><span class="line">java version <span class="string">"1.8.0_65"</span></span><br><span class="line">Java(TM) SE Runtime Environment (build <span class="number">1.8</span>.<span class="number">0</span>_65-b17)</span><br><span class="line">Java HotSpot(TM) <span class="number">64</span>-Bit Server VM (build <span class="number">25.65</span>-b01, mixed mode)</span><br><span class="line"></span><br><span class="line"><span class="comment">#有一种极端情况就是,如果在本机已经安装了OpenJavaSDK,怎么办?</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/java java /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>/<span class="title">java</span>/<span class="title">bin</span>/<span class="title">java</span> 300  </span></span><br><span class="line">sudo update-alternatives --install /usr/bin/javac javac /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>/<span class="title">java</span>/<span class="title">bin</span>/<span class="title">javac</span> 300  </span></span><br><span class="line">sudo update-alternatives --install /usr/bin/jar jar /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>/<span class="title">java</span>/<span class="title">bin</span>/<span class="title">jar</span> 300   </span></span><br><span class="line">sudo update-alternatives --install /usr/bin/javah javah /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>/<span class="title">java</span>/<span class="title">bin</span>/<span class="title">javah</span> 300   </span></span><br><span class="line">sudo update-alternatives --install /usr/bin/javap javap /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">jvm</span>/<span class="title">java</span>/<span class="title">bin</span>/<span class="title">javap</span> 300</span></span><br><span class="line">sudo update-alternatives --config java</span><br><span class="line">sudo update-alternatives --config javac</span><br></pre></td></tr></table></figure>
+<h2 id="二-Hadoop的用户创建"><a href="#二-Hadoop的用户创建" class="headerlink" title="二 Hadoop的用户创建"></a>二 Hadoop的用户创建</h2><ol>
+<li>创建hadoop用户组  </li>
+<li>创建hadoop用户</li>
+<li>给hadoop用户添加权限,打开/etc/sudoers文件</li>
+</ol>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">chu888chu888@ubuntu1:/<span class="symbol">$</span> sudo addgroup hadoop</span><br><span class="line">chu888chu888@ubuntu1:/<span class="symbol">$</span> sudo adduser -ingroup hadoop hadoop</span><br><span class="line">chu888chu888@ubuntu1:/<span class="symbol">$</span> sudo nano /etc/sudoers</span><br><span class="line"></span><br><span class="line"># User privilege specification</span><br><span class="line">root    <span class="keyword">ALL</span>=(<span class="keyword">ALL</span>:<span class="keyword">ALL</span>) <span class="keyword">ALL</span></span><br><span class="line">hadoop  <span class="keyword">ALL</span>=(<span class="keyword">ALL</span>:<span class="keyword">ALL</span>) <span class="keyword">ALL</span></span><br></pre></td></tr></table></figure>
+<h2 id="三-SSH无密码登录"><a href="#三-SSH无密码登录" class="headerlink" title="三 SSH无密码登录"></a>三 SSH无密码登录</h2><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#第一次都要用ssh密码登录太麻烦,我们想办法采用无密码登录</span></span><br><span class="line">chu888chu888<span class="meta">@ubuntu2:~$</span> cd ~/.ssh/</span><br><span class="line">chu888chu888<span class="meta">@ubuntu2:~/.ssh$</span> ssh-keygen -t rsa</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/home/chu888chu888/.ssh/id_rsa): </span><br><span class="line">Enter passphrase (empty for no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved in /home/chu888chu888/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved in /home/chu888chu888/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">3a:51:9b:99:3e:65:9d:9a:b4:60:35:4f:79:d9:5b:89 chu888chu888<span class="meta">@ubuntu2</span></span><br><span class="line">The key's randomart image is:</span><br><span class="line">+--[ RSA 2048]----+</span><br><span class="line">|<span class="string">                 </span>|</span><br><span class="line">|<span class="string">             ..o.</span>|</span><br><span class="line">|<span class="string">        . o oEo.o</span>|</span><br><span class="line">|<span class="string">       . * = o  o</span>|</span><br><span class="line">|<span class="string">      . S + +  . </span>|</span><br><span class="line">|<span class="string">       = = +     </span>|</span><br><span class="line">|<span class="string">      o o +      </span>|</span><br><span class="line">|<span class="string">       . .       </span>|</span><br><span class="line">|<span class="string">                 </span>|</span><br><span class="line">+-----------------+</span><br><span class="line">chu888chu888<span class="meta">@ubuntu2:~/.ssh$</span> cat ./id_rsa.pub &gt;&gt;./authorized_keys</span><br><span class="line">chu888chu888<span class="meta">@ubuntu2:~/.ssh$</span> ssh localhost</span><br><span class="line"><span class="comment">#但是这里面有一个小问题就是,我是用chu888chu888这个用户做的,如果您想用</span></span><br><span class="line"><span class="comment">#hadoop用户登录的话,这个过程需要再来一次</span></span><br><span class="line">hadoop<span class="meta">@ubuntu2:~$</span> ssh hadoop<span class="meta">@localhost</span></span><br></pre></td></tr></table></figure>
+<h2 id="四-Hadoop的基本安装"><a href="#四-Hadoop的基本安装" class="headerlink" title="四 Hadoop的基本安装"></a>四 Hadoop的基本安装</h2><p>Hadoop 2 可以通过 </p>
+<p>  地址1:<a href="http://mirror.bit.edu.cn/apache/hadoop/common/" target="_blank" rel="noopener">http://mirror.bit.edu.cn/apache/hadoop/common/</a><br>  地址2:<a href="http://mirrors.cnnic.cn/apache/hadoop/common/" target="_blank" rel="noopener">http://mirrors.cnnic.cn/apache/hadoop/common/</a> </p>
+<p>  下载，本教程选择的是 2.6.0 版本，下载时请下载 hadoop-2.x.y.tar.gz 这个格式的文件，这是编译好的，另一个包含 src 的则是 Hadoop 源代码，需要进行编译才可使用。</p>
+<p>下载时强烈建议也下载 hadoop-2.x.y.tar.gz.mds 这个文件，该文件包含了检验值可用于检查 hadoop-2.x.y.tar.gz 的完整性，否则若文件发生了损坏或下载不完整，Hadoop 将无法正常运行。</p>
+<p>本文涉及的文件均通过浏览器下载，默认保存在 “下载” 目录中（若不是请自行更改 tar 命令的相应目录）。另外，如果你用的不是 2.6.0 版本，则将所有命令中出现的 2.6.0 更改为你所使用的版本。</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 列出md5检验值</span></span><br><span class="line"><span class="meta"># cat ~/下载/hadoop-2.6.0.tar.gz.mds | grep 'MD5'</span></span><br><span class="line"><span class="meta"># 2.7.1版本格式变了，可以用这种方式输出</span></span><br><span class="line"><span class="meta"># head -n 6 ~/下载/hadoop-2.7.1.tar.gz.mds </span></span><br><span class="line"><span class="meta"># 计算md5值，并转化为大写，方便比较</span></span><br><span class="line"><span class="meta"># md5sum ~/下载/hadoop-2.6.0.tar.gz | tr "a-z" "A-Z"</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>将hadoop解压到/usr/local下</li>
+<li>修改bashrc的配置,加入内容</li>
+<li>修改hadoop-env.sh的配置</li>
+<li>测试</li>
+</ol>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">chu888chu888@ubuntu1:~<span class="symbol">$</span> sudo tar xvfz hadoop<span class="number">-2.6</span><span class="number">.0</span>.tar.gz </span><br><span class="line">chu888chu888@ubuntu1:~<span class="symbol">$</span> sudo cp -r hadoop<span class="number">-2.6</span><span class="number">.0</span> /usr/local/hadoop</span><br><span class="line">chu888chu888@ubuntu1:~<span class="symbol">$</span> sudo chmod -R <span class="number">775</span> /usr/local/hadoop/</span><br><span class="line">chu888chu888@ubuntu1:~<span class="symbol">$</span> sudo chown -R hadoop:hadoop /usr/local/hadoop</span><br><span class="line">chu888chu888@ubuntu1:~<span class="symbol">$</span> sudo nano ~/.bashrc</span><br><span class="line">#加入以下内容</span><br><span class="line"></span><br><span class="line">#HADOOP <span class="keyword">VARIABLES</span> START</span><br><span class="line">export <span class="comment">JAVA_HOME=</span>/usr/<span class="comment">lib</span>/jvm/</span><br><span class="line">export <span class="comment">HADOOP_INSTALL=</span>/usr/<span class="comment">local</span>/hadoop</span><br><span class="line">export PATH=$PATH:$HADOOP_INSTALL/<span class="comment">bin</span></span><br><span class="line">export <span class="comment">PATH=$PATH:$JAVA_HOME</span>/bin</span><br><span class="line">export PATH=$PATH:$HADOOP_INSTALL/<span class="comment">sbin</span></span><br><span class="line">export <span class="comment">HADOOP_MAPRED_HOME=$HADOOP_INSTALL</span></span><br><span class="line">export <span class="comment">HADOOP_COMMON_HOME=$HADOOP_INSTALL</span></span><br><span class="line">export <span class="comment">HADOOP_HDFS_HOME=$HADOOP_INSTALL</span></span><br><span class="line">export <span class="comment">YARN_HOME=$HADOOP_INSTALL</span></span><br><span class="line">export <span class="comment">HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_INSTALL</span>/lib/<span class="comment">native</span></span><br><span class="line">export <span class="comment">HADOOP_OPTS=</span><span class="comment">"-Djava.library.path=$HADOOP_INSTALL/lib"</span></span><br><span class="line">#HADOOP <span class="comment">VARIABLES END</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">chu888chu888@ubuntu1:~$ source ~/.bashrc</span><br><span class="line">chu888chu888@ubuntu1:/<span class="comment">usr</span>/local/<span class="comment">hadoop$ sudo nano</span> /usr/<span class="comment">local</span>/hadoop/<span class="comment">etc</span>/hadoop/<span class="comment">hadoop-env.sh</span></span><br><span class="line">chu888chu888@ubuntu1:~$ cd /usr/<span class="comment">local</span>/hadoop/</span><br><span class="line"></span><br><span class="line">#hadoop安装后的查看hadoop的版本</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ ./bin/hadoop version</span><br><span class="line">Hadoop <span class="number">2.6</span><span class="number">.0</span></span><br><span class="line">Subversion https:<span class="comment">//git-wip-us.apache.org/repos/asf/hadoop.git -r e3496499ecb8d220fba99dc5ed4c99c8f9e33bb1</span></span><br><span class="line">Compiled by jenkins on <span class="number">2014</span><span class="number">-11</span><span class="number">-13</span>T21:<span class="number">10</span>Z</span><br><span class="line">Compiled with protoc <span class="number">2.5</span><span class="number">.0</span></span><br><span class="line">From source with checksum <span class="number">18e43357</span>c8f927c0695f1e9522859d6a</span><br><span class="line">This command was run <span class="keyword">using</span> /usr/local/hadoop/share/hadoop/common/hadoop-common-2.6.0.jar</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ </span><br><span class="line"></span><br><span class="line">#实验一 Hadoop单机配置</span><br><span class="line">Hadoop 默认模式为非分布式模式，无需进行其他配置即可运行。非分布式即单 Java 进程，方便进行调试。</span><br><span class="line">现在我们可以执行例子来感受下 Hadoop 的运行。Hadoop 附带了丰富的例子（运行 ./bin/hadoop jar ./share/hadoop/mapreduce/hadoop-mapreduce-examples<span class="number">-2.6</span><span class="number">.0</span>.jar 可以看到所有例子），包括 wordcount、terasort、join、grep 等。</span><br><span class="line"></span><br><span class="line">在此我们选择运行 grep 例子，我们将 input 文件夹中的所有文件作为输入，筛选当中符合正则表达式 dfs[a-z.]+ 的单词并统计出现的次数，最后输出结果到 output 文件夹中。</span><br><span class="line"></span><br><span class="line">chu888chu888@ubuntu1:/usr/local/hadoop$ sudo <span class="comment">mkdir input</span></span><br><span class="line">chu888chu888@ubuntu1:/usr/local/hadoop$ sudo cp README.txt input</span><br><span class="line">chu888chu888@ubuntu1:/usr/local/hadoop$ bin/hadoop jar share/hadoop/mapreduce/sources/hadoop-mapreduce-examples<span class="number">-2.6</span><span class="number">.0</span>-sources.jar org.apache.hadoop.examples.WordCount input output</span><br><span class="line">#这里面有一个小插曲,其实就是权限的事件,如果出现问题的话,就是这个程序无法在当前目录创建,简单粗暴一点chmod -R <span class="number">777</span> /usr/local/hadoop</span><br><span class="line">#如果成功的话,那前目录就会有一个output目录自动生成</span><br><span class="line">#目录内容如下</span><br><span class="line">chu888chu888@ubuntu1:/usr/local/hadoop/output$ ls</span><br><span class="line">part-r-00000  _SUCCESS</span><br><span class="line"></span><br><span class="line">#查看输出结果</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ ls</span><br><span class="line">bin  etc  include  input  lib  libexec  LICENSE.txt  NOTICE.txt  output  README.txt  sbin  share</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ cd <span class="comment">output</span>/</span><br><span class="line">hadoop@ubuntu2:/<span class="comment">usr</span>/local/<span class="comment">hadoop</span>/output$ ls</span><br><span class="line">part-r<span class="number">-00000</span>  _SUCCESS</span><br><span class="line">hadoop@ubuntu2:/<span class="comment">usr</span>/local/<span class="comment">hadoop</span>/output$ cd ..</span><br><span class="line">hadoop@ubuntu2:/<span class="comment">usr</span>/local/<span class="comment">hadoop$ cat .</span>/output<span class="comment">/*</span></span><br><span class="line"><span class="comment">(BIS),	1</span></span><br><span class="line"><span class="comment">(ECCN)	1</span></span><br><span class="line"><span class="comment">(TSU)	1</span></span><br><span class="line"><span class="comment">(see	1</span></span><br><span class="line"><span class="comment">5D002.C.1,	1</span></span><br><span class="line"><span class="comment">740.13)	1</span></span><br><span class="line"><span class="comment">&lt;http://www.wassenaar.org/&gt;	1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">#注意，Hadoop 默认不会覆盖结果文件，因此再次运行上面实例会提示出错，需要先将 ./output 删除。</span></span><br></pre></td></tr></table></figure>
+<h2 id="五-开始伪分布式的配置文件修改"><a href="#五-开始伪分布式的配置文件修改" class="headerlink" title="五 开始伪分布式的配置文件修改"></a>五 开始伪分布式的配置文件修改</h2><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line">Hadoop 可以在单节点上以伪分布式的方式运行，Hadoop 进程以分离的 Java 进程来运行，节点既作为 NameNode 也作为 DataNode，同时，读取的是 HDFS 中的文件。</span><br><span class="line"></span><br><span class="line">Hadoop 的配置文件位于 <span class="string">/usr/local/hadoop/etc/hadoop/</span> 中，伪分布式需要修改2个配置文件 core-site.xml 和 hdfs-site.xml 。Hadoop的配置文件是 xml 格式，每个配置以声明 property 的 name 和 value 的方式来实现。</span><br><span class="line"></span><br><span class="line">修改配置文件 core-site.xml</span><br><span class="line">chu888chu888@ubuntu1:/$ sudo nano <span class="string">/usr/local/hadoop/etc/hadoop/core-site.xml</span> </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#内容如下</span></span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.tmp.dir&lt;<span class="string">/name</span>&gt;</span><br><span class="line">        &lt;value&gt;file:<span class="string">/usr/local/hadoop/tmp</span>&lt;<span class="string">/value</span>&gt;</span><br><span class="line">        &lt;description&gt;Abase for other temporary directories.&lt;<span class="string">/description</span>&gt;</span><br><span class="line">    &lt;<span class="string">/property</span>&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;fs.defaultFS&lt;<span class="string">/name</span>&gt;</span><br><span class="line">        &lt;value&gt;hdfs:<span class="string">//localhost</span><span class="function">:9000</span>&lt;<span class="string">/value</span>&gt;</span><br><span class="line">    &lt;<span class="string">/property</span>&gt;</span><br><span class="line">&lt;<span class="string">/configuration</span>&gt;</span><br><span class="line"></span><br><span class="line">chu888chu888@ubuntu1:/$ sudo nano <span class="string">/usr/local/hadoop/etc/hadoop/hdfs-site.xml</span> </span><br><span class="line"><span class="comment">#内容如下</span></span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;<span class="string">/name</span>&gt;</span><br><span class="line">        &lt;value&gt;1&lt;<span class="string">/value</span>&gt;</span><br><span class="line">    &lt;<span class="string">/property</span>&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.name.dir&lt;<span class="string">/name</span>&gt;</span><br><span class="line">        &lt;value&gt;file:<span class="string">/usr/local/hadoop/tmp/dfs/name</span>&lt;<span class="string">/value</span>&gt;</span><br><span class="line">    &lt;<span class="string">/property</span>&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.datanode.data.dir&lt;<span class="string">/name</span>&gt;</span><br><span class="line">        &lt;value&gt;file:<span class="string">/usr/local/hadoop/tmp/dfs/data</span>&lt;<span class="string">/value</span>&gt;</span><br><span class="line">    &lt;<span class="string">/property</span>&gt;</span><br><span class="line">&lt;<span class="string">/configuration</span>&gt;</span><br><span class="line"></span><br><span class="line">hadoop@ubuntu2:<span class="string">/usr/local/hadoop</span>$ <span class="string">./bin/hdfs</span> namenode -format</span><br><span class="line">16/01/13 21<span class="function">:26</span><span class="function">:01</span> INFO namenode.NameNode: STARTUP_MSG: </span><br><span class="line">/************************************************************</span><br><span class="line">STARTUP_MSG: Starting NameNode</span><br><span class="line">STARTUP_MSG:   host = ubuntu2/127.0.1.1</span><br><span class="line">STARTUP_MSG:   args = [-format]</span><br><span class="line">STARTUP_MSG:   <span class="keyword">version</span> = 2.6.0</span><br><span class="line">16/01/13 21<span class="function">:26</span><span class="function">:02</span> INFO namenode.NNStorageRetentionManager: Going to retain 1 images with txid &gt;= 0</span><br><span class="line">16/01/13 21<span class="function">:26</span><span class="function">:02</span> INFO util.ExitUtil: Exiting with status 0</span><br><span class="line">16/01/13 21<span class="function">:26</span><span class="function">:02</span> INFO namenode.NameNode: SHUTDOWN_MSG: </span><br><span class="line">/************************************************************</span><br><span class="line">SHUTDOWN_MSG: Shutting down NameNode at ubuntu2/127.0.1.1</span><br><span class="line">************************************************************/</span><br><span class="line"></span><br><span class="line">成功的话，会看到 “successfully formatted” 和 “Exitting with status 0″ 的提示，若为 “Exitting with status 1″ 则是出错。</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;注意</span><br><span class="line">在这一步时若提示 Error: JAVA_HOME is not <span class="keyword">set</span> and could not be found. 的错误，则需要在文件 <span class="string">./etc/hadoop/hadoop-env.sh</span> 中设置 JAVA_HOME 变量，即在该文件中找到：</span><br><span class="line">export JAVA_HOME=$&#123;JAVA_HOME&#125;</span><br><span class="line">将这一行改为JAVA安装位置：</span><br><span class="line">export JAVA_HOME=<span class="string">/usr/lib/jvm/</span></span><br><span class="line">再重新尝试格式化即可。</span><br><span class="line"></span><br><span class="line"><span class="comment">#接着开启 NaneNode 和 DataNode 守护进程。</span></span><br><span class="line">hadoop@ubuntu2:<span class="string">/usr/local/hadoop</span>$ <span class="string">./sbin/start-dfs.sh</span></span><br><span class="line">16/01/13 21<span class="function">:29</span><span class="function">:20</span> WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform.<span class="string">..</span> using builtin-java classes where applicable</span><br><span class="line">Starting namenodes on [localhost]</span><br><span class="line">localhost: starting namenode, logging to <span class="string">/usr/local/hadoop/logs/hadoop-hadoop-namenode-ubuntu2.out</span></span><br><span class="line">localhost: starting datanode, logging to <span class="string">/usr/local/hadoop/logs/hadoop-hadoop-datanode-ubuntu2.out</span></span><br><span class="line">Starting secondary namenodes [0.0.0.0]</span><br><span class="line">The authenticity of host '0.0.0.0 <span class="params">(0.0.0.0)</span>' can't be established.</span><br><span class="line">ECDSA key fingerprint is 87<span class="function">:f6</span><span class="function">:48</span><span class="function">:6b</span><span class="function">:0f</span><span class="function">:52</span><span class="function">:1f</span><span class="function">:27</span><span class="function">:3f</span><span class="function">:62</span><span class="function">:8c</span><span class="function">:c0</span><span class="function">:39</span><span class="function">:2d</span><span class="function">:87</span><span class="function">:e3.</span></span><br><span class="line">Are you sure you want to continue connecting <span class="params">(yes/no)</span>? yes</span><br><span class="line">0.0.0.0: Warning: Permanently added '0.0.0.0' <span class="params">(ECDSA)</span> to the list of known hosts.</span><br><span class="line">0.0.0.0: starting secondarynamenode, logging to <span class="string">/usr/local/hadoop/logs/hadoop-hadoop-secondarynamenode-ubuntu2.out</span></span><br><span class="line">16/01/13 21<span class="function">:29</span><span class="function">:39</span> WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform.<span class="string">..</span> using builtin-java classes where applicable</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">启动时可能会出现如下 WARN 提示：WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform… using builtin-java classes where applicable WARN 提示可以忽略，并不会影响正常使用。</span><br><span class="line"></span><br><span class="line">启动完成后，可以通过命令 jps 来判断是否成功启动，若成功启动则会列出如下进程: “NameNode”、”DataNode” 和 “SecondaryNameNode”（如果 SecondaryNameNode 没有启动，请运行 sbin/stop-dfs.sh 关闭进程，然后再次尝试启动尝试）。如果没有 NameNode 或 DataNode ，那就是配置不成功，请仔细检查之前步骤，或通过查看启动日志排查原因。</span><br><span class="line"></span><br><span class="line">hadoop@ubuntu2:<span class="string">/usr/local/hadoop</span>$ jps</span><br><span class="line">11841 NameNode</span><br><span class="line">12309 Jps</span><br><span class="line">12188 SecondaryNameNode</span><br><span class="line">11998 DataNode</span><br><span class="line">hadoop@ubuntu2:<span class="string">/usr/local/hadoop</span>$ </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">通过查看启动日志分析启动失败原因</span><br><span class="line">有时 Hadoop 无法正确启动，如 NameNode 进程没有顺利启动，这时可以查看启动日志来排查原因，注意几点：</span><br><span class="line"></span><br><span class="line">启动时会提示形如 “DBLab-XMU: starting namenode, logging to <span class="string">/usr/local/hadoop/logs/hadoop-hadoop-namenode-DBLab-XMU.out</span>”，其中 DBLab-XMU 对应你的机器名，但其实启动日志信息是记录在 <span class="string">/usr/local/hadoop/logs/hadoop-hadoop-namenode-DBLab-XMU.log</span> 中，所以应该查看这个后缀为 <span class="string">.log</span> 的文件；</span><br><span class="line">每一次的启动日志都是追加在日志文件之后，所以得拉到最后面看，看下记录的时间就知道了。</span><br><span class="line">一般出错的提示在最后面，通常是写着 Fatal、Error 或者 Java Exception 的地方。</span><br><span class="line">可以在网上搜索一下出错信息，看能否找到一些相关的解决方法。</span><br><span class="line"></span><br><span class="line">成功启动后，可以访问 Web 界面 http:<span class="string">//localhost</span><span class="function">:50070</span> 查看 NameNode 和 Datanode 信息，还可以在线查看 HDFS 中的文件。</span><br></pre></td></tr></table></figure>
+<p><img src="/img/hadoop/4/111.png" alt><br><img src="/img/hadoop/4/222.png" alt></p>
+<h3 id="运行伪分布式实例"><a href="#运行伪分布式实例" class="headerlink" title="运行伪分布式实例"></a>运行伪分布式实例</h3><p>1 上面的单机模式，grep 例子读取的是本地数据，伪分布式读取的则是 HDFS 上的数据。要使用 HDFS，首先需要在 HDFS 中创建用户目录：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span><span class="variable">$ </span>./bin/hdfs dfs -mkdir -p /user/hadoop</span><br><span class="line"><span class="number">16</span>/<span class="number">01</span>/<span class="number">13</span> <span class="number">21</span><span class="symbol">:</span><span class="number">37</span><span class="symbol">:</span><span class="number">47</span> WARN <span class="symbol">util.NativeCodeLoader:</span> Unable to load native-hadoop library <span class="keyword">for</span> your platform... using builtin-java classes where applicable</span><br><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span>$</span><br></pre></td></tr></table></figure></p>
+<p>2 接着将 ./etc/hadoop 中的 xml 文件作为输入文件复制到分布式文件系统中，即将 /usr/local/hadoop/etc/hadoop 复制到分布式文件系统中的 /user/hadoop/input 中。我们使用的是 hadoop 用户，并且已创建相应的用户目录 /user/hadoop ，因此在命令中就可以使用相对路径如 input，其对应的绝对路径就是 /user/hadoop/input:<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#./bin/hdfs dfs -mkdir input</span></span><br><span class="line"><span class="meta">#./bin/hdfs dfs -put ./etc/hadoop/*.xml input</span></span><br></pre></td></tr></table></figure></p>
+<p>3 复制完成后，可以通过如下命令查看文件列表：<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ ./bin/hdfs dfs -ls input</span><br><span class="line"><span class="number">16</span>/<span class="number">01</span>/<span class="number">13</span> <span class="number">21</span>:<span class="number">41</span>:<span class="number">21</span> WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable</span><br><span class="line">Found <span class="number">8</span> items</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">4436</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/capacity-scheduler.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">1071</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/core-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">9683</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/hadoop-policy.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">1133</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/hdfs-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup        <span class="number">620</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/httpfs-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">3523</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/kms-acls.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">5511</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/kms-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup        <span class="number">690</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">13</span> <span class="number">21</span>:<span class="number">40</span> input/yarn-site.xml</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$</span><br></pre></td></tr></table></figure></p>
+<p>4 伪分布式运行 MapReduce 作业的方式跟单机模式相同，区别在于伪分布式读取的是HDFS中的文件（可以将单机步骤中创建的本地 input 文件夹，输出结果 output 文件夹都删掉来验证这一点）。<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span><span class="variable">$ </span>./bin/hadoop jar ./share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar grep input output <span class="string">'dfs[a-z.]+'</span></span><br><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span><span class="variable">$ </span>./bin/hdfs dfs -cat output/*</span><br><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span><span class="variable">$ </span>./bin/hdfs dfs -cat output/*</span><br><span class="line"><span class="number">16</span>/<span class="number">01</span>/<span class="number">13</span> <span class="number">21</span><span class="symbol">:</span><span class="number">42</span><span class="symbol">:</span><span class="number">55</span> WARN <span class="symbol">util.NativeCodeLoader:</span> Unable to load native-hadoop library <span class="keyword">for</span> your platform... using builtin-java classes where applicable</span><br><span class="line"><span class="number">1</span>	dfsadmin</span><br><span class="line"><span class="number">1</span>	dfs.replication</span><br><span class="line"><span class="number">1</span>	dfs.namenode.name.dir</span><br><span class="line"><span class="number">1</span>	dfs.datanode.data.dir</span><br></pre></td></tr></table></figure></p>
+<p>5 将结果取回本地<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># rm -r ./output    </span></span><br><span class="line"><span class="meta"># 先删除本地的 output 文件夹（如果存在）</span></span><br><span class="line"><span class="meta"># ./bin/hdfs dfs -get output ./output     </span></span><br><span class="line"><span class="meta"># 将 HDFS 上的 output 文件夹拷贝到本机</span></span><br><span class="line"><span class="meta"># cat ./output/*</span></span><br></pre></td></tr></table></figure></p>
+<p>6 关闭hadoop<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#./sbin/stop-dfs.sh</span></span><br></pre></td></tr></table></figure></p>
+<p>7 开启hadoop<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">下次启动 hadoop 时，无需进行 NameNode 的初始化，只需要运行 ./sbin/start-dfs<span class="selector-class">.sh</span> 就可以！</span><br></pre></td></tr></table></figure></p>
+<h2 id="六-启动YARN"><a href="#六-启动YARN" class="headerlink" title="六 启动YARN"></a>六 启动YARN</h2><p>1 （伪分布式不启动 YARN 也可以，一般不会影响程序执行）</p>
+<p>有的读者可能会疑惑，怎么启动 Hadoop 后，见不到书上所说的 JobTracker 和 TaskTracker，这是因为新版的 Hadoop 使用了新的 MapReduce 框架（MapReduce V2，也称为 YARN，Yet Another Resource Negotiator）。</p>
+<p>YARN 是从 MapReduce 中分离出来的，负责资源管理与任务调度。YARN 运行于 MapReduce 之上，提供了高可用性、高扩展性，YARN 的更多介绍在此不展开，有兴趣的可查阅相关资料。</p>
+<p>上述通过 ./sbin/start-dfs.sh 启动 Hadoop，仅仅是启动了 MapReduce 环境，我们可以启动 YARN ，让 YARN 来负责资源管理与任务调度。</p>
+<p>首先修改配置文件 mapred-site.xml，这边需要先进行重命名：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hadoop@ubuntu2:<span class="meta-keyword">/usr/</span>local/hadoop$ mv .<span class="meta-keyword">/etc/</span>hadoop/mapred-site.xml.template .<span class="meta-keyword">/etc/</span>hadoop/mapred-site.xml</span><br><span class="line">hadoop@ubuntu2:<span class="meta-keyword">/usr/</span>local/hadoop$ nano .<span class="meta-keyword">/etc/</span>hadoop/mapred-site.xml </span><br><span class="line">hadoop@ubuntu2:<span class="meta-keyword">/usr/</span>local/hadoop$ </span><br><span class="line"></span><br><span class="line"><span class="params">&lt;configuration&gt;</span></span><br><span class="line">    <span class="params">&lt;property&gt;</span></span><br><span class="line">        <span class="params">&lt;name&gt;</span>mapreduce.framework.name<span class="params">&lt;/name&gt;</span></span><br><span class="line">        <span class="params">&lt;value&gt;</span>yarn<span class="params">&lt;/value&gt;</span></span><br><span class="line">    <span class="params">&lt;/property&gt;</span></span><br><span class="line"><span class="params">&lt;/configuration&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2 修改接着修改配置文件 yarn-site.xml：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>3 启动YARN<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ ./sbin/start-yarn.sh</span><br><span class="line">starting yarn daemons</span><br><span class="line">starting resourcemanager,<span class="built_in"> logging </span><span class="keyword">to</span> /usr/local/hadoop/logs/yarn-hadoop-resourcemanager-ubuntu2.out</span><br><span class="line">localhost: starting nodemanager,<span class="built_in"> logging </span><span class="keyword">to</span> /usr/local/hadoop/logs/yarn-hadoop-nodemanager-ubuntu2.out</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$ ./sbin/mr-jobhistory-daemon.sh start historyserver</span><br><span class="line">starting historyserver,<span class="built_in"> logging </span><span class="keyword">to</span> /usr/local/hadoop/logs/mapred-hadoop-historyserver-ubuntu2.out</span><br><span class="line">hadoop@ubuntu2:/usr/local/hadoop$</span><br></pre></td></tr></table></figure></p>
+<p>4 查看进程<br>开启后通过 jps 查看，可以看到多了 NodeManager 和 ResourceManager 两个后台进程，如下图所示。<br>启动 YARN 之后，运行实例的方法还是一样的，仅仅是资源管理方式、任务调度不同。观察日志信息可以发现，不启用 YARN 时，是 “mapred.LocalJobRunner” 在跑任务，启用 YARN 之后，是 “mapred.YARNRunner” 在跑任务。启动 YARN 有个好处是可以通过 Web 界面查看任务的运行情况：<a href="http://localhost:8088/cluster" target="_blank" rel="noopener">http://localhost:8088/cluster</a> ，如下图所示。<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span><span class="variable">$ </span>jps</span><br><span class="line"><span class="number">12880</span> ResourceManager</span><br><span class="line"><span class="number">11841</span> NameNode</span><br><span class="line"><span class="number">13329</span> JobHistoryServer</span><br><span class="line"><span class="number">13398</span> Jps</span><br><span class="line"><span class="number">13016</span> NodeManager</span><br><span class="line"><span class="number">12188</span> SecondaryNameNode</span><br><span class="line"><span class="number">11998</span> DataNode</span><br><span class="line">hadoop<span class="variable">@ubuntu2</span><span class="symbol">:/usr/local/hadoop</span>$</span><br></pre></td></tr></table></figure></p>
+<p><img src="/img/hadoop/4/yarn.png" alt><br>但 YARN 主要是为集群提供更好的资源管理与任务调度，然而这在单机上体现不出价值，反而会使程序跑得稍慢些。因此在单机上是否开启 YARN 就看实际情况了。</p>
+<p>不启动 YARN 需重命名 mapred-site.xml<br>如果不想启动 YARN，务必把配置文件 mapred-site.xml 重命名，改成 mapred-site.xml.template，需要用时改回来就行。否则在该配置文件存在，而未开启 YARN 的情况下，运行程序会提示 “Retrying connect to server: 0.0.0.0/0.0.0.0:8032″ 的错误，这也是为何该配置文件初始文件名为 mapred-site.xml.template。</p>
+<p>5 关闭YARN<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#./sbin/stop-yarn.sh</span><br><span class="line">#./sbin/mr-jobhistory-daemon<span class="selector-class">.sh</span> stop historyserver</span><br></pre></td></tr></table></figure></p>
+<p>##Unable to load native-hadoop library for your platform错误<br>错误现象<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">hadoop@<span class="literal">Master</span>:~$ hadoop fs -ls input</span><br><span class="line"><span class="number">16</span>/<span class="number">01</span>/<span class="number">27</span> <span class="number">18</span>:<span class="number">52</span>:<span class="number">02</span> WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable</span><br><span class="line">Found <span class="number">9</span> items</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">4436</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/capacity-scheduler.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">1072</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/core-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">9683</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/hadoop-policy.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">1257</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/hdfs-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup        <span class="number">620</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/httpfs-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">3523</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/kms-acls.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">5511</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/kms-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup       <span class="number">1103</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/mapred-site.xml</span><br><span class="line">-rw-r--r--   <span class="number">1</span> hadoop supergroup        <span class="number">924</span> <span class="number">2016</span>-<span class="number">01</span>-<span class="number">25</span> <span class="number">22</span>:<span class="number">10</span> input/yarn-site.xml</span><br></pre></td></tr></table></figure></p>
+<p>解决<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>首先编辑core-site.xml</span><br><span class="line"><span class="params">&lt;property&gt;</span></span><br><span class="line">        <span class="params">&lt;name&gt;</span>hadoop.native.lib<span class="params">&lt;/name&gt;</span></span><br><span class="line">        <span class="params">&lt;value&gt;</span>true<span class="params">&lt;/value&gt;</span></span><br><span class="line">        <span class="params">&lt;description&gt;</span>Should native hadoop libraries,if present,be used<span class="params">&lt;/description&gt;</span></span><br><span class="line"><span class="params">&lt;/property&gt;</span></span><br><span class="line"><span class="number">2</span>之后修改环境变量</span><br><span class="line">export JAVA_LIBRARY_PATH=<span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/hadoop/</span>lib/native</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100316.html" class="pre-post btn btn-default" title='大数据hadoop之 十.Hadoop的完全分布式搭建'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 十.Hadoop的完全分布式搭建</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100314.html" class="next-post btn btn-default" title='大数据hadoop之 八.Hadoop部署技术选型'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 八.Hadoop部署技术选型</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-JDK的安装"><span class="toc-text">一 JDK的安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-Hadoop的用户创建"><span class="toc-text">二 Hadoop的用户创建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-SSH无密码登录"><span class="toc-text">三 SSH无密码登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-Hadoop的基本安装"><span class="toc-text">四 Hadoop的基本安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-开始伪分布式的配置文件修改"><span class="toc-text">五 开始伪分布式的配置文件修改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#运行伪分布式实例"><span class="toc-text">运行伪分布式实例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-启动YARN"><span class="toc-text">六 启动YARN</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

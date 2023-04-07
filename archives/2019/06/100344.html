@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase">
+
+
+    <meta name="description" content="一 整合SQL引擎层
+NOSQL(Not only  SQL 非关系型数据库)的特性之一是不使用SQL作为查询语言,本节简单介绍NOSQL定义,为何NOSQL 上定义SQL引擎,以及现有基于HB...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 三十九.HBASE整合SQL引擎层 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 三十九.HBASE整合SQL引擎层">
+            
+	            大数据hadoop之 三十九.HBASE整合SQL引擎层
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/27</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1379</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-整合SQL引擎层"><a href="#一-整合SQL引擎层" class="headerlink" title="一 整合SQL引擎层"></a>一 整合SQL引擎层</h1><ol>
+<li>NOSQL(Not only  SQL 非关系型数据库)的特性之一是不使用SQL作为查询语言,本节简单介绍NOSQL定义,为何NOSQL 上定义SQL引擎,以及现有基于HBASE的SQL引擎的具体实现</li>
+<li>NOSQL是不同于传统关系型数据库的数据库系统的统称.两者有很多显著的不同点,其中最重要的是NOSQL不使用SQL作为查询语言.其数据存储可以不需要固定的表格模式,也经常会避免使用SQL的JOIN操作,一般具备水平扩展的特征.NOSQL的实现具有两个特征:使用硬盘或者把随机存储器作为存储媒体</li>
+</ol>
+<h2 id="1-把SQL整合到HBASE的原因"><a href="#1-把SQL整合到HBASE的原因" class="headerlink" title="(1) 把SQL整合到HBASE的原因"></a>(1) 把SQL整合到HBASE的原因</h2><p>现有的SQL解决方案通常都不是水平可伸缩的,因此当数据量变大时会遇到阻力.我们已经知道NOSQL区别于关系型数据库的一点就是NOSQL不使用SQL作为查询语言,至于为何在NOSQL数据存储HBASE上提供SQL接口,有如下三个原因:</p>
+<ol>
+<li>使用诸如SQL这样易于理解的语言,使人们能够更加轻松地使用HBASE</li>
+<li>使用诸如SQL这样更高层次的语言来编写,减少了编码的代码量.</li>
+<li>执行查询时,在数据访问与运行时执行之间加上SQL这样一层抽象可以进行大量优化.</li>
+</ol>
+<h2 id="2-基于HBASE的SQL引擎实现"><a href="#2-基于HBASE的SQL引擎实现" class="headerlink" title="(2) 基于HBASE的SQL引擎实现"></a>(2) 基于HBASE的SQL引擎实现</h2><p>现阶段业内有一些HBASE SQL引擎层的尝试</p>
+<h3 id="Hive-整合HBASE"><a href="#Hive-整合HBASE" class="headerlink" title="Hive 整合HBASE"></a>Hive 整合HBASE</h3><p>Hive与HBASE的整合功能从Hive0.6版本开始出现,利用两者对外的API接口互相通信,通信主要依赖hive_hbase-handler.jar工具包(Hive Storage Handlers).由于HBASE有一次比较大的版本变动,所以并不是每个版本的Hive都能和现有的HBASE版本进行整合,因此对版本的范围要求比较严格.</p>
+<h3 id="Phoenix"><a href="#Phoenix" class="headerlink" title="Phoenix"></a>Phoenix</h3><p>Phoenix由Saleforce.com开源,是构建在Apache Hbase之上的一个SQL中间层,可以让开发者在HBASE上执行SQL查询.Phoenix完全使用Java开发,并且提供一个客户端可嵌入的JDBC驱动.对于简单的低延迟查询,其量级为毫秒,对于百万级别的行数来说,其量级为秒.Phoenix并不像HBase那样用于map-reduce job,而是通过标准化的语言来访问HBASE数据.根据项目创建者所述,对于10万到100万行的简单查询来说,Phoenix要胜过Hive.对于使用了HBASE API,协同处理器及自定义过滤器的Impala与OpenTSDB来说,进行相似的查询Phoenix的速度也要更快一些.</p>
+<h3 id="Impala"><a href="#Impala" class="headerlink" title="Impala"></a>Impala</h3><p>Cloudera发布实时查询开源项目Impala,经多款产品实测表明,比原来基于MapReduce的Hive SQL查询速度提升了3-90倍,Impala是google dremel的模仿,但在SQL功能上青出于蓝.</p>
+<p>Impala采用与Hive相同的元数据,SQL语法 ODBC驱动和用户接口,但是对于平台有一定的局限性在CDH上表现良好,在其他平台上兼容性不好.</p>
+<h1 id="二-Phoenix的安装与使用"><a href="#二-Phoenix的安装与使用" class="headerlink" title="二 Phoenix的安装与使用"></a>二 Phoenix的安装与使用</h1><h2 id="1-概述"><a href="#1-概述" class="headerlink" title="(1) 概述"></a>(1) 概述</h2><p>Apache Phoenix是构建在HBase之上的关系型数据库层，作为内嵌的客户端JDBC驱动用以对HBase中的数据进行低延迟访问。Apache Phoenix会将用户编写的sql查询编译为一系列的scan操作，最终产生通用的JDBC结果集返回给客户端。数据表的元数据存储在HBase的表中被会标记版本号，所以进行查询的时候会自动选择正确的schema。直接使用HBase的API，结合协处理器（coprocessor）和自定义的过滤器的话，小范围的查询在毫秒级响应，千万数据的话响应速度为秒级。<br><img src="/img/hadoop/112/182730bdckgin2jtd38gpg.png" alt></p>
+<h2 id="2-Phoenix的特点"><a href="#2-Phoenix的特点" class="headerlink" title="(2) Phoenix的特点"></a>(2) Phoenix的特点</h2><ol>
+<li>嵌入式的JDBC驱动,实现了大部分的Java.sql接口,包括元数据API</li>
+<li>可以通过多行键/值单元对列进行建模</li>
+<li>完善的查询支持,优化过scan</li>
+<li>DDL支持:通过CREATE TABLE DROP TABLE  ALETR TABLE实现</li>
+<li>版本化的模式仓库:当写入数据时,快照查询会使用适当的模式</li>
+<li>DML支持:用于逐行插入的UPSERT VALUES ,用于相同或不同表之间大量数据传输的UPSERT SELECT,用于删除行的DELETE</li>
+<li>通过客户端的批处理实现的有限事务支持</li>
+<li>紧跟ANSI SQL标准</li>
+</ol>
+<p>不同于Hive On HBASE的方式,Phoenix将Query Plan直接使用HBASE API实现,规避MapReduce框架,减少查询的时间延迟.Phoenix中SQL Query Plan的执行,基本上是通过构建一系列HBASE Scan来完成的.</p>
+<p>目前支持简单的表创建,修改,数据删除过滤查询等SQL语句,从语法上看,不支持多表操作,由于不支持多表联合类的操作如各种Join等,所以在Where部分也就不能做多表比较.基于HBASE的timestamp和不限制修饰符等等特性,实现了一些有趣的功能,比如动态列,嵌套数据结构,schema演化等.</p>
+<p>由于协处理器和过滤器自身能力的限制,如果完全不依赖MapReduce框架,只通过HBASE客户端API想要实现复杂查询操作,如多表联合操作,相对比较困难,或者大量工作需要在客户端代码中实现,性能上可能无法满足需求.</p>
+<h2 id="3-下载"><a href="#3-下载" class="headerlink" title="(3) 下载"></a>(3) 下载</h2><p>访问Phoenix的官方网站进行下载.下载地址:<a href="http://www.apache.org/dyn/closer.lua/phoenix/" target="_blank" rel="noopener">http://www.apache.org/dyn/closer.lua/phoenix/</a><br><img src="/img/hadoop/12/phoenix.png" alt></p>
+<h2 id="4-安装"><a href="#4-安装" class="headerlink" title="(4) 安装"></a>(4) 安装</h2><p><strong>在Master上面的操作</strong></p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#sudo tar xvfz phoenix-4.7.0-HBase-1.1-bin.tar.gz </span></span><br><span class="line"><span class="comment">#sudo chown -R hadoop:hadoop phoenix-4.7.0-HBase-1.1</span></span><br><span class="line"><span class="comment">#sudo chmod -R 775 phoenix-4.7.0-HBase-1.1</span></span><br><span class="line"><span class="comment">#sudo mv phoenix-4.7.0-HBase-1.1 /usr/local/phoenix</span></span><br><span class="line"><span class="comment">#sudo cp /usr/local/phoenix/*.jar /usr/local/hbase/lib/</span></span><br><span class="line"><span class="comment">#sudo cp /usr/local/hbase/conf/hbase-site.xml /usr/local/phoenix/bin/</span></span><br><span class="line">hadoop<span class="variable">@hadoopmaster</span><span class="symbol">:/usr/local</span><span class="variable">$ </span>sudo tar cvfz ~<span class="regexp">/phoenix2016.tar.gz phoenix/</span></span><br><span class="line">scp /home/hadoop/phoenix2016.tar.gz hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:/home/hadoop/</span></span><br><span class="line">scp /home/hadoop/phoenix2016.tar.gz hadoop<span class="variable">@hadoopslave2</span><span class="symbol">:/home/hadoop/</span></span><br></pre></td></tr></table></figure>
+<p><strong>在Slave上面的操作</strong></p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:~</span><span class="variable">$ </span>tar xvfz phoenix2016.tar.gz</span><br><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:~</span><span class="variable">$ </span>sudo mv phoenix /usr/local/phoenix</span><br><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:~</span><span class="variable">$ </span>sudo chown -R <span class="symbol">hadoop:</span>hadoop /usr/local/phoenix/</span><br><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:~</span><span class="variable">$ </span>sudo chmod -R <span class="number">775</span> /usr/local/phoenix/</span><br><span class="line">hadoop<span class="variable">@hadoopslave1</span><span class="symbol">:/usr/local/phoenix</span><span class="variable">$ </span>cp *.jar /usr/local/hbase/lib/</span><br></pre></td></tr></table></figure>
+<p>完成以上步骤,基本上Phoenix就安装成功了.</p>
+<h2 id="5-基本使用"><a href="#5-基本使用" class="headerlink" title="(5) 基本使用"></a>(5) 基本使用</h2><h3 id="验证操作"><a href="#验证操作" class="headerlink" title="验证操作"></a>验证操作</h3><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">hadoop@Master:/usr/local/phoenix/bin$ ./sqlline.py localhost</span><br><span class="line">执行SQL语句</span><br><span class="line">CREATE TABLE IF NOT EXISTS us_population2 (</span><br><span class="line">      <span class="keyword">state</span> CHAR(<span class="number">2</span>) NOT NULL,</span><br><span class="line">      city VARCHAR NOT NULL,</span><br><span class="line">      population BIGINT</span><br><span class="line">      CONSTRAINT my_pk2 PRIMARY KEY (<span class="keyword">state</span>, city));</span><br><span class="line">      </span><br><span class="line">插入操作</span><br><span class="line"></span><br><span class="line">upsert into us_population2(<span class="keyword">state</span>, city, population) values('NY', 'New York', <span class="number">8143197</span>);</span><br><span class="line">upsert into us_population2(<span class="keyword">state</span>, city, population) values('CA', 'Chicago', <span class="number">2842518</span>);</span><br><span class="line">upsert into us_population2(<span class="keyword">state</span>, city, population) values('TX', 'Houston', <span class="number">2016582</span>);</span><br><span class="line">upsert into us_population2(<span class="keyword">state</span>, city, population) values('TX', 'San Antonio', <span class="number">1256509</span>);</span><br><span class="line">upsert into us_population2(<span class="keyword">state</span>, city, population) values('CA', 'San Jose', <span class="number">912332</span>);</span><br><span class="line"></span><br><span class="line">执行操作</span><br><span class="line"></span><br><span class="line">SELECT <span class="keyword">state</span> as <span class="string">"State"</span>,count(city) as <span class="string">"City Count"</span>,sum(population) as <span class="string">"Population Sum"</span></span><br><span class="line">FROM us_population2</span><br><span class="line">GROUP BY <span class="keyword">state</span></span><br><span class="line">ORDER BY sum(population) DESC;</span><br><span class="line"></span><br><span class="line"><span class="number">0</span>: jdbc:phoenix:localhost&gt; SELECT <span class="keyword">state</span> as <span class="string">"State"</span>,count(city) as <span class="string">"City Count"</span>,sum(population) as <span class="string">"Population Sum"</span></span><br><span class="line">. . . . . . . . . . . . .&gt; FROM us_population2</span><br><span class="line">. . . . . . . . . . . . .&gt; GROUP BY <span class="keyword">state</span></span><br><span class="line">. . . . . . . . . . . . .&gt; ORDER BY sum(population) DESC;</span><br><span class="line">+--------+-------------+-----------------+</span><br><span class="line">| State  | City Count  | Population Sum  |</span><br><span class="line">+--------+-------------+-----------------+</span><br><span class="line">| NY     | <span class="number">1</span>           | <span class="number">8143197</span>         |</span><br><span class="line">| CA     | <span class="number">2</span>           | <span class="number">3754850</span>         |</span><br><span class="line">| TX     | <span class="number">2</span>           | <span class="number">3273091</span>         |</span><br><span class="line">+--------+-------------+-----------------+</span><br><span class="line"><span class="number">3</span> rows selected (<span class="number">0.087</span> seconds)</span><br><span class="line"><span class="number">0</span>: jdbc:phoenix:localhost&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="语法索引"><a href="#语法索引" class="headerlink" title="语法索引"></a>语法索引</h3><p><a href="http://phoenix.apache.org/language/index.html" target="_blank" rel="noopener">http://phoenix.apache.org/language/index.html</a></p>
+<h3 id="使用JDBC访问Phoenix"><a href="#使用JDBC访问Phoenix" class="headerlink" title="使用JDBC访问Phoenix"></a>使用JDBC访问Phoenix</h3><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.chu;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by chuguangming on 16/9/23.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.*;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BaseDB &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * name：getConnection</span></span><br><span class="line"><span class="comment">     * time：2015年5月6日 下午2:07:06</span></span><br><span class="line"><span class="comment">     * description： get JDBC connection</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * @return connection</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Connection getConnection() &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// load driver</span></span><br><span class="line">            Class.forName(<span class="string">"org.apache.phoenix.jdbc.PhoenixDriver"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// get connection</span></span><br><span class="line">            <span class="comment">// jdbc 的 url 类似为 jdbc:phoenix [ :&lt;zookeeper quorum&gt; [ :&lt;port number&gt; ] [ :&lt;root node&gt; ] ]，</span></span><br><span class="line">            <span class="comment">// 需要引用三个参数：hbase.zookeeper.quorum、hbase.zookeeper.property.clientPort、and zookeeper.znode.parent，</span></span><br><span class="line">            <span class="comment">// 这些参数可以缺省不填而在 hbase-site.xml 中定义。</span></span><br><span class="line">            <span class="keyword">return</span> DriverManager.getConnection(<span class="string">"jdbc:phoenix:hadoopmaster,hadoopslave1,hadoopslave2"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> class HBaseSQLDriverTest &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">        <span class="comment">//Simpletest();</span></span><br><span class="line">        <span class="comment">//create();</span></span><br><span class="line">        <span class="comment">//upsert();</span></span><br><span class="line">        <span class="comment">//query();</span></span><br><span class="line">        <span class="comment">//delete();</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * name：delete</span></span><br><span class="line"><span class="comment">     * time：2015年5月4日 下午4:03:11</span></span><br><span class="line"><span class="comment">     * description：delete data</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> delete() &#123;</span><br><span class="line"></span><br><span class="line">        Connection conn = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// get connection</span></span><br><span class="line">            conn = BaseDB.getConnection();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// check connection</span></span><br><span class="line">            <span class="keyword">if</span> (conn == <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.<span class="built_in">println</span>(<span class="string">"conn is null..."</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// create sql</span></span><br><span class="line">            <span class="keyword">String</span> sql = <span class="string">"delete from user88888 where id='001'"</span>;</span><br><span class="line"></span><br><span class="line">            PreparedStatement ps = conn.prepareStatement(sql);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// execute upsert</span></span><br><span class="line">            <span class="keyword">String</span> msg = ps.executeUpdate() &gt; <span class="number">0</span> ? <span class="string">"delete success..."</span></span><br><span class="line">                    : <span class="string">"delete fail..."</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// you must commit</span></span><br><span class="line">            conn.commit();</span><br><span class="line">            System.out.<span class="built_in">println</span>(msg);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (conn != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    conn.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> query() &#123;</span><br><span class="line"></span><br><span class="line">        Connection conn = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// get connection</span></span><br><span class="line">            conn = BaseDB.getConnection();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// check connection</span></span><br><span class="line">            <span class="keyword">if</span> (conn == <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.<span class="built_in">println</span>(<span class="string">"conn is null..."</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// create sql</span></span><br><span class="line">            <span class="keyword">String</span> sql = <span class="string">"select * from user88888"</span>;</span><br><span class="line"></span><br><span class="line">            PreparedStatement ps = conn.prepareStatement(sql);</span><br><span class="line"></span><br><span class="line">            ResultSet rs = ps.executeQuery();</span><br><span class="line"></span><br><span class="line">            System.out.<span class="built_in">println</span>(<span class="string">"id"</span> + <span class="string">"\t"</span> + <span class="string">"account"</span> + <span class="string">"\t"</span> + <span class="string">"passwd"</span>);</span><br><span class="line">            System.out.<span class="built_in">println</span>(<span class="string">"======================"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rs != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                    System.out.<span class="built_in">print</span>(rs.getString(<span class="string">"id"</span>) + <span class="string">"\t"</span>);</span><br><span class="line">                    System.out.<span class="built_in">print</span>(rs.getString(<span class="string">"account"</span>) + <span class="string">"\t"</span>);</span><br><span class="line">                    System.out.<span class="built_in">println</span>(rs.getString(<span class="string">"passwd"</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (conn != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    conn.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * name：insert</span></span><br><span class="line"><span class="comment">     * time：2015年5月4日 下午2:59:11</span></span><br><span class="line"><span class="comment">     * description：</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> upsert() &#123;</span><br><span class="line"></span><br><span class="line">        Connection conn = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// get connection</span></span><br><span class="line">            conn = BaseDB.getConnection();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// check connection</span></span><br><span class="line">            <span class="keyword">if</span> (conn == <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.<span class="built_in">println</span>(<span class="string">"conn is null..."</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// create sql</span></span><br><span class="line">            <span class="keyword">String</span> sql = <span class="string">"upsert into user88888(id, INFO.account, INFO.passwd) values('001', 'admin', 'admin')"</span>;</span><br><span class="line"></span><br><span class="line">            PreparedStatement ps = conn.prepareStatement(sql);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// execute upsert</span></span><br><span class="line">            <span class="keyword">String</span> msg = ps.executeUpdate() &gt; <span class="number">0</span> ? <span class="string">"insert success..."</span></span><br><span class="line">                    : <span class="string">"insert fail..."</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// you must commit</span></span><br><span class="line">            conn.commit();</span><br><span class="line">            System.out.<span class="built_in">println</span>(msg);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (conn != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    conn.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> create() &#123;</span><br><span class="line">        Connection conn = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// get connection</span></span><br><span class="line">            conn = BaseDB.getConnection();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// check connection</span></span><br><span class="line">            <span class="keyword">if</span> (conn == <span class="keyword">null</span>) &#123;</span><br><span class="line">                System.out.<span class="built_in">println</span>(<span class="string">"conn is null..."</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// check if the table exist</span></span><br><span class="line">            ResultSet rs = conn.getMetaData().getTables(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">"USER"</span>,</span><br><span class="line">                    <span class="keyword">null</span>);</span><br><span class="line">            <span class="keyword">if</span> (rs.next()) &#123;</span><br><span class="line">                System.out.<span class="built_in">println</span>(<span class="string">"table user is exist..."</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// create sql</span></span><br><span class="line">            <span class="keyword">String</span> sql = <span class="string">"CREATE TABLE user88888 (id varchar PRIMARY KEY,INFO.account varchar ,INFO.passwd varchar)"</span>;</span><br><span class="line"></span><br><span class="line">            PreparedStatement ps = conn.prepareStatement(sql);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// execute</span></span><br><span class="line">            ps.execute();</span><br><span class="line">            System.out.<span class="built_in">println</span>(<span class="string">"create success..."</span>);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (conn != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    conn.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> Simpletest() <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">        Statement stmt = <span class="keyword">null</span>;</span><br><span class="line">        ResultSet rs = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">String</span> viewName = <span class="string">"\"US_POPULATION2\""</span>; <span class="comment">// 这是对HBase表"food:products"创建的Phoenix view</span></span><br><span class="line"></span><br><span class="line">        System.err.<span class="built_in">println</span>(<span class="string">"\n[viewName = "</span> + viewName + <span class="string">"]\n"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* ecs1.njzd.com:2181是zookeeper的某一个节点的ip:port</span></span><br><span class="line"><span class="comment">           即使集群中的ZooKeeper存在多个节点，这里也只需要写出一个节点的ip:port就可以了*/</span></span><br><span class="line">        <span class="comment">// 如果是Scala，还需要这一句</span></span><br><span class="line">        <span class="comment">//Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");</span></span><br><span class="line">        Connection conn = DriverManager.getConnection(<span class="string">"jdbc:phoenix:hadoopmaster,hadoopslave1,hadoopslave2"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* 在Phoenix中，如果table name/view name、column name等字符串不加上双引号就会被认为是大写。所以，这里的brand_name要加上双引号  */</span></span><br><span class="line">        PreparedStatement pstmt = conn.prepareStatement(<span class="string">"select * from "</span> + viewName);</span><br><span class="line">        rs = pstmt.executeQuery();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line"></span><br><span class="line">            System.err.<span class="built_in">println</span>(rs.getString(<span class="string">"STATE"</span>));</span><br><span class="line"></span><br><span class="line">            System.err.<span class="built_in">println</span>(<span class="string">"\n========================================================="</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* 关闭资源*/</span></span><br><span class="line">        rs.close();</span><br><span class="line">        pstmt.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.chu<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>HBaseDemo<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.hive/hive-jdbc --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hive<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hive-jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.hibernate.javax.persistence/hibernate-jpa-2.0-api --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.hibernate.javax.persistence<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hibernate-jpa-2.0-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.1.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hive<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hive-exec<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-client --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-common --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase-common<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-server --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.hbase/hbase-protocol --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase-protocol<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.phoenix/phoenix-core --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.phoenix<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>phoenix-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.7.0-HBase-1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100345.html" class="pre-post btn btn-default" title='大数据hadoop之 四十.HBASE的数据迁移'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十.HBASE的数据迁移</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100343.html" class="next-post btn btn-default" title='大数据hadoop之 三十八.Hive与Hbase的区别'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十八.Hive与Hbase的区别</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-整合SQL引擎层"><span class="toc-text">一 整合SQL引擎层</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-把SQL整合到HBASE的原因"><span class="toc-text">(1) 把SQL整合到HBASE的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-基于HBASE的SQL引擎实现"><span class="toc-text">(2) 基于HBASE的SQL引擎实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Hive-整合HBASE"><span class="toc-text">Hive 整合HBASE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Phoenix"><span class="toc-text">Phoenix</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Impala"><span class="toc-text">Impala</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-Phoenix的安装与使用"><span class="toc-text">二 Phoenix的安装与使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-概述"><span class="toc-text">(1) 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Phoenix的特点"><span class="toc-text">(2) Phoenix的特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-下载"><span class="toc-text">(3) 下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-安装"><span class="toc-text">(4) 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-基本使用"><span class="toc-text">(5) 基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#验证操作"><span class="toc-text">验证操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#语法索引"><span class="toc-text">语法索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用JDBC访问Phoenix"><span class="toc-text">使用JDBC访问Phoenix</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

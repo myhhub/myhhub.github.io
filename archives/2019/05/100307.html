@@ -1,0 +1,491 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="java,高并发">
+
+
+    <meta name="description" content="
+ Netflix宣布停止开发Hystrix，建议使用Resilience4j，Resilience4j到底是什么鬼？
+
+1. resilience4j实际上Resilience4j的灵感来自于...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>高并发系统之 十一.高可用架构Sentinel、Hystrix、resilience4j限流熔断技术选型 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="高并发系统之 十一.高可用架构Sentinel、Hystrix、resilience4j限流熔断技术选型">
+            
+	            高并发系统之 十一.高可用架构Sentinel、Hystrix、resilience4j限流熔断技术选型
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/concurrency/">高并发</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/05/31</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1406</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <blockquote>
+<p> Netflix宣布停止开发Hystrix，建议使用Resilience4j，Resilience4j到底是什么鬼？</p>
+</blockquote>
+<h1 id="1-resilience4j"><a href="#1-resilience4j" class="headerlink" title="1. resilience4j"></a>1. resilience4j</h1><p>实际上Resilience4j的灵感来自于Hystrix，同样是轻量级的分布式容错方法库，比Hystrix的功能更丰富一些；</p>
+<ul>
+<li><p>Hystrix是基于Command模式的，而Resilience4j利用了Java 8 的函数式编程思想；</p>
+</li>
+<li><p>Hystrix需要依赖于Archaius，Archaius又依赖于第三方库Guava和Apache Commons Configuration，而Resilience4j只依赖Vavr库（前身是Javaslang）。</p>
+</li>
+</ul>
+<p>Resilience4j的核心模块包括断路器、限流、隔离舱、重试、缓存等，他们都是独立编译的，如果你仅仅需要其中的一部分，则可以部分引入。</p>
+<ul>
+<li><p>resilience4j-circuitbreaker: Circuit breaking</p>
+</li>
+<li><p>resilience4j-ratelimiter: Rate limiting</p>
+</li>
+<li><p>resilience4j-bulkhead: Bulkheading</p>
+</li>
+<li><p>resilience4j-retry: Automatic retrying (sync and async)</p>
+</li>
+<li><p>resilience4j-cache: Response caching</p>
+</li>
+<li><p>resilience4j-timelimiter: Timeout handling</p>
+</li>
+</ul>
+<p>话不多说，直接上代码，如何实现一个断路器？ 首先引入包，<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.resilience4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>resilience4j-circuitbreaker<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.13.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span>`</span><br></pre></td></tr></table></figure></p>
+<p>创建一个自定义配置的断路器，<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()</span><br><span class="line">    .failureRateThreshold(<span class="number">80</span>) <span class="comment">//失败率阈值百分比,以百分比形式配置故障率阈值，高于该百分比，CircuitBreaker应跳闸并开始调用短路。阈值必须大于0且不大于100.默认值为50％。</span></span><br><span class="line">    .waitDurationInOpenState(Duration.ofMillis(<span class="number">1000</span>))<span class="comment">//等待持续时间，该持续时间指定CircuitBreaker在切换到半开之前应保持打开的时间。默认60秒。</span></span><br><span class="line">    .ringBufferSizeInHalfOpenState(<span class="number">20</span>)<span class="comment">//默认为100，状态为半打开时，环形缓冲区的大小，这里需要注意，如果设置为20，则必须要评估20次调用，才能计算出失败率，少于19次，无论失败率是多少都没用。</span></span><br><span class="line">    .ringBufferSizeInClosedState(<span class="number">20</span>)</span><br><span class="line">    .build();</span><br><span class="line"><span class="comment">//通过全局配置创建断路器</span></span><br><span class="line">CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);</span><br><span class="line">CircuitBreaker circuitBreaker2 = circuitBreakerRegistry.circuitBreaker(<span class="string">"otherName"</span>);</span><br><span class="line"><span class="comment">//当然，你也可以不使用全局配置创建断路器</span></span><br><span class="line">CircuitBreaker defaultCircuitBreaker = CircuitBreaker.ofDefaults(<span class="string">"testName"</span>);</span><br></pre></td></tr></table></figure></p>
+<p>这里需要注意的是如果name相同，则认为是同一个断路器。<br><figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void shouldBeTheSameCircuitBreaker<span class="comment">()</span> &#123;</span><br><span class="line">    CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker<span class="comment">("testName")</span>;</span><br><span class="line">    CircuitBreaker circuitBreaker<span class="number">2</span> = circuitBreakerRegistry.circuitBreaker<span class="comment">("testName")</span>;</span><br><span class="line">    assertThat<span class="comment">(circuitBreaker)</span>.isSameAs<span class="comment">(circuitBreaker2)</span>;</span><br><span class="line">    assertThat<span class="comment">(circuitBreakerRegistry.getAllCircuitBreakers()</span>).hasSize<span class="comment">(1)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>另外，你也可以通过Predicate过滤异常，也就是说，可以设置哪些异常可以触发断路器，哪些不触发。<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">CircuitBreaker.Metrics metrics = circuitBreaker.getMetrics();</span><br><span class="line"><span class="comment">// 返回失败百分比</span></span><br><span class="line"><span class="keyword">float</span> failureRate = metrics.getFailureRate();</span><br><span class="line"><span class="comment">// 返回当前缓冲的调用数</span></span><br><span class="line"><span class="keyword">int</span> bufferedCalls = metrics.getNumberOfBufferedCalls();</span><br><span class="line"><span class="comment">// 返回当前失败的调用数</span></span><br><span class="line"><span class="keyword">int</span> failedCalls = metrics.getNumberOfFailedCalls();</span><br><span class="line">当然，你可以可以基于AOP实现断路器，</span><br><span class="line"></span><br><span class="line"><span class="meta">@CircuitBreaker</span>(name = <span class="string">"backendA"</span>, recovery = MyRecoveryFunction.<span class="keyword">class</span>)</span><br><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BackendAConnector</span> <span class="keyword">implements</span> <span class="title">Connector</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>也可以提供了接口获取一些监控指标。可以和Prometheus集成。 </p>
+<p>断路器采用Ring Bit Buffer存储打开、关闭等状态，使用了一个16位的long数组，每个long 64 bit，这样可以存储1024次调用的状态，非常节约存储，值得借鉴。</p>
+<p>总结：大概浏览了一下源代码，代码质量不错，逻辑清晰，可读性非常高。几乎可以不用看注释、文档，可以预见，resilience4j一定是一个未来被很多框架引用的基础库。</p>
+<h1 id="2-Sentinel"><a href="#2-Sentinel" class="headerlink" title="2. Sentinel"></a>2. Sentinel</h1><p><a href="https://yq.aliyun.com/go/articleRenderRedirect?url=https://github.com/alibaba/Sentinel" target="_blank" rel="noopener">Sentinel</a> 是阿里中间件团队研发的面向分布式服务架构的轻量级高可用流量控制组件，最近正式开源。Sentinel 主要以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度来帮助用户保护服务的稳定性。</p>
+<p>可以看到 Hystrix 的关注点在于以 <em>隔离</em> 和 <em>熔断</em> 为主的容错机制，超时或被熔断的调用将会快速失败，并可以提供 fallback 机制。</p>
+<p>而 Sentinel 的侧重点在于：</p>
+<ul>
+<li>多样化的流量控制</li>
+<li>熔断降级</li>
+<li>系统负载保护</li>
+<li>实时监控和控制台</li>
+</ul>
+<p>可以看到两者解决的问题还是有比较大的不同的，下面我们来分别对比一下。</p>
+<h2 id="共同特性"><a href="#共同特性" class="headerlink" title="共同特性"></a>共同特性</h2><h3 id="资源模型和执行模型上的对比"><a href="#资源模型和执行模型上的对比" class="headerlink" title="资源模型和执行模型上的对比"></a>资源模型和执行模型上的对比</h3><p>Hystrix 的资源模型设计上采用了命令模式，将对外部资源的调用和 fallback 逻辑封装成一个命令对象（<code>HystrixCommand</code> / <code>HystrixObservableCommand</code>），其底层的执行是基于 RxJava 实现的。每个 Command 创建时都要指定 commandKey 和 groupKey（用于区分资源）以及对应的隔离策略（线程池隔离 or 信号量隔离）。线程池隔离模式下需要配置线程池对应的参数（线程池名称、容量、排队超时等），然后 Command 就会在指定的线程池按照指定的容错策略执行；信号量隔离模式下需要配置最大并发数，执行 Command 时 Hystrix 就会限制其并发调用。</p>
+<p>Sentinel 的设计则更为简单。相比 Hystrix Command 强依赖隔离规则，Sentinel 的资源定义与规则配置的耦合度更低。Hystrix 的 Command 强依赖于隔离规则配置的原因是隔离规则会直接影响 Command 的执行。在执行的时候 Hystrix 会解析 Command 的隔离规则来创建 RxJava Scheduler 并在其上调度执行，若是线程池模式则 Scheduler 底层的线程池为配置的线程池，若是信号量模式则简单包装成当前线程执行的 Scheduler。而 Sentinel 并不指定执行模型，也不关注应用是如何执行的。Sentinel 的原则非常简单：根据对应资源配置的规则来为资源执行相应的限流/降级/负载保护策略。在 Sentinel 中资源定义和规则配置是分离的。用户先通过 Sentinel API 给对应的业务逻辑定义资源（埋点），然后可以在需要的时候配置规则。埋点方式有两种：</p>
+<ul>
+<li>try-catch 方式（通过 <code>SphU.entry(...)</code>），用户在 catch 块中执行异常处理 / fallback</li>
+<li>if-else 方式（通过 <code>SphO.entry(...)</code>），当返回 false 时执行异常处理 / fallback</li>
+</ul>
+<p>未来 Sentinel 还会引入基于注解的资源定义方式，同时可以通过注解参数指定异常处理函数和 fallback 函数。</p>
+<p>Sentinel 提供<a href="https://yq.aliyun.com/go/articleRenderRedirect?url=https://github.com/alibaba/Sentinel/wiki/动态规则扩展" target="_blank" rel="noopener">多样化的规则配置方式</a>。除了直接通过 <code>loadRules</code> API 将规则注册到内存态之外，用户还可以注册各种外部数据源来提供动态的规则。用户可以根据系统当前的实时情况去动态地变更规则配置，数据源会将变更推送至 Sentinel 并即时生效。</p>
+<h3 id="隔离设计上的对比"><a href="#隔离设计上的对比" class="headerlink" title="隔离设计上的对比"></a>隔离设计上的对比</h3><p>隔离是 Hystrix 的核心功能之一。Hystrix 提供两种隔离策略：线程池隔离（Bulkhead Pattern）和信号量隔离，其中最推荐也是最常用的是线程池隔离。Hystrix 的线程池隔离针对不同的资源分别创建不同的线程池，不同服务调用都发生在不同的线程池中，在线程池排队、超时等阻塞情况时可以快速失败，并可以提供 fallback 机制。线程池隔离的好处是隔离度比较高，可以针对某个资源的线程池去进行处理而不影响其它资源，但是代价就是线程上下文切换的 overhead 比较大，特别是对低延时的调用有比较大的影响。</p>
+<p>但是，实际情况下，线程池隔离并没有带来非常多的好处。首先就是过多的线程池会非常影响性能。考虑这样一个场景，在 Tomcat 之类的 Servlet 容器使用 Hystrix，本身 Tomcat 自身的线程数目就非常多了（可能到几十或一百多），如果加上 Hystrix 为各个资源创建的线程池，总共线程数目会非常多（几百个线程），这样上下文切换会有非常大的损耗。另外，线程池模式比较彻底的隔离性使得 Hystrix 可以针对不同资源线程池的排队、超时情况分别进行处理，但这其实是超时熔断和流量控制要解决的问题，如果组件具备了超时熔断和流量控制的能力，线程池隔离就显得没有那么必要了。</p>
+<p>Sentinel 可以通过并发线程数模式的流量控制来提供信号量隔离的功能。这样的隔离非常轻量级，仅限制对某个资源调用的并发数，而不是显式地去创建线程池，所以 overhead 比较小，但是效果不错。并且结合基于响应时间的熔断降级模式，可以在不稳定资源的平均响应时间比较高的时候自动降级，防止过多的慢调用占满并发数，影响整个系统。而 Hystrix 的信号量隔离比较简单，无法对慢调用自动进行降级，只能等待客户端自己超时，因此仍然可能会出现级联阻塞的情况。</p>
+<h3 id="熔断降级对比"><a href="#熔断降级对比" class="headerlink" title="熔断降级对比"></a>熔断降级对比</h3><p>Sentinel 和 Hystrix 的熔断降级功能本质上都是基于熔断器模式（Circuit Breaker Pattern）。Sentinel 与 Hystrix 都支持基于失败比率（异常比率）的熔断降级，在调用达到一定量级并且失败比率达到设定的阈值时自动进行熔断，此时所有对该资源的调用都会被 block，直到过了指定的时间窗口后才启发性地恢复。上面提到过，Sentinel 还支持基于平均响应时间的熔断降级，可以在服务响应时间持续飙高的时候自动熔断，拒绝掉更多的请求，直到一段时间后才恢复。这样可以防止调用非常慢造成级联阻塞的情况。</p>
+<h3 id="实时指标统计实现对比"><a href="#实时指标统计实现对比" class="headerlink" title="实时指标统计实现对比"></a>实时指标统计实现对比</h3><p>Hystrix 和 Sentinel 的实时指标数据统计实现都是基于滑动窗口的。Hystrix 1.5 之前的版本是通过环形数组实现的滑动窗口，通过锁配合 CAS 的操作对每个桶的统计信息进行更新。Hystrix 1.5 开始对实时指标统计的实现进行了重构，将指标统计数据结构抽象成了响应式流（reactive stream）的形式，方便消费者去利用指标信息。同时底层改造成了基于 RxJava 的事件驱动模式，在服务调用成功/失败/超时的时候发布相应的事件，通过一系列的变换和聚合最终得到实时的指标统计数据流，可以被熔断器或 Dashboard 消费。</p>
+<p>Sentinel 目前抽象出了 Metric 指标统计接口，底层可以有不同的实现，目前默认的实现是基于 <code>LeapArray</code> 的滑动窗口，后续根据需要可能会引入 reactive stream 等实现。</p>
+<h2 id="Sentinel-的特色"><a href="#Sentinel-的特色" class="headerlink" title="Sentinel 的特色"></a>Sentinel 的特色</h2><p>除了之前提到的两者的共同特性之外，Sentinel 还提供以下的特色功能：</p>
+<h3 id="轻量级、高性能"><a href="#轻量级、高性能" class="headerlink" title="轻量级、高性能"></a>轻量级、高性能</h3><p>Sentinel 作为一个功能完备的高可用流量管控组件，其核心 <code>sentinel-core</code> 没有任何多余依赖，打包后只有不到 200 KB，非常轻量级。开发者可以放心地引入 <code>sentinel-core</code> 而不需担心依赖问题。同时，Sentinel 提供了多种扩展点，用户可以很方便地根据需求去进行扩展，并且无缝地切合到 Sentinel 中。</p>
+<p>引入 Sentinel 带来的性能损耗非常小。只有在业务单机量级超过 25W QPS 的时候才会有一些显著的影响（5% - 10% 左右），单机 QPS 不太大的时候损耗几乎可以忽略不计。</p>
+<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p>Sentinel 可以针对不同的调用关系，以不同的运行指标（如 QPS、并发调用数、系统负载等）为基准，对资源调用进行流量控制，将随机的请求调整成合适的形状。</p>
+<p>Sentinel 支持多样化的流量整形策略，在 QPS 过高的时候可以自动将流量调整成合适的形状。常用的有：</p>
+<ul>
+<li>直接拒绝模式：即超出的请求直接拒绝。</li>
+<li><p>慢启动预热模式：当流量激增的时候，控制流量通过的速率，让通过的流量缓慢增加，在一定时间内逐渐增加到阈值上限，给冷系统一个预热的时间，避免冷系统被压垮。</p>
+</li>
+<li><p>匀速器模式：利用 Leaky Bucket 算法实现的匀速模式，严格控制了请求通过的时间间隔，同时堆积的请求将会排队，超过超时时长的请求直接被拒绝。</p>
+</li>
+</ul>
+<p>Sentinel 还支持<a href="https://yq.aliyun.com/go/articleRenderRedirect?url=https://github.com/alibaba/Sentinel/wiki/流量控制#基于调用关系的流量控制" target="_blank" rel="noopener">基于调用关系的限流</a>，包括基于调用方限流、基于调用链入口限流、关联流量限流等，依托于 Sentinel 强大的调用链路统计信息，可以提供精准的不同维度的限流。</p>
+<p>目前 Sentinel 对异步调用链路的支持还不是很好，后续版本会着重改善支持异步调用。</p>
+<h3 id="系统负载保护"><a href="#系统负载保护" class="headerlink" title="系统负载保护"></a>系统负载保护</h3><p>Sentinel 对系统的维度提供保护，负载保护算法借鉴了 TCP BBR 的思想。当系统负载较高的时候，如果仍持续让请求进入，可能会导致系统崩溃，无法响应。在集群环境下，网络负载均衡会把本应这台机器承载的流量转发到其它的机器上去。如果这个时候其它的机器也处在一个边缘状态的时候，这个增加的流量就会导致这台机器也崩溃，最后导致整个集群不可用。针对这个情况，Sentinel 提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。<br><img src="/img/posts/3034626334343239633637342e6a7067.jpg" alt="Sentinel Dashboard"></p>
+<h3 id="实时监控与控制面板"><a href="#实时监控与控制面板" class="headerlink" title="实时监控与控制面板"></a>实时监控与控制面板</h3><p>Sentinel 提供 HTTP API 用于获取<a href="https://yq.aliyun.com/go/articleRenderRedirect?url=https://github.com/alibaba/Sentinel/wiki/实时监控" target="_blank" rel="noopener">实时的监控信息</a>，如调用链路统计信息、簇点信息、规则信息等。如果用户正在使用 Spring Boot/Spring Cloud 并使用了 <a href="https://yq.aliyun.com/go/articleRenderRedirect?url=https://github.com/spring-cloud-incubator/spring-cloud-alibabacloud" target="_blank" rel="noopener">Sentinel Spring Cloud Starter</a>，还可以方便地通过其暴露的 Actuator Endpoint 来获取运行时的一些信息，如动态规则等。未来 Sentinel 还会支持标准化的指标监控 API，可以方便地整合各种监控系统和可视化系统，如 Prometheus、Grafana 等。</p>
+<p><a href="https://yq.aliyun.com/go/articleRenderRedirect?url=https://github.com/alibaba/Sentinel/wiki/控制台" target="_blank" rel="noopener">Sentinel 控制台</a>（Dashboard）提供了机器发现、配置规则、查看实时监控、查看调用链路信息等功能，使得用户可以非常方便地去查看监控和进行配置。</p>
+<h3 id="生态"><a href="#生态" class="headerlink" title="生态"></a>生态</h3><p>Sentinel 目前已经针对 Servlet、Dubbo、Spring Boot/Spring Cloud、gRPC 等进行了适配，用户只需引入相应依赖并进行简单配置即可非常方便地享受 Sentinel 的高可用流量防护能力。未来 Sentinel 还会对更多常用框架进行适配，并且会为 Service Mesh 提供集群流量防护的能力。</p>
+<h1 id="3-功能对比"><a href="#3-功能对比" class="headerlink" title="3. 功能对比"></a>3. 功能对比</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>Sentinel</th>
+<th>Hystrix</th>
+<th>resilience4j</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>隔离策略</td>
+<td>信号量隔离（并发线程数限流）</td>
+<td>线程池隔离/信号量隔离</td>
+<td>信号量隔离</td>
+</tr>
+<tr>
+<td>熔断降级策略</td>
+<td>基于响应时间、异常比率、异常数</td>
+<td>基于异常比率</td>
+<td>基于异常比率、响应时间</td>
+</tr>
+<tr>
+<td>实时统计实现</td>
+<td>滑动窗口（LeapArray）</td>
+<td>滑动窗口（基于 RxJava）</td>
+<td>Ring Bit Buffer</td>
+</tr>
+<tr>
+<td>动态规则配置</td>
+<td>支持多种数据源</td>
+<td>支持多种数据源</td>
+<td>有限支持</td>
+</tr>
+<tr>
+<td>扩展性</td>
+<td>多个扩展点</td>
+<td>插件的形式</td>
+<td>接口的形式</td>
+</tr>
+<tr>
+<td>基于注解的支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>限流</td>
+<td>基于 QPS，支持基于调用关系的限流</td>
+<td>有限的支持</td>
+<td>Rate Limiter</td>
+</tr>
+<tr>
+<td>流量整形</td>
+<td>支持预热模式、匀速器模式、预热排队模式</td>
+<td>不支持</td>
+<td>简单的 Rate Limiter 模式</td>
+</tr>
+<tr>
+<td>系统自适应保护</td>
+<td>支持</td>
+<td>不支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>控制台</td>
+<td>提供开箱即用的控制台，可配置规则、查看秒级监控、机器发现等</td>
+<td>简单的监控查看</td>
+<td>不提供控制台，可对接其它监控系统</td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100308.html" class="pre-post btn btn-default" title='大数据hadoop之 一.云计算概念'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 一.云计算概念</span>
+        </a>
+    
+    
+        <a href="/archives/2019/05/100306.html" class="next-post btn btn-default" title='高并发系统之 十.集群部署时的分布式session如何实现？'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">高并发系统之 十.集群部署时的分布式session如何实现？</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-resilience4j"><span class="toc-text">1. resilience4j</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Sentinel"><span class="toc-text">2. Sentinel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#共同特性"><span class="toc-text">共同特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#资源模型和执行模型上的对比"><span class="toc-text">资源模型和执行模型上的对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#隔离设计上的对比"><span class="toc-text">隔离设计上的对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#熔断降级对比"><span class="toc-text">熔断降级对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实时指标统计实现对比"><span class="toc-text">实时指标统计实现对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sentinel-的特色"><span class="toc-text">Sentinel 的特色</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#轻量级、高性能"><span class="toc-text">轻量级、高性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#流量控制"><span class="toc-text">流量控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#系统负载保护"><span class="toc-text">系统负载保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实时监控与控制面板"><span class="toc-text">实时监控与控制面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生态"><span class="toc-text">生态</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-功能对比"><span class="toc-text">3. 功能对比</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

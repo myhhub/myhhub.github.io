@@ -1,0 +1,558 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="逆向,java">
+
+
+    <meta name="description" content="常量入栈指令常量入栈指令有iconst、bipush、sipush、ldc、ldc2_w分别对应不同的使用场景
+以下两个表简单总结了使用场景
+八大基本类型场景表
+table th:first-o...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Java逆向基础之一.常量入栈指令 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Java逆向基础之一.常量入栈指令">
+            
+	            Java逆向基础之一.常量入栈指令
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/crack/">破解</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/08/31</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1679</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="常量入栈指令"><a href="#常量入栈指令" class="headerlink" title="常量入栈指令"></a>常量入栈指令</h1><p>常量入栈指令有iconst、bipush、sipush、ldc、ldc2_w分别对应不同的使用场景</p>
+<p>以下两个表简单总结了使用场景</p>
+<h2 id="八大基本类型场景表"><a href="#八大基本类型场景表" class="headerlink" title="八大基本类型场景表"></a>八大基本类型场景表</h2><style>
+table th:first-of-type {
+    width: 15%;
+}
+table th:nth-of-type(2) {
+    width: 35%;
+}
+</style>
+
+
+<table>
+<thead>
+<tr>
+<th>常量类型</th>
+<th>常量范围</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整型int</td>
+<td>-1~5</td>
+<td>iconst_0~ iconst_5 iconst_m1</td>
+</tr>
+<tr>
+<td></td>
+<td>-128~127</td>
+<td>bipush</td>
+</tr>
+<tr>
+<td></td>
+<td>-32768~32767</td>
+<td>sipush</td>
+</tr>
+<tr>
+<td></td>
+<td>-2147483648~2147483647</td>
+<td>#2 = Integer 12345678 0: ldc #2 // int 12345678</td>
+</tr>
+<tr>
+<td>布尔型boolean</td>
+<td>true</td>
+<td>iconst_1</td>
+</tr>
+<tr>
+<td></td>
+<td>false</td>
+<td>iconst_0</td>
+</tr>
+<tr>
+<td>短整型short</td>
+<td>-1~5</td>
+<td>iconst_0~ iconst_5 iconst_m1</td>
+</tr>
+<tr>
+<td></td>
+<td>-128~127</td>
+<td>bipush</td>
+</tr>
+<tr>
+<td></td>
+<td>-32768~32767</td>
+<td>sipush</td>
+</tr>
+<tr>
+<td>字符型char</td>
+<td>\u0000~\u0005</td>
+<td>iconst_0~ iconst_5</td>
+</tr>
+<tr>
+<td></td>
+<td>\u0000~\u00FF</td>
+<td>bipush</td>
+</tr>
+<tr>
+<td></td>
+<td>\u0000~\uFFFF</td>
+<td>sipush</td>
+</tr>
+<tr>
+<td>字节型byte</td>
+<td>-1~5</td>
+<td>iconst_0~ iconst_5 iconst_m1</td>
+</tr>
+<tr>
+<td></td>
+<td>-128~127</td>
+<td>bipush</td>
+</tr>
+<tr>
+<td>长整型long</td>
+<td>-2\^63~2\^63-1</td>
+<td>#2 = Long 1234567890123456789l ldc2_w #2 // long 1234567890123456789l</td>
+</tr>
+<tr>
+<td>浮点型double</td>
+<td>8字节</td>
+<td>#2 = Double 123.456d ldc2_w  #2  // double 123.456d</td>
+</tr>
+<tr>
+<td>浮点型float</td>
+<td>4字节</td>
+<td>#2 = Float 123.456f ldc #2 // float 123.456f</td>
+</tr>
+</tbody>
+</table>
+<h2 id="指令场景表"><a href="#指令场景表" class="headerlink" title="指令场景表"></a>指令场景表</h2><table>
+<thead>
+<tr>
+<th>指令</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iconst</td>
+<td>int,short,byte,int(char a)数值在-1~5之间，boolean类型，注意不包括long</td>
+</tr>
+<tr>
+<td>bipush</td>
+<td>int,short,byte,int(char a)数值在-128~127之间，注意不包括long，范围内的值在iconst之内的优先用iconst</td>
+</tr>
+<tr>
+<td>sipush</td>
+<td>int,short,int(char a)数值在-32768~32767之间，boolean类型，注意不包括long，范围内的值在bipush之内的优先用bipush</td>
+</tr>
+<tr>
+<td>ldc</td>
+<td>int的数值-2147483648~2147483647之间（范围内的值在sipush之内的优先用sipush），float类型</td>
+</tr>
+<tr>
+<td>ldc2_w</td>
+<td>long类型，double类型</td>
+</tr>
+</tbody>
+</table>
+<h1 id="以下是简单的例子"><a href="#以下是简单的例子" class="headerlink" title="以下是简单的例子"></a>以下是简单的例子</h1><h2 id="整型常量0的例子iconst"><a href="#整型常量0的例子iconst" class="headerlink" title="整型常量0的例子iconst"></a>整型常量0的例子iconst</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac <span class="keyword">ret</span>.java</span><br></pre></td></tr></table></figure>
+<p>Java标准反编译</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javap -<span class="keyword">c</span> -verbose <span class="keyword">ret</span>.class</span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static int main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)I</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: iconst_0</span></span><br><span class="line"></span><br><span class="line"><span class="section">1: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意其中的0: iconst_0即可</li>
+</ul>
+<h2 id="整型常量123的例子bipush"><a href="#整型常量123的例子bipush" class="headerlink" title="整型常量123的例子bipush"></a>整型常量123的例子bipush</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">123</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static int main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)I</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: bipush        123</span></span><br><span class="line"></span><br><span class="line"><span class="section">2: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意其中的0: bipush        123</li>
+</ul>
+<h2 id="整型常量1234的例子sipush"><a href="#整型常量1234的例子sipush" class="headerlink" title="整型常量1234的例子sipush"></a>整型常量1234的例子sipush</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">1234</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static int main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)I</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: sipush        1234</span></span><br><span class="line"></span><br><span class="line"><span class="section">3: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意其中的 0: sipush        1234</li>
+</ul>
+<h2 id="整型常量12345678的例子ldc"><a href="#整型常量12345678的例子ldc" class="headerlink" title="整型常量12345678的例子ldc"></a>整型常量12345678的例子ldc</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">12345678</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">major version: <span class="number">52</span></span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">\#2 = <span class="built_in">Integer</span>            <span class="number">12345678</span></span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> static int main(java.lang.<span class="built_in">String</span><span class="meta">[</span><span class="meta">]</span>);</span><br><span class="line"></span><br><span class="line">descriptor: (<span class="meta">[</span>Ljava/lang/<span class="built_in">String</span>;)I</span><br><span class="line"></span><br><span class="line">flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line"></span><br><span class="line">Code:</span><br><span class="line"></span><br><span class="line"><span class="built_in">stack</span>=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>: ldc           \#2                  <span class="comment">// int 12345678</span></span><br><span class="line"></span><br><span class="line"><span class="number">2</span>: ireturn</span><br><span class="line"></span><br><span class="line">LineNumberTable:</span><br><span class="line"></span><br><span class="line">line <span class="number">5</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>布尔型true例子iconst</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static boolean main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)Z</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: iconst_1</span></span><br><span class="line"></span><br><span class="line"><span class="section">1: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: iconst_1即ture用常量1表示</li>
+</ul>
+<h2 id="短整型short例子"><a href="#短整型short例子" class="headerlink" title="短整型short例子"></a>短整型short例子</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">short</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">1234</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static short main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)S</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: sipush        1234</span></span><br><span class="line"></span><br><span class="line"><span class="section">3: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: sipush        1234</li>
+</ul>
+<h2 id="字符型A例子"><a href="#字符型A例子" class="headerlink" title="字符型A例子"></a>字符型A例子</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">char</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="string">'A'</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static char main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)C</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: bipush        65</span></span><br><span class="line"></span><br><span class="line"><span class="section">2: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: bipush        65</li>
+</ul>
+<h2 id="字符型中例子"><a href="#字符型中例子" class="headerlink" title="字符型中例子"></a>字符型中例子</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">char</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="string">'中'</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static char main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)C</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: sipush        20013</span></span><br><span class="line"></span><br><span class="line"><span class="section">3: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: sipush        20013</li>
+</ul>
+<h2 id="byte类型123列子"><a href="#byte类型123列子" class="headerlink" title="byte类型123列子"></a>byte类型123列子</h2><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ret</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span> <span class="title">main</span>(<span class="params">String[] args</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">123</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">major version: 52</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">public static byte main(java.lang.String[]);</span><br><span class="line"></span><br><span class="line"><span class="section">descriptor: ([Ljava/lang/String;)B</span></span><br><span class="line"></span><br><span class="line"><span class="section">flags: ACC_PUBLIC, ACC_STATIC</span></span><br><span class="line"></span><br><span class="line"><span class="section">Code:</span></span><br><span class="line"></span><br><span class="line">stack=1, locals=1, args_size=1</span><br><span class="line"></span><br><span class="line"><span class="section">0: bipush        123</span></span><br><span class="line"></span><br><span class="line"><span class="section">2: ireturn</span></span><br><span class="line"></span><br><span class="line"><span class="section">LineNumberTable:</span></span><br><span class="line"></span><br><span class="line">line 5: 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意 0: bipush        123</li>
+</ul>
+<h2 id="long类型1234567890123456789L例子"><a href="#long类型1234567890123456789L例子" class="headerlink" title="long类型1234567890123456789L例子"></a>long类型1234567890123456789L例子</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">1234567890123456789l</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">major version: <span class="number">52</span></span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">\#2 = Long               <span class="number">1234567890123456789</span>l</span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> static long main(java.lang.<span class="built_in">String</span><span class="meta">[</span><span class="meta">]</span>);</span><br><span class="line"></span><br><span class="line">descriptor: (<span class="meta">[</span>Ljava/lang/<span class="built_in">String</span>;)J</span><br><span class="line"></span><br><span class="line">flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line"></span><br><span class="line">Code:</span><br><span class="line"></span><br><span class="line"><span class="built_in">stack</span>=<span class="number">2</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>: ldc2_w        \#2                  <span class="comment">// long 1234567890123456789l</span></span><br><span class="line"></span><br><span class="line"><span class="number">3</span>: lreturn</span><br><span class="line"></span><br><span class="line">LineNumberTable:</span><br><span class="line"></span><br><span class="line">line <span class="number">5</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: ldc2_w        #2                  // long 1234567890123456789l</li>
+</ul>
+<h2 id="浮点类型123-456d的例子"><a href="#浮点类型123-456d的例子" class="headerlink" title="浮点类型123.456d的例子"></a>浮点类型123.456d的例子</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">123.456</span>d;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">major version: <span class="number">52</span></span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">\#2 = Double             <span class="number">123.456</span>d</span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> static double main(java.lang.<span class="built_in">String</span><span class="meta">[</span><span class="meta">]</span>);</span><br><span class="line"></span><br><span class="line">descriptor: (<span class="meta">[</span>Ljava/lang/<span class="built_in">String</span>;)D</span><br><span class="line"></span><br><span class="line">flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line"></span><br><span class="line">Code:</span><br><span class="line"></span><br><span class="line"><span class="built_in">stack</span>=<span class="number">2</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>: ldc2_w        \#2                  <span class="comment">// double 123.456d</span></span><br><span class="line"></span><br><span class="line"><span class="number">3</span>: dreturn</span><br><span class="line"></span><br><span class="line">LineNumberTable:</span><br><span class="line"></span><br><span class="line">line <span class="number">5</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: ldc2_w        #2                  // double 123.456d</li>
+</ul>
+<h2 id="浮点类型123-456f的例子"><a href="#浮点类型123-456f的例子" class="headerlink" title="浮点类型123.456f的例子"></a>浮点类型123.456f的例子</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ret</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">float</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="number">123.456f</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>反编译</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">major version: <span class="number">52</span></span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">\#2 = Float              <span class="number">123.456</span>f</span><br><span class="line"></span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> static float main(java.lang.<span class="built_in">String</span><span class="meta">[</span><span class="meta">]</span>);</span><br><span class="line"></span><br><span class="line">descriptor: (<span class="meta">[</span>Ljava/lang/<span class="built_in">String</span>;)F</span><br><span class="line"></span><br><span class="line">flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line"></span><br><span class="line">Code:</span><br><span class="line"></span><br><span class="line"><span class="built_in">stack</span>=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="number">0</span>: ldc           \#2                  <span class="comment">// float 123.456f</span></span><br><span class="line"></span><br><span class="line"><span class="number">2</span>: freturn</span><br><span class="line"></span><br><span class="line">LineNumberTable:</span><br><span class="line"></span><br><span class="line">line <span class="number">5</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意0: ldc           #2                  // float 123.456f</li>
+</ul>
+<hr>
+<p><strong>参考资料</strong><br><a href="http://www.vuln.cn/7115" target="_blank" rel="noopener">http://www.vuln.cn/7115</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/09/100014.html" class="pre-post btn btn-default" title='Java逆向基础之二.操作数栈'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Java逆向基础之二.操作数栈</span>
+        </a>
+    
+    
+        <a href="/archives/2018/08/100013.html" class="next-post btn btn-default" title='什么软件都不用，一分钟找回连接的WIFI密码'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">什么软件都不用，一分钟找回连接的WIFI密码</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#常量入栈指令"><span class="toc-text">常量入栈指令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#八大基本类型场景表"><span class="toc-text">八大基本类型场景表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指令场景表"><span class="toc-text">指令场景表</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#以下是简单的例子"><span class="toc-text">以下是简单的例子</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#整型常量0的例子iconst"><span class="toc-text">整型常量0的例子iconst</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整型常量123的例子bipush"><span class="toc-text">整型常量123的例子bipush</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整型常量1234的例子sipush"><span class="toc-text">整型常量1234的例子sipush</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整型常量12345678的例子ldc"><span class="toc-text">整型常量12345678的例子ldc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#短整型short例子"><span class="toc-text">短整型short例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符型A例子"><span class="toc-text">字符型A例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符型中例子"><span class="toc-text">字符型中例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#byte类型123列子"><span class="toc-text">byte类型123列子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#long类型1234567890123456789L例子"><span class="toc-text">long类型1234567890123456789L例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#浮点类型123-456d的例子"><span class="toc-text">浮点类型123.456d的例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#浮点类型123-456f的例子"><span class="toc-text">浮点类型123.456f的例子</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

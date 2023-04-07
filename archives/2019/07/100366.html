@@ -1,0 +1,713 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop">
+
+
+    <meta name="description" content="一 数据采集概念任何完整的大数据平台，一般包括以下的几个过程：
+
+数据采集
+数据存储
+数据处理
+数据展现（可视化，报表和监控）
+
+其中，数据采集是所有数据系统必不可少的，随着大数据越来越被重视，...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 六十.数据采集与爬虫 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 六十.数据采集与爬虫">
+            
+	            大数据hadoop之 六十.数据采集与爬虫
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/05</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1371</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一-数据采集概念"><a href="#一-数据采集概念" class="headerlink" title="一 数据采集概念"></a>一 数据采集概念</h2><p>任何完整的大数据平台，一般包括以下的几个过程：</p>
+<ul>
+<li>数据采集</li>
+<li>数据存储</li>
+<li>数据处理</li>
+<li>数据展现（可视化，报表和监控）<br><img src="/img/hadoop/18/chapter18001.jpg" alt></li>
+</ul>
+<p>其中，数据采集是所有数据系统必不可少的，随着大数据越来越被重视，数据采集的挑战也变的尤为突出。这其中包括：</p>
+<ul>
+<li>数据源多种多样</li>
+<li>数据量大，变化快</li>
+<li>如何保证数据采集的可靠性的性能</li>
+<li>如何避免重复数据</li>
+<li>如何保证数据的质量</li>
+</ul>
+<p>我们今天就来看看当前可用的六款数据采集的产品，重点关注它们是如何做到高可靠，高性能和高扩展。</p>
+<h3 id="1-Apache-Flume"><a href="#1-Apache-Flume" class="headerlink" title="1) Apache Flume"></a>1) Apache Flume</h3><p><strong>官网：<a href="https://flume.apache.org/" target="_blank" rel="noopener">https://flume.apache.org/</a></strong></p>
+<p>Flume 是Apache旗下的一款开源、高可靠、高扩展、容易管理、支持客户扩展的数据采集系统。 Flume使用JRuby来构建，所以依赖Java运行环境。</p>
+<p>Flume最初是由Cloudera的工程师设计用于合并日志数据的系统，后来逐渐发展用于处理流数据�件。<br><img src="/img/hadoop/18/chapter18002.jpg" alt></p>
+<p>Flume设计成一个分布式的管道架构，可以看作在数据源和目的地之间有一个Agent的网络，支持数据路由。<br><img src="/img/hadoop/18/chapter18003.jpg" alt><br>每一个agent都由Source，Channel和Sink组成。</p>
+<p><strong>Source</strong></p>
+<p>Source负责接收输入数据，并将数据写入管道。Flume的Source支持HTTP，JMS，RPC，NetCat，Exec，Spooling Directory。其中Spooling支持监视一个目录或者文件，解析其中新生成的事件。</p>
+<p><strong>Channel</strong></p>
+<p>Channel 存储，缓存从source到Sink的中间数据。可使用不同的配置来做Channel，例如内存，文件，JDBC等。使用内存性能高但不持久，有可能丢数据。使用文件更可靠，但性能不如内存。</p>
+<p><strong>Sink</strong></p>
+<p>Sink负责从管道中读出数据并发给下一个Agent或者最终的目的地。Sink支持的不同目的地种类包括：HDFS，HBASE，Solr，ElasticSearch，File，Logger或者其它的Flume Agent。<br><img src="/img/hadoop/18/chapter18004.jpg" alt></p>
+<p>Flume在source和sink端都使用了transaction机制保证在数据传输中没有数据丢失。<br><img src="/img/hadoop/18/chapter18005.jpg" alt></p>
+<p>Source上的数据可以复制到不同的通道上。每一个Channel也可以连接不同数量的Sink。这样连接不同配置的Agent就可以组成一个复杂的数据收集网络。通过对agent的配置，可以组成一个路由复杂的数据传输网络。</p>
+<p><img src="/img/hadoop/18/chapter18006.jpg" alt></p>
+<p>配置如上图所示的agent结构，Flume支持设置sink的Failover和Load Balance，这样就可以保证即使有一个agent失效的情况下，整个系统仍能正常收集数据。<br><img src="/img/hadoop/18/chapter18007.jpg" alt></p>
+<p>Flume中传输的内容定义为事件（Event），事件由Headers（包含元数据，Meta Data）和Payload组成。</p>
+<p>Flume提供SDK，可以支持用户定制开发：</p>
+<p>Flume客户端负责在事件产生的源头把事件发送给Flume的Agent。客户端通常和产生数据源的应用在同一个进程空间。常见的Flume客户端有Avro，log4J，syslog和HTTP Post。另外ExecSource支持指定一个本地进程的输出作为Flume的输入。当然很有可能，以上的这些客户端都不能满足需求，用户可以定制的客户端，和已有的FLume的Source进行通信，或者定制实现一种新的Source类型。</p>
+<p>同时，用户可以使用Flume的SDK定制Source和Sink。似乎不支持定制的Channel。</p>
+<h3 id="2-Fluentd"><a href="#2-Fluentd" class="headerlink" title="2) Fluentd"></a>2) Fluentd</h3><p><strong>官网：<a href="http://docs.fluentd.org/articles/quickstart" target="_blank" rel="noopener">http://docs.fluentd.org/articles/quickstart</a></strong></p>
+<p>Fluentd是另一个开源的数据收集框架。Fluentd使用C/Ruby开发，使用JSON文件来统一日志数据。它的可插拔架构，支持各种不同种类和格式的数据源和数据输出。最后它也同时提供了高可靠和很好的扩展性。Treasure Data, Inc 对该产品提供支持和维护。<br><img src="/img/hadoop/18/chapter18008.jpg" alt></p>
+<p>Fluentd的部署和Flume非常相似：<br><img src="/img/hadoop/18/chapter18009.jpg" alt><br><img src="/img/hadoop/18/chapter1810.jpg" alt><br><img src="/img/hadoop/18/chapter18011.jpg" alt><br>Fluentd的Input／Buffer／Output非常类似于Flume的Source／Channel／Sink。</p>
+<p><strong>Input</strong></p>
+<p>Input负责接收数据或者主动抓取数据。支持syslog，http，file tail等。</p>
+<p><strong>Buffer</strong></p>
+<p>Buffer负责数据获取的性能和可靠性，也有文件或内存等不同类型的Buffer可以配置。</p>
+<p><strong>Output</strong></p>
+<p>Output负责输出数据到目的地例如文件，AWS S3或者其它的Fluentd。</p>
+<p>Fluentd的配置非常方便，如下图：</p>
+<p><img src="/img/hadoop/18/chapter18012.jpg" alt></p>
+<h3 id="3-Logstash"><a href="#3-Logstash" class="headerlink" title="3) Logstash"></a>3) Logstash</h3><p><strong>官方网站:<a href="https://github.com/elastic/logstash" target="_blank" rel="noopener">https://github.com/elastic/logstash</a></strong></p>
+<p>Logstash是著名的开源数据栈ELK （ElasticSearch, Logstash, Kibana）中的那个L。</p>
+<p>Logstash用JRuby开发，所有运行时依赖JVM。</p>
+<p>Logstash的部署架构如下图，当然这只是一种部署的选项。<br><img src="/img/hadoop/18/chapter18013.jpg" alt><br>一个典型的Logstash的配置如下，包括了Input，filter的Output的设置。<br><img src="/img/hadoop/18/chapter18014.jpg" alt></p>
+<p>几乎在大部分的情况下ELK作为一个栈是被同时使用的。所有当你的数据系统使用ElasticSearch的情况下，logstash是首选。</p>
+<h3 id="4-数据采集总结"><a href="#4-数据采集总结" class="headerlink" title="4) 数据采集总结"></a>4) 数据采集总结</h3><p>我们简单讨论了几种流行的数据收集平台，它们大都提供高可靠和高扩展的数据收集。大多平台都抽象出了输入，输出和中间的缓冲的架构。利用分布式的网络连接，大多数平台都能实现一定程度的扩展性和高可靠性。</p>
+<p>其中Flume，Fluentd是两个被使用较多的产品。如果你用ElasticSearch，Logstash也许是首选，因为ELK栈提供了很好的集成。Chukwa和Scribe由于项目的不活跃，不推荐使用。</p>
+<p>Splunk作为一个优秀的商业产品，它的数据采集还存在一定的限制，相信Splunk很快会开发出更好的数据收集的解决方案。</p>
+<h2 id="二-爬虫技术方案选择"><a href="#二-爬虫技术方案选择" class="headerlink" title="二 爬虫技术方案选择"></a>二 爬虫技术方案选择</h2><p>开发网络爬虫应该选择Nutch、Crawler4j、WebMagic、scrapy、WebCollector还是其他的？这里按照我的经验随便扯淡一下：上面说的爬虫，基本可以分3类：</p>
+<ol>
+<li>分布式爬虫：Nutch</li>
+<li>JAVA单机爬虫：Crawler4j、WebMagic、WebCollector</li>
+<li>非JAVA单机爬虫：scrapy</li>
+</ol>
+<h3 id="1-分布式爬虫"><a href="#1-分布式爬虫" class="headerlink" title="1) 分布式爬虫"></a>1) 分布式爬虫</h3><p>爬虫使用分布式，主要是解决两个问题：</p>
+<ol>
+<li>海量URL管理</li>
+<li>网速</li>
+</ol>
+<p>现在比较流行的分布式爬虫，是Apache的Nutch。但是对于大多数用户来说，Nutch是这几类爬虫里，最不好的选择，理由如下：</p>
+<ol>
+<li><p>Nutch是为搜索引擎设计的爬虫，大多数用户是需要一个做精准数据爬取（精抽取）的爬虫。Nutch运行的一套流程里，有三分之二是为了搜索引擎而设计的。对精抽取没有太大的意义。也就是说，用Nutch做数据抽取，会浪费很多的时间在不必要的计算上。而且如果你试图通过对Nutch进行二次开发，来使得它适用于精抽取的业务，基本上就要破坏Nutch的框架，把Nutch改的面目全非，有修改Nutch的能力，真的不如自己重新写一个分布式爬虫框架了。</p>
+</li>
+<li><p>Nutch依赖hadoop运行，hadoop本身会消耗很多的时间。如果集群机器数量较少，爬取速度反而不如单机爬虫快。</p>
+</li>
+<li><p>Nutch虽然有一套插件机制，而且作为亮点宣传。可以看到一些开源的Nutch插件，提供精抽取的功能。但是开发过Nutch插件的人都知道，Nutch的插件系统有多蹩脚。利用反射的机制来加载和调用插件，使得程序的编写和调试都变得异常困难，更别说在上面开发一套复杂的精抽取系统了。而且Nutch并没有为精抽取提供相应的插件挂载点。Nutch的插件有只有五六个挂载点，而这五六个挂载点都是为了搜索引擎服务的，并没有为精抽取提供挂载点。大多数Nutch的精抽取插件，都是挂载在“页面解析”(parser)这个挂载点的，这个挂载点其实是为了解析链接（为后续爬取提供URL），以及为搜索引擎提供一些易抽取的网页信息(网页的meta信息、text文本)。</p>
+</li>
+<li><p>用Nutch进行爬虫的二次开发，爬虫的编写和调试所需的时间，往往是单机爬虫所需的十倍时间不止。了解Nutch源码的学习成本很高，何况是要让一个团队的人都读懂Nutch源码。调试过程中会出现除程序本身之外的各种问题(hadoop的问题、hbase的问题)。</p>
+</li>
+<li><p>很多人说Nutch2有gora，可以持久化数据到avro文件、hbase、mysql等。很多人其实理解错了，这里说的持久化数据，是指将URL信息（URL管理所需要的数据）存放到avro、hbase、mysql。并不是你要抽取的结构化数据。其实对大多数人来说，URL信息存在哪里无所谓。</p>
+</li>
+<li><p>Nutch2的版本目前并不适合开发。官方现在稳定的Nutch版本是nutch2.2.1，但是这个版本绑定了gora-0.3。如果想用hbase配合nutch（大多数人用nutch2就是为了用hbase)，只能使用0.90版本左右的hbase，相应的就要将hadoop版本降到hadoop 0.2左右。而且nutch2的官方教程比较有误导作用，Nutch2的教程有两个，分别是Nutch1.x和Nutch2.x，这个Nutch2.x官网上写的是可以支持到hbase 0.94。但是实际上，这个Nutch2.x的意思是Nutch2.3之前、Nutch2.2.1之后的一个版本，这个版本在官方的SVN中不断更新。而且非常不稳定（一直在修改）。<br>所以，如果你不是要做搜索引擎，尽量不要选择Nutch作为爬虫。有些团队就喜欢跟风，非要选择Nutch来开发精抽取的爬虫，其实是冲着Nutch的名气（Nutch作者是Doug Cutting），当然最后的结果往往是项目延期完成。</p>
+</li>
+</ol>
+<p>如果你是要做搜索引擎，Nutch1.x是一个非常好的选择。Nutch1.x和solr或者es配合，就可以构成一套非常强大的搜索引擎了。如果非要用Nutch2的话，建议等到Nutch2.3发布再看。目前的Nutch2是一个非常不稳定的版本。</p>
+<h3 id="2-JAVA单机爬虫"><a href="#2-JAVA单机爬虫" class="headerlink" title="2) JAVA单机爬虫"></a>2) JAVA单机爬虫</h3><p>其实开源网络爬虫（框架）的开发非常简单，难问题和复杂的问题都被以前的人解决了（比如DOM树解析和定位、字符集检测、海量URL去重），可以说是毫无技术含量。包括Nutch，其实Nutch的技术难点是开发hadoop，本身代码非常简单。网络爬虫从某种意义来说，类似遍历本机的文件，查找文件中的信息。没有任何难度可言。之所以选择开源爬虫框架，就是为了省事。比如爬虫的URL管理、线程池之类的模块，谁都能做，但是要做稳定也是需要一段时间的调试和修改的。</p>
+<p>对于爬虫的功能来说。用户比较关心的问题往往是：</p>
+<ol>
+<li>爬虫支持多线程么、爬虫能用代理么、爬虫会爬取重复数据么、爬虫能爬取JS生成的信息么？</li>
+</ol>
+<p>不支持多线程、不支持代理、不能过滤重复URL的，那都不叫开源爬虫，那叫循环执行http请求。能不能爬js生成的信息和爬虫本身没有太大关系。爬虫主要是负责遍历网站和下载页面。爬js生成的信息和网页信息抽取模块有关，往往需要通过模拟浏览器(htmlunit,selenium)来完成。这些模拟浏览器，往往需要耗费很多的时间来处理一个页面。所以一种策略就是，使用这些爬虫来遍历网站，遇到需要解析的页面，就将网页的相关信息提交给模拟浏览器，来完成JS生成信息的抽取。</p>
+<ol start="2">
+<li>爬虫可以爬取ajax信息么？</li>
+</ol>
+<p>网页上有一些异步加载的数据，爬取这些数据有两种方法：使用模拟浏览器（问题1中描述过了），或者分析ajax的http请求，自己生成ajax请求的url，获取返回的数据。如果是自己生成ajax请求，使用开源爬虫的意义在哪里？其实是要用开源爬虫的线程池和URL管理功能（比如断点爬取）。</p>
+<p>如果我已经可以生成我所需要的ajax请求（列表），如何用这些爬虫来对这些请求进行爬取？<br>爬虫往往都是设计成广度遍历或者深度遍历的模式，去遍历静态或者动态页面。爬取ajax信息属于deep web（深网）的范畴，虽然大多数爬虫都不直接支持。但是也可以通过一些方法来完成。比如WebCollector使用广度遍历来遍历网站。爬虫的第一轮爬取就是爬取种子集合(seeds)中的所有url。简单来说，就是将生成的ajax请求作为种子，放入爬虫。用爬虫对这些种子，进行深度为1的广度遍历（默认就是广度遍历）。</p>
+<ol start="3">
+<li>爬虫怎么爬取要登陆的网站？</li>
+</ol>
+<p>这些开源爬虫都支持在爬取时指定cookies，模拟登陆主要是靠cookies。至于cookies怎么获取，不是爬虫管的事情。你可以手动获取、用http请求模拟登陆或者用模拟浏览器自动登陆获取cookie。</p>
+<ol start="4">
+<li>爬虫怎么抽取网页的信息？</li>
+</ol>
+<p>开源爬虫一般都会集成网页抽取工具。主要支持两种规范：CSS SELECTOR和XPATH。至于哪个好，这里不评价。</p>
+<ol start="5">
+<li>爬虫怎么保存网页的信息？</li>
+</ol>
+<p>有一些爬虫，自带一个模块负责持久化。比如webmagic，有一个模块叫pipeline。通过简单地配置，可以将爬虫抽取到的信息，持久化到文件、数据库等。还有一些爬虫，并没有直接给用户提供数据持久化的模块。比如crawler4j和webcollector。让用户自己在网页处理模块中添加提交数据库的操作。至于使用pipeline这种模块好不好，就和操作数据库使用ORM好不好这个问题类似，取决于你的业务。</p>
+<ol start="6">
+<li>爬虫被网站封了怎么办？</li>
+</ol>
+<p>爬虫被网站封了，一般用多代理（随机代理）就可以解决。但是这些开源爬虫一般没有直接支持随机代理的切换。所以用户往往都需要自己将获取的代理，放到一个全局数组中，自己写一个代理随机获取（从数组中）的代码。</p>
+<ol start="7">
+<li>网页可以调用爬虫么？</li>
+</ol>
+<p>爬虫的调用是在Web的服务端调用的，平时怎么用就怎么用，这些爬虫都可以使用。</p>
+<ol start="8">
+<li>爬虫速度怎么样？</li>
+</ol>
+<p>单机开源爬虫的速度，基本都可以讲本机的网速用到极限。爬虫的速度慢，往往是因为用户把线程数开少了、网速慢，或者在数据持久化时，和数据库的交互速度慢。而这些东西，往往都是用户的机器和二次开发的代码决定的。这些开源爬虫的速度，都很可以。</p>
+<ol start="9">
+<li>明明代码写对了，爬不到数据，是不是爬虫有问题，换个爬虫能解决么？</li>
+</ol>
+<p>如果代码写对了，又爬不到数据，换其他爬虫也是一样爬不到。遇到这种情况，要么是网站把你封了，要么是你爬的数据是javascript生成的。爬不到数据通过换爬虫是不能解决的。</p>
+<ol start="10">
+<li>哪个爬虫可以判断网站是否爬完、那个爬虫可以根据主题进行爬取？</li>
+</ol>
+<p>爬虫无法判断网站是否爬完，只能尽可能覆盖。</p>
+<p>至于根据主题爬取，爬虫之后把内容爬下来才知道是什么主题。所以一般都是整个爬下来，然后再去筛选内容。如果嫌爬的太泛，可以通过限制URL正则等方式，来缩小一下范围。</p>
+<ol start="11">
+<li>哪个爬虫的设计模式和构架比较好？</li>
+</ol>
+<p>设计模式纯属扯淡。说软件设计模式好的，都是软件开发完，然后总结出几个设计模式。设计模式对软件开发没有指导性作用。用设计模式来设计爬虫，只会使得爬虫的设计更加臃肿。</p>
+<p>至于构架，开源爬虫目前主要是细节的数据结构的设计，比如爬取线程池、任务队列，这些大家都能控制好。爬虫的业务太简单，谈不上什么构架。</p>
+<p>所以对于JAVA开源爬虫，我觉得，随便找一个用的顺手的就可以。如果业务复杂，拿哪个爬虫来，都是要经过复杂的二次开发，才可以满足需求。</p>
+<h3 id="3-非JAVA单机爬虫"><a href="#3-非JAVA单机爬虫" class="headerlink" title="3) 非JAVA单机爬虫"></a>3) 非JAVA单机爬虫</h3><p>在非JAVA语言编写的爬虫中，有很多优秀的爬虫。这里单独提取出来作为一类，并不是针对爬虫本身的质量进行讨论，而是针对larbin、scrapy这类爬虫，对开发成本的影响。</p>
+<p>先说python爬虫，python可以用30行代码，完成JAVA 50行代码干的任务。python写代码的确快，但是在调试代码的阶段，python代码的调试往往会耗费远远多于编码阶段省下的时间。使用python开发，要保证程序的正确性和稳定性，就需要写更多的测试模块。当然如果爬取规模不大、爬取业务不复杂，使用scrapy这种爬虫也是蛮不错的，可以轻松完成爬取任务。</p>
+<p>对于C++爬虫来说，学习成本会比较大。而且不能只计算一个人的学习成本，如果软件需要团队开发或者交接，那就是很多人的学习成本了。软件的调试也不是那么容易。</p>
+<p>还有一些ruby、php的爬虫，这里不多评价。的确有一些非常小型的数据采集任务，用ruby或者php很方便。但是选择这些语言的开源爬虫，一方面要调研一下相关的生态圈，还有就是，这些开源爬虫可能会出一些你搜不到的BUG（用的人少、资料也少）</p>
+<h2 id="三-基于Python的爬虫库"><a href="#三-基于Python的爬虫库" class="headerlink" title="三 基于Python的爬虫库"></a>三 基于Python的爬虫库</h2><h3 id="1-通用"><a href="#1-通用" class="headerlink" title="1) 通用"></a>1) 通用</h3><ol>
+<li>urllib -网络库(stdlib)。</li>
+<li>requests -网络库。</li>
+<li>grab – 网络库（基于pycurl）。</li>
+<li>pycurl – 网络库（绑定libcurl）。</li>
+<li>urllib3 – Python HTTP库，安全连接池、支持文件post、可用性高。</li>
+<li>httplib2 – 网络库。</li>
+<li>RoboBrowser – 一个简单的、极具Python风格的Python库，无需独立的浏览器即可浏览网页。</li>
+<li>MechanicalSoup -一个与网站自动交互Python库。</li>
+<li>mechanize -有状态、可编程的Web浏览库。</li>
+<li>socket – 底层网络接口(stdlib)。</li>
+<li>Unirest for Python – Unirest是一套可用于多种语言的轻量级的HTTP库。</li>
+<li>hyper – Python的HTTP/2客户端。</li>
+<li>PySocks – SocksiPy更新并积极维护的版本，包括错误修复和一些其他的特征。作为socket模块的直接替换。</li>
+</ol>
+<h3 id="2-异步"><a href="#2-异步" class="headerlink" title="2) 异步"></a>2) 异步</h3><ol>
+<li>treq – 类似于requests的API（基于twisted）。</li>
+<li>aiohttp – asyncio的HTTP客户端/服务器(PEP-3156)。</li>
+</ol>
+<h3 id="3-功能齐全的爬虫"><a href="#3-功能齐全的爬虫" class="headerlink" title="3) 功能齐全的爬虫"></a>3) 功能齐全的爬虫</h3><ol>
+<li>grab – 网络爬虫框架（基于pycurl/multicur）。</li>
+<li>scrapy – 网络爬虫框架（基于twisted），不支持Python3。</li>
+<li>pyspider – 一个强大的爬虫系统。</li>
+<li>cola – 一个分布式爬虫框架。</li>
+</ol>
+<h3 id="4-其他"><a href="#4-其他" class="headerlink" title="4) 其他"></a>4) 其他</h3><ol>
+<li>portia – 基于Scrapy的可视化爬虫。</li>
+<li>restkit – Python的HTTP资源工具包。它可以让你轻松地访问HTTP资源，并围绕它建立的对象。</li>
+<li>demiurge – 基于PyQuery的爬虫微框架。</li>
+</ol>
+<h3 id="5-HTML-XML解析器"><a href="#5-HTML-XML解析器" class="headerlink" title="5) HTML/XML解析器"></a>5) HTML/XML解析器</h3><ol>
+<li>lxml – C语言编写高效HTML/ XML处理库。支持XPath。</li>
+<li>cssselect – 解析DOM树和CSS选择器。</li>
+<li>pyquery – 解析DOM树和jQuery选择器。</li>
+<li>BeautifulSoup – 低效HTML/ XML处理库，纯Python实现。</li>
+<li>html5lib – 根据WHATWG规范生成HTML/ </li>
+<li>XML文档的DOM。该规范被用在现在所有的浏览器上。</li>
+<li>feedparser – 解析RSS/ATOM feeds。</li>
+<li>MarkupSafe – 为XML/HTML/XHTML提供了安全转义的字符串。</li>
+<li>xmltodict – 一个可以让你在处理XML时感觉像在处理JSON一样的Python模块。</li>
+<li>xhtml2pdf – 将HTML/CSS转换为PDF。</li>
+<li>untangle – 轻松实现将XML文件转换为Python对象。</li>
+</ol>
+<h3 id="6-清理"><a href="#6-清理" class="headerlink" title="6) 清理"></a>6) 清理</h3><ol>
+<li>Bleach – 清理HTML（需要html5lib）。</li>
+<li>sanitize – 为混乱的数据世界带来清明。</li>
+</ol>
+<h3 id="7-解析和操作简单文本的库。"><a href="#7-解析和操作简单文本的库。" class="headerlink" title="7) 解析和操作简单文本的库。"></a>7) 解析和操作简单文本的库。</h3><ol>
+<li>difflib – （Python标准库）帮助进行差异化比较。</li>
+<li>Levenshtein – 快速计算Levenshtein距离和字符串相似度。</li>
+<li>fuzzywuzzy – 模糊字符串匹配。</li>
+<li>esmre – 正则表达式加速器。</li>
+<li>ftfy – 自动整理Unicode文本，减少碎片化。</li>
+</ol>
+<h3 id="8-转换"><a href="#8-转换" class="headerlink" title="8) 转换"></a>8) 转换</h3><ol>
+<li>unidecode – 将Unicode文本转为ASCII。</li>
+</ol>
+<h3 id="9-字符编码"><a href="#9-字符编码" class="headerlink" title="9) 字符编码"></a>9) 字符编码</h3><ol>
+<li>uniout – 打印可读字符，而不是被转义的字符串。</li>
+<li>chardet – 兼容 Python的2/3的字符编码器。</li>
+<li>xpinyin – 一个将中国汉字转为拼音的库。</li>
+<li>pangu.py – 格式化文本中CJK和字母数字的间距。</li>
+</ol>
+<h3 id="10-Slug化"><a href="#10-Slug化" class="headerlink" title="10) Slug化"></a>10) Slug化</h3><ol>
+<li>awesome-slugify – 一个可以保留unicode的Python slugify库。</li>
+<li>python-slugify – 一个可以将Unicode转为ASCII的Python slugify库。</li>
+<li>unicode-slugify – 一个可以将生成Unicode slugs的工具。</li>
+<li>pytils – 处理俄语字符串的简单工具（包括pytils.translit.slugify）。</li>
+</ol>
+<h3 id="11-通用解析器"><a href="#11-通用解析器" class="headerlink" title="11) 通用解析器"></a>11) 通用解析器</h3><ol>
+<li>PLY – lex和yacc解析工具的Python实现。</li>
+<li>pyparsing – 一个通用框架的生成语法分析器。</li>
+</ol>
+<h3 id="12-人的名字"><a href="#12-人的名字" class="headerlink" title="12) 人的名字"></a>12) 人的名字</h3><ol>
+<li>python-nameparser -解析人的名字的组件。</li>
+</ol>
+<h3 id="13-电话号码"><a href="#13-电话号码" class="headerlink" title="13) 电话号码"></a>13) 电话号码</h3><ol>
+<li>phonenumbers -解析，格式化，存储和验证国际电话号码。</li>
+</ol>
+<h3 id="14-用户代理字符串"><a href="#14-用户代理字符串" class="headerlink" title="14) 用户代理字符串"></a>14) 用户代理字符串</h3><ol>
+<li>python-user-agents – 浏览器用户代理的解析器。</li>
+<li>HTTP Agent Parser – Python的HTTP代理分析器。</li>
+</ol>
+<h3 id="15-解析和处理特定文本格式的库。"><a href="#15-解析和处理特定文本格式的库。" class="headerlink" title="15) 解析和处理特定文本格式的库。"></a>15) 解析和处理特定文本格式的库。</h3><ol>
+<li>tablib – 一个把数据导出为XLS、CSV、JSON、YAML等格式的模块。</li>
+<li>textract – 从各种文件中提取文本，比如 Word、PowerPoint、PDF等。</li>
+<li>messytables – 解析混乱的表格数据的工具。</li>
+<li>rows – 一个常用数据接口，支持的格式很多（目前支持CSV，HTML，XLS，TXT – 将来还会提供更多！）。</li>
+</ol>
+<h3 id="16-Office"><a href="#16-Office" class="headerlink" title="16) Office"></a>16) Office</h3><ol>
+<li>python-docx – 读取，查询和修改的Microsoft Word2007/2008的docx文件。</li>
+<li>xlwt / xlrd – 从Excel文件读取写入数据和格式信息。</li>
+<li>XlsxWriter – 一个创建Excel.xlsx文件的Python模块。</li>
+<li>xlwings – 一个BSD许可的库，可以很容易地在Excel中调用Python，反之亦然。</li>
+<li>openpyxl – 一个用于读取和写入的Excel2010 XLSX/ XLSM/ xltx/ XLTM文件的库。</li>
+<li>Marmir – 提取Python数据结构并将其转换为电子表格。</li>
+</ol>
+<h3 id="17-PDF"><a href="#17-PDF" class="headerlink" title="17) PDF"></a>17) PDF</h3><ol>
+<li>PDFMiner – 一个从PDF文档中提取信息的工具。</li>
+<li>PyPDF2 – 一个能够分割、合并和转换PDF页面的库。</li>
+<li>ReportLab – 允许快速创建丰富的PDF文档。</li>
+<li>pdftables – 直接从PDF文件中提取表格。</li>
+</ol>
+<h3 id="18-Markdown"><a href="#18-Markdown" class="headerlink" title="18) Markdown"></a>18) Markdown</h3><ol>
+<li>Python-Markdown – 一个用Python实现的John Gruber的Markdown。</li>
+<li>Mistune – 速度最快，功能全面的Markdown纯Python解析器。</li>
+<li>markdown2 – 一个完全用Python实现的快速的Markdown。</li>
+</ol>
+<h3 id="19-YAML"><a href="#19-YAML" class="headerlink" title="19) YAML"></a>19) YAML</h3><ol>
+<li>PyYAML – 一个Python的YAML解析器。</li>
+</ol>
+<h3 id="20-CSS"><a href="#20-CSS" class="headerlink" title="20) CSS"></a>20) CSS</h3><ol>
+<li>cssutils – 一个Python的CSS库。</li>
+</ol>
+<h3 id="21-ATOM-RSS"><a href="#21-ATOM-RSS" class="headerlink" title="21) ATOM/RSS"></a>21) ATOM/RSS</h3><ol>
+<li>feedparser – 通用的feed解析器。</li>
+</ol>
+<h3 id="22-SQL"><a href="#22-SQL" class="headerlink" title="22) SQL"></a>22) SQL</h3><ol>
+<li>sqlparse – 一个非验证的SQL语句分析器。</li>
+</ol>
+<h3 id="23-HTTP"><a href="#23-HTTP" class="headerlink" title="23) HTTP"></a>23) HTTP</h3><ol>
+<li>http-parser – C语言实现的HTTP请求/响应消息解析器。</li>
+</ol>
+<h3 id="24-微格式"><a href="#24-微格式" class="headerlink" title="24) 微格式"></a>24) 微格式</h3><ol>
+<li>opengraph – 一个用来解析Open Graph协议标签的Python模块。</li>
+</ol>
+<h3 id="25-可移植的执行体"><a href="#25-可移植的执行体" class="headerlink" title="25) 可移植的执行体"></a>25) 可移植的执行体</h3><ol>
+<li>pefile – 一个多平台的用于解析和处理可移植执行体（即PE）文件的模块。</li>
+</ol>
+<h3 id="26-PSD"><a href="#26-PSD" class="headerlink" title="26) PSD"></a>26) PSD</h3><ol>
+<li>psd-tools – 将Adobe Photoshop PSD（即PE）文件读取到Python数据结构。</li>
+</ol>
+<h3 id="27-自然语言处理"><a href="#27-自然语言处理" class="headerlink" title="27) 自然语言处理"></a>27) 自然语言处理</h3><ol>
+<li>NLTK -编写Python程序来处理人类语言数据的最好平台。</li>
+<li>Pattern – Python的网络挖掘模块。他有自然语言处理工具，机器学习以及其它。</li>
+<li>TextBlob – 为深入自然语言处理任务提供了一致的API。是基于NLTK以及Pattern的巨人之肩上发展的。</li>
+<li>jieba – 中文分词工具。</li>
+<li>SnowNLP – 中文文本处理库。</li>
+<li>loso – 另一个中文分词库。</li>
+<li>genius – 基于条件随机域的中文分词。</li>
+<li>langid.py – 独立的语言识别系统。</li>
+<li>Korean – 一个韩文形态库。</li>
+<li>pymorphy2 – 俄语形态分析器（词性标注+词形变化引擎）。</li>
+<li>PyPLN  – 用Python编写的分布式自然语言处理通道。这个项目的目标是创建一种简单的方法使用NLTK通过网络接口处理大语言库。</li>
+</ol>
+<h3 id="28-浏览器自动化与仿真"><a href="#28-浏览器自动化与仿真" class="headerlink" title="28) 浏览器自动化与仿真"></a>28) 浏览器自动化与仿真</h3><ol>
+<li>selenium – 自动化真正的浏览器（Chrome浏览器，火狐浏览器，Opera浏览器，IE浏览器）。</li>
+<li>Ghost.py – 对PyQt的webkit的封装（需要PyQT）。</li>
+<li>Spynner – 对PyQt的webkit的封装（需要PyQT）。</li>
+<li>Splinter – 通用API浏览器模拟器（selenium web驱动，Django客户端，Zope）。</li>
+</ol>
+<h3 id="29-多重处理"><a href="#29-多重处理" class="headerlink" title="29) 多重处理"></a>29) 多重处理</h3><ol>
+<li>threading – Python标准库的线程运行。对于I/O密集型任务很有效。对于CPU绑定的任务没用，因为python GIL。</li>
+<li>multiprocessing – 标准的Python库运行多进程。</li>
+<li>celery – 基于分布式消息传递的异步任务队列/作业队列。<br>concurrent-futures – concurrent-futures 模块为调用异步执行提供了一个高层次的接口。</li>
+</ol>
+<h3 id="30-异步网络编程库"><a href="#30-异步网络编程库" class="headerlink" title="30) 异步网络编程库"></a>30) 异步网络编程库</h3><ol>
+<li>asyncio – （在Python 3.4 +版本以上的 Python标准库）异步I/O，时间循环，协同程序和任务。</li>
+<li>Twisted – 基于事件驱动的网络引擎框架。</li>
+<li>Tornado – 一个网络框架和异步网络库。</li>
+<li>pulsar – Python事件驱动的并发框架。</li>
+<li>diesel – Python的基于绿色事件的I/O框架。</li>
+<li>gevent – 一个使用greenlet 的基于协程的Python网络库。</li>
+<li>eventlet – 有WSGI支持的异步框架。</li>
+<li><p>Tomorrow – 异步代码的奇妙的修饰语法。<br>队列</p>
+</li>
+<li><p>celery – 基于分布式消息传递的异步任务队列/作业队列。</p>
+</li>
+<li>huey – 小型多线程任务队列。</li>
+<li>mrq – Mr. Queue – 使用redis &amp; Gevent 的Python分布式工作任务队列。</li>
+<li>RQ – 基于Redis的轻量级任务队列管理器。</li>
+<li>simpleq – 一个简单的，可无限扩展，基于Amazon SQS的队列。</li>
+<li>python-gearman – Gearman的Python API。</li>
+</ol>
+<h3 id="31-云计算"><a href="#31-云计算" class="headerlink" title="31) 云计算"></a>31) 云计算</h3><ol>
+<li>picloud – 云端执行Python代码。</li>
+<li>dominoup.com – 云端执行R，Python和matlab代码。</li>
+</ol>
+<h3 id="32-电子邮件"><a href="#32-电子邮件" class="headerlink" title="32) 电子邮件"></a>32) 电子邮件</h3><ol>
+<li>flanker – 电子邮件地址和Mime解析库。</li>
+<li>Talon – Mailgun库用于提取消息的报价和签名。</li>
+</ol>
+<h3 id="33-网址和网络地址操作"><a href="#33-网址和网络地址操作" class="headerlink" title="33) 网址和网络地址操作"></a>33) 网址和网络地址操作</h3><ol>
+<li>furl – 一个小的Python库，使得操纵URL简单化。</li>
+<li>purl – 一个简单的不可改变的URL以及一个干净的用于调试和操作的API。</li>
+<li>urllib.parse – 用于打破统一资源定位器（URL）的字符串在组件（寻址方案，网络位置，路径等）之间的隔断，为了结合组件到一个URL字符串，并将“相对URL”转化为一个绝对URL，称之为“基本URL”。</li>
+<li>tldextract – 从URL的注册域和子域中准确分离TLD，使用公共后缀列表。</li>
+<li>netaddr – 用于显示和操纵网络地址的Python库。</li>
+</ol>
+<h3 id="34-提取网页内容的库。"><a href="#34-提取网页内容的库。" class="headerlink" title="34) 提取网页内容的库。"></a>34) 提取网页内容的库。</h3><ol>
+<li>newspaper – 用Python进行新闻提取、文章提取和内容策展。</li>
+<li>html2text – 将HTML转为Markdown格式文本。</li>
+<li>python-goose – HTML内容/文章提取器。</li>
+<li>lassie – 人性化的网页内容检索工具</li>
+<li>micawber – 一个从网址中提取丰富内容的小库。</li>
+<li>sumy -一个自动汇总文本文件和HTML网页的模块</li>
+<li>Haul – 一个可扩展的图像爬虫。</li>
+<li>python-readability – arc90 readability工具的快速Python接口。</li>
+<li>scrapely – 从HTML网页中提取结构化数据的库。给出了一些Web页面和数据提取的示例，scrapely为所有类似的网页构建一个分析器。</li>
+</ol>
+<h3 id="35-视频"><a href="#35-视频" class="headerlink" title="35) 视频"></a>35) 视频</h3><ol>
+<li>youtube-dl – 一个从YouTube下载视频的小命令行程序。</li>
+<li>you-get – Python3的YouTube、优酷/ Niconico视频下载器。</li>
+</ol>
+<h3 id="36-维基"><a href="#36-维基" class="headerlink" title="36) 维基"></a>36) 维基</h3><ol>
+<li>WikiTeam – 下载和保存wikis的工具。</li>
+</ol>
+<h3 id="37-用于WebSocket的库。"><a href="#37-用于WebSocket的库。" class="headerlink" title="37) 用于WebSocket的库。"></a>37) 用于WebSocket的库。</h3><ol>
+<li>Crossbar – 开源的应用消息传递路由器（Python实现的用于Autobahn的WebSocket和WAMP）。</li>
+<li>AutobahnPython – 提供了WebSocket协议和WAMP协议的Python实现并且开源。</li>
+<li>WebSocket-for-Python – Python 2和3以及PyPy的WebSocket客户端和服务器库。</li>
+</ol>
+<h3 id="38-DNS解析"><a href="#38-DNS解析" class="headerlink" title="38) DNS解析"></a>38) DNS解析</h3><ol>
+<li>dnsyo – 在全球超过1500个的DNS服务器上检查你的DNS。</li>
+<li>pycares – c-ares的接口。c-ares是进行DNS请求和异步名称决议的C语言库。</li>
+</ol>
+<h3 id="39-计算机视觉"><a href="#39-计算机视觉" class="headerlink" title="39) 计算机视觉"></a>39) 计算机视觉</h3><ol>
+<li>SimpleCV – 用于照相机、图像处理、特征提取、格式转换的简介，可读性强的接口（基于OpenCV）。</li>
+<li>mahotas – 快速计算机图像处理算法（完全使用 C++ 实现），完全基于 numpy 的数组作为它的数据类型。</li>
+</ol>
+<h3 id="40-代理服务器"><a href="#40-代理服务器" class="headerlink" title="40) 代理服务器"></a>40) 代理服务器</h3><ol>
+<li>shadowsocks – 一个快速隧道代理，可帮你穿透防火墙（支持TCP和UDP，TFO，多用户和平滑重启，目的IP黑名单）。</li>
+<li>tproxy – tproxy是一个简单的TCP路由代理（第7层），基于Gevent，用Python进行配置。<br>其他Python工具列表</li>
+</ol>
+<h3 id="41-awesome-python"><a href="#41-awesome-python" class="headerlink" title="41) awesome-python"></a>41) awesome-python</h3><ol>
+<li>pycrumbs</li>
+<li>python-github-projects</li>
+<li>python_reference</li>
+<li>pythonidae</li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100367.html" class="pre-post btn btn-default" title='大数据hadoop之 六十一.Hadoop相关资源'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 六十一.Hadoop相关资源</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100365.html" class="next-post btn btn-default" title='大数据hadoop之 五十九.开源实时日志分析ELK平台'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 五十九.开源实时日志分析ELK平台</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-数据采集概念"><span class="toc-text">一 数据采集概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Apache-Flume"><span class="toc-text">1) Apache Flume</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Fluentd"><span class="toc-text">2) Fluentd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Logstash"><span class="toc-text">3) Logstash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-数据采集总结"><span class="toc-text">4) 数据采集总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-爬虫技术方案选择"><span class="toc-text">二 爬虫技术方案选择</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-分布式爬虫"><span class="toc-text">1) 分布式爬虫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-JAVA单机爬虫"><span class="toc-text">2) JAVA单机爬虫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-非JAVA单机爬虫"><span class="toc-text">3) 非JAVA单机爬虫</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-基于Python的爬虫库"><span class="toc-text">三 基于Python的爬虫库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-通用"><span class="toc-text">1) 通用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-异步"><span class="toc-text">2) 异步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-功能齐全的爬虫"><span class="toc-text">3) 功能齐全的爬虫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-其他"><span class="toc-text">4) 其他</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-HTML-XML解析器"><span class="toc-text">5) HTML/XML解析器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-清理"><span class="toc-text">6) 清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-解析和操作简单文本的库。"><span class="toc-text">7) 解析和操作简单文本的库。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-转换"><span class="toc-text">8) 转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-字符编码"><span class="toc-text">9) 字符编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-Slug化"><span class="toc-text">10) Slug化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-通用解析器"><span class="toc-text">11) 通用解析器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-人的名字"><span class="toc-text">12) 人的名字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-电话号码"><span class="toc-text">13) 电话号码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-用户代理字符串"><span class="toc-text">14) 用户代理字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-解析和处理特定文本格式的库。"><span class="toc-text">15) 解析和处理特定文本格式的库。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-Office"><span class="toc-text">16) Office</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-PDF"><span class="toc-text">17) PDF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#18-Markdown"><span class="toc-text">18) Markdown</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#19-YAML"><span class="toc-text">19) YAML</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#20-CSS"><span class="toc-text">20) CSS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#21-ATOM-RSS"><span class="toc-text">21) ATOM/RSS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-SQL"><span class="toc-text">22) SQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-HTTP"><span class="toc-text">23) HTTP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-微格式"><span class="toc-text">24) 微格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-可移植的执行体"><span class="toc-text">25) 可移植的执行体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-PSD"><span class="toc-text">26) PSD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-自然语言处理"><span class="toc-text">27) 自然语言处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-浏览器自动化与仿真"><span class="toc-text">28) 浏览器自动化与仿真</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-多重处理"><span class="toc-text">29) 多重处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#30-异步网络编程库"><span class="toc-text">30) 异步网络编程库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#31-云计算"><span class="toc-text">31) 云计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-电子邮件"><span class="toc-text">32) 电子邮件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-网址和网络地址操作"><span class="toc-text">33) 网址和网络地址操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-提取网页内容的库。"><span class="toc-text">34) 提取网页内容的库。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-视频"><span class="toc-text">35) 视频</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-维基"><span class="toc-text">36) 维基</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-用于WebSocket的库。"><span class="toc-text">37) 用于WebSocket的库。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-DNS解析"><span class="toc-text">38) DNS解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#39-计算机视觉"><span class="toc-text">39) 计算机视觉</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#40-代理服务器"><span class="toc-text">40) 代理服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#41-awesome-python"><span class="toc-text">41) awesome-python</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

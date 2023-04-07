@@ -1,0 +1,474 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="linux,loongson,mysql">
+
+
+    <meta name="description" content="一、下载源码这里官网给出了两种版本，一个是带boost一个是不带的，这次先尝试编译带boost库的mysql
+Mysql官网下载地址
+Product Version: 8.0.24
+Operat...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>龙芯硬件平台使用源码安装mysql8.0 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="龙芯硬件平台使用源码安装mysql8.0">
+            
+	            龙芯硬件平台使用源码安装mysql8.0
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/devops/">运维</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/linux/">linux</a> <a class="tag-link" href="/tags/loongson/">loongson</a> <a class="tag-link" href="/tags/mysql/">mysql</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/07/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>625</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一、下载源码"><a href="#一、下载源码" class="headerlink" title="一、下载源码"></a>一、下载源码</h1><p>这里官网给出了两种版本，一个是带boost一个是不带的，这次先尝试编译带boost库的mysql</p>
+<p><a href="https://downloads.mysql.com/archives/community/" target="_blank" rel="noopener">Mysql官网下载地址</a></p>
+<p>Product Version: 8.0.24</p>
+<p>Operating System: Source Code</p>
+<p>OS Version: Generic linux (Architecture Independent)</p>
+<p>选择：<strong>Compressed TAR Archive, Includes Boost Headers</strong></p>
+<h1 id="二、删除旧数据库"><a href="#二、删除旧数据库" class="headerlink" title="二、删除旧数据库"></a>二、删除旧数据库</h1><h2 id="1-删除自带mysql"><a href="#1-删除自带mysql" class="headerlink" title="1. 删除自带mysql"></a>1. 删除自带mysql</h2><p>   使用以下命令查找出安装的mysql软件包和依赖包：<code>apt -list | grep mysql</code></p>
+<p><strong>如果有的话，可能的显示结果和操作方法如下</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">mysql80-community-release-el7-1</span><span class="selector-class">.noarch</span></span><br><span class="line"><span class="selector-tag">mysql-community-server-8</span><span class="selector-class">.0</span><span class="selector-class">.11-1</span><span class="selector-class">.el7</span><span class="selector-class">.x86_64</span></span><br><span class="line"><span class="selector-tag">mysql-community-common-8</span><span class="selector-class">.0</span><span class="selector-class">.11-1</span><span class="selector-class">.el7</span><span class="selector-class">.x86_64</span></span><br><span class="line"><span class="selector-tag">mysql-community-libs-8</span><span class="selector-class">.0</span><span class="selector-class">.11-1</span><span class="selector-class">.el7</span><span class="selector-class">.x86_64</span></span><br><span class="line"><span class="selector-tag">mysql-community-client-8</span><span class="selector-class">.0</span><span class="selector-class">.11-1</span><span class="selector-class">.el7</span><span class="selector-class">.x86_64</span></span><br><span class="line">#使用以下命令依次删除上面的程序</span><br><span class="line"> </span><br><span class="line"><span class="selector-tag">apt</span> <span class="selector-tag">remove</span> <span class="selector-tag">mysql-xxx-xxx-</span></span><br></pre></td></tr></table></figure>
+<p>删除mysql的配置文件，卸载不会自动删除配置文件，首先使用如下命令查找出所用的配置文件:<code>find / -name mysql</code></p>
+<p><strong>如果有的话，可能的显示结果和操作方法如下:</strong></p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/etc/logrotate.d/mysql</span><br><span class="line">/etc/selinux/targeted/active/modules/<span class="number">100</span>/mysql</span><br><span class="line">/etc/selinux/targeted/tmp/modules/<span class="number">100</span>/mysql</span><br><span class="line">/var/<span class="class"><span class="keyword">lib</span>/<span class="title">mysql</span></span></span><br><span class="line">/var/<span class="class"><span class="keyword">lib</span>/<span class="title">mysql</span>/<span class="title">mysql</span></span></span><br><span class="line">/usr/bin/mysql</span><br><span class="line">/usr/lib64/mysql</span><br><span class="line">/usr/local/mysql</span><br></pre></td></tr></table></figure>
+<p>使用<code>rm - rf</code>删除所有的</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /var/lib/mysql .... .... .... ....</span><br></pre></td></tr></table></figure>
+<p>或者尝试管道符</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -name mysql | rm - rf</span><br></pre></td></tr></table></figure>
+<h2 id="2-删除自带MariaDB"><a href="#2-删除自带MariaDB" class="headerlink" title="2. 删除自带MariaDB"></a>2. 删除自带MariaDB</h2><p>由于MySQL在CentOS7中收费了，所以已经不支持MySQL了，取而代之在CentOS7内部集成了mariadb，而安装MySQL的话会和MariaDB的文件冲突，所以<strong>一定需要先卸载掉MariaDB</strong>.</p>
+<p>使用<code>rpm</code> 命令查找出要删除的mariadb文件:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">apt -<span class="type">list</span> | grep mariadb</span><br><span class="line">#可能的显示结果如下：</span><br><span class="line">#mariadb-libs<span class="number">-5.5</span><span class="number">.56</span><span class="number">-2.</span>el7.x86_64 </span><br><span class="line">apt -e mariadb-libs<span class="number">-5.5</span><span class="number">.56</span><span class="number">-2.</span>el7.x86_64 #删除上面的程序</span><br></pre></td></tr></table></figure>
+<h1 id="三、安装及其他需要软件"><a href="#三、安装及其他需要软件" class="headerlink" title="三、安装及其他需要软件"></a>三、安装及其他需要软件</h1><p><strong>龙芯平台上cmake和gcc不需要变动，如果是windows的虚拟机要安装高版本mysql才需要变。</strong></p>
+<h2 id="1、cmake"><a href="#1、cmake" class="headerlink" title="1、cmake"></a>1、cmake</h2><p>先卸载之前的低版本的cmake</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt <span class="builtin-name">remove</span> cmake -y</span><br></pre></td></tr></table></figure>
+<p>编译安装cmake</p>
+<h3 id="1-1、解压cmake并进入目录"><a href="#1-1、解压cmake并进入目录" class="headerlink" title="1.1、解压cmake并进入目录"></a>1.1、解压cmake并进入目录</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">zxf</span> <span class="selector-tag">cmake-3</span><span class="selector-class">.15</span><span class="selector-class">.0-rc1</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br><span class="line"></span><br><span class="line"><span class="selector-tag">cd</span> <span class="selector-tag">cmake-3</span><span class="selector-class">.15</span><span class="selector-class">.0-rc</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2、配置、编译、安装"><a href="#1-2、配置、编译、安装" class="headerlink" title="1.2、配置、编译、安装"></a>1.2、配置、编译、安装</h3><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/<span class="keyword">local</span>/cmake</span><br><span class="line"></span><br><span class="line"><span class="built_in">make</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">make</span> install</span><br><span class="line"></span><br><span class="line"><span class="meta">#--prefix 参数是配置cmake的安装目录</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-3、做cmake命令软连接，查看cmake版本"><a href="#1-3、做cmake命令软连接，查看cmake版本" class="headerlink" title="1.3、做cmake命令软连接，查看cmake版本"></a>1.3、做cmake命令软连接，查看cmake版本</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ln -s <span class="regexp">/usr/</span>local<span class="regexp">/cmake/</span>bin<span class="regexp">/cmake /u</span>sr<span class="regexp">/bin/</span>cmake</span><br><span class="line">cmake --version</span><br></pre></td></tr></table></figure>
+<h2 id="2、重新安装gcc高版本"><a href="#2、重新安装gcc高版本" class="headerlink" title="2、重新安装gcc高版本"></a>2、重新安装gcc高版本</h2><h3 id="2-1、下载源码包"><a href="#2-1、下载源码包" class="headerlink" title="2.1、下载源码包"></a>2.1、下载源码包</h3><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/src</span><br><span class="line">wget <span class="symbol">http:</span>/<span class="regexp">/ftp.tsukuba.wide.ad.jp/software</span><span class="regexp">/gcc/releases</span><span class="regexp">/gcc-8.3.0/gcc</span>-<span class="number">8.3</span>.<span class="number">0</span>.tar.gz</span><br></pre></td></tr></table></figure>
+<h3 id="2-2、进入gcc目录，安装gcc依赖库"><a href="#2-2、进入gcc目录，安装gcc依赖库" class="headerlink" title="2.2、进入gcc目录，安装gcc依赖库"></a>2.2、进入gcc目录，安装gcc依赖库</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cd</span> gcc</span><br><span class="line"><span class="string">./contrib/download_prerequisites</span></span><br><span class="line"></span><br><span class="line"><span class="string">../configure</span> <span class="params">--prefix=/usr/local/gcc-8</span>.3.0 <span class="params">--enable-languages=c</span>,c++ <span class="params">--disable-multilib</span></span><br></pre></td></tr></table></figure>
+<p>开始使用<code>apt</code>来按照</p>
+<p>通过安装devtoolset来提升版本</p>
+<p>使用 <code>sudo apt install centos-release-scl</code> 来安装centos-release-scl</p>
+<p>安装devtoolset：<code>sudo apt install devtoolset-8-gcc</code></p>
+<p>激活安装的devtoolset: <code>scl enable devtoolset-8 bash</code></p>
+<p>然后用<code>gcc -v</code>检查一下gcc的版本</p>
+<p>注意：这种方式安装后每次重启gcc的版本可能会变成原来低版本的。重新输入激活安装的语句，再次检查gcc版本就好。或者可以将bin目录下的gcc换成高版本的。</p>
+<h2 id="3、配置、编译、安装"><a href="#3、配置、编译、安装" class="headerlink" title="3、配置、编译、安装"></a>3、配置、编译、安装</h2><p>在mysql的安装目录下建立一个bld目录</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir <span class="keyword">bld</span></span><br><span class="line"><span class="meta">#进入bld目录</span></span><br><span class="line">cd <span class="keyword">bld</span></span><br><span class="line"><span class="meta">#然后执行以下命令</span></span><br></pre></td></tr></table></figure>
+<p>cmake：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cmake</span><br><span class="line"><span class="attribute">-DCMAKE_INSTALL_PREFIX</span>=/usr/local/mysql \ 安装根目录</span><br><span class="line"><span class="attribute">-DMYSQL_DATADIR</span>=/data/3306/data \ 数据存储目录</span><br><span class="line"><span class="attribute">-DSYSCONFDIR</span>=/data/3306 \ 配置文件(my.cnf)目录 (貌似没用，配置文件依然在/etc/my.cnf)</span><br><span class="line"><span class="attribute">-DWITH_MYISAM_STORAGE_ENGINE</span>=1 \ 编译myisam存储引擎，默认的存储引擎，不加也可以</span><br><span class="line"><span class="attribute">-DWITH_INNOBASE_STORAGE_ENGINE</span>=1 \ 支持InnoDB存储引擎，这个也是默认安装的</span><br><span class="line"><span class="attribute">-DWITH_MEMORY_STORAGE_ENGINE</span>=1 \ 支持MEMORY引擎</span><br><span class="line"><span class="attribute">-DWITH_READLINE</span>=1 \ 使用readline功能</span><br><span class="line"><span class="attribute">-DMYSQL_UNIX_ADDR</span>=/data/3306/mysql.sock \ sock存放到/data/3306目录</span><br><span class="line"><span class="attribute">-DMYSQL_TCP_PORT</span>=3306 \ 数据库端口</span><br><span class="line"><span class="attribute">-DENABLED_LOCAL_INFILE</span>=1 \ 可以使用load data infile命令从本地导入文件</span><br><span class="line"><span class="attribute">-DWITH_PARTITION_STORAGE_ENGINE</span>=1 \ 安装数据库分区</span><br><span class="line"><span class="attribute">-DEXTRA_CHARSETS</span>=all \ 支持所有字符集</span><br><span class="line"><span class="attribute">-DDEFAULT_CHARSET</span>=utf8 \ 默认字符集</span><br><span class="line"><span class="attribute">-DDEFAULT_COLLATION</span>=utf8_general_ci \ 设置默认效验字符集排序规则，要和DDEFAULT_CHARSET一起用</span><br><span class="line"><span class="attribute">-DWITH_BOOST</span>=boost 从MySQL 5.7.5开始Boost库是必需的</span><br><span class="line">然后就是make和make install</span><br></pre></td></tr></table></figure>
+<p><strong>以下是我的输入</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cmake <span class="built_in">..</span>/ <span class="attribute">-DCMAKE_INSTALL_PREFIX</span>=/usr/local/mysql \</span><br><span class="line"><span class="attribute">-DDEFAULT_CHARSET</span>=utf8 \</span><br><span class="line"><span class="attribute">-DDEFAULT_COLLATION</span>=utf8_general_ci \</span><br><span class="line"><span class="attribute">-DSYSCONFDIR</span>=/etc \</span><br><span class="line"><span class="attribute">-DWITH_EXTRA_CHARSETS</span>=all \</span><br><span class="line"><span class="attribute">-DMYSQL_DATADIR</span>=/usr/local/mysql/data \</span><br><span class="line"><span class="attribute">-DWITH_BOOST</span>=/usr/local/src/mysql-8.0.24/boost \</span><br><span class="line"><span class="attribute">-DFORCE_INSOURCE_BUILD</span>=0 \</span><br><span class="line"><span class="attribute">-DCMAKE_CXX_COMPILER</span>=/usr/bin/g++ \</span><br><span class="line"><span class="attribute">-DDEFAULT_CHARSET</span>=utf8</span><br></pre></td></tr></table></figure>
+<p>注意：cmake这步特别重要，需要着重看DWITH_BOOST=自己mysql源码下的boost目录（第一个就行）</p>
+<p>DCMAKE_CXX_COMPILER=这个填写自己的g++目录。可以使用<code>whereis g++</code>。找到usr/bin/下面的。一定要测试一下这个g++是哪个版本的，如果编译mysql8必须是5以上的高版本。</p>
+<p>然后（这步不需要网络）</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">make</span> 或者<span class="built_in">make</span> -<span class="built_in">j4</span> (开启四个进程去编译，但不要超过自己电脑的处理器数量，用上面查看CPU的命令)</span><br><span class="line"></span><br><span class="line"><span class="built_in">make</span> install</span><br></pre></td></tr></table></figure>
+<h2 id="4、报错误"><a href="#4、报错误" class="headerlink" title="4、报错误"></a>4、报错误</h2><p>错误解决方式请参照解决方案。</p>
+<p><strong>1)、does not appear to contain CMakeLists.txt.</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Make Warning:</span><br><span class="line"><span class="literal">No</span> source <span class="keyword">or</span> binary directory provided. Both will be assumed <span class="keyword">to</span> be the same as the current working directory^ but<span class="built_in"> note </span>that this <span class="builtin-name">warning</span> will become a fatal <span class="builtin-name">error</span> <span class="keyword">in</span> future CMake releases.</span><br><span class="line">CMake Error: The source directory n/usr/local/src/mysql-8.0.24 does <span class="keyword">not</span> appear <span class="keyword">to</span> contain CMakeLists.txt. Specify 一一help <span class="keyword">for</span> usagez <span class="keyword">or</span> press the help button on the CMake GUI.</span><br></pre></td></tr></table></figure>
+<p><strong>原因</strong>：mysql下载的源码包不对</p>
+<p><strong>解决方法</strong>：下载正确的mysql源码包。</p>
+<p><strong>2)、配置报错：Please install the appropriate openssl developer package.</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Cannot find appropriate system libraries for WITH_SSL=system.</span><br><span class="line">Make sure you have specified a supported SSL version.</span><br><span class="line">Valid options are ：</span><br><span class="line">system (<span class="keyword">use</span> the OS openssl <span class="keyword">library</span>), yes (<span class="keyword">synonym</span> <span class="keyword">for</span> <span class="keyword">system</span>),</span><br><span class="line">&lt;/<span class="keyword">path</span>/<span class="keyword">to</span>/custom/openssl/installation〉，</span><br><span class="line">wolfssl (<span class="keyword">use</span> wolfSSL. See extra/README-wolfssl. txt <span class="keyword">on</span> how <span class="keyword">to</span> <span class="keyword">set</span> this up)</span><br><span class="line">CMake <span class="keyword">Error</span> <span class="keyword">at</span> cmake/ssl. cmake：<span class="number">68</span> (MESSAGE)：</span><br><span class="line">Please <span class="keyword">install</span> the appropriate openssl developer package.</span><br><span class="line"><span class="keyword">Call</span> Stack (most recent <span class="keyword">call</span> <span class="keyword">first</span>)：</span><br><span class="line">cmake/ssl. cmake：<span class="number">413</span> (FATAL_SSL_NOT_FOUND_ERROR)</span><br><span class="line">CMakeLists. txt： <span class="number">1002</span> (NfYSQL_CHECK_SSL)</span><br></pre></td></tr></table></figure>
+<p><strong>解决方法</strong>：安装openssl-devel</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt -y <span class="keyword">install</span> openssl-devel</span><br></pre></td></tr></table></figure>
+<p> <strong>3)、配置报错：Could NOT find Curses</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">—Could <span class="keyword">NOT</span> <span class="builtin-name">find</span> Curses (missing： CURSES_LIBRARY CURSES_INCLUDE_PATH) CMake <span class="builtin-name">Error</span> at cmake/readline. cmake：71 (MESSAGE)：</span><br><span class="line">Curses library <span class="keyword">not</span> found. Please install appropriate package,</span><br></pre></td></tr></table></figure>
+<p><strong>解决方法</strong>：安装ncurses-devel</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt -y <span class="keyword">install</span> ncurses-devel</span><br></pre></td></tr></table></figure>
+<p><strong>4)、编译报错：Please do not build in-source.  Out-of source builds are highly</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Cl-fake Error at Cl-fakeLists . txt: 301 (MESSAGE):</span><br><span class="line">Please <span class="keyword">do</span> <span class="keyword">not</span> <span class="keyword">build</span> <span class="keyword">in</span>-source. <span class="keyword">Out</span>-<span class="keyword">of</span> <span class="keyword">source</span> builds <span class="keyword">are</span> highly recontended: you can have multiple builds <span class="keyword">for</span> the same <span class="keyword">source</span>, <span class="keyword">and</span> there <span class="keyword">is</span> an easy way <span class="keyword">to</span> <span class="keyword">do</span> <span class="keyword">cleanup</span>, simply remove the <span class="keyword">build</span> <span class="keyword">directory</span> (note that <span class="string">'make clean'</span> <span class="keyword">or</span> <span class="string">'make distclean'</span> does *<span class="keyword">not</span>* <span class="keyword">work</span>)</span><br><span class="line">You *can* <span class="keyword">force</span> <span class="keyword">in</span>-<span class="keyword">source</span> <span class="keyword">build</span> <span class="keyword">by</span> invoking cmake <span class="keyword">with</span> - DFORCE_INSOURCE_BUILD=<span class="number">1</span></span><br><span class="line">—— Configuring incompletez <span class="keyword">errors</span> occurred!</span><br><span class="line">See also r,/usr/<span class="keyword">local</span>/src/mysql<span class="number">-8.0</span><span class="number">.24</span>/C14akeFiles/C14akeOutput. logr,.</span><br></pre></td></tr></table></figure>
+<p><strong>原因</strong>：是它建议你不要构建源代码。</p>
+<p><strong>解决办法</strong>：在配置的时候加入字段：-DFORCE_INSOURCE_BUILD=1</p>
+<p><strong>5)、配置报错：The C compiler identification is unknown</strong></p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- Running cmake <span class="built_in">version</span> <span class="number">3.15</span><span class="number">.0</span>-rcl</span><br><span class="line">—MySQL <span class="number">8.</span> <span class="number">0.</span> <span class="number">24</span></span><br><span class="line"><span class="comment">-- The C compiler identification is unknown</span></span><br><span class="line">CMake Error <span class="keyword">at</span> CMakeLists. txt：<span class="number">271</span> (PROJECT)：</span><br><span class="line">The CN!AKE_C_COMPILER：</span><br><span class="line">/usr/bin/cc</span><br><span class="line">is <span class="keyword">not</span> <span class="keyword">a</span> full path <span class="built_in">to</span> <span class="keyword">an</span> existing compiler tool.</span><br><span class="line">Tell CMake where <span class="built_in">to</span> find <span class="keyword">the</span> compiler <span class="keyword">by</span> setting either <span class="keyword">the</span> environment <span class="built_in">variable</span> <span class="string">"CC"</span> <span class="keyword">or</span> <span class="keyword">the</span> CMake cache entry CN!AKE_C_COMPILER <span class="built_in">to</span> <span class="keyword">the</span> full path <span class="built_in">to</span> <span class="keyword">the</span> compiler, <span class="keyword">or</span> <span class="built_in">to</span> <span class="keyword">the</span> compiler name <span class="keyword">if</span> <span class="keyword">it</span> is <span class="keyword">in</span> <span class="keyword">the</span> PATH.</span><br></pre></td></tr></table></figure>
+<p><strong>解决办法</strong>：做一个gcc的软链接。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s <span class="regexp">/usr/</span>local<span class="regexp">/gcc/</span>bin<span class="regexp">/gcc /u</span>sr<span class="regexp">/bin/</span>cc</span><br></pre></td></tr></table></figure>
+<p><strong>6)、编译报错：/usr/lib/libstdc++.so.6: version `CXXABI_1.3.9’ not found</strong></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">../runtime_output_directory/uca9dump： /lib64/libstdc++. <span class="keyword">so</span>.<span class="number">6</span>： <span class="keyword">version</span> found (required by .. /runtime_output_directory/uca9dump)</span><br><span class="line"><span class="keyword">make</span>[<span class="number">2</span>]： *** [strings/uca900_zh_tbls. <span class="keyword">cc</span>]错误 <span class="number">1</span></span><br><span class="line"><span class="keyword">make</span>[<span class="keyword">l</span>]： *** [strings/CMakeFiles/strings. dir/<span class="keyword">all</span>]错误 <span class="number">2</span></span><br><span class="line"><span class="keyword">make</span>： *** [<span class="keyword">all</span>]错误 <span class="number">2</span></span><br><span class="line">CXXABI_1.<span class="number">3</span>. <span class="number">91</span> not</span><br></pre></td></tr></table></figure>
+<p>因为libstdc++.so.6的库是使用的以前的老库。</p>
+<p><strong>解决办法</strong>：修改软链接</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find / -name libstdc++<span class="selector-class">.so</span>.<span class="number">6</span></span><br><span class="line">mv /usr/lib64/libstdc++<span class="selector-class">.so</span>.<span class="number">6</span> /usr/lib64/libstdc++<span class="selector-class">.so</span>.<span class="number">6</span>_old</span><br><span class="line">ln -s /usr/local/gcc/lib64/libstdc++<span class="selector-class">.so</span>.<span class="number">6.0</span>.<span class="number">25</span> /usr/lib64/libstdc++<span class="selector-class">.so</span>.<span class="number">6</span></span><br></pre></td></tr></table></figure>
+<p><strong>7)、编译报错：’SYS_gettid’ has not been declared in this scope</strong></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/usr/</span>local<span class="regexp">/src/</span>mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span><span class="regexp">/storage/</span>innobase<span class="regexp">/buf/</span>bufObuf. cc：在函数 <span class="keyword">void</span> buf_jpool_create (buf_pool_t*, ulint, ulint, std：：mutex*, dberr_t&amp;)中：</span><br><span class="line"><span class="regexp">/usr/</span>local<span class="regexp">/src/</span>mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span><span class="regexp">/storage/</span>innobase<span class="regexp">/buf/</span>bufObuf. cc：<span class="number">1220</span>:<span class="number">44</span>：错误 SYS_gettid</span><br><span class="line">在此作用域中尚未声明</span><br><span class="line">setpriority(PRI0_PR0CESS, (pid_t) syscall(SYS_gettid), <span class="number">-20</span>)；</span><br><span class="line"><span class="regexp">/usr/</span>local<span class="regexp">/src/</span>mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span><span class="regexp">/storage/</span>innobase<span class="regexp">/buf/</span>bufObuf. cc：<span class="number">1220</span>:<span class="number">44</span>：附注：suggested alt <span class="string">ernative:</span> my_getwd</span><br><span class="line">setpriority(PRI0_PR0CESS, (pid_t)syscall(SYS_gettid), <span class="number">-20</span>)；</span><br><span class="line">make[<span class="number">2</span>]： *** [storage<span class="regexp">/innobase/</span>CMakeFiles<span class="regexp">/innobase. dir/</span>buf/bufObuf.cc.o]错误 <span class="number">1</span></span><br><span class="line">make[l]： *** [storage<span class="regexp">/innobase/</span>CMakeFiles<span class="regexp">/innobase. dir/</span>all]错误 <span class="number">2</span></span><br><span class="line">make： *** [all]错误 <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p><strong>解决方法</strong>：在该文件上添加一个头文件。</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/src/</span>mysql<span class="number">-8.0</span><span class="number">.24</span><span class="meta-keyword">/storage/</span>innobase<span class="meta-keyword">/buf/</span>buf0buf.cc </span><br><span class="line">       <span class="meta">#在第一行添加</span></span><br><span class="line">       <span class="meta">#<span class="meta-keyword">include</span> <span class="string">"sys/syscall.h"</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>8)、编译报错：‘os_compare_and_swap_thread_id’ Has not been declared in this scope</strong></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">38%</span>] <span class="string">'Li Idin；. XX oL.ieci： sro.'</span> je/irir_C<span class="string">'ise/C-：yc.keFiles/iririobase. dii/l'</span>jC-.k/l<span class="string">'jC-.kOl'</span>jC-.k 二二 o</span><br><span class="line">/usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/storage/innobase/<span class="keyword">lock</span>/lock01ock. cc：在成 员函数 <span class="keyword">void</span> RecLock： ：<span class="function">mark_trx_for_rol <span class="title">Iback</span> (<span class="params">trx_t*</span>)'中：</span></span><br><span class="line"><span class="function">/usr/local/src/mysql-8. 0. 24/storage/innobase/<span class="keyword">lock</span>/lock01ock.cc：1571:68：错 误： os_compar e_eind_swap_thread_i d,在此作用域中尚未声明</span></span><br><span class="line"><span class="function">cas</span> = os_compare_and_swap_thread_id(&amp;trx-&gt;killed_by, <span class="number">0</span>, thread_id)；</span><br><span class="line">make [<span class="number">2</span>]： *** [storage/innobase/CMakeFiles/innobase. dir/<span class="keyword">lock</span>/lockOlock. cc. o]错误 <span class="number">1</span></span><br><span class="line">make[l]： *** [storage/innobase/CMakeFiles/innobase. dir/all]错误 <span class="number">2</span></span><br><span class="line">make： *** [all]错误 <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p><strong>解决办法</strong>：修改报错文件内容</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim <span class="regexp">/usr/</span>local<span class="regexp">/src/my</span>sql-<span class="number">8.0</span>.<span class="number">24</span><span class="regexp">/storage/i</span>nnobase<span class="regexp">/lock/</span>lock0lock.cc</span><br><span class="line">      <span class="comment">#将 “os_compare_and_swap_thread_id” 修改为</span></span><br><span class="line">      os_compare_and_swap_lint</span><br></pre></td></tr></table></figure>
+<p><strong>9)、编译报错：/usr/bin/ar: ../../archive_output_directory/libz.a</strong></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/<span class="keyword">ar</span>： . .	. /archive_output_directory/libz. <span class="keyword">a</span>：没有那个文件或目录</span><br><span class="line"><span class="keyword">make</span> [<span class="number">2</span>]： *** [archive_output_directory/libz. <span class="keyword">a</span>]错误 <span class="number">1</span></span><br><span class="line"><span class="keyword">make</span>[<span class="keyword">l</span>]： *** [extra/zlib/CMakeFiles/zlib. dir/<span class="keyword">all</span>]错误 <span class="number">2</span></span><br><span class="line"><span class="keyword">make</span>： *** [<span class="keyword">all</span>]错误 <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p><strong>解决方法</strong>：重新配置编译</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make clean</span><br><span class="line"><span class="function"><span class="title">cmake</span></span> .....(你的配置参数)</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<p><strong>10)、编译报错：_DIAGASSERT、libedit_fgetln、__arraycount、libedit_fgetln an undefined reference</strong></p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">89</span>%] Linking CXX executable .. /runtime_output_directory/mysql</span><br><span class="line">/usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/np/vis. c：<span class="number">372</span>：错 误</span><br><span class="line">/usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/np/vis. c：<span class="number">373</span>：错 误</span><br><span class="line">/usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/np/vis. c：<span class="number">374</span>：错 误</span><br><span class="line">/usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/np/vis. c：<span class="number">475</span>：错 误</span><br><span class="line">/usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/el. c：<span class="number">554</span>：错误：对</span><br><span class="line">：对 ,DIAGASSERT，未定义的引用</span><br><span class="line">：对 ,DIAGASSERT，未定义的引用 ：对 ,DIAGASSERT，未定义的引用 ：对 ,DIAGASSERT，未定义的引用</span><br><span class="line">〕ibedit_fgetln’未定义的引用</span><br><span class="line">/usr/local/src/niysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/./history, c： <span class="number">747</span>：错误：对〕ibedit_fgetln’未定义的引用 /usr/local/src/niysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/./history, c： <span class="number">756</span>：错误：对〕ibedit_fgetln’未定义的引用 /usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/np/unvis. c：<span class="number">451</span>：错误：对 '—arraycount'未定义的引用 /usr/local/src/mysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/np/unvis. c：<span class="number">458</span>：错误：对 '—arraycount'未定义的引用 /usr/local/src/niysql<span class="number">-8.</span> <span class="number">0.</span> <span class="number">24</span>/extra/libedit/history. c： <span class="number">747</span>：错误：对〕ibedit_fgetln’未定义的引用</span><br><span class="line">collect2：错误：Id 返回 <span class="number">1</span></span><br><span class="line">make[<span class="number">2</span>]： *** [runtime_output_directory/mysql]错误 <span class="number">1</span></span><br><span class="line">make[l]： *** [client/CMakeFiles/mysql. dir/all]错误 <span class="number">2</span></span><br><span class="line">make： *** [all]错误 <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p><strong>解决方法</strong>：在各文件里加入sys.h头文件</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#在文件中加入</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="5、数据库用户"><a href="#5、数据库用户" class="headerlink" title="5、数据库用户"></a>5、数据库用户</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd -s <span class="regexp">/sbin/</span>nologin mysql</span><br></pre></td></tr></table></figure>
+<h2 id="6、创建数据存放目录并修改权限"><a href="#6、创建数据存放目录并修改权限" class="headerlink" title="6、创建数据存放目录并修改权限"></a>6、创建数据存放目录并修改权限</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir <span class="regexp">/usr/</span>local<span class="regexp">/mysql/</span>data</span><br><span class="line">chown -R <span class="string">mysql:</span>mysql <span class="regexp">/usr/</span>local/mysql</span><br></pre></td></tr></table></figure>
+<h2 id="7、修改配置文件（根据自己的情况来配置）"><a href="#7、修改配置文件（根据自己的情况来配置）" class="headerlink" title="7、修改配置文件（根据自己的情况来配置）"></a>7、修改配置文件（根据自己的情况来配置）</h2><p>这里我找不到自己的配置文件在哪</p>
+<p>从Oracle官方了解到：mysql5.7.18 开始不在二进制包中提供 my-default.cnf 文件。</p>
+<p>修改配置文件的目的是为了下一步初始化的操作，我们可以在下一步通过命令行来实现（也就是说可以跳过这部）。</p>
+<p>但对于更低版本的有如下方式寻找</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#首先查找mysqld，这里我是找不到的，但可以直接去安装目录的bin下寻找</span></span><br><span class="line"><span class="built_in">which</span> mysqld</span><br><span class="line"><span class="comment">#第二步，先输入自己的mysqld的完整目录</span></span><br><span class="line">/usr/<span class="built_in">local</span>/mysql/bin/mysqld --verbose --<span class="built_in">help</span> |grep -A 1 <span class="string">'Default options'</span></span><br></pre></td></tr></table></figure>
+<p>然后使用vim修改配置文件</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">port</span>=<span class="number">3306</span></span><br><span class="line"><span class="attr">server-id</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">basedir</span>=/usr/local/mysql</span><br><span class="line"><span class="attr">datadir</span>=/usr/local/mysql/data</span><br><span class="line"><span class="attr">socket</span>=/usr/local/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line"><span class="section">[client]</span></span><br><span class="line"><span class="attr">socket</span>=/usr/local/mysql/mysql.sock</span><br></pre></td></tr></table></figure>
+<p>初始化配置文件详解：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port = 3306</span><br><span class="line">socket = /tmp/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line">port = 3306</span><br><span class="line">socket = /tmp/mysql.sock</span><br><span class="line">basedir = /usr/local/mysql</span><br><span class="line">datadir = /data/mysql</span><br><span class="line">pid-file = /data/mysql/mysql.pid</span><br><span class="line">user = mysql</span><br><span class="line">bind-address = 0.0.0.0</span><br><span class="line">server-id = 1 <span class="comment">#表示是本机的序号为1,一般来讲就是master的意思</span></span><br><span class="line">skip-name-resolve</span><br><span class="line"><span class="comment"># 禁止MySQL对外部连接进行DNS解析，使用这一选项可以消除MySQL进行DNS解析的时间。但需要注意，如果开启该选项，</span></span><br><span class="line"><span class="comment"># 则所有远程主机连接授权都要使用IP地址方式，否则MySQL将无法正常处理连接请求</span></span><br><span class="line"><span class="comment">#skip-networking</span></span><br><span class="line">back_log = 600</span><br><span class="line"><span class="comment"># MySQL能有的连接数量。当主要MySQL线程在一个很短时间内得到非常多的连接请求，这就起作用，</span></span><br><span class="line"><span class="comment"># 然后主线程花些时间(尽管很短)检查连接并且启动一个新线程。back_log值指出在MySQL暂时停止回答新请求之前的短时间内多少个请求可以被存在堆栈中。</span></span><br><span class="line"><span class="comment"># 如果期望在一个短时间内有很多连接，你需要增加它。也就是说，如果MySQL的连接数据达到max_connections时，新来的请求将会被存在堆栈中，</span></span><br><span class="line"><span class="comment"># 以等待某一连接释放资源，该堆栈的数量即back_log，如果等待连接的数量超过back_log，将不被授予连接资源。</span></span><br><span class="line"><span class="comment"># 另外，这值（back_log）限于您的操作系统对到来的TCP/IP连接的侦听队列的大小。</span></span><br><span class="line"><span class="comment"># 你的操作系统在这个队列大小上有它自己的限制（可以检查你的OS文档找出这个变量的最大值），试图设定back_log高于你的操作系统的限制将是无效的。</span></span><br><span class="line">max_connections = 1000</span><br><span class="line"><span class="comment"># MySQL的最大连接数，如果服务器的并发连接请求量比较大，建议调高此值，以增加并行连接数量，当然这建立在机器能支撑的情况下，因为如果连接数越多，介于MySQL会为每个连接提供连接缓冲区，就会开销越多的内存，所以要适当调整该值，不能盲目提高设值。可以过'conn%'通配符查看当前状态的连接数量，以定夺该值的大小。</span></span><br><span class="line">max_connect_errors = 6000</span><br><span class="line"><span class="comment"># 对于同一主机，如果有超出该参数值个数的中断错误连接，则该主机将被禁止连接。如需对该主机进行解禁，执行：FLUSH HOST。</span></span><br><span class="line">open_files_limit = 65535</span><br><span class="line"><span class="comment"># MySQL打开的文件描述符限制，默认最小1024;当open_files_limit没有被配置的时候，比较max_connections*5和ulimit -n的值，哪个大用哪个，</span></span><br><span class="line"><span class="comment"># 当open_file_limit被配置的时候，比较open_files_limit和max_connections*5的值，哪个大用哪个。</span></span><br><span class="line">table_open_cache = 128</span><br><span class="line"><span class="comment"># MySQL每打开一个表，都会读入一些数据到table_open_cache缓存中，当MySQL在这个缓存中找不到相应信息时，才会去磁盘上读取。默认值64</span></span><br><span class="line"><span class="comment"># 假定系统有200个并发连接，则需将此参数设置为200*N(N为每个连接所需的文件描述符数目)；</span></span><br><span class="line"><span class="comment"># 当把table_open_cache设置为很大时，如果系统处理不了那么多文件描述符，那么就会出现客户端失效，连接不上</span></span><br><span class="line">max_allowed_packet = 4M</span><br><span class="line"><span class="comment"># 接受的数据包大小；增加该变量的值十分安全，这是因为仅当需要时才会分配额外内存。例如，仅当你发出长查询或MySQLd必须返回大的结果行时MySQLd才会分配更多内存。</span></span><br><span class="line"><span class="comment"># 该变量之所以取较小默认值是一种预防措施，以捕获客户端和服务器之间的错误信息包，并确保不会因偶然使用大的信息包而导致内存溢出。</span></span><br><span class="line">binlog_cache_size = 1M</span><br><span class="line"><span class="comment"># 一个事务，在没有提交的时候，产生的日志，记录到Cache中；等到事务提交需要提交的时候，则把日志持久化到磁盘。默认binlog_cache_size大小32K</span></span><br><span class="line">max_heap_table_size = 8M</span><br><span class="line"><span class="comment"># 定义了用户可以创建的内存表(memory table)的大小。这个值用来计算内存表的最大行数值。这个变量支持动态改变</span></span><br><span class="line">tmp_table_size = 16M</span><br><span class="line"><span class="comment"># MySQL的heap（堆积）表缓冲大小。所有联合在一个DML指令内完成，并且大多数联合甚至可以不用临时表即可以完成。</span></span><br><span class="line"><span class="comment"># 大多数临时表是基于内存的(HEAP)表。具有大的记录长度的临时表 (所有列的长度的和)或包含BLOB列的表存储在硬盘上。</span></span><br><span class="line"><span class="comment"># 如果某个内部heap（堆积）表大小超过tmp_table_size，MySQL可以根据需要自动将内存中的heap表改为基于硬盘的MyISAM表。还可以通过设置tmp_table_size选项来增加临时表的大小。也就是说，如果调高该值，MySQL同时将增加heap表的大小，可达到提高联接查询速度的效果</span></span><br><span class="line">read_buffer_size = 2M</span><br><span class="line"><span class="comment"># MySQL读入缓冲区大小。对表进行顺序扫描的请求将分配一个读入缓冲区，MySQL会为它分配一段内存缓冲区。read_buffer_size变量控制这一缓冲区的大小。</span></span><br><span class="line"><span class="comment"># 如果对表的顺序扫描请求非常频繁，并且你认为频繁扫描进行得太慢，可以通过增加该变量值以及内存缓冲区大小提高其性能</span></span><br><span class="line">read_rnd_buffer_size = 8M</span><br><span class="line"><span class="comment"># MySQL的随机读缓冲区大小。当按任意顺序读取行时(例如，按照排序顺序)，将分配一个随机读缓存区。进行排序查询时，</span></span><br><span class="line"><span class="comment"># MySQL会首先扫描一遍该缓冲，以避免磁盘搜索，提高查询速度，如果需要排序大量数据，可适当调高该值。但MySQL会为每个客户连接发放该缓冲空间，所以应尽量适当设置该值，以避免内存开销过大</span></span><br><span class="line">sort_buffer_size = 8M</span><br><span class="line"><span class="comment"># MySQL执行排序使用的缓冲大小。如果想要增加ORDER BY的速度，首先看是否可以让MySQL使用索引而不是额外的排序阶段。</span></span><br><span class="line"><span class="comment"># 如果不能，可以尝试增加sort_buffer_size变量的大小</span></span><br><span class="line">join_buffer_size = 8M</span><br><span class="line"><span class="comment"># 联合查询操作所能使用的缓冲区大小，和sort_buffer_size一样，该参数对应的分配内存也是每连接独享</span></span><br><span class="line">thread_cache_size = 8</span><br><span class="line"><span class="comment"># 这个值（默认8）表示可以重新利用保存在缓存中线程的数量，当断开连接时如果缓存中还有空间，那么客户端的线程将被放到缓存中，</span></span><br><span class="line"><span class="comment"># 如果线程重新被请求，那么请求将从缓存中读取,如果缓存中是空的或者是新的请求，那么这个线程将被重新创建,如果有很多新的线程，</span></span><br><span class="line"><span class="comment"># 增加这个值可以改善系统性能.通过比较Connections和Threads_created状态的变量，可以看到这个变量的作用。(–&gt;表示要调整的值)</span></span><br><span class="line"><span class="comment"># 根据物理内存设置规则如下：</span></span><br><span class="line"><span class="comment"># 1G  —&gt; 8</span></span><br><span class="line"><span class="comment"># 2G  —&gt; 16</span></span><br><span class="line"><span class="comment"># 3G  —&gt; 32</span></span><br><span class="line"><span class="comment"># 大于3G  —&gt; 64</span></span><br><span class="line">query_cache_size = 8M</span><br><span class="line"><span class="comment">#MySQL的查询缓冲大小（从4.0.1开始，MySQL提供了查询缓冲机制）使用查询缓冲，MySQL将SELECT语句和查询结果存放在缓冲区中，</span></span><br><span class="line"><span class="comment"># 今后对于同样的SELECT语句（区分大小写），将直接从缓冲区中读取结果。根据MySQL用户手册，使用查询缓冲最多可以达到238%的效率。</span></span><br><span class="line"><span class="comment"># 通过检查状态值'Qcache_%'，可以知道query_cache_size设置是否合理：如果Qcache_lowmem_prunes的值非常大，则表明经常出现缓冲不够的情况，</span></span><br><span class="line"><span class="comment"># 如果Qcache_hits的值也非常大，则表明查询缓冲使用非常频繁，此时需要增加缓冲大小；如果Qcache_hits的值不大，则表明你的查询重复率很低，</span></span><br><span class="line"><span class="comment"># 这种情况下使用查询缓冲反而会影响效率，那么可以考虑不用查询缓冲。此外，在SELECT语句中加入SQL_NO_CACHE可以明确表示不使用查询缓冲</span></span><br><span class="line">query_cache_limit = 2M</span><br><span class="line"><span class="comment">#指定单个查询能够使用的缓冲区大小，默认1M</span></span><br><span class="line">key_buffer_size = 4M</span><br><span class="line"><span class="comment">#指定用于索引的缓冲区大小，增加它可得到更好处理的索引(对所有读和多重写)，到你能负担得起那样多。如果你使它太大，</span></span><br><span class="line"><span class="comment"># 系统将开始换页并且真的变慢了。对于内存在4GB左右的服务器该参数可设置为384M或512M。通过检查状态值Key_read_requests和Key_reads，</span></span><br><span class="line"><span class="comment"># 可以知道key_buffer_size设置是否合理。比例key_reads/key_read_requests应该尽可能的低，</span></span><br><span class="line"><span class="comment"># 至少是1:100，1:1000更好(上述状态值可以使用SHOW STATUS LIKE 'key_read%'获得)。注意：该参数值设置的过大反而会是服务器整体效率降低</span></span><br><span class="line">ft_min_word_len = 4</span><br><span class="line"><span class="comment"># 分词词汇最小长度，默认4</span></span><br><span class="line">transaction_isolation = REPEATABLE-READ</span><br><span class="line"><span class="comment"># MySQL支持4种事务隔离级别，他们分别是：</span></span><br><span class="line"><span class="comment"># READ-UNCOMMITTED, READ-COMMITTED, REPEATABLE-READ, SERIALIZABLE.</span></span><br><span class="line"><span class="comment"># 如没有指定，MySQL默认采用的是REPEATABLE-READ，ORACLE默认的是READ-COMMITTED</span></span><br><span class="line">log_bin = mysql-bin</span><br><span class="line">binlog_format = mixed</span><br><span class="line">expire_logs_days = 30 <span class="comment">#超过30天的binlog删除</span></span><br><span class="line">log_error = /data/mysql/mysql-error.log <span class="comment">#错误日志路径</span></span><br><span class="line">slow_query_log = 1</span><br><span class="line">long_query_time = 1 <span class="comment">#慢查询时间 超过1秒则为慢查询</span></span><br><span class="line">slow_query_log_file = /data/mysql/mysql-slow.log</span><br><span class="line">performance_schema = 0</span><br><span class="line">explicit_defaults_for_timestamp</span><br><span class="line"><span class="comment">#lower_case_table_names = 1 #不区分大小写</span></span><br><span class="line">skip-external-locking <span class="comment">#MySQL选项以避免外部锁定。该选项默认开启</span></span><br><span class="line">default-storage-engine = InnoDB <span class="comment">#默认存储引擎</span></span><br><span class="line">innodb_file_per_table = 1</span><br><span class="line"><span class="comment"># InnoDB为独立表空间模式，每个数据库的每个表都会生成一个数据空间</span></span><br><span class="line"><span class="comment"># 独立表空间优点：</span></span><br><span class="line"><span class="comment"># 1．每个表都有自已独立的表空间。</span></span><br><span class="line"><span class="comment"># 2．每个表的数据和索引都会存在自已的表空间中。</span></span><br><span class="line"><span class="comment"># 3．可以实现单表在不同的数据库中移动。</span></span><br><span class="line"><span class="comment"># 4．空间可以回收（除drop table操作处，表空不能自已回收）</span></span><br><span class="line"><span class="comment"># 缺点：</span></span><br><span class="line"><span class="comment"># 单表增加过大，如超过100G</span></span><br><span class="line"><span class="comment"># 结论：</span></span><br><span class="line"><span class="comment"># 共享表空间在Insert操作上少有优势。其它都没独立表空间表现好。当启用独立表空间时，请合理调整：innodb_open_files</span></span><br><span class="line">innodb_open_files = 500</span><br><span class="line"><span class="comment"># 限制Innodb能打开的表的数据，如果库里的表特别多的情况，请增加这个。这个值默认是300</span></span><br><span class="line">innodb_buffer_pool_size = 64M</span><br><span class="line"><span class="comment"># InnoDB使用一个缓冲池来保存索引和原始数据, 不像MyISAM.</span></span><br><span class="line"><span class="comment"># 这里你设置越大,你在存取表里面数据时所需要的磁盘I/O越少.</span></span><br><span class="line"><span class="comment"># 在一个独立使用的数据库服务器上,你可以设置这个变量到服务器物理内存大小的80%</span></span><br><span class="line"><span class="comment"># 不要设置过大,否则,由于物理内存的竞争可能导致操作系统的换页颠簸.</span></span><br><span class="line"><span class="comment"># 注意在32位系统上你每个进程可能被限制在 2-3.5G 用户层面内存限制,</span></span><br><span class="line"><span class="comment"># 所以不要设置的太高.</span></span><br><span class="line">innodb_write_io_threads = 4</span><br><span class="line">innodb_read_io_threads = 4</span><br><span class="line"><span class="comment"># innodb使用后台线程处理数据页上的读写 I/O(输入输出)请求,根据你的 CPU 核数来更改,默认是4</span></span><br><span class="line"><span class="comment"># 注:这两个参数不支持动态改变,需要把该参数加入到my.cnf里，修改完后重启MySQL服务,允许值的范围从 1-64</span></span><br><span class="line">innodb_thread_concurrency = 0</span><br><span class="line"><span class="comment"># 默认设置为 0,表示不限制并发数，这里推荐设置为0，更好去发挥CPU多核处理能力，提高并发量</span></span><br><span class="line">innodb_purge_threads = 1</span><br><span class="line"><span class="comment"># InnoDB中的清除操作是一类定期回收无用数据的操作。在之前的几个版本中，清除操作是主线程的一部分，这意味着运行时它可能会堵塞其它的数据库操作。</span></span><br><span class="line"><span class="comment"># 从MySQL5.5.X版本开始，该操作运行于独立的线程中,并支持更多的并发数。用户可通过设置innodb_purge_threads配置参数来选择清除操作是否使用单</span></span><br><span class="line"><span class="comment"># 独线程,默认情况下参数设置为0(不使用单独线程),设置为 1 时表示使用单独的清除线程。建议为1</span></span><br><span class="line">innodb_flush_log_at_trx_commit = 2</span><br><span class="line"><span class="comment"># 0：如果innodb_flush_log_at_trx_commit的值为0,log buffer每秒就会被刷写日志文件到磁盘，提交事务的时候不做任何操作（执行是由mysql的master thread线程来执行的。</span></span><br><span class="line"><span class="comment"># 主线程中每秒会将重做日志缓冲写入磁盘的重做日志文件(REDO LOG)中。不论事务是否已经提交）默认的日志文件是ib_logfile0,ib_logfile1</span></span><br><span class="line"><span class="comment"># 1：当设为默认值1的时候，每次提交事务的时候，都会将log buffer刷写到日志。</span></span><br><span class="line"><span class="comment"># 2：如果设为2,每次提交事务都会写日志，但并不会执行刷的操作。每秒定时会刷到日志文件。要注意的是，并不能保证100%每秒一定都会刷到磁盘，这要取决于进程的调度。</span></span><br><span class="line"><span class="comment"># 每次事务提交的时候将数据写入事务日志，而这里的写入仅是调用了文件系统的写入操作，而文件系统是有 缓存的，所以这个写入并不能保证数据已经写入到物理磁盘</span></span><br><span class="line"><span class="comment"># 默认值1是为了保证完整的ACID。当然，你可以将这个配置项设为1以外的值来换取更高的性能，但是在系统崩溃的时候，你将会丢失1秒的数据。</span></span><br><span class="line"><span class="comment"># 设为0的话，mysqld进程崩溃的时候，就会丢失最后1秒的事务。设为2,只有在操作系统崩溃或者断电的时候才会丢失最后1秒的数据。InnoDB在做恢复的时候会忽略这个值。</span></span><br><span class="line"><span class="comment"># 总结</span></span><br><span class="line"><span class="comment"># 设为1当然是最安全的，但性能页是最差的（相对其他两个参数而言，但不是不能接受）。如果对数据一致性和完整性要求不高，完全可以设为2，如果只最求性能，例如高并发写的日志服务器，设为0来获得更高性能</span></span><br><span class="line">innodb_log_buffer_size = 2M</span><br><span class="line"><span class="comment"># 此参数确定些日志文件所用的内存大小，以M为单位。缓冲区更大能提高性能，但意外的故障将会丢失数据。MySQL开发人员建议设置为1－8M之间</span></span><br><span class="line">innodb_log_file_size = 32M</span><br><span class="line"><span class="comment"># 此参数确定数据日志文件的大小，更大的设置可以提高性能，但也会增加恢复故障数据库所需的时间</span></span><br><span class="line">innodb_log_files_in_group = 3</span><br><span class="line"><span class="comment"># 为提高性能，MySQL可以以循环方式将日志文件写到多个文件。推荐设置为3</span></span><br><span class="line">innodb_max_dirty_pages_pct = 90</span><br><span class="line"><span class="comment"># innodb主线程刷新缓存池中的数据，使脏数据比例小于90%</span></span><br><span class="line">innodb_lock_wait_timeout = 120 </span><br><span class="line"><span class="comment"># InnoDB事务在被回滚之前可以等待一个锁定的超时秒数。InnoDB在它自己的锁定表中自动检测事务死锁并且回滚事务。InnoDB用LOCK TABLES语句注意到锁定设置。默认值是50秒</span></span><br><span class="line">bulk_insert_buffer_size = 8M</span><br><span class="line"><span class="comment"># 批量插入缓存大小， 这个参数是针对MyISAM存储引擎来说的。适用于在一次性插入100-1000+条记录时， 提高效率。默认值是8M。可以针对数据量的大小，翻倍增加。</span></span><br><span class="line">myisam_sort_buffer_size = 8M</span><br><span class="line"><span class="comment"># MyISAM设置恢复表之时使用的缓冲区的尺寸，当在REPAIR TABLE或用CREATE INDEX创建索引或ALTER TABLE过程中排序 MyISAM索引分配的缓冲区</span></span><br><span class="line">myisam_max_sort_file_size = 10G</span><br><span class="line"><span class="comment"># 如果临时文件会变得超过索引，不要使用快速排序索引方法来创建一个索引。注释：这个参数以字节的形式给出</span></span><br><span class="line">myisam_repair_threads = 1</span><br><span class="line"><span class="comment"># 如果该值大于1，在Repair by sorting过程中并行创建MyISAM表索引(每个索引在自己的线程内) </span></span><br><span class="line">interactive_timeout = 28800</span><br><span class="line"><span class="comment"># 服务器关闭交互式连接前等待活动的秒数。交互式客户端定义为在mysql_real_connect()中使用CLIENT_INTERACTIVE选项的客户端。默认值：28800秒（8小时）</span></span><br><span class="line">wait_timeout = 28800</span><br><span class="line"><span class="comment"># 服务器关闭非交互连接之前等待活动的秒数。在线程启动时，根据全局wait_timeout值或全局interactive_timeout值初始化会话wait_timeout值，</span></span><br><span class="line"><span class="comment"># 取决于客户端类型(由mysql_real_connect()的连接选项CLIENT_INTERACTIVE定义)。参数默认值：28800秒（8小时）</span></span><br><span class="line"><span class="comment"># MySQL服务器所支持的最大连接数是有上限的，因为每个连接的建立都会消耗内存，因此我们希望客户端在连接到MySQL Server处理完相应的操作后，</span></span><br><span class="line"><span class="comment"># 应该断开连接并释放占用的内存。如果你的MySQL Server有大量的闲置连接，他们不仅会白白消耗内存，而且如果连接一直在累加而不断开，</span></span><br><span class="line"><span class="comment"># 最终肯定会达到MySQL Server的连接上限数，这会报'too many connections'的错误。对于wait_timeout的值设定，应该根据系统的运行情况来判断。</span></span><br><span class="line"><span class="comment"># 在系统运行一段时间后，可以通过show processlist命令查看当前系统的连接状态，如果发现有大量的sleep状态的连接进程，则说明该参数设置的过大，</span></span><br><span class="line"><span class="comment"># 可以进行适当的调整小些。要同时设置interactive_timeout和wait_timeout才会生效。</span></span><br><span class="line">[mysqldump]</span><br><span class="line">quick</span><br><span class="line">max_allowed_packet = 16M <span class="comment">#服务器发送和接受的最大包长度</span></span><br><span class="line">[myisamchk]</span><br><span class="line">key_buffer_size = 8M</span><br><span class="line">sort_buffer_size = 8M</span><br><span class="line">read_buffer = 4M</span><br><span class="line">write_buffer = 4M</span><br></pre></td></tr></table></figure>
+<p>我的这步出错了。socket后面写成mysql的可执行文件了，直接导致mysql可执行文件不能使用。第二章图看到mysql可执行文件变为紫色</p>
+<p>这步查找了为什么mysql可执行文件不能使用</p>
+<p>1.设置到系统路径下</p>
+<p>2.在本目录下使用./</p>
+<p>3.确认命令格式是否正确</p>
+<p>4.查找命令权限。<code>ls -al</code>和file（file是查找文件类型的）</p>
+<p>在编译每一步完成后最好都加上快照。实验得出，在挂起状态下快照，占用空间更少。</p>
+<p>重新<code>make</code>（这步速度快的话大概一小时左右），然后继续配置</p>
+<p>接着<code>make install</code>（这步速度很快，几分钟就好 ）</p>
+<h2 id="8、初始化数据库并安装ssl"><a href="#8、初始化数据库并安装ssl" class="headerlink" title="8、初始化数据库并安装ssl"></a>8、初始化数据库并安装ssl</h2><p>如果上一步配置了配置文件的话，这里使用这个命令</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/mysql/</span>bin/mysqld --initialize --user=mysql --datadir=<span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/mysql/</span>data</span><br><span class="line"><span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/mysql/</span>bin/mysql_ssl_rsa_setup</span><br></pre></td></tr></table></figure>
+<h2 id="9、复制启动脚本、启动"><a href="#9、复制启动脚本、启动" class="headerlink" title="9、复制启动脚本、启动"></a>9、复制启动脚本、启动</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp <span class="regexp">/usr/</span>local<span class="regexp">/mysql/</span>support-files<span class="regexp">/mysql.server /</span>etc<span class="regexp">/init.d/my</span>sqld</span><br><span class="line"><span class="regexp">/etc/i</span>nit.d<span class="regexp">/mysqld  start</span></span><br></pre></td></tr></table></figure>
+<p><strong>设置开机自启</strong></p>
+<p>先将/usr/local/mysql/mysql/support-files/ 文件夹下的mysql.server文件复制到 /etc/rc.d/init.d/ 目录下mysqld</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> cp <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/mysql/</span>mysql<span class="meta-keyword">/support-files/</span>mysql.server <span class="meta-keyword">/etc/</span>rc.d/init.d/mysqld</span><br><span class="line"><span class="meta">#赋予可执行权限：</span></span><br><span class="line">chmod +x <span class="meta-keyword">/etc/</span>init.d/mysqld</span><br><span class="line"><span class="meta">#添加为服务: </span></span><br><span class="line">chkconfig --add mysqld</span><br><span class="line"><span class="meta">#查看服务列表: </span></span><br><span class="line">chkconfig --list</span><br></pre></td></tr></table></figure>
+<p>看到3、4、5状态为开或者为 on 则表示成功。如果是 关或者 off 则执行一下：<code>chkconfig --level 345 mysqld on</code></p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">reboot</span>   <span class="comment">#重启计算机:</span></span><br></pre></td></tr></table></figure>
+<p>再次查看服务列表或者查看3306端口号</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -na <span class="string">| grep 3306</span></span><br></pre></td></tr></table></figure>
+<p>启动成功！！</p>
+<h2 id="10、修改mysql密码（忘记密码）"><a href="#10、修改mysql密码（忘记密码）" class="headerlink" title="10、修改mysql密码（忘记密码）"></a>10、修改mysql密码（忘记密码）</h2><p>登录mysql后直接执行更改命令，如果不行的话执行后面的</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#先配置环境变量</span></span><br><span class="line"><span class="comment">#在/etc/profile中添加：</span></span><br><span class="line">export PATH=<span class="variable">$PATH</span><span class="symbol">:/usr/local/MySQL/bin</span>就OK</span><br><span class="line">alter user <span class="string">'root'</span>@<span class="string">'locahost'</span> identified by <span class="string">'admin123‘;</span></span><br></pre></td></tr></table></figure>
+<h3 id="10-1-在配置文件中的-mysqld-下加入skip-grant-tables（在-mysqld-范围内任意行加入都可以）"><a href="#10-1-在配置文件中的-mysqld-下加入skip-grant-tables（在-mysqld-范围内任意行加入都可以）" class="headerlink" title="10.1 在配置文件中的[mysqld]下加入skip-grant-tables（在[mysqld]范围内任意行加入都可以）"></a>10.1 在配置文件中的[mysqld]下加入skip-grant-tables（在[mysqld]范围内任意行加入都可以）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/my.cnf</span><br><span class="line">      [mysqld]</span><br><span class="line">      skip-<span class="keyword">grant</span>-<span class="keyword">tables</span></span><br></pre></td></tr></table></figure>
+<h3 id="10-2-重启mysql"><a href="#10-2-重启mysql" class="headerlink" title="10.2 重启mysql"></a>10.2 重启mysql</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/etc/i</span>nit.d<span class="regexp">/mysqld restart</span></span><br></pre></td></tr></table></figure>
+<h3 id="10-3-登录数据库后，修改密码为空。"><a href="#10-3-登录数据库后，修改密码为空。" class="headerlink" title="10.3 登录数据库后，修改密码为空。"></a>10.3 登录数据库后，修改密码为空。</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql</span><br><span class="line">    mysql &gt;use mysql;</span><br><span class="line">    mysql &gt;update<span class="built_in"> user </span><span class="builtin-name">set</span> <span class="attribute">authentication_string</span>=<span class="string">""</span> where <span class="attribute">user</span>=<span class="string">'root'</span>;</span><br><span class="line">    mysql &gt;flush privileges;</span><br><span class="line">    mysql &gt; exit;</span><br><span class="line"><span class="comment">#大家可以使用下面的语句测试是否修改</span></span><br></pre></td></tr></table></figure>
+<h3 id="10-4-在配置文件中删除skip-grant-tables并重启mysql"><a href="#10-4-在配置文件中删除skip-grant-tables并重启mysql" class="headerlink" title="10.4 在配置文件中删除skip-grant-tables并重启mysql"></a>10.4 在配置文件中删除skip-grant-tables并重启mysql</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/etc/i</span>nit.d<span class="regexp">/mysqld restart</span></span><br></pre></td></tr></table></figure>
+<h3 id="10-5-登录mysql，修改密码"><a href="#10-5-登录mysql，修改密码" class="headerlink" title="10.5 登录mysql，修改密码"></a>10.5 登录mysql，修改密码</h3><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -ppassword</span><br><span class="line">     mysql&gt;alter user <span class="symbol">'root</span><span class="string">'@'</span>locahost' identified by <span class="symbol">'admin123</span>‘;</span><br><span class="line">     mysql&gt;flush privileges;</span><br><span class="line">     mysql&gt;<span class="keyword">exit</span>;</span><br></pre></td></tr></table></figure>
+<p>这里修改密码出现了问题，尝试了好几种修改密码的语句。最后问题出在mysql8的密码政策改变了，密码必须满足</p>
+<p>### 密码必须包含两个大写字母 、特殊符号、 字母、 数字</p>
+<p>特殊字符可以是@</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'root'</span>@<span class="string">'localhost'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">'RootPwd@123456'</span>;</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/08/100677.html" class="pre-post btn btn-default" title='Qt Installer Framework 使用手册'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Qt Installer Framework 使用手册</span>
+        </a>
+    
+    
+        <a href="/archives/2021/07/100672.html" class="next-post btn btn-default" title='龙芯硬件平台安装Loongnix操作系统'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">龙芯硬件平台安装Loongnix操作系统</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、下载源码"><span class="toc-text">一、下载源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、删除旧数据库"><span class="toc-text">二、删除旧数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-删除自带mysql"><span class="toc-text">1. 删除自带mysql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-删除自带MariaDB"><span class="toc-text">2. 删除自带MariaDB</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三、安装及其他需要软件"><span class="toc-text">三、安装及其他需要软件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1、cmake"><span class="toc-text">1、cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1、解压cmake并进入目录"><span class="toc-text">1.1、解压cmake并进入目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2、配置、编译、安装"><span class="toc-text">1.2、配置、编译、安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3、做cmake命令软连接，查看cmake版本"><span class="toc-text">1.3、做cmake命令软连接，查看cmake版本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2、重新安装gcc高版本"><span class="toc-text">2、重新安装gcc高版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1、下载源码包"><span class="toc-text">2.1、下载源码包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2、进入gcc目录，安装gcc依赖库"><span class="toc-text">2.2、进入gcc目录，安装gcc依赖库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3、配置、编译、安装"><span class="toc-text">3、配置、编译、安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4、报错误"><span class="toc-text">4、报错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5、数据库用户"><span class="toc-text">5、数据库用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6、创建数据存放目录并修改权限"><span class="toc-text">6、创建数据存放目录并修改权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7、修改配置文件（根据自己的情况来配置）"><span class="toc-text">7、修改配置文件（根据自己的情况来配置）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8、初始化数据库并安装ssl"><span class="toc-text">8、初始化数据库并安装ssl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9、复制启动脚本、启动"><span class="toc-text">9、复制启动脚本、启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10、修改mysql密码（忘记密码）"><span class="toc-text">10、修改mysql密码（忘记密码）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-在配置文件中的-mysqld-下加入skip-grant-tables（在-mysqld-范围内任意行加入都可以）"><span class="toc-text">10.1 在配置文件中的[mysqld]下加入skip-grant-tables（在[mysqld]范围内任意行加入都可以）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-重启mysql"><span class="toc-text">10.2 重启mysql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-登录数据库后，修改密码为空。"><span class="toc-text">10.3 登录数据库后，修改密码为空。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-在配置文件中删除skip-grant-tables并重启mysql"><span class="toc-text">10.4 在配置文件中删除skip-grant-tables并重启mysql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-5-登录mysql，修改密码"><span class="toc-text">10.5 登录mysql，修改密码</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

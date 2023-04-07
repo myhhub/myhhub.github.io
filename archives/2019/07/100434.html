@@ -1,0 +1,478 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,shell,zookeeper">
+
+
+    <meta name="description" content="一、节点增删改查1.1 启动服务和连接服务12345# 启动服务bin/zkServer.sh start#连接服务 不指定服务地址则默认连接到localhost:2181zkCli.sh -s...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Zookeeper常用Shell命令 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Zookeeper常用Shell命令">
+            
+	            Zookeeper常用Shell命令
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/shell/">shell</a> <a class="tag-link" href="/tags/zookeeper/">zookeeper</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/15</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1361</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、节点增删改查"><a href="#一、节点增删改查" class="headerlink" title="一、节点增删改查"></a>一、节点增删改查</h2><h3 id="1-1-启动服务和连接服务"><a href="#1-1-启动服务和连接服务" class="headerlink" title="1.1 启动服务和连接服务"></a>1.1 启动服务和连接服务</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动服务</span></span><br><span class="line">bin/zkServer.sh start</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">连接服务 不指定服务地址则默认连接到localhost:2181</span></span><br><span class="line">zkCli.sh -server hadoop001:2181</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-help命令"><a href="#1-2-help命令" class="headerlink" title="1.2 help命令"></a>1.2 help命令</h3><p>使用<code>help</code>可以查看所有命令及格式。</p>
+<h3 id="1-3-查看节点列表"><a href="#1-3-查看节点列表" class="headerlink" title="1.3 查看节点列表"></a>1.3 查看节点列表</h3><p>查看节点列表有<code>ls path</code>和 <code>ls2 path</code>两个命令，后者是前者的增强，不仅可以查看指定路径下的所有节点，还可以查看当前节点的信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 0] ls /</span><br><span class="line">[cluster, controller_epoch, brokers, storm, zookeeper, admin,  ...]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 1] ls2 /</span><br><span class="line">[cluster, controller_epoch, brokers, storm, zookeeper, admin, ....]</span><br><span class="line">cZxid = 0x0</span><br><span class="line">ctime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">mZxid = 0x0</span><br><span class="line">mtime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">pZxid = 0x130</span><br><span class="line">cversion = 19</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 0</span><br><span class="line">numChildren = 11</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-新增节点"><a href="#1-4-新增节点" class="headerlink" title="1.4 新增节点"></a>1.4 新增节点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create [-s] [-e] path data acl   #其中-s为有序节点，-e临时节点</span><br></pre></td></tr></table></figure>
+<p>创建节点并写入数据：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create /hadoop 123456</span><br></pre></td></tr></table></figure>
+<p>创建有序节点，此时创建的节点名为指定节点名+自增序号：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 23] create -s /a  "aaa"</span><br><span class="line">Created /a0000000022</span><br><span class="line">[zk: localhost:2181(CONNECTED) 24] create -s /b  "bbb"</span><br><span class="line">Created /b0000000023</span><br><span class="line">[zk: localhost:2181(CONNECTED) 25] create -s /c  "ccc"</span><br><span class="line">Created /c0000000024</span><br></pre></td></tr></table></figure>
+<p>创建临时节点，临时节点会在会话过期后被删除：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 26] create -e /tmp  "tmp"</span><br><span class="line">Created /tmp</span><br></pre></td></tr></table></figure>
+<h3 id="1-5-查看节点"><a href="#1-5-查看节点" class="headerlink" title="1.5 查看节点"></a>1.5 查看节点</h3><h4 id="1-获取节点数据"><a href="#1-获取节点数据" class="headerlink" title="1. 获取节点数据"></a>1. 获取节点数据</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 格式</span></span><br><span class="line">get path [watch]</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 31] get /hadoop</span><br><span class="line">123456   #节点数据</span><br><span class="line">cZxid = 0x14b</span><br><span class="line">ctime = Fri May 24 17:03:06 CST 2019</span><br><span class="line">mZxid = 0x14b</span><br><span class="line">mtime = Fri May 24 17:03:06 CST 2019</span><br><span class="line">pZxid = 0x14b</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></figure>
+<p>节点各个属性如下表。其中一个重要的概念是Zxid(ZooKeeper Transaction  Id)，ZooKeeper节点的每一次更改都具有唯一的Zxid，如果Zxid1小于Zxid2，则Zxid1的更改发生在Zxid2更改之前。</p>
+<table>
+<thead>
+<tr>
+<th><strong>状态属性</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cZxid</td>
+<td>数据节点创建时的事务ID</td>
+</tr>
+<tr>
+<td>ctime</td>
+<td>数据节点创建时的时间</td>
+</tr>
+<tr>
+<td>mZxid</td>
+<td>数据节点最后一次更新时的事务ID</td>
+</tr>
+<tr>
+<td>mtime</td>
+<td>数据节点最后一次更新时的时间</td>
+</tr>
+<tr>
+<td>pZxid</td>
+<td>数据节点的子节点最后一次被修改时的事务ID</td>
+</tr>
+<tr>
+<td>cversion</td>
+<td>子节点的更改次数</td>
+</tr>
+<tr>
+<td>dataVersion</td>
+<td>节点数据的更改次数</td>
+</tr>
+<tr>
+<td>aclVersion</td>
+<td>节点的ACL的更改次数</td>
+</tr>
+<tr>
+<td>ephemeralOwner</td>
+<td>如果节点是临时节点，则表示创建该节点的会话的SessionID；如果节点是持久节点，则该属性值为0</td>
+</tr>
+<tr>
+<td>dataLength</td>
+<td>数据内容的长度</td>
+</tr>
+<tr>
+<td>numChildren</td>
+<td>数据节点当前的子节点个数</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-查看节点状态"><a href="#2-查看节点状态" class="headerlink" title="2. 查看节点状态"></a>2. 查看节点状态</h4><p>可以使用<code>stat</code>命令查看节点状态，它的返回值和<code>get</code>命令类似，但不会返回节点数据。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 32] stat /hadoop</span><br><span class="line">cZxid = 0x14b</span><br><span class="line">ctime = Fri May 24 17:03:06 CST 2019</span><br><span class="line">mZxid = 0x14b</span><br><span class="line">mtime = Fri May 24 17:03:06 CST 2019</span><br><span class="line">pZxid = 0x14b</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></figure>
+<h3 id="1-6-更新节点"><a href="#1-6-更新节点" class="headerlink" title="1.6 更新节点"></a>1.6 更新节点</h3><p>更新节点的命令是<code>set</code>，可以直接进行修改，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 33] set /hadoop 345</span><br><span class="line">cZxid = 0x14b</span><br><span class="line">ctime = Fri May 24 17:03:06 CST 2019</span><br><span class="line">mZxid = 0x14c</span><br><span class="line">mtime = Fri May 24 17:13:05 CST 2019</span><br><span class="line">pZxid = 0x14b</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1  # 注意更改后此时版本号为1，默认创建时为0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 3</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></figure>
+<p>也可以基于版本号进行更改，此时类似于乐观锁机制，当你传入的数据版本号(dataVersion)和当前节点的数据版本号不符合时，zookeeper会拒绝本次修改：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 34] set /hadoop 678 0</span><br><span class="line">version No is not valid : /hadoop    #无效的版本号</span><br></pre></td></tr></table></figure>
+<h3 id="1-7-删除节点"><a href="#1-7-删除节点" class="headerlink" title="1.7 删除节点"></a>1.7 删除节点</h3><p>删除节点的语法如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete path [version]</span><br></pre></td></tr></table></figure>
+<p>和更新节点数据一样，也可以传入版本号，当你传入的数据版本号(dataVersion)和当前节点的数据版本号不符合时，zookeeper不会执行删除操作。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 36] delete /hadoop 0</span><br><span class="line">version No is not valid : /hadoop   #无效的版本号</span><br><span class="line">[zk: localhost:2181(CONNECTED) 37] delete /hadoop 1</span><br><span class="line">[zk: localhost:2181(CONNECTED) 38]</span><br></pre></td></tr></table></figure>
+<p>要想删除某个节点及其所有后代节点，可以使用递归删除，命令为<code>rmr path</code>。</p>
+<h2 id="二、监听器"><a href="#二、监听器" class="headerlink" title="二、监听器"></a>二、监听器</h2><h3 id="2-1-get-path-watch"><a href="#2-1-get-path-watch" class="headerlink" title="2.1 get path [watch]"></a>2.1 get path [watch]</h3><p>使用<code>get path [watch]</code>注册的监听器能够在节点内容发生改变的时候，向客户端发出通知。需要注意的是zookeeper的触发器是一次性的(One-time trigger)，即触发一次后就会立即失效。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 4] get /hadoop  watch</span><br><span class="line">[zk: localhost:2181(CONNECTED) 5] set /hadoop 45678</span><br><span class="line">WATCHER::</span><br><span class="line">WatchedEvent state:SyncConnected type:NodeDataChanged path:/hadoop  #节点值改变</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-stat-path-watch"><a href="#2-2-stat-path-watch" class="headerlink" title="2.2 stat path [watch]"></a>2.2 stat path [watch]</h3><p>使用<code>stat path [watch]</code>注册的监听器能够在节点状态发生改变的时候，向客户端发出通知。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 7] stat /hadoop watch</span><br><span class="line">[zk: localhost:2181(CONNECTED) 8] set /hadoop 112233</span><br><span class="line">WATCHER::</span><br><span class="line">WatchedEvent state:SyncConnected type:NodeDataChanged path:/hadoop  #节点值改变</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-ls-ls2-path-watch"><a href="#2-3-ls-ls2-path-watch" class="headerlink" title="2.3 ls\ls2 path  [watch]"></a>2.3 ls\ls2 path  [watch]</h3><p>使用<code>ls path [watch]</code>或<code>ls2 path [watch]</code>注册的监听器能够监听该节点下所有<strong>子节点</strong>的增加和删除操作。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 9] ls /hadoop watch</span><br><span class="line">[]</span><br><span class="line">[zk: localhost:2181(CONNECTED) 10] create  /hadoop/yarn "aaa"</span><br><span class="line">WATCHER::</span><br><span class="line">WatchedEvent state:SyncConnected type:NodeChildrenChanged path:/hadoop</span><br></pre></td></tr></table></figure>
+<h2 id="三、-zookeeper-四字命令"><a href="#三、-zookeeper-四字命令" class="headerlink" title="三、 zookeeper 四字命令"></a>三、 zookeeper 四字命令</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>功能描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>conf</td>
+<td>打印服务配置的详细信息。</td>
+</tr>
+<tr>
+<td>cons</td>
+<td>列出连接到此服务器的所有客户端的完整连接/会话详细信息。包括接收/发送的数据包数量，会话ID，操作延迟，上次执行的操作等信息。</td>
+</tr>
+<tr>
+<td>dump</td>
+<td>列出未完成的会话和临时节点。这只适用于Leader节点。</td>
+</tr>
+<tr>
+<td>envi</td>
+<td>打印服务环境的详细信息。</td>
+</tr>
+<tr>
+<td>ruok</td>
+<td>测试服务是否处于正确状态。如果正确则返回“imok”，否则不做任何相应。</td>
+</tr>
+<tr>
+<td>stat</td>
+<td>列出服务器和连接客户端的简要详细信息。</td>
+</tr>
+<tr>
+<td>wchs</td>
+<td>列出所有watch的简单信息。</td>
+</tr>
+<tr>
+<td>wchc</td>
+<td>按会话列出服务器watch的详细信息。</td>
+</tr>
+<tr>
+<td>wchp</td>
+<td>按路径列出服务器watch的详细信息。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>更多四字命令可以参阅官方文档：<a href="https://zookeeper.apache.org/doc/current/zookeeperAdmin.html" target="_blank" rel="noopener">https://zookeeper.apache.org/doc/current/zookeeperAdmin.html</a></p>
+</blockquote>
+<p>使用前需要使用 <code>yum install nc</code> 安装 nc 命令，使用示例如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@hadoop001 bin]# echo stat | nc localhost 2181</span><br><span class="line">Zookeeper version: 3.4.13-2d71af4dbe22557fda74f9a9b4309b15a7487f03, </span><br><span class="line">built on 06/29/2018 04:05 GMT</span><br><span class="line">Clients:</span><br><span class="line"> /0:0:0:0:0:0:0:1:50584[1](queued=0,recved=371,sent=371)</span><br><span class="line"> /0:0:0:0:0:0:0:1:50656[0](queued=0,recved=1,sent=0)</span><br><span class="line">Latency min/avg/max: 0/0/19</span><br><span class="line">Received: 372</span><br><span class="line">Sent: 371</span><br><span class="line">Connections: 2</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x150</span><br><span class="line">Mode: standalone</span><br><span class="line">Node count: 167</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100435.html" class="pre-post btn btn-default" title='Zookeeper Java 客户端 ——Apache Curator'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Zookeeper Java 客户端 ——Apache Curator</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100433.html" class="next-post btn btn-default" title='Zookeeper简介及核心概念'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Zookeeper简介及核心概念</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、节点增删改查"><span class="toc-text">一、节点增删改查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-启动服务和连接服务"><span class="toc-text">1.1 启动服务和连接服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-help命令"><span class="toc-text">1.2 help命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-查看节点列表"><span class="toc-text">1.3 查看节点列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-新增节点"><span class="toc-text">1.4 新增节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-查看节点"><span class="toc-text">1.5 查看节点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-获取节点数据"><span class="toc-text">1. 获取节点数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-查看节点状态"><span class="toc-text">2. 查看节点状态</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-更新节点"><span class="toc-text">1.6 更新节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-删除节点"><span class="toc-text">1.7 删除节点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、监听器"><span class="toc-text">二、监听器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-get-path-watch"><span class="toc-text">2.1 get path [watch]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-stat-path-watch"><span class="toc-text">2.2 stat path [watch]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-ls-ls2-path-watch"><span class="toc-text">2.3 ls\ls2 path  [watch]</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、-zookeeper-四字命令"><span class="toc-text">三、 zookeeper 四字命令</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

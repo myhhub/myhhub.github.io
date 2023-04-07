@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="练习,xxe">
+
+
+    <meta name="description" content="前言对于xxe漏洞的认识一直都不是很清楚，而在我为期不长的挖洞生涯中也没有遇到过，所以就想着总结一下，撰写此文以作为记录，加深自己对xxe漏洞的认识。
+xml基础知识要了解xxe漏洞，那么一定得...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>XXE漏洞攻防学习 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="XXE漏洞攻防学习">
+            
+	            XXE漏洞攻防学习
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/penetration/">渗透</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/xxe/">xxe</a> <a class="tag-link" href="/tags/practise/">练习</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/10/10</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1639</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>对于xxe漏洞的认识一直都不是很清楚，而在我为期不长的挖洞生涯中也没有遇到过，所以就想着总结一下，撰写此文以作为记录，加深自己对xxe漏洞的认识。</p>
+<h2 id="xml基础知识"><a href="#xml基础知识" class="headerlink" title="xml基础知识"></a>xml基础知识</h2><p>要了解xxe漏洞，那么一定得先明白基础知识，了解xml文档的基础组成。</p>
+<blockquote>
+<p>XML用于标记电子文件使其具有结构性的标记语言，可以用来标记数据、定义数据类型，是一种允许用户对自己的标记语言进行定义的源语言。XML文档结构包括XML声明、DTD文档类型定义（可选）、文档元素</p>
+</blockquote>
+<p><img src="/img/posts/1205477-20170729131727597-973576085.png" alt="img"></p>
+<h3 id="xml文档的构建模块"><a href="#xml文档的构建模块" class="headerlink" title="xml文档的构建模块"></a>xml文档的构建模块</h3><p>所有的 XML 文档（以及 HTML 文档）均由以下简单的构建模块构成：</p>
+<ul>
+<li>元素</li>
+<li>属性</li>
+<li>实体</li>
+<li>PCDATA</li>
+<li>CDATA</li>
+</ul>
+<p>下面是每个构建模块的简要描述。<br><strong>1.  元素</strong><br>元素是 XML 以及 HTML 文档的主要构建模块，元素可包含文本、其他元素或者是空的。<br>实例:</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">body</span>&gt;<span class="keyword">body</span> text <span class="keyword">in</span> between&lt;/<span class="keyword">body</span>&gt;</span><br><span class="line">&lt;message&gt;<span class="keyword">some</span> message <span class="keyword">in</span> between&lt;/message&gt;</span><br></pre></td></tr></table></figure>
+<p>空的 HTML 元素的例子是 “hr”、”br” 以及 “img”。</p>
+<p><strong>2.  属性</strong><br>属性可提供有关元素的额外信息<br>实例：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">img</span> src=<span class="string">"computer.gif"</span> /&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>3. 实体</strong><br>实体是用来定义普通文本的变量。实体引用是对实体的引用。</p>
+<p><strong>4. PCDATA</strong><br>PCDATA 的意思是被解析的字符数据（parsed character data）。<br>PCDATA 是会被解析器解析的文本。这些文本将被解析器检查实体以及标记。</p>
+<p><strong>5. CDATA</strong><br>CDATA 的意思是字符数据（character data）。<br>CDATA 是不会被解析器解析的文本。</p>
+<h3 id="DTD-文档类型定义"><a href="#DTD-文档类型定义" class="headerlink" title="DTD(文档类型定义)"></a>DTD(文档类型定义)</h3><p>DTD（文档类型定义）的作用是定义 XML 文档的合法构建模块。</p>
+<p>DTD 可以在 XML 文档内声明，也可以外部引用。</p>
+<p><strong>1. 内部声明：&lt;!DOCTYPE 根元素 [元素声明]&gt; ex: `&lt;!DOCTYOE test any&gt;</strong><br>完整实例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE note [</span></span><br><span class="line"><span class="meta">  &lt;!ELEMENT note (to,from,heading,body)&gt;</span></span><br><span class="line"><span class="meta">  &lt;!ELEMENT to      (#PCDATA)&gt;</span></span><br><span class="line"><span class="meta">  &lt;!ELEMENT from    (#PCDATA)&gt;</span></span><br><span class="line"><span class="meta">  &lt;!ELEMENT heading (#PCDATA)&gt;</span></span><br><span class="line"><span class="meta">  &lt;!ELEMENT body    (#PCDATA)&gt;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">to</span>&gt;</span>George<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span>Don't forget the meeting!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>*<em>2. 外部声明（引用外部DTD）：&lt;!DOCTYPE 根元素 SYSTEM “文件名”&gt; ex:`&lt;!DOCTYPE test SYSTEM </em>‘<a href="http://www.test.com/evil.dtd&#39;&gt;`" target="_blank" rel="noopener">http://www.test.com/evil.dtd&#39;&gt;`</a><br>完整实例:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE note SYSTEM "note.dtd"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>George<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>Don't forget the meeting!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>而note.dtd的内容为:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ELEMENT<span class="built_in"> note </span>(<span class="keyword">to</span>,<span class="keyword">from</span>,heading,body)&gt;</span><br><span class="line">&lt;!ELEMENT <span class="keyword">to</span> (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT <span class="keyword">from</span> (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT heading (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT body (#PCDATA)&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="DTD实体"><a href="#DTD实体" class="headerlink" title="DTD实体"></a>DTD实体</h3><p>DTD实体是用于定义引用普通文本或特殊字符的快捷方式的变量，可以内部声明或外部引用。<br><strong>实体又分为一般实体和参数实体1，一般实体的声明语法:&lt;!ENTITY 实体名 “实体内容”&gt;引用实体的方式：&amp;实体名；2，参数实体只能在DTD中使用，参数实体的声明格式： &lt;!ENTITY % 实体名 “实体内容”&gt;引用实体的方式：%实体名；</strong></p>
+<p><strong>1. 内部实体声明:&lt;!ENTITY 实体名称 “实体的值”&gt; ex:`&lt;!ENTITY eviltest “eviltest”&gt;</strong><br>完整实例:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE test [</span></span><br><span class="line"><span class="meta">&lt;!ENTITY writer "Bill Gates"&gt;</span></span><br><span class="line"><span class="meta">&lt;!ENTITY copyright "Copyright W3School.com.cn"&gt;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">test</span>&gt;</span>&amp;writer;&amp;copyright;<span class="tag">&lt;/<span class="name">test</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>2.  外部实体声明:&lt;!ENTITY 实体名称 SYSTEM “URI”&gt;</strong><br>完整实例:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE test [</span></span><br><span class="line"><span class="meta">&lt;!ENTITY writer SYSTEM "http://www.w3school.com.cn/dtd/entities.dtd"&gt;</span></span><br><span class="line"><span class="meta">&lt;!ENTITY copyright SYSTEM "http://www.w3school.com.cn/dtd/entities.dtd"&gt;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">author</span>&gt;</span>&amp;writer;&amp;copyright;<span class="tag">&lt;/<span class="name">author</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在了解了基础知识后，下面开始了解xml外部实体注入引发的问题。</p>
+<h2 id="XXE的攻击与危害（XML-External-Entity）"><a href="#XXE的攻击与危害（XML-External-Entity）" class="headerlink" title="XXE的攻击与危害（XML External Entity）"></a>XXE的攻击与危害（XML External Entity）</h2><p><strong>1.  何为XXE?</strong><br>答： xxe也就是xml外部实体注入。也就是上文中加粗的那一部分。</p>
+<p><strong>2.  怎样构建外部实体注入？</strong><br>方式一：直接通过DTD外部实体声明<br>XML内容<br><img src="/img/posts/1205477-20170729140431597-914383211.png" alt="img"></p>
+<p>方式二：通过DTD文档引入外部DTD文档，再引入外部实体声明<br>XML内容：<br><img src="/img/posts/1205477-20170729140617472-1523498833.png" alt="img"><br>DTD文件内容：<br><img src="/img/posts/1205477-20170729140640300-285141670.png" alt="img"></p>
+<p>方式三：通过DTD外部实体声明引入外部实体声明<br>好像有点拗口，其实意思就是先写一个外部实体声明，然后引用的是在攻击者服务器上面的外部实体声明<br>具体看例子,XML内容<br><img src="/img/posts/1205477-20170729141950472-1045381626.png" alt="img"></p>
+<p>dtd文件内容：<br><img src="/img/posts/1205477-20170729142002394-1678808572.png" alt="img"></p>
+<p><strong>3. 支持的协议有哪些？</strong><br>不同程序支持的协议如下图：<br><img src="/img/posts/1205477-20170729141612957-759004042.png" alt="img"></p>
+<p>其中php支持的协议会更多一些，但需要一定的扩展支持。</p>
+<p><img src="/img/posts/1205477-20170729141643972-251925223.png" alt="img"></p>
+<p><strong>4. 产生哪些危害？</strong></p>
+<p>XXE危害1：读取任意文件<br><img src="/img/posts/1205477-20170729145026738-1407663000.png" alt="img"></p>
+<p><img src="/img/posts/1205477-20170729145035082-1171815922.png" alt="img"></p>
+<p>该CASE是读取/etc/passwd，有些XML解析库支持列目录，攻击者通过列目录、读文件，获取帐号密码后进一步攻击，如读取tomcat-users.xml得到帐号密码后登录tomcat的manager部署webshell。</p>
+<p>另外，数据不回显就没有问题了吗？如下图，<br><img src="/img/posts/1205477-20170729145050972-1215502458.png" alt="img"></p>
+<p>不，可以把数据发送到远程服务器，</p>
+<p><img src="/img/posts/1205477-20170729145104285-1507820174.png" alt="img"></p>
+<p>远程evil.dtd文件内容如下：<br><img src="/img/posts/1205477-20170729145111863-976147511.png" alt="img"></p>
+<p>触发XXE攻击后，服务器会把文件内容发送到攻击者网站</p>
+<p><img src="/img/posts/1205477-20170729145120957-1229784360.png" alt="img"></p>
+<p>XXE危害2：执行系统命令<br><img src="/img/posts/1205477-20170729145129957-1907303428.png" alt="img"></p>
+<p>该CASE是在安装expect扩展的PHP环境里执行系统命令，其他协议也有可能可以执行系统命令。</p>
+<p>XXE危害3：探测内网端口</p>
+<p><img src="/img/posts/1205477-20170729145153722-1549362415.png" alt="img"></p>
+<p><img src="/img/posts/1205477-20170729145204847-766408731.png" alt="img"></p>
+<p>该CASE是探测192.168.1.1的80、81端口，通过返回的“Connection refused”可以知道该81端口是closed的，而80端口是open的。</p>
+<p>XXE危害4：攻击内网网站</p>
+<p><img src="/img/posts/1205477-20170729145220472-216779729.png" alt="img"></p>
+<p><img src="/img/posts/1205477-20170729145231894-1025001344.png" alt="img"></p>
+<p>该CASE是攻击内网struts2网站，远程执行系统命令。</p>
+<h2 id="如何防御xxe攻击"><a href="#如何防御xxe攻击" class="headerlink" title="如何防御xxe攻击"></a>如何防御xxe攻击</h2><p>方案一、使用开发语言提供的禁用外部实体的方法</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">PHP：</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">JAVA:</span><br><span class="line">DocumentBuilderFactory <span class="attr">dbf</span> =DocumentBuilderFactory.newInstance();</span><br><span class="line">dbf.setExpandEntityReferences(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">Python：</span><br><span class="line">from lxml <span class="built_in">import</span> etree</span><br><span class="line"><span class="attr">xmlData</span> = etree.parse(xmlSource,etree.XMLParser(<span class="attr">resolve_entities=False))</span></span><br></pre></td></tr></table></figure>
+<p>方案二、过滤用户提交的XML数据<br>关键词：&lt;!DOCTYPE和&lt;!ENTITY，或者，SYSTEM和PUBLIC。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>通过本次对XXE的总结，认真了解了XML基础知识，XXE的攻击方式与及防御方案。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><p><a href="https://security.tencent.com/index.php/blog/msg/69" target="_blank" rel="noopener">未知攻焉知防——XXE漏洞攻防</a></p>
+</li>
+<li><p><a href="http://www.91ri.org/9539.html" target="_blank" rel="noopener">XXE注入攻击与防御</a></p>
+</li>
+<li><a href="http://www.w3school.com.cn/dtd/" target="_blank" rel="noopener">DTD教程</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/10/100052.html" class="pre-post btn btn-default" title='安全资源共享'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">安全资源共享</span>
+        </a>
+    
+    
+        <a href="/archives/2018/10/100050.html" class="next-post btn btn-default" title='几种最好的图片无损压缩工具'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">几种最好的图片无损压缩工具</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xml基础知识"><span class="toc-text">xml基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#xml文档的构建模块"><span class="toc-text">xml文档的构建模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DTD-文档类型定义"><span class="toc-text">DTD(文档类型定义)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DTD实体"><span class="toc-text">DTD实体</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XXE的攻击与危害（XML-External-Entity）"><span class="toc-text">XXE的攻击与危害（XML External Entity）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何防御xxe攻击"><span class="toc-text">如何防御xxe攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最后"><span class="toc-text">最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

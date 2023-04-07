@@ -1,0 +1,632 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink,sql">
+
+
+    <meta name="description" content="SQL是数据处理中使用最广泛的语言。它允许用户简明扼要地声明他们的业务逻辑。大数据批计算使用SQL很常见，但是支持SQL的实时计算并不多。Apache Flink是一款同时支持批和流计算的引擎，...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink SQL编程 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink SQL编程">
+            
+	            Flink SQL编程
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/sql/">sql</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/23</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1353</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>SQL是数据处理中使用最广泛的语言。它允许用户简明扼要地声明他们的业务逻辑。大数据批计算使用SQL很常见，但是支持SQL的实时计算并不多。Apache Flink是一款同时支持批和流计算的引擎，Flink SQL的实现完全遵循ANSI SQL标准，这是它和其他流处理框架（例如Kafka和Spark）在DSL上的一个重要的不同。</p>
+<h2 id="Flink-SQL是什么"><a href="#Flink-SQL是什么" class="headerlink" title="Flink SQL是什么?"></a>Flink SQL是什么?</h2><ol>
+<li><p>声明式API</p>
+<p>Flink最高层的API,易于使用</p>
+</li>
+<li><p>自动优化</p>
+</li>
+</ol>
+<p>屏蔽State的复杂性, 自动做到最优处理</p>
+<ol start="3">
+<li>流批统一</li>
+</ol>
+<p>—样的SQL,—样的结果</p>
+<ol start="4">
+<li>应用广泛</li>
+</ol>
+<p>ETL,统计分析， 实时报表，实时风控</p>
+<h2 id="Window-Aggregation"><a href="#Window-Aggregation" class="headerlink" title="Window Aggregation"></a>Window Aggregation</h2><p><img src="/img/flink/AARAWRWR2425U54U4UER2424242.png" alt></p>
+<h2 id="Window-Aggregation-1"><a href="#Window-Aggregation-1" class="headerlink" title="Window Aggregation"></a>Window Aggregation</h2><p><strong>每小时每个用户点击的次数</strong></p>
+<p><img src="/img/flink/AARAWRWR242wrw4249w442.png" alt></p>
+<h2 id="Group-Aggregation"><a href="#Group-Aggregation" class="headerlink" title="Group Aggregation"></a>Group Aggregation</h2><p><strong>从历史到现在每个用户点击的次数</strong></p>
+<p><img src="/img/flink/AARAWRWR2425U54U4UER24w442.png" alt></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Window Aggregation</strong></th>
+<th><strong>Group Aggregation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输出模式</td>
+<td>按时输出</td>
+<td>提前输出</td>
+</tr>
+<tr>
+<td>输出量</td>
+<td>只输出次结果</td>
+<td>Per key输出N个结果(Sink压力)</td>
+</tr>
+<tr>
+<td>输出流</td>
+<td>Append Stream</td>
+<td>Update Stream</td>
+</tr>
+<tr>
+<td>状态清理</td>
+<td>及时清理过期数据</td>
+<td>状态无限增长</td>
+</tr>
+<tr>
+<td>Sink</td>
+<td>均可</td>
+<td>可更新的结果表(Hbase, MySQL)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p><strong>状态无限增长,解决方法:</strong></p>
+<p>精确性<-->状态大小</--></p>
+<p><strong>State TTL Config</strong></p>
+<figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">streamQueryConfig</span><br><span class="line">.withIdLeStateRetentionTime(<span class="built_in">Time</span>.<span class="built_in">day</span>(<span class="number">1</span>), <span class="built_in">Time</span>.<span class="built_in">day</span>(<span class="number">2</span>)*)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Demo Time <a href="https://github.com/ververica/sql-training/" target="_blank" rel="noopener">https://github.com/ververica/sql-training/</a></p>
+<h2 id="支持的语法"><a href="#支持的语法" class="headerlink" title="支持的语法"></a>支持的语法</h2><p>Flink使用<a href="https://calcite.apache.org/docs/reference.html" target="_blank" rel="noopener">Apache Calcite</a>解析SQL ，它支持标准的ANSI SQL。Flink不支持DDL语句。</p>
+<p>以下BNF语法描述了批处理和流式查询中支持的SQL函数的超集。“ 算子”部分显示支持的函数的示例，并指示仅批处理或流式查询支持哪些函数。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span>:</span><br><span class="line">  <span class="keyword">INSERT</span> <span class="keyword">INTO</span> tableReference</span><br><span class="line">  <span class="keyword">query</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">query</span>:</span><br><span class="line">  <span class="keyword">values</span></span><br><span class="line">  | &#123;</span><br><span class="line">      <span class="keyword">select</span></span><br><span class="line">      | selectWithoutFrom</span><br><span class="line">      | <span class="keyword">query</span> <span class="keyword">UNION</span> [ <span class="keyword">ALL</span> ] <span class="keyword">query</span></span><br><span class="line">      | <span class="keyword">query</span> <span class="keyword">EXCEPT</span> <span class="keyword">query</span></span><br><span class="line">      | <span class="keyword">query</span> <span class="keyword">INTERSECT</span> <span class="keyword">query</span></span><br><span class="line">    &#125;</span><br><span class="line">    [ <span class="keyword">ORDER</span> <span class="keyword">BY</span> orderItem [, orderItem ]* ]</span><br><span class="line">    [ <span class="keyword">LIMIT</span> &#123; <span class="keyword">count</span> | <span class="keyword">ALL</span> &#125; ]</span><br><span class="line">    [ <span class="keyword">OFFSET</span> <span class="keyword">start</span> &#123; <span class="keyword">ROW</span> | <span class="keyword">ROWS</span> &#125; ]</span><br><span class="line">    [ <span class="keyword">FETCH</span> &#123; <span class="keyword">FIRST</span> | <span class="keyword">NEXT</span> &#125; [ <span class="keyword">count</span> ] &#123; <span class="keyword">ROW</span> | <span class="keyword">ROWS</span> &#125; <span class="keyword">ONLY</span>]</span><br><span class="line"></span><br><span class="line">orderItem:</span><br><span class="line">  expression [ <span class="keyword">ASC</span> | <span class="keyword">DESC</span> ]</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span>:</span><br><span class="line">  <span class="keyword">SELECT</span> [ <span class="keyword">ALL</span> | <span class="keyword">DISTINCT</span> ]</span><br><span class="line">  &#123; * | projectItem [, projectItem ]* &#125;</span><br><span class="line">  <span class="keyword">FROM</span> tableExpression</span><br><span class="line">  [ <span class="keyword">WHERE</span> booleanExpression ]</span><br><span class="line">  [ <span class="keyword">GROUP</span> <span class="keyword">BY</span> &#123; groupItem [, groupItem ]* &#125; ]</span><br><span class="line">  [ <span class="keyword">HAVING</span> booleanExpression ]</span><br><span class="line">  [ <span class="keyword">WINDOW</span> windowName <span class="keyword">AS</span> windowSpec [, windowName <span class="keyword">AS</span> windowSpec ]* ]</span><br><span class="line">  </span><br><span class="line">selectWithoutFrom:</span><br><span class="line">  <span class="keyword">SELECT</span> [ <span class="keyword">ALL</span> | <span class="keyword">DISTINCT</span> ]</span><br><span class="line">  &#123; * | projectItem [, projectItem ]* &#125;</span><br><span class="line"></span><br><span class="line">projectItem:</span><br><span class="line">  expression [ [ <span class="keyword">AS</span> ] columnAlias ]</span><br><span class="line">  | tableAlias . *</span><br><span class="line"></span><br><span class="line">tableExpression:</span><br><span class="line">  tableReference [, tableReference ]*</span><br><span class="line">  | tableExpression [ <span class="keyword">NATURAL</span> ] [ <span class="keyword">LEFT</span> | <span class="keyword">RIGHT</span> | <span class="keyword">FULL</span> ] <span class="keyword">JOIN</span> tableExpression [ joinCondition ]</span><br><span class="line"></span><br><span class="line">joinCondition:</span><br><span class="line">  <span class="keyword">ON</span> booleanExpression</span><br><span class="line">  | <span class="keyword">USING</span> <span class="string">'('</span> <span class="keyword">column</span> [, <span class="keyword">column</span> ]* <span class="string">')'</span></span><br><span class="line"></span><br><span class="line">tableReference:</span><br><span class="line">  tablePrimary</span><br><span class="line">  [ [ <span class="keyword">AS</span> ] <span class="keyword">alias</span> [ <span class="string">'('</span> columnAlias [, columnAlias ]* <span class="string">')'</span> ] ]</span><br><span class="line"></span><br><span class="line">tablePrimary:</span><br><span class="line">  [ <span class="keyword">TABLE</span> ] [ [ catalogName . ] schemaName . ] tableName</span><br><span class="line">  | <span class="keyword">LATERAL</span> <span class="keyword">TABLE</span> <span class="string">'('</span> functionName <span class="string">'('</span> expression [, expression ]* <span class="string">')'</span> <span class="string">')'</span></span><br><span class="line">  | <span class="keyword">UNNEST</span> <span class="string">'('</span> expression <span class="string">')'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">values</span>:</span><br><span class="line">  <span class="keyword">VALUES</span> expression [, expression ]*</span><br><span class="line"></span><br><span class="line">groupItem:</span><br><span class="line">  expression</span><br><span class="line">  | <span class="string">'('</span> <span class="string">')'</span></span><br><span class="line">  | <span class="string">'('</span> expression [, expression ]* <span class="string">')'</span></span><br><span class="line">  | <span class="keyword">CUBE</span> <span class="string">'('</span> expression [, expression ]* <span class="string">')'</span></span><br><span class="line">  | <span class="keyword">ROLLUP</span> <span class="string">'('</span> expression [, expression ]* <span class="string">')'</span></span><br><span class="line">  | <span class="keyword">GROUPING</span> <span class="keyword">SETS</span> <span class="string">'('</span> groupItem [, groupItem ]* <span class="string">')'</span></span><br><span class="line"></span><br><span class="line">windowRef:</span><br><span class="line">    windowName</span><br><span class="line">  | windowSpec</span><br><span class="line"></span><br><span class="line">windowSpec:</span><br><span class="line">    [ windowName ]</span><br><span class="line">    <span class="string">'('</span></span><br><span class="line">    [ <span class="keyword">ORDER</span> <span class="keyword">BY</span> orderItem [, orderItem ]* ]</span><br><span class="line">    [ <span class="keyword">PARTITION</span> <span class="keyword">BY</span> expression [, expression ]* ]</span><br><span class="line">    [</span><br><span class="line">        <span class="keyword">RANGE</span> numericOrIntervalExpression &#123;<span class="keyword">PRECEDING</span>&#125;</span><br><span class="line">      | <span class="keyword">ROWS</span> numericExpression &#123;<span class="keyword">PRECEDING</span>&#125;</span><br><span class="line">    ]</span><br><span class="line">    <span class="string">')'</span></span><br></pre></td></tr></table></figure>
+<p>Flink SQL对类似于Java标识符（表，属性，函数名）使用词法策略：</p>
+<ul>
+<li>无论是否引用标识符，都会保存标识符的大小写。</li>
+<li>之后，标识符区分大小写。</li>
+<li>与Java不同，反向标记允许标识符包含非字母数字字符（例如<code>&quot;SELECT a AS</code>my field<code>FROM t&quot;</code>）。</li>
+</ul>
+<h2 id="算子"><a href="#算子" class="headerlink" title="算子"></a>算子</h2><h3 id="Scan，Projection和过滤"><a href="#Scan，Projection和过滤" class="headerlink" title="Scan，Projection和过滤"></a>Scan，Projection和过滤</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Scan/Select/As</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center"><code>SELECT * FROM Orders  SELECT a, c AS d FROM Orders</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Where / Filter</strong>  <strong>Batch</strong> <strong>Streaming</strong></td>
+<td style="text-align:center"><code>SELECT * FROM Orders WHERE b = &#39;red&#39;  SELECT * FROM Orders WHERE a % 2 = 0</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>User-defined Scalar Functions (Scalar UDF)</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center">UDF必须在TableEnvironment中注册。<code>SELECT PRETTY_PRINT(user) FROM Orders</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>GroupBy聚合</strong> <strong>批处理</strong> <strong>流</strong> <strong>结果更新</strong></td>
+<td style="text-align:center"><strong>注意：</strong>流表上的GroupBy会生成更新结果。<code>SELECT a, SUM(b) as d FROM Orders GROUP BY a</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>GroupBy窗口聚合</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center">使用组窗口计算每个组的单个结果行。<code>SELECT user, SUM(amount) FROM Orders GROUP BY TUMBLE(rowtime, INTERVAL &#39;1&#39; DAY), user</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Over Window聚合</strong> <strong>流</strong></td>
+<td style="text-align:center"><strong>注意：</strong>必须在同一窗口中定义所有聚合，即相同的分区，排序和范围。目前，仅支持具有PRREDING（UNBOUNDED和有界）到CURRENT ROW范围的窗口。尚不支持使用FOLLOWING的范围。必须在单个时间属性上指定ORDER BY<code>SELECT COUNT(amount) OVER (   PARTITION BY user   ORDER BY proctime   ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) FROM Orders  SELECT COUNT(amount) OVER w, SUM(amount) OVER w FROM Orders WINDOW w AS (   PARTITION BY user   ORDER BY proctime   ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Distinct</strong> <strong>批量</strong> <strong>流</strong>  <strong>结果更新</strong></td>
+<td style="text-align:center"><code>SELECT DISTINCT users FROM Orders</code><strong>注意：</strong>对于流式查询，计算查询结果所需的状态可能会无限增长，具体取决于不同字段的数量。请提供具有有效保存间隔的查询配置，以防止过大的状态。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>分组集，汇总，多维数据集</strong> <strong>批量</strong></td>
+<td style="text-align:center"><code>SELECT SUM(amount) FROM Orders GROUP BY GROUPING SETS ((user), (product))</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Having</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center"><code>SELECT SUM(amount) FROM Orders GROUP BY users HAVING SUM(amount) &gt; 50</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>用户定义的聚合函数（UDAGG）</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center">UDAGG必须在TableEnvironment中注册。<code>SELECT MyAggregate(amount) FROM Orders GROUP BY users</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="Join"><a href="#Join" class="headerlink" title="Join"></a>Join</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>内部Equi-join</strong>  <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center">目前，仅支持等连接，即具有至少一个带有等式谓词的连接条件的连接。不支持任意交叉或theta连接。<strong>注意：</strong>连接顺序未优化。表按照FROM子句中指定的顺序连接。确保以不产生交叉连接（笛卡尔积）的顺序指定表，这些表不受支持并且会导致查询失败。<code>SELECT * FROM Orders INNER JOIN Product ON Orders.productId = Product.id</code><strong>注意：</strong>对于流式查询，计算查询结果所需的状态可能会无限增长，具体取决于不同输入行的数量。请提供具有有效保存间隔的查询配置，以防止过大的状态。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>外部Equi-join</strong>  <strong>批量</strong> <strong>流</strong> <strong>结果更新</strong></td>
+<td style="text-align:center">目前，仅支持等连接，即具有至少一个带有等式谓词的连接条件的连接。不支持任意交叉或theta连接。<strong>注意：</strong>连接顺序未优化。表按照FROM子句中指定的顺序连接。确保以不产生交叉连接（笛卡尔积）的顺序指定表，这些表不受支持并且会导致查询失败。<code>SELECT * FROM Orders LEFT JOIN Product ON Orders.productId = Product.id  SELECT * FROM Orders RIGHT JOIN Product ON Orders.productId = Product.id  SELECT * FROM Orders FULL OUTER JOIN Product ON Orders.productId = Product.id</code><strong>注意：</strong>对于流式查询，计算查询结果所需的状态可能会无限增长，具体取决于不同输入行的数量。请提供具有有效保存间隔的查询配置，以防止过大的状态。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Time-windowed Join</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center"><strong>注意：</strong>时间窗口连接是可以以流方式处理的常规连接的子集。时间窗口连接需要至少一个等连接谓词和一个限制双方时间的连接条件。这样的条件可以由两个适当的范围谓词（<code>&lt;, &lt;=, &gt;=, &gt;</code>），<code>BETWEEN</code>谓词或单个等式谓词来定义，其比较两个输入表的相同类型的<a href="https://flink.sojb.cn/dev/table/streaming.html#time-attributes" target="_blank" rel="noopener">时间属性</a>（即，处理时间或事件时间）。例如，以下谓词是有效的窗口连接条件：<code>ltime = rtime`</code>ltime &gt;= rtime AND ltime &lt; rtime + INTERVAL ‘10’ MINUTE<code>ltime BETWEEN rtime - INTERVAL &#39;10&#39; SECOND AND rtime + INTERVAL &#39;5&#39; SECOND</code>SELECT * FROM Orders o, Shipments s WHERE o.id = s.orderId AND       o.ordertime BETWEEN s.shiptime - INTERVAL ‘4’ HOUR AND s.shiptime`如果订单在收到订单后四小时发货，上面的示例将关联所有订单及其相应的货件。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>将数组扩展为关系</strong> <strong>Batch</strong> <strong>Streaming</strong></td>
+<td style="text-align:center">尚未支持UnANDing WITH ORDINALITY。<code>SELECT users, tag FROM Orders CROSS JOIN UNNEST(tags) AS t (tag)</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>关联用户定义的表函数（UDTF）</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center">UDTF必须在TableEnvironment中注册。内部联接<code>SELECT users, tag FROM Orders, LATERAL TABLE(unnest_udtf(tags)) t AS tag</code>左外连接<code>SELECT users, tag FROM Orders LEFT JOIN LATERAL TABLE(unnest_udtf(tags)) t AS tag ON TRUE</code><strong>注意：</strong>目前，<code>TRUE</code>对于横向表，只支持左外连接的谓词作为谓词。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="设置-算子操作"><a href="#设置-算子操作" class="headerlink" title="设置 算子操作"></a>设置 算子操作</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Union</strong> <strong>批次</strong></td>
+<td style="text-align:center"><code>SELECT * FROM (     (SELECT user FROM Orders WHERE a % 2 = 0)   UNION     (SELECT user FROM Orders WHERE b = 0) )</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UnionAll</strong>  <strong>Batch</strong> <strong>Streaming</strong></td>
+<td style="text-align:center"><code>SELECT * FROM (     (SELECT user FROM Orders WHERE a % 2 = 0)   UNION ALL     (SELECT user FROM Orders WHERE b = 0) )</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Intersect/ Except**</strong>批量**</td>
+<td style="text-align:center"><code>SELECT * FROM (     (SELECT user FROM Orders WHERE a % 2 = 0)   INTERSECT     (SELECT user FROM Orders WHERE b = 0) )`</code>SELECT * FROM (     (SELECT user FROM Orders WHERE a % 2 = 0)   EXCEPT     (SELECT user FROM Orders WHERE b = 0) )`</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>IN</strong>  <strong>批量</strong> <strong>流中</strong></td>
+<td style="text-align:center">如果表达式存在于给定的表子查询中，则返回true。子查询表必须包含一列。此列必须与表达式具有相同的数据类型。<code>SELECT user, amount FROM Orders WHERE product IN (     SELECT product FROM NewProducts )</code><strong>注意：</strong>对于流式查询， 算子操作将在连接和组 算子操作中重写。计算查询结果所需的状态可能会无限增长，具体取决于不同输入行的数量。请提供具有有效保存间隔的查询配置，以防止过大的状态。</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Exists</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center">如果子查询至少返回一行，则返回true。仅在可以在连接和组 算子操作中重写 算子操作时才支持。<code>SELECT user, amount FROM Orders WHERE product EXISTS (     SELECT product FROM NewProducts )</code><strong>注意：</strong>对于流式查询， 算子操作将在连接和组 算子操作中重写。计算查询结果所需的状态可能会无限增长，具体取决于不同输入行的数量。请提供具有有效保存间隔的查询配置，以防止过大的状态。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="OrderBy＆Limit"><a href="#OrderBy＆Limit" class="headerlink" title="OrderBy＆Limit"></a>OrderBy＆Limit</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Order By</strong> <strong>批量</strong> <strong>流</strong></td>
+<td style="text-align:center"><strong>注意：</strong>流式查询的结果必须主要按升序时间属性排序。支持其他排序属性。<code>SELECT * FROM Orders ORDER BY orderTime</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Limit</strong> <strong>批次</strong></td>
+<td style="text-align:center"><code>SELECT * FROM Orders LIMIT 3</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Insert</strong> <strong>批量</strong> <strong>流处理</strong></td>
+<td style="text-align:center">输出表必须在TableEnvironment中注册。此外，已注册表的模式必须与查询的模式匹配。<code>INSERT INTO OutputTable SELECT users, tag FROM Orders</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="GroupWindows"><a href="#GroupWindows" class="headerlink" title="GroupWindows"></a>GroupWindows</h3><p>组窗口在<code>GROUP BY</code>SQL查询的子句中定义。就像具有常规<code>GROUP BY</code>子句的查询一样，带有<code>GROUP BY</code>包含组窗口函数的子句的查询会为每个组计算单个结果行。批处理和流表上的SQL支持以下组窗口函数。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">组窗口函数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>TUMBLE(time_attr, interval)</code></td>
+<td style="text-align:left">定义翻滚时间窗口。翻滚时间窗口将行分配给具有固定持续时间（<code>interval</code>）的非重叠连续窗口。例如，5分钟的翻滚窗口以5分钟为间隔对行进行分组。可以在事件时间（流+批处理）或处理时间（流）上定义翻滚窗口。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>HOP(time_attr, interval, interval)</code></td>
+<td style="text-align:left">定义跳跃时间窗口（在 Table API中称为滑动窗口）。跳跃时间窗口具有固定的持续时间（第二<code>interval</code>参数）并且按指定的跳跃间隔（第一<code>interval</code>参数）跳跃。如果跳跃间隔小于窗口大小，则跳跃窗口重叠。因此，可以将行分配给多个窗口。例如，15分钟大小和5分钟跳跃间隔的跳跃窗口将每行分配给3个不同的15分钟大小的窗口，这些窗口以5分钟的间隔进行评估。可以在事件时间（流+批处理）或处理时间（流）上定义跳跃窗口。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>SESSION(time_attr, interval)</code></td>
+<td style="text-align:left">定义会话时间窗口。会话时间窗口没有固定的持续时间，但它们的界限由<code>interval</code>不活动时间定义，即如果在定义的间隙期间没有出现事件，则会话窗口关闭。例如，如果在30分钟不活动后观察到一行，则会开始一个30分钟间隙的会话窗口（否则该行将被添加到现有窗口中），如果在30分钟内未添加任何行，则会关闭。会话窗口可以在事件时间（流+批处理）或处理时间（流）上工作。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="时间属性"><a href="#时间属性" class="headerlink" title="时间属性"></a>时间属性</h4><p>对于流表的SQL查询，<code>time_attr</code>组窗口函数的参数必须引用指定行的处理时间或事件时间的有效时间属性。</p>
+<p>对于批处理表上的SQL，<code>time_attr</code>组窗口函数的参数必须是类型的属性<code>TIMESTAMP</code>。</p>
+<h4 id="选择组窗口开始和结束时间戳"><a href="#选择组窗口开始和结束时间戳" class="headerlink" title="选择组窗口开始和结束时间戳"></a>选择组窗口开始和结束时间戳</h4><p>可以使用以下辅助函数选择组窗口的开始和结束时间戳以及时间属性：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">辅助函数</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>TUMBLE_START(time_attr, interval)</code> <code>HOP_START(time_attr, interval, interval)</code> <code>SESSION_START(time_attr, interval)</code></td>
+<td style="text-align:left">返回相应的翻滚，跳跃或会话窗口的包含下限的时间戳。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>TUMBLE_END(time_attr, interval)</code> <code>HOP_END(time_attr, interval, interval)</code> <code>SESSION_END(time_attr, interval)</code></td>
+<td style="text-align:left">返回相应的翻滚，跳跃或会话窗口的<em>独占</em>上限的时间戳。<strong>注意：</strong>独占上限时间戳<em>不能</em>在后续基于时间的 算子操作中用作行时属性，例如时间窗口连接和组窗口或窗口聚合。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>TUMBLE_ROWTIME(time_attr, interval)</code> <code>HOP_ROWTIME(time_attr, interval, interval)</code> <code>SESSION_ROWTIME(time_attr, interval)</code></td>
+<td style="text-align:left">返回相应的翻滚，跳跃或会话窗口的<em>包含</em>上限的时间戳。结果属性是rowtime属性，可用于后续基于时间的 算子操作，例如时间窗口连接和组窗口或窗口聚合。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>TUMBLE_PROCTIME(time_attr, interval)</code> <code>HOP_PROCTIME(time_attr, interval, interval)</code> <code>SESSION_PROCTIME(time_attr, interval)</code></td>
+<td style="text-align:left">返回proctime属性，该属性可用于后续基于时间的 算子操作，例如时间窗口连接和组窗口或窗口聚合。</td>
+</tr>
+</tbody>
+</table>
+<p><em>注意：</em>必须使用与<code>GROUP BY</code>子句中的组窗口函数完全相同的参数调用辅助函数。</p>
+<h2 id="SQL编程实例"><a href="#SQL编程实例" class="headerlink" title="SQL编程实例"></a>SQL编程实例</h2><h3 id="Ride-表"><a href="#Ride-表" class="headerlink" title="Ride:表"></a>Ride:表</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">rideld:</span> BIGINT	<span class="comment">//行为ID （包含两条记录，一条入一条出）</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">taxild:</span> BIGINT	<span class="comment">//出租车ID</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">isStart:</span> BOOLEAN	<span class="comment">//开始 or 结束</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">Ion:</span> FLOAT	<span class="comment">//经度</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">lat:</span> FLOAT	<span class="comment">//纬度</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">rideTime:</span> TIMESTAMP <span class="comment">//时间</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">psgCnt:</span> INT	<span class="comment">// 乘客数</span></span><br></pre></td></tr></table></figure>
+<h3 id="需求1-filter"><a href="#需求1-filter" class="headerlink" title="需求1 (filter)"></a>需求1 (filter)</h3><p>出现在纽约的行车记录。<br><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">VIEW</span> nyc_view <span class="keyword">AS</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> Rides <span class="keyword">WHERE</span> isInNYC(lon, lat);</span><br></pre></td></tr></table></figure></p>
+<h3 id="需求2-Group-Agg"><a href="#需求2-Group-Agg" class="headerlink" title="需求2 (Group Agg)"></a>需求2 (Group Agg)</h3><p>计算搭载每种乘客数量的行车事件数。</p>
+<p>也就是搭载1个乘客的行车数、搭载2个乘客的行车数…<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT psgCnt, COUNT(*) AS ent</span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> Rides</span><br><span class="line"></span><br><span class="line">WHERE isInNYC(lon, lat) <span class="keyword">AND</span> isStart</span><br><span class="line"></span><br><span class="line">GROUP BY psgCnt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="需求3-Window-Agg"><a href="#需求3-Window-Agg" class="headerlink" title="需求3 (Window Agg)"></a>需求3 (Window Agg)</h3><p>为了持续地监测城市的交通流量，计算每个区域每5分钟的进入的车辆数。</p>
+<p>我们只关心纽约的区域交通情况，并且只关心至少有5辆车子进入的区域。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line"></span><br><span class="line">toAreald(lon, lat) <span class="keyword">AS</span> area,</span><br><span class="line"></span><br><span class="line">isStart,</span><br><span class="line"></span><br><span class="line">TUMBLE_END(rideTime, <span class="built_in">INTERVAL</span> <span class="string">'5'</span> <span class="keyword">MINUTE</span>) <span class="keyword">AS</span> window_end,</span><br><span class="line"></span><br><span class="line"><span class="keyword">COUNT</span> (*) <span class="keyword">ASc</span> nt</span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> Rides</span><br><span class="line"></span><br><span class="line"><span class="keyword">WHERE</span> isInNYC(lon, lat)</span><br><span class="line"></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span></span><br><span class="line"></span><br><span class="line">toAreald(l <span class="keyword">on</span>, lat),</span><br><span class="line"></span><br><span class="line">isStart,</span><br><span class="line"></span><br><span class="line">TUMBLE(rideTime, <span class="built_in">INTERVAL</span> <span class="string">'5'</span> <span class="keyword">MINUTE</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">HAVING</span> <span class="keyword">COUNT</span>(*) &gt;= <span class="number">5</span>;</span><br></pre></td></tr></table></figure></p>
+<h3 id="需求4-write-to-Kafka"><a href="#需求4-write-to-Kafka" class="headerlink" title="需求4 (write to Kafka)"></a>需求4 (write to Kafka)</h3><p>将每10分钟的搭乘的乘客数写入Kafka</p>
+<p>结果表：Sink_TenMinPsgCnts<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> Sink_TenMinPsgCnts</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line"></span><br><span class="line">TUMBLE_START(rideTime, <span class="built_in">INTERVAL</span> <span class="string">'10'</span> <span class="keyword">MINUTE</span>) <span class="keyword">AS</span> cntStart, TUMBLE_END(rideTime, <span class="built_in">INTERVAL</span> <span class="string">'10'</span> <span class="keyword">MINUTE</span>) <span class="keyword">AS</span> cntEnd, <span class="keyword">SUM</span>(psgCnt) <span class="keyword">AS</span> cnt</span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> Rides</span><br><span class="line"></span><br><span class="line"><span class="keyword">GROUP</span> BYTUMBLE(rideTime, <span class="built_in">INTERVAL</span> <span class="string">'10'</span> <span class="keyword">MINUTE</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="需求5-write-to-ES"><a href="#需求5-write-to-ES" class="headerlink" title="需求5 (write to ES)"></a>需求5 (write to ES)</h3><p>从每个区域出发的行车数，写入到ES。</p>
+<p>结果表：Si nk_AreaCnts<br><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> Sink_AreaCnts</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> toAreald(lon, lat) <span class="keyword">AS</span> areald, <span class="built_in">COUNT</span>(*) <span class="keyword">AS</span> ent <span class="keyword">FROM</span> Rides</span><br><span class="line"></span><br><span class="line"><span class="keyword">WHERE</span> isStart</span><br><span class="line"></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> toAreaId(lon, lat);</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100485.html" class="pre-post btn btn-default" title='常用办公软件'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">常用办公软件</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100481.html" class="next-post btn btn-default" title='Flink Table API编程'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink Table API编程</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink-SQL是什么"><span class="toc-text">Flink SQL是什么?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Window-Aggregation"><span class="toc-text">Window Aggregation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Window-Aggregation-1"><span class="toc-text">Window Aggregation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Group-Aggregation"><span class="toc-text">Group Aggregation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持的语法"><span class="toc-text">支持的语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#算子"><span class="toc-text">算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scan，Projection和过滤"><span class="toc-text">Scan，Projection和过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#聚合"><span class="toc-text">聚合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Join"><span class="toc-text">Join</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#设置-算子操作"><span class="toc-text">设置 算子操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OrderBy＆Limit"><span class="toc-text">OrderBy＆Limit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert"><span class="toc-text">Insert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GroupWindows"><span class="toc-text">GroupWindows</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#时间属性"><span class="toc-text">时间属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#选择组窗口开始和结束时间戳"><span class="toc-text">选择组窗口开始和结束时间戳</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL编程实例"><span class="toc-text">SQL编程实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ride-表"><span class="toc-text">Ride:表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需求1-filter"><span class="toc-text">需求1 (filter)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需求2-Group-Agg"><span class="toc-text">需求2 (Group Agg)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需求3-Window-Agg"><span class="toc-text">需求3 (Window Agg)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需求4-write-to-Kafka"><span class="toc-text">需求4 (write to Kafka)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需求5-write-to-ES"><span class="toc-text">需求5 (write to ES)</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

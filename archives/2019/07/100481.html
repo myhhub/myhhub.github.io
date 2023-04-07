@@ -1,0 +1,454 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink,api">
+
+
+    <meta name="description" content="一. 什么是Table API1.1 Flink API总览首先：flink根据使用的便捷性提供了三种API，自下而上是：
+
+Table API &amp; SQL
+
+声明行：用户只关心做什么，...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink Table API编程 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink Table API编程">
+            
+	            Flink Table API编程
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/api/">api</a> <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/23</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1353</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-什么是Table-API"><a href="#一-什么是Table-API" class="headerlink" title="一. 什么是Table API"></a>一. 什么是Table API</h1><h2 id="1-1-Flink-API总览"><a href="#1-1-Flink-API总览" class="headerlink" title="1.1 Flink API总览"></a>1.1 Flink API总览</h2><p>首先：flink根据使用的便捷性提供了三种API，自下而上是：</p>
+<p><img src="/img/flink/660569-20190504141810628-524975287.png" alt="img"></p>
+<p><strong>Table API &amp; SQL</strong></p>
+<ol>
+<li><p>声明行：用户只关心做什么，不用关心怎么做</p>
+</li>
+<li><p>高性能：支持性能优化，可以获取更好的执行性能</p>
+</li>
+<li><p>流批统一：相同的统计逻辑，既可以流模式运行，也可以批模式运行</p>
+</li>
+<li><p>性能稳定：语义遵循SQL标准，不易变动</p>
+</li>
+<li><p>易理解：语义明确，所见即所得</p>
+</li>
+</ol>
+<p><strong>Table API</strong>：tab.groupBy(“word”).select(“word,count(1) as count”)</p>
+<p><strong>SQL</strong>:SELECT word,COUNT(*) as cnt FROM MyTable GROUP BY word</p>
+<h2 id="1-2-Table-API-特点"><a href="#1-2-Table-API-特点" class="headerlink" title="1.2 Table API 特点"></a>1.2 Table API 特点</h2><p>1、Table API使得多声明的数据处理起来比较容易</p>
+<p>　　例如：我们把a大于10的数据存xxx的外部表，同时需要把a小于10的数据插入到外部表yyy，我们是使用TableAPI很方便。</p>
+<p>　　　　Table.filter(a&gt;10).insertInto(“xxx”)</p>
+<p>　　　　Table.filter(a&lt;10).insertInto(“yyy”)</p>
+<p>2、TableAPI使得扩展标准SQL更容易（当且仅当需要的时候）</p>
+<p><img src="/img/flink/660569-20190504143951458-2096341051.png" alt="img"></p>
+<h1 id="二-Table-API-编程"><a href="#二-Table-API-编程" class="headerlink" title="二. Table API 编程"></a>二. Table API 编程</h1><h2 id="2-1-WordCount示例"><a href="#2-1-WordCount示例" class="headerlink" title="2.1 WordCount示例"></a>2.1 WordCount示例</h2><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.Table;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.TableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.FileSystem;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.OldCsv;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.Schema;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.types.Row;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaStreamWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) throws Exception &#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);</span><br><span class="line"></span><br><span class="line">        String path = JavaStreamWordCount.class.getClassLoader().getResource(<span class="string">"words.txt"</span>).getPath();</span><br><span class="line">        tEnv.connect(<span class="keyword">new</span> FileSystem().path(path))</span><br><span class="line">            .withFormat(<span class="keyword">new</span> OldCsv().field(<span class="string">"word"</span>, Types.STRING).lineDelimiter(<span class="string">"\n"</span>))</span><br><span class="line">            .withSchema(<span class="keyword">new</span> Schema().field(<span class="string">"word"</span>, Types.STRING))</span><br><span class="line">            .inAppendMode()</span><br><span class="line">            .registerTableSource(<span class="string">"fileSource"</span>);</span><br><span class="line"></span><br><span class="line">        Table result = tEnv.scan(<span class="string">"fileSource"</span>)</span><br><span class="line">            .groupBy(<span class="string">"word"</span>)</span><br><span class="line">            .select(<span class="string">"word, count(1) as count"</span>);</span><br><span class="line"></span><br><span class="line">        tEnv.toRetractStream(result, Row.class).print();</span><br><span class="line">        env.execute();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.Table;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.TableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.FileSystem;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.OldCsv;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.Schema;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.types.Row;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaStreamWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) throws Exception &#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);</span><br><span class="line"></span><br><span class="line">        String path = JavaStreamWordCount.class.getClassLoader().getResource(<span class="string">"words.txt"</span>).getPath();</span><br><span class="line">        tEnv.connect(<span class="keyword">new</span> FileSystem().path(path))</span><br><span class="line">            .withFormat(<span class="keyword">new</span> OldCsv().field(<span class="string">"word"</span>, Types.STRING).lineDelimiter(<span class="string">"\n"</span>))</span><br><span class="line">            .withSchema(<span class="keyword">new</span> Schema().field(<span class="string">"word"</span>, Types.STRING))</span><br><span class="line">            .inAppendMode()</span><br><span class="line">            .registerTableSource(<span class="string">"fileSource"</span>);</span><br><span class="line"></span><br><span class="line">        Table result = tEnv.scan(<span class="string">"fileSource"</span>)</span><br><span class="line">            .groupBy(<span class="string">"word"</span>)</span><br><span class="line">            .select(<span class="string">"word, count(1) as count"</span>);</span><br><span class="line"></span><br><span class="line">        tEnv.toRetractStream(result, Row.class).print();</span><br><span class="line">        env.execute();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.java.ExecutionEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.Table;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.java.BatchTableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.FileSystem;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.OldCsv;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.Schema;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.types.Row;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaBatchWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) throws Exception &#123;</span><br><span class="line">        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        BatchTableEnvironment tEnv = BatchTableEnvironment.create(env);</span><br><span class="line"></span><br><span class="line">        String path = JavaBatchWordCount.class.getClassLoader().getResource(<span class="string">"words.txt"</span>).getPath();</span><br><span class="line">        tEnv.connect(<span class="keyword">new</span> FileSystem().path(path))</span><br><span class="line">            .withFormat(<span class="keyword">new</span> OldCsv().field(<span class="string">"word"</span>, Types.STRING).lineDelimiter(<span class="string">"\n"</span>))</span><br><span class="line">            .withSchema(<span class="keyword">new</span> Schema().field(<span class="string">"word"</span>, Types.STRING))</span><br><span class="line">            .registerTableSource(<span class="string">"fileSource"</span>);</span><br><span class="line"></span><br><span class="line">        Table result = tEnv.scan(<span class="string">"fileSource"</span>)</span><br><span class="line">            .groupBy(<span class="string">"word"</span>)</span><br><span class="line">            .select(<span class="string">"word, count(1) as count"</span>);</span><br><span class="line"></span><br><span class="line">        tEnv.toDataSet(result, Row.class).print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考：<a href="https://github.com/hequn8128/TableApiDemo" target="_blank" rel="noopener">https://github.com/hequn8128/TableApiDemo</a></p>
+<p><strong>Environment</strong></p>
+<p><img src="/img/flink/660569-20190504164057226-1639460581.png" alt="img"></p>
+<p>Table Environment使用优化<br><a href="https://mail.google.com/mail/u/0/?tab=wm#search/label%3Aflink-dev+table+environment/FMfcgxvzMBlhTWVjxlzCnVZsLvvDkmph" target="_blank" rel="noopener">https://mail.google.com/mail/u/0/?tab=wm#search/label%3Aflink-dev+table+environment/FMfcgxvzMBlhTWVjxlzCnVZsLvvDkmph</a><br><a href="https://cwiki.apache.org/confluence/display/FLINK/FLIP-32%3A+Restructure+flink-table+for+future+contributions" target="_blank" rel="noopener">https://cwiki.apache.org/confluence/display/FLINK/FLIP-32%3A+Restructure+flink-table+for+future+contributions</a></p>
+<h2 id="2-2-TableAPI操作"><a href="#2-2-TableAPI操作" class="headerlink" title="2.2 TableAPI操作"></a>2.2 TableAPI操作</h2><h3 id="（1）how-to-get-a-Table"><a href="#（1）how-to-get-a-Table" class="headerlink" title="（1）how to get a Table"></a>（1）how to get a Table</h3><p>　　　　Table myTable = tableExnvironment.scan(“MyTable”); //Table 是从tableExnvironment中scan出来的，那么MyTable是如果注册呢，即：How to register a table?大致又三种：</p>
+<p><img src="/img/flink/660569-20190504150828284-1764507401.png" alt="img"></p>
+<h3 id="（2）how-to-emit-a-Table"><a href="#（2）how-to-emit-a-Table" class="headerlink" title="（2）how to emit a Table　　"></a>（2）how to emit a Table　　</h3><p><img src="/img/flink/660569-20190504151357553-39325798.png" alt="img"></p>
+<h3 id="（3）how-to-query-a-Table"><a href="#（3）how-to-query-a-Table" class="headerlink" title="（3）how to query a Table"></a>（3）how to query a Table</h3><p><img src="/img/flink/660569-20190504151654699-1447494924.png" alt="img"></p>
+<p><img src="/img/flink/afawrwqrw24242424.png" alt="img"></p>
+<h3 id="Columns-Operation-amp-Function"><a href="#Columns-Operation-amp-Function" class="headerlink" title="Columns Operation &amp; Function"></a>Columns Operation &amp; Function</h3><h4 id="Columns-Operation-易用性"><a href="#Columns-Operation-易用性" class="headerlink" title="Columns Operation - 易用性"></a><strong>Columns Operation - 易用性</strong></h4><p>假设有一张100列的表，我们需要去掉一列，需要怎么操作?</p>
+<table>
+<thead>
+<tr>
+<th><strong>Operators</strong></th>
+<th><strong>Examples</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AddColumns</strong></td>
+<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>addColumns<strong>(</strong>“concat(c, ‘sunny‘)as desc”<strong>);</strong></td>
+</tr>
+<tr>
+<td><strong>AddOrReplaceColumns</strong></td>
+<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>addOrReplaceColumns<strong>(</strong>“concat(c, ‘sunny’) as desc”<strong>);</strong></td>
+</tr>
+<tr>
+<td><strong>DropColumns</strong></td>
+<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>dropColumns<strong>(</strong>“b, c”<strong>);</strong></td>
+</tr>
+<tr>
+<td><strong>RenameColumns</strong></td>
+<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>renameColumns<strong>(</strong>“b as b2, c as c2”<strong>);</strong></td>
+</tr>
+</tbody>
+</table>
+<p>假设有一张100列的表，我们需要选择第20-第80列，需要怎么操作?</p>
+<h4 id="Columns-Function-易用性"><a href="#Columns-Function-易用性" class="headerlink" title="Columns Function - 易用性"></a><strong>Columns Function - 易用性</strong></h4><p><img src="/img/flink/660569-20190504155440103-823425306.png" alt="img"></p>
+<p><strong>Syntax</strong></p>
+<p>The proposed colu mn operati on syn tax is as follows:</p>
+<p><strong>columnOperation</strong>:</p>
+<p>withColu mn s(colu mn Exprs) / withoutColu mn s(colu mn Exprs)</p>
+<p><strong>columnExprs</strong>:</p>
+<p>columnExpr [, columnExpr]*</p>
+<p><strong>columnExpr</strong>:</p>
+<p>columnRef | columnlndex to columnlndex | columnName to columnName</p>
+<p><strong>columnRef</strong>:</p>
+<p>colu mnN ame(The field n ame that exists in the table) | colu mnln dex(a<br>positive in teger start ing at 1)</p>
+<p><strong>Example</strong>: withColumns(a, b, 2 to 10, w to z)</p>
+<p><strong>总结</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>API</strong></th>
+<th><strong>Example</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Columns Operation</td>
+<td>table.dropColumns(‘a, ‘b)</td>
+</tr>
+<tr>
+<td>Columns Function</td>
+<td>table.select(withColum ns(‘a, 1 to 10))</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Row-based-Operation"><a href="#Row-based-Operation" class="headerlink" title="Row-based Operation"></a>Row-based Operation</h3><h4 id="Map-operation-易用性"><a href="#Map-operation-易用性" class="headerlink" title=" Map operation - 易用性"></a><strong> Map operation - 易用性</strong></h4><p><img src="/img/flink/660569-20190504160425737-931477258.png" alt="img"></p>
+<h4 id="FlatMap-operation-易用性"><a href="#FlatMap-operation-易用性" class="headerlink" title="FlatMap operation - 易用性"></a><strong>FlatMap operation - 易用性</strong></h4><p><img src="/img/flink/660569-20190504160949812-1931389347.png" alt="img"></p>
+<h4 id="Aggregate-operation-一-易用性"><a href="#Aggregate-operation-一-易用性" class="headerlink" title="Aggregate operation 一 易用性"></a><strong>Aggregate operation 一 易用性</strong></h4><p><img src="/img/flink/660569-20190504161900234-583158334.png" alt="img"> </p>
+<h4 id="FlatAggregate-operation-—功能性"><a href="#FlatAggregate-operation-—功能性" class="headerlink" title="FlatAggregate operation —功能性"></a><strong>FlatAggregate operation —功能性</strong></h4><p><img src="/img/flink/660569-20190504162347287-1370749481.png" alt="img"></p>
+<h4 id="Aggregate-VS-TableAggregate"><a href="#Aggregate-VS-TableAggregate" class="headerlink" title="Aggregate VS TableAggregate"></a><strong>Aggregate VS TableAggregate</strong></h4><p><img src="/img/flink/660569-20190504163017523-1610092332.png" alt="img"></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h4><p><img src="/img/flink/660569-20190504163148572-1592072621.png" alt="img"></p>
+<h1 id="三-Table-API-动态"><a href="#三-Table-API-动态" class="headerlink" title="三. Table API 动态"></a>三. Table API 动态</h1><p>3.1    Flip29</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-10972" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-10972</a></p>
+<p>3.2    Python Table API</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-12308" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-12308</a></p>
+<p>3.3    Interactive Programming（交互式编程）</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-11199" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-11199</a></p>
+<p>3.4    Iterative processing（迭代计算）</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-11199" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-11199</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100482.html" class="pre-post btn btn-default" title='Flink SQL编程'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink SQL编程</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100480.html" class="next-post btn btn-default" title='Flink状态管理和容错机制介绍'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink状态管理和容错机制介绍</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-什么是Table-API"><span class="toc-text">一. 什么是Table API</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Flink-API总览"><span class="toc-text">1.1 Flink API总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-Table-API-特点"><span class="toc-text">1.2 Table API 特点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-Table-API-编程"><span class="toc-text">二. Table API 编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-WordCount示例"><span class="toc-text">2.1 WordCount示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-TableAPI操作"><span class="toc-text">2.2 TableAPI操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#（1）how-to-get-a-Table"><span class="toc-text">（1）how to get a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#（2）how-to-emit-a-Table"><span class="toc-text">（2）how to emit a Table　　</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#（3）how-to-query-a-Table"><span class="toc-text">（3）how to query a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Columns-Operation-amp-Function"><span class="toc-text">Columns Operation &amp; Function</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Columns-Operation-易用性"><span class="toc-text">Columns Operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Columns-Function-易用性"><span class="toc-text">Columns Function - 易用性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Row-based-Operation"><span class="toc-text">Row-based Operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Map-operation-易用性"><span class="toc-text"> Map operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FlatMap-operation-易用性"><span class="toc-text">FlatMap operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregate-operation-一-易用性"><span class="toc-text">Aggregate operation 一 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FlatAggregate-operation-—功能性"><span class="toc-text">FlatAggregate operation —功能性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregate-VS-TableAggregate"><span class="toc-text">Aggregate VS TableAggregate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-Table-API-动态"><span class="toc-text">三. Table API 动态</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,storm">
+
+
+    <meta name="description" content="一、Storm核心概念  
+
+1.1  Topologies（拓扑）一个完整的Storm流处理程序被称为Storm topology(拓扑)。它是一个是由Spouts 和Bolts通过Strea...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Storm核心概念详解 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Storm核心概念详解">
+            
+	            Storm核心概念详解
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/storm/">storm</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/13</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1363</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、Storm核心概念"><a href="#一、Storm核心概念" class="headerlink" title="一、Storm核心概念"></a>一、Storm核心概念</h2><div align="center"> <img src="/img/bigdata/spout-bolt.png"> </div>
+
+<h3 id="1-1-Topologies（拓扑）"><a href="#1-1-Topologies（拓扑）" class="headerlink" title="1.1  Topologies（拓扑）"></a>1.1  Topologies（拓扑）</h3><p>一个完整的Storm流处理程序被称为Storm topology(拓扑)。它是一个是由<code>Spouts</code> 和<code>Bolts</code>通过<code>Stream</code>连接起来的有向无环图，Storm会保持每个提交到集群的topology持续地运行，从而处理源源不断的数据流，直到你将主动其杀死(kill)为止。</p>
+<h3 id="1-2-Streams（流）"><a href="#1-2-Streams（流）" class="headerlink" title="1.2  Streams（流）"></a>1.2  Streams（流）</h3><p><code>Stream</code>是Storm中的核心概念。一个<code>Stream</code>是一个无界的、以分布式方式并行创建和处理的<code>Tuple</code>序列。Tuple可以包含大多数基本类型以及自定义类型的数据。简单来说，Tuple就是流数据的实际载体，而Stream就是一系列Tuple。</p>
+<h3 id="1-3-Spouts"><a href="#1-3-Spouts" class="headerlink" title="1.3 Spouts"></a>1.3 Spouts</h3><p><code>Spouts</code>是流数据的源头，一个Spout 可以向不止一个<code>Streams</code>中发送数据。<code>Spout</code>通常分为<strong>可靠</strong>和<strong>不可靠</strong>两种：可靠的<code>Spout</code>能够在失败时重新发送 Tuple, 不可靠的<code>Spout</code>一旦把Tuple 发送出去就置之不理了。</p>
+<h3 id="1-4-Bolts"><a href="#1-4-Bolts" class="headerlink" title="1.4 Bolts"></a>1.4 Bolts</h3><p><code>Bolts</code>是流数据的处理单元，它可以从一个或者多个<code>Streams</code>中接收数据，处理完成后再发射到新的<code>Streams</code>中。<code>Bolts</code>可以执行过滤(filtering)，聚合(aggregations)，连接(joins)等操作，并能与文件系统或数据库进行交互。</p>
+<h3 id="1-5-Stream-groupings（分组策略）"><a href="#1-5-Stream-groupings（分组策略）" class="headerlink" title="1.5 Stream groupings（分组策略）"></a>1.5 Stream groupings（分组策略）</h3><div align="center"> <img width="400px" src="/img/bigdata/topology-tasks.png"> </div>
+
+<p><code>spouts</code>和<code>bolts</code>在集群上执行任务时，是由多个Task并行执行(如上图，每一个圆圈代表一个Task)。当一个Tuple需要从Bolt A发送给Bolt B执行的时候，程序如何知道应该发送给Bolt B的哪一个Task执行呢？</p>
+<p>这是由Stream groupings分组策略来决定的，Storm中一共有如下8个内置的Stream Grouping。当然你也可以通过实现 <code>CustomStreamGrouping</code>接口来实现自定义Stream分组策略。</p>
+<ol>
+<li><p><strong>Shuffle grouping</strong></p>
+<p>Tuples随机的分发到每个Bolt的每个Task上，每个Bolt获取到等量的Tuples。</p>
+</li>
+<li><p><strong>Fields grouping</strong> </p>
+<p> Streams通过grouping指定的字段(field)来分组。假设通过<code>user-id</code>字段进行分区，那么具有相同<code>user-id</code>的Tuples就会发送到同一个Task。</p>
+</li>
+<li><p><strong>Partial Key grouping</strong></p>
+<p>Streams通过grouping中指定的字段(field)来分组，与<code>Fields Grouping</code>相似。但是对于两个下游的Bolt来说是负载均衡的，可以在输入数据不平均的情况下提供更好的优化。</p>
+</li>
+<li><p><strong>All grouping</strong> </p>
+<p>Streams会被所有的Bolt的Tasks进行复制。由于存在数据重复处理，所以需要谨慎使用。</p>
+</li>
+<li><p><strong>Global grouping</strong>  </p>
+<p>整个Streams会进入Bolt的其中一个Task，通常会进入id最小的Task。</p>
+</li>
+<li><p><strong>None grouping</strong></p>
+<p>当前None grouping 和Shuffle grouping等价，都是进行随机分发。</p>
+</li>
+<li><p><strong>Direct grouping</strong></p>
+<p>Direct grouping只能被用于direct streams 。使用这种方式需要由Tuple的生产者直接指定由哪个Task进行处理。</p>
+</li>
+<li><p><strong>Local or shuffle grouping</strong> </p>
+<p>如果目标Bolt有Tasks和当前Bolt的Tasks处在同一个Worker进程中，那么则优先将Tuple Shuffled到处于同一个进程的目标Bolt的Tasks上，这样可以最大限度地减少网络传输。否则，就和普通的<code>Shuffle Grouping</code>行为一致。</p>
+</li>
+</ol>
+<h2 id="二、Storm架构详解"><a href="#二、Storm架构详解" class="headerlink" title="二、Storm架构详解"></a>二、Storm架构详解</h2><div align="center"> <img src="/img/bigdata/Internal-Working-of-Apache-Storm.png"> </div>
+
+<h3 id="2-1-Nimbus进程"><a href="#2-1-Nimbus进程" class="headerlink" title="2.1 Nimbus进程"></a>2.1 Nimbus进程</h3><p> 也叫做Master Node，是Storm集群工作的全局指挥官。主要功能如下：</p>
+<ol>
+<li>通过Thrift接口，监听并接收Client提交的Topology；</li>
+<li>根据集群Workers的资源情况，将Client提交的Topology进行任务分配，分配结果写入Zookeeper;</li>
+<li>通过Thrift接口，监听Supervisor的下载Topology代码的请求，并提供下载 ;</li>
+<li>通过Thrift接口，监听UI对统计信息的读取，从Zookeeper上读取统计信息，返回给UI;</li>
+<li>若进程退出后，立即在本机重启，则不影响集群运行。 </li>
+</ol>
+<h3 id="2-2-Supervisor进程"><a href="#2-2-Supervisor进程" class="headerlink" title="2.2 Supervisor进程"></a>2.2 Supervisor进程</h3><p>也叫做Worker Node , 是Storm集群的资源管理者，按需启动Worker进程。主要功能如下：</p>
+<ol>
+<li>定时从Zookeeper检查是否有新Topology代码未下载到本地 ，并定时删除旧Topology代码 ;</li>
+<li>根据Nimbus的任务分配计划，在本机按需启动1个或多个Worker进程，并监控所有的Worker进程的情况；</li>
+<li>若进程退出，立即在本机重启，则不影响集群运行。 </li>
+</ol>
+<h3 id="2-3-zookeeper的作用"><a href="#2-3-zookeeper的作用" class="headerlink" title="2.3 zookeeper的作用"></a>2.3 zookeeper的作用</h3><p>Nimbus和Supervisor进程都被设计为<strong>快速失败</strong>（遇到任何意外情况时进程自毁）和<strong>无状态</strong>（所有状态保存在Zookeeper或磁盘上）。  这样设计的好处就是如果它们的进程被意外销毁，那么在重新启动后，就只需要从Zookeeper上获取之前的状态数据即可，并不会造成任何数据丢失。</p>
+<h3 id="2-4-Worker进程"><a href="#2-4-Worker进程" class="headerlink" title="2.4 Worker进程"></a>2.4 Worker进程</h3><p>Storm集群的任务构造者 ，构造Spoult或Bolt的Task实例，启动Executor线程。主要功能如下： </p>
+<ol>
+<li>根据Zookeeper上分配的Task，在本进程中启动1个或多个Executor线程，将构造好的Task实例交给Executor去运行；</li>
+<li>向Zookeeper写入心跳 ；</li>
+<li>维持传输队列，发送Tuple到其他的Worker ；</li>
+<li>若进程退出，立即在本机重启，则不影响集群运行。 </li>
+</ol>
+<h3 id="2-5-Executor线程"><a href="#2-5-Executor线程" class="headerlink" title="2.5 Executor线程"></a>2.5 Executor线程</h3><p>Storm集群的任务执行者 ，循环执行Task代码。主要功能如下：</p>
+<ol>
+<li>执行1个或多个Task；</li>
+<li>执行Acker机制，负责发送Task处理状态给对应Spout所在的worker。</li>
+</ol>
+<h3 id="2-6-并行度"><a href="#2-6-并行度" class="headerlink" title="2.6 并行度"></a>2.6 并行度</h3><div align="center"> <img src="/img/bigdata/relationships-worker-processes-executors-tasks.png"> </div>
+
+<p>1个Worker进程执行的是1个Topology的子集，不会出现1个Worker为多个Topology服务的情况，因此1个运行中的Topology就是由集群中多台物理机上的多个Worker进程组成的。1个Worker进程会启动1个或多个Executor线程来执行1个Topology的Component(组件，即Spout或Bolt)。</p>
+<p>Executor是1个被Worker进程启动的单独线程。每个Executor会运行1个Component中的一个或者多个Task。</p>
+<p>Task是组成Component的代码单元。Topology启动后，1个Component的Task数目是固定不变的，但该Component使用的Executor线程数可以动态调整（例如：1个Executor线程可以执行该Component的1个或多个Task实例）。这意味着，对于1个Component来说，<code>#threads&lt;=#tasks</code>（线程数小于等于Task数目）这样的情况是存在的。默认情况下Task的数目等于Executor线程数，即1个Executor线程只运行1个Task。  </p>
+<p><strong>总结如下：</strong></p>
+<ul>
+<li>一个运行中的Topology由集群中的多个Worker进程组成的；</li>
+<li>在默认情况下，每个Worker进程默认启动一个Executor线程；</li>
+<li>在默认情况下，每个Executor默认启动一个Task线程；</li>
+<li>Task是组成Component的代码单元。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><p><a href="http://storm.apache.org/releases/1.2.2/Concepts.html" target="_blank" rel="noopener">storm documentation -&gt; Concepts</a></p>
+</li>
+<li><p><a href="https://www.spritle.com/blogs/2016/04/04/apache-storm/" target="_blank" rel="noopener">Internal Working of Apache Storm</a></p>
+</li>
+<li><a href="http://storm.apache.org/releases/1.2.2/Understanding-the-parallelism-of-a-Storm-topology.html" target="_blank" rel="noopener">Understanding the Parallelism of a Storm Topology</a></li>
+<li><a href="https://blog.csdn.net/daiyutage/article/details/52049519" target="_blank" rel="noopener">Storm nimbus 单节点宕机的处理</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100421.html" class="pre-post btn btn-default" title='Storm编程模型'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Storm编程模型</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100419.html" class="next-post btn btn-default" title='Storm和流处理简介'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Storm和流处理简介</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Storm核心概念"><span class="toc-text">一、Storm核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Topologies（拓扑）"><span class="toc-text">1.1  Topologies（拓扑）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Streams（流）"><span class="toc-text">1.2  Streams（流）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-Spouts"><span class="toc-text">1.3 Spouts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-Bolts"><span class="toc-text">1.4 Bolts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-Stream-groupings（分组策略）"><span class="toc-text">1.5 Stream groupings（分组策略）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、Storm架构详解"><span class="toc-text">二、Storm架构详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Nimbus进程"><span class="toc-text">2.1 Nimbus进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Supervisor进程"><span class="toc-text">2.2 Supervisor进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-zookeeper的作用"><span class="toc-text">2.3 zookeeper的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Worker进程"><span class="toc-text">2.4 Worker进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-Executor线程"><span class="toc-text">2.5 Executor线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-并行度"><span class="toc-text">2.6 并行度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,服务,qos">
+
+
+    <meta name="description" content="QoS是 Quality of Service 的缩写，即服务质量。为了实现资源被有效调度和分配的同时提高资源利用率，kubernetes针对不同服务质量的预期，通过 QoS（Quality o...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Kubernetes服务质量Qos解析 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Kubernetes服务质量Qos解析">
+            
+	            Kubernetes服务质量Qos解析
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/qos/">qos</a> <a class="tag-link" href="/tags/services/">服务</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/09</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1579</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p><code>QoS</code>是 Quality of Service 的缩写，即<strong>服务质量</strong>。为了实现资源被有效调度和分配的同时提高资源利用率，<code>kubernetes</code>针对不同服务质量的预期，通过 QoS（Quality of Service）来对 pod 进行服务质量管理。对于一个 pod 来说，服务质量体现在两个具体的指标：<code>CPU 和内存</code>。当节点上内存资源紧张时，kubernetes 会根据预先设置的不同 QoS 类别进行相应处理。</p>
+<p>QoS 主要分为<code>Guaranteed、Burstable 和 Best-Effort</code>三类，优先级从高到低。</p>
+<h2 id="Guaranteed-有保证的"><a href="#Guaranteed-有保证的" class="headerlink" title="Guaranteed(有保证的)"></a>Guaranteed(有保证的)</h2><p>属于该级别的pod有以下两种：</p>
+<ul>
+<li>Pod中的所有容器都且仅设置了 CPU 和内存的 limits</li>
+<li>pod中的所有容器都设置了 CPU 和内存的 requests 和 limits ，且单个容器内的<code>requests==limits</code>（requests不等于0）</li>
+</ul>
+<p>pod中的所有容器都且仅设置了limits：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">containers:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">foo</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">10</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">bar</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">100</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">100</span><span class="string">Mi</span></span><br></pre></td></tr></table></figure>
+<p>pod 中的所有容器都设置了 requests 和 limits，且单个容器内的<code>requests==limits</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">containers:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">foo</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">10</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">      requests:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">10</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  name:</span> <span class="string">bar</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">100</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">100</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">      requests:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">100</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">100</span><span class="string">Mi</span></span><br></pre></td></tr></table></figure>
+<p>容器foo和bar内resources的requests和limits均相等，该pod的QoS级别属于<code>Guaranteed</code>。</p>
+<h2 id="Burstable-不稳定的"><a href="#Burstable-不稳定的" class="headerlink" title="Burstable(不稳定的)"></a>Burstable(不稳定的)</h2><p>pod中只要有一个容器的requests和limits的设置不相同，该pod的QoS即为<code>Burstable</code>。</p>
+<p>容器foo指定了resource，而容器bar未指定：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">containers:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">foo</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">10</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">      requests:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">10</span><span class="string">m</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  name:</span> <span class="string">bar</span></span><br></pre></td></tr></table></figure>
+<p>容器foo设置了内存limits，而容器bar设置了CPU limits：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">containers:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">foo</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        memory:</span> <span class="number">1</span><span class="string">Gi</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  name:</span> <span class="string">bar</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">      limits:</span></span><br><span class="line"><span class="attr">        cpu:</span> <span class="number">100</span><span class="string">m</span></span><br></pre></td></tr></table></figure>
+<p>注意：若容器指定了requests而未指定limits，则limits的值等于节点resource的最大值；若容器指定了limits而未指定requests，则requests的值等于limits。</p>
+<h2 id="Best-Effort-尽最大努力"><a href="#Best-Effort-尽最大努力" class="headerlink" title="Best-Effort(尽最大努力)"></a>Best-Effort(尽最大努力)</h2><p>如果Pod中所有容器的resources均未设置requests与limits，该pod的QoS即为<code>Best-Effort</code>。</p>
+<p>容器foo和容器bar均未设置requests和limits：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">containers:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">foo</span></span><br><span class="line"><span class="attr">    resources:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">bar</span></span><br><span class="line"><span class="attr">    resources:</span></span><br></pre></td></tr></table></figure>
+<h2 id="根据QoS进行资源回收策略"><a href="#根据QoS进行资源回收策略" class="headerlink" title="根据QoS进行资源回收策略"></a>根据QoS进行资源回收策略</h2><p>Kubernetes 通过<code>cgroup</code>给pod设置QoS级别，当资源不足时先<code>kill</code>优先级低的 pod，在实际使用过程中，通过<code>OOM</code>分数值来实现，<code>OOM</code>分数值范围为0-1000。OOM 分数值根据<code>OOM_ADJ</code>参数计算得出。</p>
+<p>对于<code>Guaranteed</code>级别的 Pod，OOM_ADJ参数设置成了<strong>-998</strong>，对于<code>Best-Effort</code>级别的 Pod，OOM_ADJ参数设置成了<strong>1000</strong>，对于<code>Burstable</code>级别的 Pod，OOM_ADJ参数取值<strong>从2到999</strong>。</p>
+<p>对于 kuberntes 保留资源，比如kubelet，docker，OOM_ADJ参数设置成了<strong>-999</strong>，表示不会被OOM kill掉。OOM_ADJ参数设置的越大，计算出来的OOM分数越高，表明该pod优先级就越低，当出现资源竞争时会越早被kill掉，对于OOM_ADJ参数是-999的表示kubernetes永远不会因为OOM将其kill掉。</p>
+<h2 id="QoS-pods被kill掉场景与顺序"><a href="#QoS-pods被kill掉场景与顺序" class="headerlink" title="QoS pods被kill掉场景与顺序"></a>QoS pods被kill掉场景与顺序</h2><ul>
+<li>Best-Effort pods：系统用完了全部内存时，该类型 pods 会最先被kill掉。</li>
+<li>Burstable pods：系统用完了全部内存，且没有 Best-Effort 类型的容器可以被 kill 时，该类型的 pods 会被 kill 掉。</li>
+<li>Guaranteed pods：系统用完了全部内存，且没有 Burstable 与 Best-Effort 类型的容器可以被 kill 时，该类型的 pods 会被 kill 掉。</li>
+</ul>
+<h2 id="QoS使用建议"><a href="#QoS使用建议" class="headerlink" title="QoS使用建议"></a>QoS使用建议</h2><p>如果资源充足，可将 QoS pods 类型均设置为<code>Guaranteed</code>。用计算资源换业务性能和稳定性，减少排查问题时间和成本。如果想更好的提高资源利用率，业务服务可以设置为Guaranteed，而其他服务根据重要程度可分别设置为Burstable或Best-Effort。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100111.html" class="pre-post btn btn-default" title='Kubernetes集群监控之 一.Prometheus'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Kubernetes集群监控之 一.Prometheus</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100130.html" class="next-post btn btn-default" title='保护Kubernetes对外暴露的服务'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">保护Kubernetes对外暴露的服务</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Guaranteed-有保证的"><span class="toc-text">Guaranteed(有保证的)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Burstable-不稳定的"><span class="toc-text">Burstable(不稳定的)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Best-Effort-尽最大努力"><span class="toc-text">Best-Effort(尽最大努力)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#根据QoS进行资源回收策略"><span class="toc-text">根据QoS进行资源回收策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QoS-pods被kill掉场景与顺序"><span class="toc-text">QoS pods被kill掉场景与顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QoS使用建议"><span class="toc-text">QoS使用建议</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

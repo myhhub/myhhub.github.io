@@ -1,0 +1,394 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,对象,configmap">
+
+
+    <meta name="description" content="接上文: kubernetes常用对象操作之 五.Service
+
+前面的课程中我们学习了Servie的使用，Service是Kubernetes系统中非常重要的一个核心概念，我们还会在后面 的...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>kubernetes常用对象操作之 六.ConfigMap | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="kubernetes常用对象操作之 六.ConfigMap">
+            
+	            kubernetes常用对象操作之 六.ConfigMap
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/configmap/">configmap</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/object/">对象</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/11/30</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1588</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100101.html">kubernetes常用对象操作之 五.Service</a></p>
+<hr>
+<p>前面的课程中我们学习了<code>Servie</code>的使用，<code>Service</code>是<code>Kubernetes</code>系统中非常重要的一个核心概念，我们还会在后面 的课程中继续学习<code>Service</code>的一些使用方法的。这节课我们来学习另外一个非常重要的资源对象：<code>ConfigMap</code>，我们知道许多应用经常会有从配置文件、命令行参数或者环境变量中读取一些配置信息，这些配置信息我们肯定不会直接写死到应用程序中去的，比如你一个应用连接一个<code>redis</code>服务，下一次想更换一个了的，还得重新去修改代码，重新制作一个镜像，这肯定是不可取的，而<code>ConfigMap</code>就给我们提供了向容器中注入配置信息的能力，不仅可以用来保存单个属性，也可以用来保存整个配置文件，比如我们可以用来配置一个<code>redis</code>服务的访问地址，也可以用来保存整个<code>redis</code>的配置文件。</p>
+<h2 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h2><p><code>ConfigMap</code> 资源对象使用<code>key-value</code>形式的键值对来配置数据，这些数据可以在<code>Pod</code>里面使用，<code>ConfigMap</code>和我们后面要讲到的<code>Secrets</code>比较类似，一个比较大的区别是<code>ConfigMap</code>可以比较方便的处理一些非敏感的数据，比如密码之类的还是需要使用<code>Secrets</code>来进行管理。我们来举个例子说明下<code>ConfigMap</code>的使用方法：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cm-demo</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="string">data.1:</span> <span class="string">hello</span></span><br><span class="line">  <span class="string">data.2:</span> <span class="string">world</span></span><br><span class="line"><span class="attr">  config:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    property.1=value-1</span></span><br><span class="line"><span class="string">    property.2=value-2</span></span><br><span class="line"><span class="string">    property.3=value-3</span></span><br></pre></td></tr></table></figure>
+<p>其中配置数据在<code>data</code>属性下面进行配置，前两个被用来保存单个属性，后面一个被用来保存一个配置文件。</p>
+<p>当然同样的我们可以使用<code>kubectl create -f xx.yaml</code>来创建上面的<code>ConfigMap</code>对象，但是如果我们不知道怎么创建<code>ConfigMap</code>的话，不要忘记<code>kubectl</code>是我们最好的老师，可以使用<code>kubectl create configmap -h</code>来查看关于创建<code>ConfigMap</code>的帮助信息，</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Examples:</span><br><span class="line">  # <span class="keyword">Create</span> a new configmap named my-config based <span class="keyword">on</span> folder bar</span><br><span class="line">  kubectl <span class="keyword">create</span> configmap my-config --<span class="keyword">from</span>-file=<span class="keyword">path</span>/<span class="keyword">to</span>/bar</span><br><span class="line"></span><br><span class="line">  # <span class="keyword">Create</span> a new configmap named my-config <span class="keyword">with</span> specified <span class="keyword">keys</span> instead of file basenames <span class="keyword">on</span> disk</span><br><span class="line">  kubectl <span class="keyword">create</span> configmap my-config --<span class="keyword">from</span>-file=key1=/<span class="keyword">path</span>/<span class="keyword">to</span>/bar/file1.txt --<span class="keyword">from</span>-file=key2=/<span class="keyword">path</span>/<span class="keyword">to</span>/bar/file2.txt</span><br><span class="line"></span><br><span class="line">  # <span class="keyword">Create</span> a new configmap named my-config <span class="keyword">with</span> key1=config1 <span class="keyword">and</span> key2=config2</span><br><span class="line">  kubectl <span class="keyword">create</span> configmap my-config --<span class="keyword">from</span>-literal=key1=config1 --<span class="keyword">from</span>-literal=key2=config2</span><br></pre></td></tr></table></figure>
+<p>我们可以看到可以从一个给定的目录来创建一个<code>ConfigMap</code>对象，比如我们有一个<code>testcm</code>的目录，该目录下面包含一些配置文件，<code>redis</code>和<code>mysql</code>的连接信息，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ls testcm</span></span><br><span class="line">redis.conf</span><br><span class="line">mysql.conf</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat testcm/redis.conf</span></span><br><span class="line">host=127.0.0.1</span><br><span class="line">port=6379</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat testcm/mysql.conf</span></span><br><span class="line">host=127.0.0.1</span><br><span class="line">port=3306</span><br></pre></td></tr></table></figure>
+<p>然后我们可以使用<code>from-file</code>关键字来创建包含这个目录下面所以配置文件的<code>ConfigMap</code>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl create configmap cm-demo1 --from-file=testcm</span></span><br><span class="line">configmap "cm-demo1" created</span><br></pre></td></tr></table></figure>
+<p>其中<code>from-file</code>参数指定在该目录下面的所有文件都会被用在<code>ConfigMap</code>里面创建一个键值对，键的名字就是文件名，值就是文件的内容。</p>
+<p>创建完成后，同样我们可以使用如下命令来查看<code>ConfigMap</code>列表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl get configmap</span></span><br><span class="line">NAME       DATA      AGE</span><br><span class="line">cm-demo1   2         17s</span><br></pre></td></tr></table></figure>
+<p>可以看到已经创建了一个<code>cm-demo1</code>的<code>ConfigMap</code>对象，然后可以使用<code>describe</code>命令查看详细信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe configmap cm-demo1</span><br><span class="line">Name:         cm-demo1</span><br><span class="line">Namespace:    default</span><br><span class="line">Labels:       &lt;none&gt;</span><br><span class="line">Annotations:  &lt;none&gt;</span><br><span class="line"></span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">mysql.conf:</span><br><span class="line">----</span><br><span class="line">host=127.0.0.1</span><br><span class="line">port=3306</span><br><span class="line"></span><br><span class="line">redis.conf:</span><br><span class="line">----</span><br><span class="line">host=127.0.0.1</span><br><span class="line">port=6379</span><br><span class="line"></span><br><span class="line">Events:  &lt;none&gt;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到两个<code>key</code>是<code>testcm</code>目录下面的文件名称，对应的<code>value</code>值的话就是文件内容，这里值得注意的是如果文件里面的配置信息很大的话，<code>describe</code>的时候可能不会显示对应的值，要查看键值的话，可以使用如下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl get configmap cm-demo1 -o yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">data:</span><br><span class="line">  mysql.conf: |</span><br><span class="line">    host=127.0.0.1</span><br><span class="line">    port=3306</span><br><span class="line">  redis.conf: |</span><br><span class="line">    host=127.0.0.1</span><br><span class="line">    port=6379</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  creationTimestamp: 2018-06-14T16:24:36Z</span><br><span class="line">  name: cm-demo1</span><br><span class="line">  namespace: default</span><br><span class="line">  resourceVersion: "3109975"</span><br><span class="line">  selfLink: /api/v1/namespaces/default/configmaps/cm-demo1</span><br><span class="line">  uid: 6e0f4d82-6fef-11e8-a101-525400db4df7</span><br></pre></td></tr></table></figure>
+<p>除了通过文件目录进行创建，我们也可以使用指定的文件进行创建<code>ConfigMap</code>，同样的，以上面的配置文件为例，我们创建一个<code>redis</code>的配置的一个单独<code>ConfigMap</code>对象：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl create configmap cm-demo2 --from-file=testcm/redis.conf</span></span><br><span class="line">configmap "cm-demo2" created</span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get configmap cm-demo2 -o yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">data:</span><br><span class="line">  redis.conf: |</span><br><span class="line">    host=127.0.0.1</span><br><span class="line">    port=6379</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  creationTimestamp: 2018-06-14T16:34:29Z</span><br><span class="line">  name: cm-demo2</span><br><span class="line">  namespace: default</span><br><span class="line">  resourceVersion: "3110758"</span><br><span class="line">  selfLink: /api/v1/namespaces/default/configmaps/cm-demo2</span><br><span class="line">  uid: cf59675d-6ff0-11e8-a101-525400db4df7</span><br></pre></td></tr></table></figure>
+<p>我们可以看到一个关联<code>redis.conf</code>文件配置信息的<code>ConfigMap</code>对象创建成功了，另外值得注意的是<code>--from-file</code>这个参数可以使用多次，比如我们这里使用两次分别指定<code>redis.conf</code>和<code>mysql.conf</code>文件，就和直接指定整个目录是一样的效果了。</p>
+<p>另外，通过帮助文档我们可以看到我们还可以直接使用字符串进行创建，通过<code>--from-literal</code>参数传递配置信息，同样的，这个参数可以使用多次，格式如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create configmap cm-demo3 <span class="attribute">--from-literal</span>=db.host=localhost <span class="attribute">--from-literal</span>=db.port=3306</span><br><span class="line">configmap <span class="string">"cm-demo3"</span> created</span><br><span class="line">$ kubectl <span class="builtin-name">get</span> configmap cm-demo3 -o yaml</span><br><span class="line">apiVersion: v1</span><br><span class="line">data:</span><br><span class="line">  db.host: localhost</span><br><span class="line">  db.port: <span class="string">"3306"</span></span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  creationTimestamp: 2018-06-14T16:43:12Z</span><br><span class="line">  name: cm-demo3</span><br><span class="line">  namespace: default</span><br><span class="line">  resourceVersion: <span class="string">"3111447"</span></span><br><span class="line">  selfLink: /api/v1/namespaces/default/configmaps/cm-demo3</span><br><span class="line">  uid: 06eeec7e-6ff2-11e8-a101-525400db4df7</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p><code>ConfigMap</code>创建成功了，那么我们应该怎么在<code>Pod</code>中来使用呢？我们说<code>ConfigMap</code>这些配置数据可以通过很多种方式在<code>Pod</code>里使用，主要有以下几种方式：</p>
+<ul>
+<li>设置环境变量的值</li>
+<li>在容器里设置命令行参数</li>
+<li>在数据卷里面创建config文件</li>
+</ul>
+<p>首先，我们使用<code>ConfigMap</code>来填充我们的环境变量：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">testcm1-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">testcm1</span></span><br><span class="line"><span class="attr">      image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">[</span> <span class="string">"/bin/sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"env"</span> <span class="string">]</span></span><br><span class="line"><span class="attr">      env:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_HOST</span></span><br><span class="line"><span class="attr">          valueFrom:</span></span><br><span class="line"><span class="attr">            configMapKeyRef:</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">cm-demo3</span></span><br><span class="line"><span class="attr">              key:</span> <span class="string">db.host</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_PORT</span></span><br><span class="line"><span class="attr">          valueFrom:</span></span><br><span class="line"><span class="attr">            configMapKeyRef:</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">cm-demo3</span></span><br><span class="line"><span class="attr">              key:</span> <span class="string">db.port</span></span><br><span class="line"><span class="attr">      envFrom:</span></span><br><span class="line"><span class="attr">        - configMapRef:</span></span><br><span class="line"><span class="attr">            name:</span> <span class="string">cm-demo1</span></span><br></pre></td></tr></table></figure>
+<p>这个Pod运行后会输出如下几行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs testcm1-pod</span></span><br><span class="line">......</span><br><span class="line">DB_HOST=localhost</span><br><span class="line">DB_PORT=3306</span><br><span class="line">mysql.conf=host=127.0.0.1</span><br><span class="line">port=3306</span><br><span class="line">redis.conf=host=127.0.0.1</span><br><span class="line">port=6379</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>我们可以看到<code>DB_HOST</code>和<code>DB_PORT</code>都已经正常输出了，另外的环境变量是因为我们这里直接把<code>cm-demo1</code>给注入进来了，所以把他们的整个键值给输出出来了，这也是符合预期的。</p>
+<p>另外我们可以使用<code>ConfigMap</code>来设置命令行参数，<code>ConfigMap</code>也可以被用来设置容器中的命令或者参数值，如下<code>Pod</code>:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">testcm2-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">testcm2</span></span><br><span class="line"><span class="attr">      image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">[</span> <span class="string">"/bin/sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"echo $(DB_HOST) $(DB_PORT)"</span> <span class="string">]</span></span><br><span class="line"><span class="attr">      env:</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_HOST</span></span><br><span class="line"><span class="attr">          valueFrom:</span></span><br><span class="line"><span class="attr">            configMapKeyRef:</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">cm-demo3</span></span><br><span class="line"><span class="attr">              key:</span> <span class="string">db.host</span></span><br><span class="line"><span class="attr">        - name:</span> <span class="string">DB_PORT</span></span><br><span class="line"><span class="attr">          valueFrom:</span></span><br><span class="line"><span class="attr">            configMapKeyRef:</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">cm-demo3</span></span><br><span class="line"><span class="attr">              key:</span> <span class="string">db.port</span></span><br></pre></td></tr></table></figure>
+<p>运行这个<code>Pod</code>后会输出如下信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs testcm2-pod</span></span><br><span class="line">localhost 3306</span><br></pre></td></tr></table></figure>
+<p>另外一种是非常常见的使用<code>ConfigMap</code>的方式：通过数据卷使用，在数据卷里面使用<code>ConfigMap</code>，就是将文件填入数据卷，在这个文件中，键就是文件名，键值就是文件内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">testcm3-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">testcm3</span></span><br><span class="line"><span class="attr">      image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">[</span> <span class="string">"/bin/sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"cat /etc/config/redis.conf"</span> <span class="string">]</span></span><br><span class="line"><span class="attr">      volumeMounts:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">config-volume</span></span><br><span class="line"><span class="attr">        mountPath:</span> <span class="string">/etc/config</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">config-volume</span></span><br><span class="line"><span class="attr">      configMap:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">cm-demo2</span></span><br></pre></td></tr></table></figure>
+<p>运行这个<code>Pod</code>的，查看日志：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs testcm3-pod</span></span><br><span class="line">host=127.0.0.1</span><br><span class="line">port=6379</span><br></pre></td></tr></table></figure>
+<p>当然我们也可以在<code>ConfigMap</code>值被映射的数据卷里去控制路径，如下<code>Pod</code>定义：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">testcm4-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">testcm4</span></span><br><span class="line"><span class="attr">      image:</span> <span class="string">busybox</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">[</span> <span class="string">"/bin/sh"</span><span class="string">,"-c","cat</span> <span class="string">/etc/config/path/to/msyql.conf"</span> <span class="string">]</span></span><br><span class="line"><span class="attr">      volumeMounts:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">config-volume</span></span><br><span class="line"><span class="attr">        mountPath:</span> <span class="string">/etc/config</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">config-volume</span></span><br><span class="line"><span class="attr">      configMap:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">cm-demo1</span></span><br><span class="line"><span class="attr">        items:</span></span><br><span class="line"><span class="attr">        - key:</span> <span class="string">mysql.conf</span></span><br><span class="line"><span class="attr">          path:</span> <span class="string">path/to/msyql.conf</span></span><br></pre></td></tr></table></figure>
+<p>运行这个<code>Pod</code>的，查看日志：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs testcm4-pod</span></span><br><span class="line">host=127.0.0.1</span><br><span class="line">port=3306</span><br></pre></td></tr></table></figure>
+<p>另外需要注意的是，当<code>ConfigMap</code>以数据卷的形式挂载进<code>Pod</code>的时，这时更新<code>ConfigMap</code>（或删掉重建<code>ConfigMap</code>），<code>Pod</code>内挂载的配置信息会热更新。这时可以增加一些监测配置文件变更的脚本，然后<code>reload</code>对应服务。</p>
+<hr>
+<p>接上文: <a href="100102.html">kubernetes常用对象操作之 七.Secret</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/11/100102.html" class="pre-post btn btn-default" title='kubernetes常用对象操作之 七.Secret'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">kubernetes常用对象操作之 七.Secret</span>
+        </a>
+    
+    
+        <a href="/archives/2018/11/100101.html" class="next-post btn btn-default" title='kubernetes常用对象操作之 五.Service'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">kubernetes常用对象操作之 五.Service</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#创建"><span class="toc-text">创建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用"><span class="toc-text">使用</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

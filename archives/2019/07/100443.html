@@ -1,0 +1,399 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,azkaban">
+
+
+    <meta name="description" content="一、Flow 2.0 简介1.1 Flow 2.0 的产生Azkaban 目前同时支持 Flow 1.0 和 Flow2.0 ，但是官方文档上更推荐使用Flow 2.0，因为Flow 1.0会在...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Azkaban Flow 2.0的使用 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Azkaban Flow 2.0的使用">
+            
+	            Azkaban Flow 2.0的使用
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/azkaban/">azkaban</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/16</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1360</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、Flow-2-0-简介"><a href="#一、Flow-2-0-简介" class="headerlink" title="一、Flow 2.0 简介"></a>一、Flow 2.0 简介</h2><h3 id="1-1-Flow-2-0-的产生"><a href="#1-1-Flow-2-0-的产生" class="headerlink" title="1.1 Flow 2.0 的产生"></a>1.1 Flow 2.0 的产生</h3><p>Azkaban 目前同时支持 Flow 1.0 和 Flow2.0 ，但是官方文档上更推荐使用Flow 2.0，因为Flow 1.0会在将来的版本被移除。Flow 2.0的主要设计思想是提供1.0所没有的流级定义。用户可以将属于给定流的所有<code>job / properties</code>文件合并到单个流定义文件中，其内容采用YAML语法进行定义，同时还支持在流中再定义流，称为为嵌入流或子流。</p>
+<h3 id="1-2-基本结构"><a href="#1-2-基本结构" class="headerlink" title="1.2 基本结构"></a>1.2 基本结构</h3><p>项目zip将包含多个流YAML文件，一个项目YAML文件以及可选库和源代码。Flow YAML文件的基本结构如下：</p>
+<ul>
+<li>每个Flow都在单个YAML文件中定义；</li>
+<li>流文件以流名称命名，如：<code>my-flow-name.flow</code>；</li>
+<li>包含DAG中的所有节点；</li>
+<li>每个节点可以是作业或流程；</li>
+<li>每个节点 可以拥有 name, type, config, dependsOn 和 nodes sections等属性；</li>
+<li>通过列出dependsOn列表中的父节点来指定节点依赖性；</li>
+<li>包含与流相关的其他配置；</li>
+<li>当前properties文件中流的所有常见属性都将迁移到每个流YAML文件中的config部分。</li>
+</ul>
+<p>官方提供了一个比较完善的配置样例，如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">config:</span></span><br><span class="line">  <span class="string">user.to.proxy:</span> <span class="string">azktest</span></span><br><span class="line">  <span class="string">param.hadoopOutData:</span> <span class="string">/tmp/wordcounthadoopout</span></span><br><span class="line">  <span class="string">param.inData:</span> <span class="string">/tmp/wordcountpigin</span></span><br><span class="line">  <span class="string">param.outData:</span> <span class="string">/tmp/wordcountpigout</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># This section defines the list of jobs</span></span><br><span class="line"><span class="comment"># A node can be a job or a flow</span></span><br><span class="line"><span class="comment"># In this example, all nodes are jobs</span></span><br><span class="line"><span class="attr">nodes:</span></span><br><span class="line"> <span class="comment"># Job definition</span></span><br><span class="line"> <span class="comment"># The job definition is like a YAMLified version of properties file</span></span><br><span class="line"> <span class="comment"># with one major difference. All custom properties are now clubbed together</span></span><br><span class="line"> <span class="comment"># in a config section in the definition.</span></span><br><span class="line"> <span class="comment"># The first line describes the name of the job</span></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">AZTest</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">noop</span></span><br><span class="line">   <span class="comment"># The dependsOn section contains the list of parent nodes the current</span></span><br><span class="line">   <span class="comment"># node depends on</span></span><br><span class="line"><span class="attr">   dependsOn:</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">hadoopWC1</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">NoOpTest1</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">hive2</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">java1</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">jobCommand2</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">pigWordCount1</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">pig</span></span><br><span class="line">   <span class="comment"># The config section contains custom arguments or parameters which are</span></span><br><span class="line">   <span class="comment"># required by the job</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line">     <span class="string">pig.script:</span> <span class="string">src/main/pig/wordCountText.pig</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">hadoopWC1</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">hadoopJava</span></span><br><span class="line"><span class="attr">   dependsOn:</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">pigWordCount1</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line"><span class="attr">     classpath:</span> <span class="string">./*</span></span><br><span class="line">     <span class="string">force.output.overwrite:</span> <span class="literal">true</span></span><br><span class="line">     <span class="string">input.path:</span> <span class="string">$&#123;param.inData&#125;</span></span><br><span class="line">     <span class="string">job.class:</span> <span class="string">com.linkedin.wordcount.WordCount</span></span><br><span class="line">     <span class="string">main.args:</span> <span class="string">$&#123;param.inData&#125;</span> <span class="string">$&#123;param.hadoopOutData&#125;</span></span><br><span class="line">     <span class="string">output.path:</span> <span class="string">$&#123;param.hadoopOutData&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">hive1</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">hive</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line">     <span class="string">hive.script:</span> <span class="string">src/main/hive/showdb.q</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">NoOpTest1</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">noop</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">hive2</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">hive</span></span><br><span class="line"><span class="attr">   dependsOn:</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">hive1</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line">     <span class="string">hive.script:</span> <span class="string">src/main/hive/showTables.sql</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">java1</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">javaprocess</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line"><span class="attr">     Xms:</span> <span class="number">96</span><span class="string">M</span></span><br><span class="line">     <span class="string">java.class:</span> <span class="string">com.linkedin.foo.HelloJavaProcessJob</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">jobCommand1</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line"><span class="attr">     command:</span> <span class="string">echo</span> <span class="string">"hello world from job_command_1"</span></span><br><span class="line"></span><br><span class="line"><span class="attr"> - name:</span> <span class="string">jobCommand2</span></span><br><span class="line"><span class="attr">   type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">   dependsOn:</span></span><br><span class="line"><span class="bullet">     -</span> <span class="string">jobCommand1</span></span><br><span class="line"><span class="attr">   config:</span></span><br><span class="line"><span class="attr">     command:</span> <span class="string">echo</span> <span class="string">"hello world from job_command_2"</span></span><br></pre></td></tr></table></figure>
+<h2 id="二、YAML语法"><a href="#二、YAML语法" class="headerlink" title="二、YAML语法"></a>二、YAML语法</h2><p>想要使用 Flow 2.0 进行工作流的配置，首先需要了解YAML 。YAML 是一种简洁的非标记语言，有着严格的格式要求的，如果你的格式配置失败，上传到Azkaban的时候就会抛出解析异常。</p>
+<h3 id="2-1-基本规则"><a href="#2-1-基本规则" class="headerlink" title="2.1 基本规则"></a>2.1 基本规则</h3><ol>
+<li>大小写敏感 ；</li>
+<li>使用缩进表示层级关系 ；</li>
+<li>缩进长度没有限制，只要元素对齐就表示这些元素属于一个层级； </li>
+<li>使用#表示注释 ；</li>
+<li>字符串默认不用加单双引号，但单引号和双引号都可以使用，双引号表示不需要对特殊字符进行转义；</li>
+<li>YAML中提供了多种常量结构，包括：整数，浮点数，字符串，NULL，日期，布尔，时间。</li>
+</ol>
+<h3 id="2-2-对象的写法"><a href="#2-2-对象的写法" class="headerlink" title="2.2 对象的写法"></a>2.2 对象的写法</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># value 与 ： 符号之间必须要有一个空格</span></span><br><span class="line"><span class="attr">key:</span> <span class="string">value</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-map的写法"><a href="#2-3-map的写法" class="headerlink" title="2.3 map的写法"></a>2.3 map的写法</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 写法一 同一缩进的所有键值对属于一个map</span></span><br><span class="line"><span class="attr">key:</span> </span><br><span class="line"><span class="attr">    key1:</span> <span class="string">value1</span></span><br><span class="line"><span class="attr">    key2:</span> <span class="string">value2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 写法二</span></span><br><span class="line"><span class="string">&#123;key1:</span> <span class="string">value1,</span> <span class="attr">key2:</span> <span class="string">value2&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-数组的写法"><a href="#2-3-数组的写法" class="headerlink" title="2.3 数组的写法"></a>2.3 数组的写法</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 写法一 使用一个短横线加一个空格代表一个数组项</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">a</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">b</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">c</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 写法二</span></span><br><span class="line"><span class="string">[a,b,c]</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-5-单双引号"><a href="#2-5-单双引号" class="headerlink" title="2.5 单双引号"></a>2.5 单双引号</h3><p>支持单引号和双引号，但双引号不会对特殊字符进行转义：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">s1:</span> <span class="string">'内容\n字符串'</span></span><br><span class="line"><span class="attr">s2:</span> <span class="string">"内容\n字符串"</span></span><br><span class="line"></span><br><span class="line"><span class="string">转换后：</span></span><br><span class="line"><span class="string">&#123;</span> <span class="attr">s1:</span> <span class="string">'内容\\n字符串'</span><span class="string">,</span> <span class="attr">s2:</span> <span class="string">'内容\n字符串'</span> <span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-6-特殊符号"><a href="#2-6-特殊符号" class="headerlink" title="2.6 特殊符号"></a>2.6 特殊符号</h3><p>一个YAML文件中可以包括多个文档，使用<code>---</code>进行分割。</p>
+<h3 id="2-7-配置引用"><a href="#2-7-配置引用" class="headerlink" title="2.7 配置引用"></a>2.7 配置引用</h3><p>Flow 2.0 建议将公共参数定义在<code>config</code>下，并通过<code>${}</code>进行引用。</p>
+<h2 id="三、简单任务调度"><a href="#三、简单任务调度" class="headerlink" title="三、简单任务调度"></a>三、简单任务调度</h2><h3 id="3-1-任务配置"><a href="#3-1-任务配置" class="headerlink" title="3.1 任务配置"></a>3.1 任务配置</h3><p>新建<code>flow</code>配置文件：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nodes:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobA</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"Hello Azkaban Flow 2.0."</span></span><br></pre></td></tr></table></figure>
+<p>在当前的版本中，Azkaban同时支持 Flow 1.0 和 Flow 2.0，如果你希望以2.0的方式运行，则需要新建一个<code>project</code>文件，指明是使用的是Flow 2.0：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">azkaban-flow-version: 2.0</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-打包上传"><a href="#3-2-打包上传" class="headerlink" title="3.2 打包上传"></a>3.2 打包上传</h3><div align="center"> <img src="/img/bigdata/azkaban-simple.png"> </div>
+
+
+
+<h3 id="3-3-执行结果"><a href="#3-3-执行结果" class="headerlink" title="3.3 执行结果"></a>3.3 执行结果</h3><p>由于在1.0 版本中已经介绍过Web UI的使用，这里就不再赘述。对于1.0和2.0版本，只有配置方式有所不同，其他上传执行的方式都是相同的。执行结果如下：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-simle-result.png"> </div>
+
+<h2 id="四、多任务调度"><a href="#四、多任务调度" class="headerlink" title="四、多任务调度"></a>四、多任务调度</h2><p>和1.0给出的案例一样，这里假设我们有五个任务（jobA——jobE）, D 任务需要在A，B，C任务执行完成后才能执行，而 E 任务则需要在 D 任务执行完成后才能执行，相关配置文件应如下。可以看到在1.0中我们需要分别定义五个配置文件，而在2.0中我们只需要一个配置文件即可完成配置。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nodes:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobE</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"This is job E"</span></span><br><span class="line">    <span class="comment"># jobE depends on jobD</span></span><br><span class="line"><span class="attr">    dependsOn:</span> </span><br><span class="line"><span class="bullet">      -</span> <span class="string">jobD</span></span><br><span class="line">    </span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobD</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"This is job D"</span></span><br><span class="line">    <span class="comment"># jobD depends on jobA、jobB、jobC</span></span><br><span class="line"><span class="attr">    dependsOn:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">jobA</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">jobB</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">jobC</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobA</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"This is job A"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobB</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"This is job B"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobC</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"This is job C"</span></span><br></pre></td></tr></table></figure>
+<h2 id="五、内嵌流"><a href="#五、内嵌流" class="headerlink" title="五、内嵌流"></a>五、内嵌流</h2><p>Flow2.0 支持在一个Flow中定义另一个Flow，称为内嵌流或者子流。这里给出一个内嵌流的示例，其<code>Flow</code>配置如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nodes:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">jobC</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">echo</span> <span class="string">"This is job C"</span></span><br><span class="line"><span class="attr">    dependsOn:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">embedded_flow</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">embedded_flow</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">flow</span></span><br><span class="line"><span class="attr">    config:</span></span><br><span class="line"><span class="attr">      prop:</span> <span class="string">value</span></span><br><span class="line"><span class="attr">    nodes:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">jobB</span></span><br><span class="line"><span class="attr">        type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">        config:</span></span><br><span class="line"><span class="attr">          command:</span> <span class="string">echo</span> <span class="string">"This is job B"</span></span><br><span class="line"><span class="attr">        dependsOn:</span></span><br><span class="line"><span class="bullet">          -</span> <span class="string">jobA</span></span><br><span class="line"></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">jobA</span></span><br><span class="line"><span class="attr">        type:</span> <span class="string">command</span></span><br><span class="line"><span class="attr">        config:</span></span><br><span class="line"><span class="attr">          command:</span> <span class="string">echo</span> <span class="string">"This is job A"</span></span><br></pre></td></tr></table></figure>
+<p>内嵌流的DAG图如下：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-embeded-flow.png"> </div>
+
+<p>执行情况如下：</p>
+<div align="center"> <img src="/img/bigdata/azkaban-embeded-success.png"> </div>
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://github.com/azkaban/azkaban/wiki/Azkaban-Flow-2.0-Design" target="_blank" rel="noopener">Azkaban Flow 2.0 Design</a></li>
+<li><a href="https://github.com/azkaban/azkaban/wiki/Getting-started-with-Azkaban-Flow-2.0" target="_blank" rel="noopener">Getting started with Azkaban Flow 2.0</a></li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100444.html" class="pre-post btn btn-default" title='Scala简介及开发环境配置'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Scala简介及开发环境配置</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100442.html" class="next-post btn btn-default" title='Azkaban Flow 1.0 的使用'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Azkaban Flow 1.0 的使用</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Flow-2-0-简介"><span class="toc-text">一、Flow 2.0 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Flow-2-0-的产生"><span class="toc-text">1.1 Flow 2.0 的产生</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-基本结构"><span class="toc-text">1.2 基本结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、YAML语法"><span class="toc-text">二、YAML语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-基本规则"><span class="toc-text">2.1 基本规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-对象的写法"><span class="toc-text">2.2 对象的写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-map的写法"><span class="toc-text">2.3 map的写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-数组的写法"><span class="toc-text">2.3 数组的写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-单双引号"><span class="toc-text">2.5 单双引号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-特殊符号"><span class="toc-text">2.6 特殊符号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-7-配置引用"><span class="toc-text">2.7 配置引用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、简单任务调度"><span class="toc-text">三、简单任务调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-任务配置"><span class="toc-text">3.1 任务配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-打包上传"><span class="toc-text">3.2 打包上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-执行结果"><span class="toc-text">3.3 执行结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、多任务调度"><span class="toc-text">四、多任务调度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、内嵌流"><span class="toc-text">五、内嵌流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

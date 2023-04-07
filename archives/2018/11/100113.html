@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,对象,hpa">
+
+
+    <meta name="description" content="接上文: kubernetes常用对象操作之 二.Deployment
+
+在前面我们提到过通过手工执行kubectl scale命令和在Dashboard上操作可以实现Pod的扩缩容，但是这样毕...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>kubernetes常用对象操作之 三.HPA自动扩缩容Pod | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="kubernetes常用对象操作之 三.HPA自动扩缩容Pod">
+            
+	            kubernetes常用对象操作之 三.HPA自动扩缩容Pod
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hpa/">hpa</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/object/">对象</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/11/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1589</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100112.html">kubernetes常用对象操作之 二.Deployment</a></p>
+<hr>
+<p>在前面我们提到过通过手工执行<code>kubectl scale</code>命令和在<code>Dashboard</code>上操作可以实现<code>Pod</code>的扩缩容，但是这样毕竟需要每次去手工操作一次，而且指不定什么时候业务请求量就很大了，所以如果不能做到自动化的去扩缩容的话，这也是一个很麻烦的事情。如果<code>Kubernetes</code>系统能够根据<code>Pod</code>当前的负载的变化情况来自动的进行扩缩容就好了，因为这个过程本来就是不固定的，频繁发生的，所以纯手工的方式不是很现实。</p>
+<p>幸运的是<code>Kubernetes</code>为我们提供了这样一个资源对象：<code>Horizontal Pod Autoscaling</code>（Pod水平自动伸缩），简称<code>HPA</code>。<code>HAP</code>通过监控分析<code>RC</code>或者<code>Deployment</code>控制的所有<code>Pod</code>的负载变化情况来确定是否需要调整<code>Pod</code>的副本数量，这是<code>HPA</code>最基本的原理。</p>
+<div align="center"><img src="/img/posts/horizontal-pod-autoscaler.svg" alt="hpa"></div>
+
+<p><code>HPA</code>在<code>kubernetes</code>集群中被设计成一个<code>controller</code>，我们可以简单的通过<code>kubectl autoscale</code>命令来创建一个<code>HPA</code>资源对象，<code>HPA Controller</code>默认30s轮询一次（可通过<code>kube-controller-manager</code>的标志<code>--horizontal-pod-autoscaler-sync-period</code>进行设置），查询指定的资源（RC或者Deployment）中<code>Pod</code>的资源使用率，并且与创建时设定的值和指标做对比，从而实现自动伸缩的功能。</p>
+<p>当你创建了<code>HPA</code>后，<code>HPA</code>会从<code>Heapster</code>或者用户自定义的<code>RESTClient</code>端获取每一个一个<code>Pod</code>利用率或原始值的平均值，然后和<code>HPA</code>中定义的指标进行对比，同时计算出需要伸缩的具体值并进行相应的操作。目前，<code>HPA</code>可以从两个地方获取数据：</p>
+<ul>
+<li>Heapster：仅支持<code>CPU</code>使用率</li>
+<li>自定义监控：我们到后面的监控的课程中再给大家讲解这部分的使用方法</li>
+</ul>
+<p>我们这节课来给大家介绍从<code>Heapster</code>获取监控数据来进行自动扩缩容的方法，所以首先我们得安装<code>Heapster</code>，前面我们在<code>kubeadm</code>搭建集群的课程中，实际上我们已经默认把<code>Heapster</code>相关的镜像都已经拉取到节点上了，所以接下来我们只需要部署即可，我们这里使用的是<code>Heapster</code> 1.4.2 版本的，前往<code>Heapster</code>的<code>github</code>页面：</p>
+<p><a href="https://github.com/kubernetes/heapster/tree/v1.4.2/deploy/kube-config/influxdb" target="_blank" rel="noopener">https://github.com/kubernetes/heapster</a></p>
+<p>我们将该目录下面的<code>yaml</code>文件保存到我们的集群上，然后使用<code>kubectl</code>命令行工具创建即可，另外创建完成后，如果需要在<code>Dashboard</code>当中看到监控图表，我们还需要在<code>Dashboard</code>中配置上我们的<code>heapster-host</code>。</p>
+<p>同样的，我们来创建一个<code>Deployment</code>管理的<code>Nginx</code> Pod，然后利用<code>HPA</code>来进行自动扩缩容。定义<code>Deployment</code>的<code>YAML</code>文件如下：（hap-deploy-demo.yaml）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">hpa-nginx-deploy</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">nginx-demo</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  revisionHistoryLimit:</span> <span class="number">15</span></span><br><span class="line"><span class="attr">  template:</span></span><br><span class="line"><span class="attr">    metadata:</span></span><br><span class="line"><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    spec:</span></span><br><span class="line"><span class="attr">      containers:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">        image:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">        ports:</span></span><br><span class="line"><span class="attr">        - containerPort:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure>
+<p>然后创建<code>Deployment</code>：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>kubectl create -f hpa-deploy-demo.yaml</span><br></pre></td></tr></table></figure>
+<p>现在我们来创建一个<code>HPA</code>，可以使用<code>kubectl autoscale</code>命令来创建：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl autoscale deployment hpa-nginx-deploy --cpu-percent=<span class="number">10</span> --min=<span class="number">1</span> --max=<span class="number">10</span></span><br><span class="line">deployment <span class="string">"hpa-nginx-deploy"</span> autoscaled</span><br><span class="line">···</span><br><span class="line">$ kubectl get hpa                                                         </span><br><span class="line">NAME        REFERENCE              TARGET    CURRENT   MINPODS   MAXPODS   AGE</span><br><span class="line">hpa-nginx-deploy   Deployment/hpa-nginx-deploy   <span class="number">10</span>%       <span class="number">0</span>%        <span class="number">1</span>         <span class="number">10</span>        <span class="number">13</span>s</span><br></pre></td></tr></table></figure>
+<p>此命令创建了一个关联资源 hpa-nginx-deploy 的<code>HPA</code>，最小的 pod 副本数为1，最大为10。<code>HPA</code>会根据设定的 cpu使用率（10%）动态的增加或者减少pod数量。</p>
+<p>当然出来使用<code>kubectl autoscale</code>命令来创建外，我们依然可以通过创建<code>YAML</code>文件的形式来创建<code>HPA</code>资源对象。如果我们不知道怎么编写的话，可以查看上面命令行创建的<code>HPA</code>的<code>YAML</code>文件：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get hpa hpa-nginx-deploy -o yaml</span><br><span class="line"><span class="symbol">apiVersion:</span> autoscaling/v1</span><br><span class="line"><span class="symbol">kind:</span> HorizontalPodAutoscaler</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  creationTimestamp:</span> <span class="number">2017</span><span class="number">-06</span><span class="number">-29</span>T08:<span class="number">04</span>:<span class="number">08</span>Z</span><br><span class="line"><span class="symbol">  name:</span> nginxtest</span><br><span class="line"><span class="symbol">  namespace:</span> default</span><br><span class="line"><span class="symbol">  resourceVersion:</span> <span class="string">"951016361"</span></span><br><span class="line"><span class="symbol">  selfLink:</span> <span class="meta-keyword">/apis/</span>autoscaling<span class="meta-keyword">/v1/</span>namespaces<span class="meta-keyword">/default/</span>horizontalpodautoscalers/nginxtest</span><br><span class="line"><span class="symbol">  uid:</span> <span class="number">86f</span>ebb63<span class="number">-5</span>ca1<span class="number">-11e7</span>-aaef<span class="number">-5254004e79</span>a3</span><br><span class="line"><span class="symbol">spec:</span></span><br><span class="line"><span class="symbol">  maxReplicas:</span> <span class="number">5</span> <span class="comment">//资源最大副本数</span></span><br><span class="line"><span class="symbol">  minReplicas:</span> <span class="number">1</span> <span class="comment">//资源最小副本数</span></span><br><span class="line"><span class="symbol">  scaleTargetRef:</span></span><br><span class="line"><span class="symbol">    apiVersion:</span> extensions/v1beta1</span><br><span class="line"><span class="symbol">    kind:</span> Deployment <span class="comment">//需要伸缩的资源类型</span></span><br><span class="line"><span class="symbol">    name:</span> nginxtest  <span class="comment">//需要伸缩的资源名称</span></span><br><span class="line"><span class="symbol">  targetCPUUtilizationPercentage:</span> <span class="number">50</span> <span class="comment">//触发伸缩的cpu使用率</span></span><br><span class="line"><span class="symbol">status:</span></span><br><span class="line"><span class="symbol">  currentCPUUtilizationPercentage:</span> <span class="number">48</span> <span class="comment">//当前资源下pod的cpu使用率</span></span><br><span class="line"><span class="symbol">  currentReplicas:</span> <span class="number">1</span> <span class="comment">//当前的副本数</span></span><br><span class="line"><span class="symbol">  desiredReplicas:</span> <span class="number">2</span> <span class="comment">//期望的副本数</span></span><br><span class="line"><span class="symbol">  lastScaleTime:</span> <span class="number">2017</span><span class="number">-07</span><span class="number">-03</span>T06:<span class="number">32</span>:<span class="number">19</span>Z</span><br></pre></td></tr></table></figure>
+<p>好，现在我们根据上面的<code>YAML</code>文件就可以自己来创建一个基于<code>YAML</code>的<code>HPA</code>描述文件了。</p>
+<p>现在我们来增大负载进行测试，我们来创建一个<code>busybox</code>，并且循环访问上面创建的服务。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl run -i <span class="comment">--tty load-generator --image=busybox /bin/sh</span></span><br><span class="line"><span class="keyword">If</span> you don<span class="symbol">'t</span> see a command prompt, try pressing enter.</span><br><span class="line">/ # <span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span> wget -q -O- http://<span class="number">172.16</span>.<span class="number">255.60</span>:<span class="number">4000</span>; done</span><br></pre></td></tr></table></figure>
+<p>下图可以看到，HPA已经开始工作。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get hpa</span><br><span class="line">NAME        REFERENCE              TARGET    CURRENT   MINPODS   MAXPODS   AGE</span><br><span class="line">hpa-nginx-deploy   Deployment/hpa-nginx-deploy   <span class="number">10</span>%       <span class="number">29</span>%        <span class="number">1</span>         <span class="number">10</span>        <span class="number">27</span>m</span><br></pre></td></tr></table></figure>
+<p>同时我们查看相关资源hpa-nginx-deploy的副本数量，副本数量已经从原来的1变成了3。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get deployment hpa-nginx-deploy</span><br><span class="line">NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">hpa-nginx-deploy   <span class="number">3</span>         <span class="number">3</span>         <span class="number">3</span>            <span class="number">3</span>           <span class="number">4</span>d</span><br></pre></td></tr></table></figure>
+<p>同时再次查看<code>HPA</code>，由于副本数量的增加，使用率也保持在了10%左右。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get hpa</span><br><span class="line">NAME        REFERENCE              TARGET    CURRENT   MINPODS   MAXPODS   AGE</span><br><span class="line">hpa-nginx-deploy   Deployment/hpa-nginx-deploy   <span class="number">10</span>%       <span class="number">9</span>%        <span class="number">1</span>         <span class="number">10</span>        <span class="number">35</span>m</span><br></pre></td></tr></table></figure>
+<p>同样的这个时候我们来关掉<code>busybox</code>来减少负载，然后等待一段时间观察下<code>HPA</code>和<code>Deployment</code>对象</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get hpa     </span><br><span class="line">NAME        REFERENCE              TARGET    CURRENT   MINPODS   MAXPODS   AGE</span><br><span class="line">hpa-nginx-deploy   Deployment/hpa-nginx-deploy   <span class="number">10</span>%       <span class="number">0</span>%        <span class="number">1</span>         <span class="number">10</span>        <span class="number">48</span>m</span><br><span class="line">$ kubectl get deployment hpa-nginx-deploy</span><br><span class="line">NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">hpa-nginx-deploy   <span class="number">1</span>         <span class="number">1</span>         <span class="number">1</span>            <span class="number">1</span>           <span class="number">4</span>d</span><br></pre></td></tr></table></figure>
+<p>可以看到副本数量已经由3变为1。</p>
+<p>不过当前的<code>HPA</code>只有<code>CPU</code>使用率这一个指标，还不是很灵活的，在后面的课程中我们来根据我们自定义的监控来自动对<code>Pod</code>进行扩缩容。</p>
+<hr>
+<p>接下文: <a href="100100.html">kubernetes常用对象操作之 四.Job、CronJob</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/11/100100.html" class="pre-post btn btn-default" title='kubernetes常用对象操作之 四.Job、CronJob'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">kubernetes常用对象操作之 四.Job、CronJob</span>
+        </a>
+    
+    
+        <a href="/archives/2018/11/100112.html" class="next-post btn btn-default" title='kubernetes常用对象操作之 二.Deployment'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">kubernetes常用对象操作之 二.Deployment</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <p>暂无目录</p>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

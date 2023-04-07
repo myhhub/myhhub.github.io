@@ -1,0 +1,388 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="tsdb">
+
+
+    <meta name="description" content="DolphinDB概述DolphinDB是一个速度极快的时序数据库和数据分析系统，可无限拓展。 它具有内置的并行和分布式计算功能，可用于实时数据处理和多节点计算分析。
+DolphinDB支持常用...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>初识DolphinDB、KDB+ 时序数据库 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="初识DolphinDB、KDB+ 时序数据库">
+            
+	            初识DolphinDB、KDB+ 时序数据库
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/tsdb/">tsdb</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/09/05</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1309</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="DolphinDB"><a href="#DolphinDB" class="headerlink" title="DolphinDB"></a>DolphinDB</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>DolphinDB是一个速度极快的时序数据库和数据分析系统，可无限拓展。 它具有内置的并行和分布式计算功能，可用于实时数据处理和多节点计算分析。</p>
+<p>DolphinDB支持常用的数据结构，包括向量、矩阵、字典和数据表以及相应的操作和查询。 它还提供了一种易于使用的脚本语言，方便用户以高速有效的方式开发自己的应用程序。 在DolphinDB中，数据库和开发语言无缝集成，因此DolphinDB可达到毫秒级的响应速度，为实时应用程序提供最佳性能。</p>
+<p>DolphinDB中的脚本语言与Python或R非常相似。如果您对Python或R有一些了解，那么您将会觉得DolphinDB脚本非常容易上手。DolphinDB还支持与标准SQL非常相似的SQL语法。</p>
+<p>DolphinDB是用C++编写的。 DolphinDB提供Java、Python、C++、C#和Excel的API，方便用户与已有应用程序集成。</p>
+<h2 id="性能优异"><a href="#性能优异" class="headerlink" title="性能优异"></a>性能优异</h2><p>和其他很多语言一样，DolphinDB的脚本语言是解释执行的，比如Python、R、Matlab、SAS等。但是，由于DolphinDB做到了以下几点，所以DolphinDB的速度极快。</p>
+<ul>
+<li>DolphinDB无缝连接了高性能时间序列数据库、轻量级的分布式计算框架和功能齐全的向量化编程语言，最大程度地减少了功能模块间的数据移动。</li>
+<li>DolphinDB对所有内置函数和命令，无论是最基本的排序还是高阶函数（如表连接），都做了性能上的优化。</li>
+<li>DolphinDB使用自带的内存管理系统来优化性能。在处理大数据时，根据具体任务的计算要求，动态分配和释放内存。</li>
+<li>DolphinDB的脚本语言是向量语言，并提供函数化编程。它在数据管理和分析方面具有很强的表达能力，所以在编译执行时的系统耗费的时间与资源非常小。</li>
+<li>DolphinDB用C++编写。在DolphinDB里，所有并行或迭代的计算都使用轻量级的线程模式，这要比用Java编写的进程模式有更好的性能。</li>
+</ul>
+<h2 id="对DolphinDB-的认知"><a href="#对DolphinDB-的认知" class="headerlink" title="对DolphinDB 的认知"></a>对DolphinDB 的认知</h2><ul>
+<li>国产软件：<a href="http://www.dolphindb.cn/index.php" target="_blank" rel="noopener">DolphinDB</a>，公司位于杭州市。</li>
+<li>社区版长期免费：目前可以下载的版本显示试用期是2个月，不过官方消息，后续会推出长期license。</li>
+<li>学习资料丰富：官网本身就提供了大量详细教程及手册。</li>
+<li>支持Python和sql：可以良好对接已有知识。</li>
+<li><a href="https://github.com/dolphindb/grafana-datasource/blob/master/README_CN.md" target="_blank" rel="noopener">支持Grafana连接DolphinDB数据源</a>。</li>
+<li>官方宣传性能全面超越kdb+，个人试用确实性能还不错，比InfluxDB快多了。</li>
+</ul>
+<h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><ul>
+<li><a href="http://www.dolphindb.cn/article/article.php?id=14#service1_cn" target="_blank" rel="noopener">官方中文资料非常详细</a></li>
+</ul>
+<h1 id="KDB"><a href="#KDB" class="headerlink" title="KDB+"></a>KDB+</h1><p>KDB+ 是专门处理金融tick数据的时序数据库。</p>
+<h2 id="关于KDB-的问答"><a href="#关于KDB-的问答" class="headerlink" title="关于KDB+ 的问答"></a>关于KDB+ 的问答</h2><ul>
+<li><a href="https://www.zhihu.com/question/21687625" target="_blank" rel="noopener">金融分析量化系统，高频交易程序数据库通常采用哪种方式存贮数据？</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/41799930" target="_blank" rel="noopener">Kdb+有可能不再是最快的时序数据库？</a></li>
+<li><a href="https://www.zhihu.com/question/20756848" target="_blank" rel="noopener">Quant 如何运算百万行的数据？</a></li>
+<li><a href="https://www.zhihu.com/question/24436232" target="_blank" rel="noopener">请问有人熟悉Q/KDB吗?</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/30556050" target="_blank" rel="noopener">q语言与量化分析利器kdb+</a></li>
+<li><a href="https://www.zhihu.com/question/26882540" target="_blank" rel="noopener">KDB/Q是什么语言？</a></li>
+</ul>
+<h2 id="对KDB-的认知"><a href="#对KDB-的认知" class="headerlink" title="对KDB+ 的认知"></a>对KDB+ 的认知</h2><ul>
+<li>kdb+作为上一代时序数据库，最大的问题是为高性能计算机设计的，无法运行在pc服务器组成的分布式系统上。</li>
+<li>kdb+差不多是20年前开发的高性能时间序列数据库。除了速度快和语言表达能力强，价格昂贵和难以使用同样的出名。</li>
+<li>KDB+是上个时代投行标配，学习曲线陡峭。</li>
+<li><a href="https://kx.com/connect-with-us/licenses/" target="_blank" rel="noopener">kdb+</a>有32位、<a href="https://ondemand.kx.com/" target="_blank" rel="noopener">64位</a>个人免费版。</li>
+<li>不支持Grafana连接。</li>
+<li>kdb的很大的问题在于Arthur Whitney退休了，这个系统基本上就到此为止了，不会有啥大的改进了。First Derivatives买过来以后基本是在推广应用领域。现在新的公司上系统，除非很多人以前用过kdb，基本不会考虑它了。</li>
+</ul>
+<h2 id="学习资料-1"><a href="#学习资料-1" class="headerlink" title="学习资料"></a>学习资料</h2><ul>
+<li><a href="https://code.kx.com/q4m3/" target="_blank" rel="noopener">Q for Mortals</a></li>
+<li><a href="https://zhuanlan.zhihu.com/c_1101069446726184960" target="_blank" rel="noopener">KDB+数据库/Q语言</a></li>
+<li><a href="https://zhuanlan.zhihu.com/c_175078307" target="_blank" rel="noopener">磨人的KDB+</a></li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/09/100584.html" class="pre-post btn btn-default" title='图数据库neo4j、JanusGraph、hugugraph比较'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">图数据库neo4j、JanusGraph、hugugraph比较</span>
+        </a>
+    
+    
+        <a href="/archives/2019/09/100582.html" class="next-post btn btn-default" title='时序数据库介绍'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">时序数据库介绍</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#DolphinDB"><span class="toc-text">DolphinDB</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能优异"><span class="toc-text">性能优异</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对DolphinDB-的认知"><span class="toc-text">对DolphinDB 的认知</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#学习资料"><span class="toc-text">学习资料</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#KDB"><span class="toc-text">KDB+</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关于KDB-的问答"><span class="toc-text">关于KDB+ 的问答</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#对KDB-的认知"><span class="toc-text">对KDB+ 的认知</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#学习资料-1"><span class="toc-text">学习资料</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

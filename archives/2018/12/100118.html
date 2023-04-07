@@ -1,0 +1,381 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,pod">
+
+
+    <meta name="description" content="接上文: 深入理解kubernetes Pod之 三.Pod Hook
+
+前面我们和大家一起学习了Pod中容器的生命周期的两个钩子函数，PostStart与PreStop，其中PostStart...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>深入理解kubernetes Pod之 四.Pod健康检查 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="深入理解kubernetes Pod之 四.Pod健康检查">
+            
+	            深入理解kubernetes Pod之 四.Pod健康检查
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/pod/">pod</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/12/12</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1576</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文: <a href="100117.html">深入理解kubernetes Pod之 三.Pod Hook</a></p>
+<hr>
+<p>前面我们和大家一起学习了<code>Pod</code>中容器的生命周期的两个钩子函数，<code>PostStart</code>与<code>PreStop</code>，其中<code>PostStart</code>是在容器创建后立即执行的，而<code>PreStop</code>这个钩子函数则是在容器终止之前执行的。除了上面这两个钩子函数以外，还有一项配置会影响到容器的生命周期的，那就是健康检查的探针。</p>
+<p>在<code>Kubernetes</code>集群当中，我们可以通过配置<code>liveness probe</code>（存活探针）和<code>readiness probe</code>（可读性探针）来影响容器的生存周期。</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>kubelet 通过使用 liveness probe 来确定你的应用程序是否正在运行，通俗点将就是是否还活着。一般来说，如果你的程序一旦崩溃了， Kubernetes 就会立刻知道这个程序已经终止了，然后就会重启这个程序。而我们的 liveness probe 的目的就是来捕获到当前应用程序还没有终止，还没有崩溃，如果出现了这些情况，那么就重启处于该状态下的容器，使应用程序在存在 bug 的情况下依然能够继续运行下去。</span><br><span class="line"><span class="bullet">* </span>kubelet 使用 readiness probe 来确定容器是否已经就绪可以接收流量过来了。这个探针通俗点讲就是说是否准备好了，现在可以开始工作了。只有当 Pod 中的容器都处于就绪状态的时候 kubelet 才会认定该 Pod 处于就绪状态，因为一个 Pod 下面可能会有多个容器。当然 Pod 如果处于非就绪状态，那么我们就会将他从我们的工作队列(实际上就是我们后面需要重点学习的 Service)中移除出来，这样我们的流量就不会被路由到这个 Pod 里面来了。</span><br></pre></td></tr></table></figure>
+<p>和前面的钩子函数一样的，我们这两个探针的支持两种配置方式：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>exec：执行一段命令</span><br><span class="line"><span class="bullet">* </span>http：检测某个 http 请求</span><br><span class="line"><span class="bullet">* </span>tcpSocket：使用此配置， kubelet 将尝试在指定端口上打开容器的套接字。如果可以建立连接，容器被认为是健康的，如果不能就认为是失败的。实际上就是检查端口</span><br></pre></td></tr></table></figure>
+<p>好，我们先来给大家演示下存活探针的使用方法，首先我们用<code>exec</code>执行命令的方式来检测容器的存活，如下:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">apiVersion:</span> v1</span><br><span class="line"><span class="symbol">kind:</span> Pod</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> liveness-exec</span><br><span class="line"><span class="symbol">  labels:</span></span><br><span class="line"><span class="symbol">    test:</span> liveness</span><br><span class="line"><span class="symbol">spec:</span></span><br><span class="line"><span class="symbol">  containers:</span></span><br><span class="line">  - name: liveness</span><br><span class="line"><span class="symbol">    image:</span> busybox</span><br><span class="line"><span class="symbol">    args:</span></span><br><span class="line">    - <span class="meta-keyword">/bin/</span>sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch <span class="meta-keyword">/tmp/</span>healthy; sleep <span class="number">30</span>; rm -rf <span class="meta-keyword">/tmp/</span>healthy; sleep <span class="number">600</span></span><br><span class="line"><span class="symbol">    livenessProbe:</span></span><br><span class="line"><span class="symbol">      exec:</span></span><br><span class="line"><span class="symbol">        command:</span></span><br><span class="line">        - cat</span><br><span class="line">        - <span class="meta-keyword">/tmp/</span>healthy</span><br><span class="line"><span class="symbol">      initialDelaySeconds:</span> <span class="number">5</span></span><br><span class="line"><span class="symbol">      periodSeconds:</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
+<p>我们这里需要用到一个新的属性：<code>livenessProbe</code>，下面通过<code>exec</code>执行一段命令，其中<code>periodSeconds</code>属性表示让<code>kubelet</code>每隔5秒执行一次存活探针，也就是每5秒执行一次上面的<code>cat /tmp/healthy</code>命令，如果命令执行成功了，将返回0，那么<code>kubelet</code>就会认为当前这个容器是存活的并且很监控，如果返回的是非0值，那么<code>kubelet</code>就会把该容器杀掉然后重启它。另外一个属性<code>initialDelaySeconds</code>表示在第一次执行探针的时候要等待5秒，这样能够确保我们的容器能够有足够的时间启动起来。大家可以想象下，如果你的第一次执行探针等候的时间太短，是不是很有可能容器还没正常启动起来，所以存活探针很可能始终都是失败的，这样就会无休止的重启下去了，对吧？所以一个合理的<code>initialDelaySeconds</code>非常重要。</p>
+<p>另外我们在容器启动的时候，执行了如下命令：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">☁  <span class="symbol">~ /bin/sh -c "touch /tmp/healthy</span>; sleep <span class="number">30</span>; rm -rf /tmp/healthy; sleep <span class="number">600</span><span class="string">"</span></span><br></pre></td></tr></table></figure>
+<p>意思是说在容器最开始的30秒内有一个<code>/tmp/healthy</code>文件，在这30秒内执行<code>cat /tmp/healthy</code>命令都会返回一个成功的返回码。30秒后，我们删除这个文件，现在执行<code>cat /tmp/healthy</code>是不是就会失败了，这个时候就会重启容器了。</p>
+<p>我们来创建下该<code>Pod</code>，在30秒内，查看<code>Pod</code>的<code>Event</code>：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">☁  ~ kubectl describe pod liveness-<span class="built_in">exec</span></span><br></pre></td></tr></table></figure>
+<p>我们可以观察到容器是正常启动的，在隔一会儿，比如40s后，再查看下<code>Pod</code>的<code>Event</code>，在最下面有一条信息显示 <code>liveness probe</code>失败了，容器被删掉并重新创建。</p>
+<p>然后通过<code>kubectl get pod liveness-exec</code>可以看到<code>RESTARTS</code>值加1了。</p>
+<p>同样的，我们还可以使用<code>HTTP GET</code>请求来配置我们的存活探针，我们这里使用一个<code>liveness</code>镜像来验证演示下，</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: v1</span><br><span class="line"><span class="attribute">kind</span>: Pod</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">labels</span>:</span><br><span class="line">    <span class="attribute">test</span>: liveness</span><br><span class="line">  <span class="attribute">name</span>: liveness-http</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">containers</span>:</span><br><span class="line">  - <span class="attribute">name</span>: liveness</span><br><span class="line">    <span class="attribute">image</span>: cnych/liveness</span><br><span class="line">    <span class="attribute">args</span>:</span><br><span class="line">    - /server</span><br><span class="line">    <span class="attribute">livenessProbe</span>:</span><br><span class="line">      <span class="attribute">httpGet</span>:</span><br><span class="line">        <span class="attribute">path</span>: /healthz</span><br><span class="line">        <span class="attribute">port</span>: <span class="number">8080</span></span><br><span class="line">        <span class="attribute">httpHeaders</span>:</span><br><span class="line">        - <span class="attribute">name</span>: X-Custom-Header</span><br><span class="line">          <span class="attribute">value</span>: Awesome</span><br><span class="line">      <span class="attribute">initialDelaySeconds</span>: <span class="number">3</span></span><br><span class="line">      <span class="attribute">periodSeconds</span>: <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<p>同样的，根据<code>periodSeconds</code>属性我们可以知道<code>kubelet</code>需要每隔3秒执行一次<code>liveness probe</code>，该探针将向容器中的 server 的8080端口发送一个 HTTP GET 请求。如果 server 的 /healthz 路径的 handler 返回一个成功的返回码，<code>kubelet</code>就会认定该容器是活着的并且很健康,如果返回失败的返回码，<code>kubelet</code>将杀掉该容器并重启它。。<code>initialDelaySeconds</code> 指定<code>kubelet</code>在该执行第一次探测之前需要等待3秒钟。</p>
+<p>通常来说，任何大于200小于400的返回码都会认定是成功的返回码。其他返回码都会被认为是失败的返回码。</p>
+<p>我们可以来查看下上面的<code>healthz</code>的实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">http.HandleFunc(<span class="string">"/healthz"</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    duration := time.Now().Sub(started)</span><br><span class="line">    <span class="keyword">if</span> duration.Seconds() &gt; <span class="number">10</span> &#123;</span><br><span class="line">        w.WriteHeader(<span class="number">500</span>)</span><br><span class="line">        w.Write([]<span class="keyword">byte</span>(fmt.Sprintf(<span class="string">"error: %v"</span>, duration.Seconds())))</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        w.WriteHeader(<span class="number">200</span>)</span><br><span class="line">        w.Write([]<span class="keyword">byte</span>(<span class="string">"ok"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>大概意思就是最开始前10s返回状态码200，10s过后就返回500的<code>status_code</code>了。所以当容器启动3秒后，<code>kubelet</code> 开始执行健康检查。第一次健康监测会成功，因为是在10s之内，但是10秒后，健康检查将失败，因为现在返回的是一个错误的状态码了，所以<code>kubelet</code>将会杀掉和重启容器。</p>
+<p>同样的，我们来创建下该<code>Pod</code>测试下效果，10秒后，查看 Pod 的 event，确认<code>liveness probe</code>失败并重启了容器。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">☁  ~ kubectl <span class="keyword">describe</span> pod liveness-<span class="keyword">http</span></span><br></pre></td></tr></table></figure>
+<p>然后我们来通过端口的方式来配置存活探针，使用此配置，<code>kubelet</code>将尝试在指定端口上打开容器的套接字。 如果可以建立连接，容器被认为是健康的，如果不能就认为是失败的。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: v1</span><br><span class="line"><span class="attribute">kind</span>: Pod</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">name</span>: goproxy</span><br><span class="line">  <span class="attribute">labels</span>:</span><br><span class="line">    <span class="attribute">app</span>: goproxy</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">containers</span>:</span><br><span class="line">  - <span class="attribute">name</span>: goproxy</span><br><span class="line">    <span class="attribute">image</span>: cnych/goproxy</span><br><span class="line">    <span class="attribute">ports</span>:</span><br><span class="line">    - <span class="attribute">containerPort</span>: <span class="number">8080</span></span><br><span class="line">    <span class="attribute">readinessProbe</span>:</span><br><span class="line">      <span class="attribute">tcpSocket</span>:</span><br><span class="line">        <span class="attribute">port</span>: <span class="number">8080</span></span><br><span class="line">      <span class="attribute">initialDelaySeconds</span>: <span class="number">5</span></span><br><span class="line">      <span class="attribute">periodSeconds</span>: <span class="number">10</span></span><br><span class="line">    <span class="attribute">livenessProbe</span>:</span><br><span class="line">      <span class="attribute">tcpSocket</span>:</span><br><span class="line">        <span class="attribute">port</span>: <span class="number">8080</span></span><br><span class="line">      <span class="attribute">initialDelaySeconds</span>: <span class="number">15</span></span><br><span class="line">      <span class="attribute">periodSeconds</span>: <span class="number">20</span></span><br></pre></td></tr></table></figure>
+<p>我们可以看到，TCP 检查的配置与 HTTP 检查非常相似，只是将<code>httpGet</code>替换成了<code>tcpSocket</code>。 而且我们同时使用了<code>readiness probe</code>和<code>liveness probe</code>两种探针。 容器启动后5秒后，<code>kubelet</code>将发送第一个<code>readiness probe</code>（可读性探针）。 该探针会去连接容器的8080端，如果连接成功，则该 Pod 将被标记为就绪状态。然后<code>Kubelet</code>将每隔10秒钟执行一次该检查。</p>
+<p>除了<code>readiness probe</code>之外，该配置还包括<code>liveness probe</code>。 容器启动15秒后，<code>kubelet</code>将运行第一个 <code>liveness probe</code>。 就像<code>readiness probe</code>一样，这将尝试去连接到容器的8080端口。如果<code>liveness probe</code>失败，容器将重新启动。</p>
+<p>有的时候，应用程序可能暂时无法对外提供服务，例如，应用程序可能需要在启动期间加载大量数据或配置文件。 在这种情况下，您不想杀死应用程序，也不想对外提供服务。 那么这个时候我们就可以使用<code>readiness probe</code>来检测和减轻这些情况。 Pod中的容器可以报告自己还没有准备，不能处理Kubernetes服务发送过来的流量。</p>
+<p>从上面的<code>YAML</code>文件我们可以看出<code>readiness probe</code>的配置跟<code>liveness probe</code>很像，基本上一致的。唯一的不同是使用<code>readinessProbe</code>而不是<code>livenessProbe</code>。两者如果同时使用的话就可以确保流量不会到达还未准备好的容器，准备好过后，如果应用程序出现了错误，则会重新启动容器。</p>
+<p>另外除了上面的<code>initialDelaySeconds</code>和<code>periodSeconds</code>属性外，探针还可以配置如下几个参数：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* timeoutSeconds：探测超时时间，默认<span class="number">1</span>秒，最小<span class="number">1</span>秒。</span><br><span class="line">* successThreshold：探测失败后，最少连续探测成功多少次才被认定为成功。默认是 <span class="number">1</span>，但是如果是`liveness`则必须是 <span class="number">1</span>。最小值是 <span class="number">1</span>。</span><br><span class="line">* failureThreshold：探测成功后，最少连续探测失败多少次才被认定为失败。默认是 <span class="number">3</span>，最小值是 <span class="number">1</span>。</span><br></pre></td></tr></table></figure>
+<p>这就是<code>liveness probe</code>（存活探针）和<code>readiness probe</code>（可读性探针）的使用方法。</p>
+<hr>
+<p>接下文: <a href="100098.html">深入理解kubernetes Pod之 五.Pod容器初始化</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/12/100098.html" class="pre-post btn btn-default" title='深入理解kubernetes Pod之 五.Pod容器初始化'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">深入理解kubernetes Pod之 五.Pod容器初始化</span>
+        </a>
+    
+    
+        <a href="/archives/2018/12/100117.html" class="next-post btn btn-default" title='深入理解kubernetes Pod之 三.Pod Hook'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">深入理解kubernetes Pod之 三.Pod Hook</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <p>暂无目录</p>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

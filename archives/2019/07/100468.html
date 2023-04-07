@@ -1,0 +1,434 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,flink,集群,高可用">
+
+
+    <meta name="description" content="JobManager高可用性（HA）JobManager协调每个Flink部署。它负责调度和资源管理。
+默认情况下，每个Flink群集都有一个JobManager实例。这会产生单点故障（SPOF...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Flink高可用集群部署 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Flink高可用集群部署">
+            
+	            Flink高可用集群部署
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/colony/">集群</a> <a class="tag-link" href="/tags/availability/">高可用</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/20</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1356</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="JobManager高可用性（HA）"><a href="#JobManager高可用性（HA）" class="headerlink" title="JobManager高可用性（HA）"></a>JobManager高可用性（HA）</h1><p>JobManager协调每个Flink部署。它负责<em>调度</em>和<em>资源管理</em>。</p>
+<p>默认情况下，每个Flink群集都有一个JobManager实例。这会产生<em>单点故障</em>（SPOF）：如果JobManager崩溃，则无法提交新程序并且运行程序失败。</p>
+<p>使用JobManager High Availability，您可以从JobManager故障中恢复，从而消除<em>SPOF</em>。您可以为<strong>独立</strong>和<strong>YARN群集</strong>配置高可用性。</p>
+<h2 id="独立群集高可用性"><a href="#独立群集高可用性" class="headerlink" title="独立群集高可用性"></a>独立群集高可用性</h2><p>独立集群的JobManager高可用性的一般概念是，任何时候都有一个<strong>Master JobManager</strong>和<strong>多个Slave JobManagers</strong>，以便在Leader失败时接管领导。这保证了<strong>没有单点故障</strong>，一旦Slave JobManager取得领导，程序就可以取得进展。Slave 和主JobManager实例之间没有明确的区别。每个JobManager都可以充当主服务器或Slave 服务器。</p>
+<p>例如，请考虑以下三个JobManager实例的设置：</p>
+<p><img src="/img/flink/jobmanager_ha_overview.png" alt="img"></p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>要启用JobManager高可用性，您必须将<strong>高可用性模式设置</strong>为<em>zookeeper</em>，配置<strong>ZooKeeper quorum</strong>并设置包含所有JobManagers主机及其Web UI端口的<strong>主服务器文件</strong>。</p>
+<p>Flink利用<strong>ZooKeeper</strong>在所有正在运行的JobManager实例之间进行<em>分布式协调</em>。ZooKeeper是Flink的独立服务，通过Leader选举和轻量级一致状态存储提供高度可靠的分布式协调。有关ZooKeeper的更多信息，请查看<a href="100433.html">ZooKeeper的指南</a>。Flink包含用于引导简单ZooKeeper安装的脚本。</p>
+<h4 id="Masters-文件（Masters-）"><a href="#Masters-文件（Masters-）" class="headerlink" title="Masters 文件（Masters ）"></a>Masters 文件（Masters ）</h4><p>要启动HA群集，请在以下位置配置<em>主</em>文件<code>conf/masters</code>：</p>
+<ul>
+<li><p><strong>masters文件</strong>：<em>masters文件</em>包含启动JobManagers的所有主机以及Web用户界面绑定的端口。</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jobManagerAddress1：webUIPort1 </span><br><span class="line"><span class="string">[...]</span> </span><br><span class="line">jobManagerAddressX：webUIPortX</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>默认情况下，JobManager将为进程间通信选择一个<em>随机端口</em>。您可以通过<strong>high-availability.jobmanager.port</strong>Keys更改此设置。此Keys接受单个端口（例如<code>50010</code>），范围（<code>50000-50025</code>）或两者的组合（<code>50010,50011,50020-50025,50050-50075</code>）。</p>
+<h4 id="配置文件（flink-conf-yaml）"><a href="#配置文件（flink-conf-yaml）" class="headerlink" title="配置文件（flink-conf.yaml）"></a>配置文件（flink-conf.yaml）</h4><p>要启动HA群集，请将以下配置键添加到<code>conf/flink-conf.yaml</code>：</p>
+<ul>
+<li><p><strong>高可用性模式</strong>（必需）：<em>高可用性模式</em>必须被在设置<code>conf/flink-conf.yaml</code>于<em>zookeeper</em>，以使高可用性模式。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">high-<span class="string">availability:</span> zookeeper</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>ZooKeeper quorum</strong>（必需）：<em>ZooKeeper quorum</em>是ZooKeeper服务器的复制组，它提供分布式协调服务。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">high-availability</span><span class="selector-class">.zookeeper</span><span class="selector-class">.quorum</span>：<span class="selector-tag">address1</span>：2181 <span class="selector-attr">[，...]</span>，<span class="selector-tag">addressX</span>：2181</span><br></pre></td></tr></table></figure>
+<p>每个<em>addressX：port</em>指的是一个ZooKeeper服务器，Flink可以在给定的地址和端口访问它。</p>
+</li>
+<li><p><strong>ZooKeeper root</strong>（推荐）：<em>根ZooKeeper节点</em>，在该<em>节点</em>下放置所有集群节点。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">high-availability<span class="selector-class">.zookeeper</span><span class="selector-class">.path</span><span class="selector-class">.root</span>：/ flink</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>ZooKeeper cluster-id</strong>（推荐）：<em>cluster-id ZooKeeper节点</em>，在该<em>节点</em>下放置集群的所有必需协调数据。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">high-availability.cluster-<span class="built_in">id</span>：/ default_ns＃important：每个群集自定义</span><br></pre></td></tr></table></figure>
+<p><strong>要点</strong>：在运行YARN群集，按作业YARN会话或其他群集管理器时，不应手动设置此值。在这些情况下，将根据应用程序ID自动生成cluster-id。手动设置cluster-id会覆盖YARN中的此行为。反过来，使用-z CLI选项指定cluster-id会覆盖手动配置。如果在裸机上运行多个Flink HA群集，则必须为每个群集手动配置单独的群集ID。</p>
+</li>
+<li><p><strong>存储目录</strong>（必需）：JobManager元数据保存在文件系统<em>storageDir中</em>，只有指向此状态的指针存储在ZooKeeper中。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">high-availability.storageDir：hdfs：<span class="regexp">//</span><span class="regexp">/ flink /</span> recovery</span><br></pre></td></tr></table></figure>
+<p>该<code>storageDir</code>存储所有元数据需要恢复JobManager失败。</p>
+</li>
+</ul>
+<p>配置主服务器和ZooKeeper quorum后，您可以像往常一样使用提供的集群启动脚本。他们将启动HA群集。请记住，调用脚本时<strong>必须运行ZooKeeper quorum</strong>，并确保为要<strong>启动的</strong>每个HA群集<strong>配置单独的ZooKeeper根路径</strong>。</p>
+<h4 id="示例：具有2个JobManagers的独立群集"><a href="#示例：具有2个JobManagers的独立群集" class="headerlink" title="示例：具有2个JobManagers的独立群集"></a>示例：具有2个JobManagers的独立群集</h4><ol>
+<li><p><strong>配置高可用性模式和 zookeeper.quorum</strong> 在<code>conf/flink-conf.yaml</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">high-availability: zookeeper </span><br><span class="line">high-availability<span class="selector-class">.zookeeper</span><span class="selector-class">.quorum</span>：localhost：<span class="number">2181</span> </span><br><span class="line">high-availability<span class="selector-class">.zookeeper</span><span class="selector-class">.path</span><span class="selector-class">.root</span>：/ flink </span><br><span class="line">high-availability.cluster-id：/ cluster_one＃important：custom per cluster </span><br><span class="line">high-availability.storageDir： HDFS：<span class="comment">///Flink/恢复</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>配置Masters</strong> 在<code>conf/masters</code>：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">localhost：<span class="number">8081</span> </span><br><span class="line">localhost：<span class="number">8082</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>配置ZooKeeper的服务器</strong>中<code>conf/zoo.cfg</code>（目前它只是可以运行每台机器的单一的ZooKeeper服务器）：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server.0</span> =localhost:<span class="number">2888</span>：<span class="number">3888</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>启动ZooKeeper quorum</strong>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ bin / start-zookeeper-quorum<span class="selector-class">.sh</span> </span><br><span class="line">在主机localhost上启动zookeeper守护程序。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>启动HA群集</strong>：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ bin / start-cluster.sh </span><br><span class="line">在ZooKeeper quorum中启动具有<span class="number">2</span>个主服务器和<span class="number">1</span>个对等服务器的HA集群。</span><br><span class="line">在主机localhost上启动jobmanager守护程序。</span><br><span class="line">在主机localhost上启动jobmanager守护程序。</span><br><span class="line">在主机localhost上启动taskmanager守护程序。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>停止ZooKeeper quorum和集群</strong>：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ bin / stop-cluster.sh </span><br><span class="line">在localhost上停止taskmanager守护进程（pid：<span class="number">7647</span>）。</span><br><span class="line">在主机localhost上停止jobmanager守护进程（pid：<span class="number">7495</span>）。</span><br><span class="line">在主机localhost上停止jobmanager守护进程（pid：<span class="number">7349</span>）。</span><br><span class="line">$ bin / stop-zookeeper-quorum.sh </span><br><span class="line">在主机localhost上停止zookeeper守护进程（pid：<span class="number">7101</span>）。</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="YARN群集高可用性"><a href="#YARN群集高可用性" class="headerlink" title="YARN群集高可用性"></a>YARN群集高可用性</h2><p>在运行高可用性YARN群集时，<strong>我们不会运行多个JobManager（ApplicationMaster）实例</strong>，而只会运行一个，由YARN在失败时重新启动。确切的行为取决于您使用的特定YARN版本。</p>
+<h3 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h3><h4 id="最大应用程序主要尝试次数（yarn-site-xml）"><a href="#最大应用程序主要尝试次数（yarn-site-xml）" class="headerlink" title="最大应用程序主要尝试次数（yarn-site.xml）"></a>最大应用程序主要尝试次数（yarn-site.xml）</h4><p>您必须配置为尝试应用Masters 的最大数量<strong>的</strong> YARN的设置<code>yarn-site.xml</code>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.am.max-attempts<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>4<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span></span><br><span class="line">    The maximum number of application master execution attempts.</span><br><span class="line">  <span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>当前YARN版本的默认值为2（表示允许单个JobManager失败）。</p>
+<h4 id="申请尝试（flink-conf-yaml）"><a href="#申请尝试（flink-conf-yaml）" class="headerlink" title="申请尝试（flink-conf.yaml）"></a>申请尝试（flink-conf.yaml）</h4><p>除HA配置外，您还必须配置最大尝试次数<code>conf/flink-conf.yaml</code>：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn.<span class="built_in">application</span>-attempts：<span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p>这意味着在YARN未通过应用程序（9次重试+ 1次初始尝试）之前，应用程序可以重新启动9次以进行失败尝试。如果YARN 算子操作需要，YARN可以执行其他重新启动：抢占，节点硬件故障或重新启动或NodeManager重新同步。这些重启不计入<code>yarn.application-attempts</code>，请参阅<a href="http://johnjianfang.blogspot.de/2015/04/the-number-of-maximum-attempts-of-yarn.html" target="_blank" rel="noopener">Jian Fang的博客文章</a>。重要的是要注意<code>yarn.resourcemanager.am.max-attempts</code>应用程序重新启动的上限。因此，Flink中设置的应用程序尝试次数不能超过启动YARN的YARN群集设置。</p>
+<h4 id="容器关闭行为"><a href="#容器关闭行为" class="headerlink" title="容器关闭行为"></a>容器关闭行为</h4><ul>
+<li><strong>YARN 2.3.0 &lt;版本&lt;2.4.0</strong>。如果应用程序主机失败，则重新启动所有容器。</li>
+<li><strong>YARN 2.4.0 &lt;版本&lt;2.6.0</strong>。TaskManager容器在应用程序主故障期间保持活动状态。这具有以下优点：启动时间更快并且用户不必再等待再次获得容器资源。</li>
+<li><strong>YARN 2.6.0 &lt;= version</strong>：将尝试失败有效性间隔设置为Flinks的Akka超时值。尝试失败有效性间隔表示只有在系统在一个间隔期间看到最大应用程序尝试次数后才会终止应用程序。这避免了持久的工作会耗尽它的应用程序尝试。</li>
+</ul>
+<p><strong>注意</strong>：Hadoop YARN 2.4.0有一个主要错误（在2.5.0中修复），阻止重新启动的Application Master / Job Manager容器重启容器。有关详细信息，请参阅<a href="https://issues.apache.org/jira/browse/FLINK-4142" target="_blank" rel="noopener">FLINK-4142</a>。我们建议至少在YARN上使用Hadoop 2.5.0进行高可用性设置。</p>
+<h4 id="示例：高度可用的YARN会话"><a href="#示例：高度可用的YARN会话" class="headerlink" title="示例：高度可用的YARN会话"></a>示例：高度可用的YARN会话</h4><ol>
+<li><p><strong>配置HA模式和 zookeeper.quorum</strong> 在<code>conf/flink-conf.yaml</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">high-availability: zookeeper </span><br><span class="line">high-availability<span class="selector-class">.zookeeper</span><span class="selector-class">.quorum</span>：localhost：<span class="number">2181</span> </span><br><span class="line">high-availability.storageDir：hdfs：<span class="comment">/// flink / recovery </span></span><br><span class="line">high-availability<span class="selector-class">.zookeeper</span><span class="selector-class">.path</span><span class="selector-class">.root</span>：/ flink </span><br><span class="line">yarn.application-attempts：<span class="number">10</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>配置ZooKeeper的服务器</strong>中<code>conf/zoo.cfg</code>（目前它只是可以运行每台机器的单一的ZooKeeper服务器）：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server.0</span> =localhost:<span class="number">2888</span>：<span class="number">3888</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>启动ZooKeeper quorum</strong>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ bin / start-zookeeper-quorum<span class="selector-class">.sh</span> </span><br><span class="line">在主机localhost上启动zookeeper守护程序。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>启动HA群集</strong>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bin / yarn-session<span class="selector-class">.sh</span> -n <span class="number">2</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="配置Zookeeper安全性"><a href="#配置Zookeeper安全性" class="headerlink" title="配置Zookeeper安全性"></a>配置Zookeeper安全性</h2><p>如果ZooKeeper使用Kerberos以安全模式运行，则可以<code>flink-conf.yaml</code>根据需要覆盖以下配置：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zookeeper<span class="selector-class">.sasl</span><span class="selector-class">.service-name</span>：zookeeper <span class="number">#def</span>ault是“zookeeper”。如果ZooKeeper quorum配置为</span><br><span class="line">                                           ＃具有不同的服务名称，则可以在此处提供。</span><br><span class="line">zookeeper<span class="selector-class">.sasl</span><span class="selector-class">.login-context-name</span>：Client＃default是“Client”。该值需要匹配</span><br><span class="line">                                           “security<span class="selector-class">.kerberos</span><span class="selector-class">.login</span><span class="selector-class">.contexts</span>”中配置的值＃之一。</span><br></pre></td></tr></table></figure>
+<p>有关Kerberos安全性的Flink配置的更多信息，请参阅<a href="100469.html">此处</a>。您还可以找有关Flink内部如何设置基于Kerberos的安全性的更多详细信息。</p>
+<h2 id="Bootstrap-ZooKeeper"><a href="#Bootstrap-ZooKeeper" class="headerlink" title="Bootstrap ZooKeeper"></a>Bootstrap ZooKeeper</h2><p>如果您没有正在运行的ZooKeeper安装，则可以使用Flink附带的帮助程序脚本。</p>
+<p>中有一个ZooKeeper配置模板<code>conf/zoo.cfg</code>。您可以将主机配置为使用<code>server.X</code>条目运行ZooKeeper ，其中X是每个服务器的唯一ID：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server.X</span> = addressX：peerPort：leaderPort </span><br><span class="line"><span class="section">[...]</span> </span><br><span class="line"><span class="attr">server.Y</span> = addressY：peerPort：leaderPort</span><br></pre></td></tr></table></figure>
+<p>该脚本<code>bin/start-zookeeper-quorum.sh</code>将在每个配置的主机上启动ZooKeeper服务器。启动的进程通过Flink打包器启动ZooKeeper服务器，该打包器从中读取配置<code>conf/zoo.cfg</code>并确保为方便起见设置一些必需的配置值。在生产设置中，建议您管理自己的ZooKeeper安装。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100469.html" class="pre-post btn btn-default" title='Flink完整配置'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Flink完整配置</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100467.html" class="next-post btn btn-default" title='Flink集群部署'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Flink集群部署</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JobManager高可用性（HA）"><span class="toc-text">JobManager高可用性（HA）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#独立群集高可用性"><span class="toc-text">独立群集高可用性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置"><span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Masters-文件（Masters-）"><span class="toc-text">Masters 文件（Masters ）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#配置文件（flink-conf-yaml）"><span class="toc-text">配置文件（flink-conf.yaml）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#示例：具有2个JobManagers的独立群集"><span class="toc-text">示例：具有2个JobManagers的独立群集</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#YARN群集高可用性"><span class="toc-text">YARN群集高可用性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置-1"><span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#最大应用程序主要尝试次数（yarn-site-xml）"><span class="toc-text">最大应用程序主要尝试次数（yarn-site.xml）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#申请尝试（flink-conf-yaml）"><span class="toc-text">申请尝试（flink-conf.yaml）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#容器关闭行为"><span class="toc-text">容器关闭行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#示例：高度可用的YARN会话"><span class="toc-text">示例：高度可用的YARN会话</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Zookeeper安全性"><span class="toc-text">配置Zookeeper安全性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bootstrap-ZooKeeper"><span class="toc-text">Bootstrap ZooKeeper</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

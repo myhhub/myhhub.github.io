@@ -1,0 +1,759 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="c++,cmake,qt">
+
+
+    <meta name="description" content="本章的主要内容如下：
+
+使用超级级构建模式
+使用超级构建管理依赖项:Ⅰ.Boost库
+使用超级构建管理依赖项:Ⅱ.FFTW库
+使用超级构建管理依赖项:Ⅲ.Google Test框架
+使用超级构建...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>CMake 完整使用教程 之九 超级构建模式 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="CMake 完整使用教程 之九 超级构建模式">
+            
+	            CMake 完整使用教程 之九 超级构建模式
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/c/">c++</a> <a class="tag-link" href="/tags/cmake/">cmake</a> <a class="tag-link" href="/tags/qt/">qt</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2021/03/29</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>738</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>本章的主要内容如下：</p>
+<ul>
+<li>使用超级级构建模式</li>
+<li>使用超级构建管理依赖项:Ⅰ.Boost库</li>
+<li>使用超级构建管理依赖项:Ⅱ.FFTW库</li>
+<li>使用超级构建管理依赖项:Ⅲ.Google Test框架</li>
+<li>使用超级构建支持项目</li>
+</ul>
+<p>每个项目都需要处理依赖关系，使用CMake很容易查询这些依赖关系，是否存在于配置项目中。第3章，展示了如何找到安装在系统上的依赖项，到目前为止我们一直使用这种模式。但是，当不满足依赖关系，我们只能使配置失败，并向用户警告失败的原因。然而，使用CMake可以组织我们的项目，如果在系统上找不到依赖项，就可以自动获取和构建依赖项。本章将介绍和分析<code>ExternalProject.cmake</code>和<code>FetchContent.cmake</code>标准模块，及在超级构建模式中的使用。前者允许在构建时检索项目的依赖项，后者允许我们在配置时检索依赖项(CMake的3.11版本后添加)。使用超级构建模式，我们可以利用CMake作为包管理器：相同的项目中，将以相同的方式处理依赖项，无论依赖项在系统上是已经可用，还是需要重新构建。接下来的5个示例，将带您了解该模式，并展示如何使用它来获取和构建依赖关系。</p>
+<p><strong>NOTE</strong>:<em>这两个模块都有大量的在线文档。<code>ExternalProject.cmake</code>，可以参考<a href="https://cmake.org/cmake/help/v3.5/module/ExternalProject.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/module/ExternalProject.html</a> 。<code>FetchContent.cmake</code>，可以参考<a href="https://cmake.org/cmake/help/v3.11/module/FetchContent.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.11/module/FetchContent.html</a> 。</em></p>
+<h1 id="8-1-使用超级构建模式"><a href="#8-1-使用超级构建模式" class="headerlink" title="8.1 使用超级构建模式"></a>8.1 使用超级构建模式</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-01" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-01</a> 中找到，其中有一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>本示例通过一个简单示例，介绍超级构建模式。我们将展示如何使用<code>ExternalProject_Add</code>命令来构建一个的“Hello, World”程序。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>本示例将从以下源代码(<code>Hello-World.cpp</code>)构建“Hello, World”可执行文件:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdlib&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">say_hello</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"Hello, CMake superbuild world!"</span>); &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; say_hello() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">  <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>项目结构如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">└── src</span><br><span class="line">      ├── CMakeLists.txt</span><br><span class="line">      └── hello-world.cpp</span><br></pre></td></tr></table></figure>
+<h2 id="具体实施"><a href="#具体实施" class="headerlink" title="具体实施"></a>具体实施</h2><p>让我们看一下根目录下的CMakeLists.txt：</p>
+<ol>
+<li><p>声明一个C++11项目，以及CMake最低版本:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">01</span> LANGUAGES CXX)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为当前目录和底层目录设置<code>EP_BASE</code>目录属性:</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set_property(DIRECTORY <span class="keyword">PROPERTY</span><span class="title"> </span>EP_BASE $&#123;CMAKE_BINARY_DIR&#125;/subprojects)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>包括<code>ExternalProject.cmake</code>标准模块。该模块提供了<code>ExternalProject_Add</code>函数:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">include</span><span class="params">(ExternalProject)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>“Hello, World”源代码通过调用<code>ExternalProject_Add</code>函数作为外部项目添加的。外部项目的名称为<code>recipe-01_core</code>:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">ExternalProject_Add</span>(<span class="variable">$&#123;PROJECT_NAME&#125;</span>_core</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>SOURCE_DIR</code>选项为外部项目设置源目录:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SOURCE_DIR</span><br><span class="line">$&#123;CMAKE_CURRENT_LIST_DIR&#125;/src</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>src</code>子目录包含一个完整的CMake项目。为了配置和构建它，通过<code>CMAKE_ARGS</code>选项将适当的CMake选项传递给外部项目。例子中，只需要通过C++编译器和C++标准的要求即可:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_ARGS</span><br><span class="line">  -<span class="ruby">DCMAKE_CXX_COMPILER=$&#123;CMAKE_CXX_COMPILER&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_STANDARD=$&#123;CMAKE_CXX_STANDARD&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_EXTENSIONS=$&#123;CMAKE_CXX_EXTENSIONS&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_STANDARD_REQUIRED=$&#123;CMAKE_CXX_STANDARD_REQUIRED&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们还设置了C++编译器标志。这些通过使用<code>CMAKE_CACHE_ARGS</code>选项传递到<code>ExternalProject_Add</code>中:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_CACHE_ARGS</span><br><span class="line">	-DCMAKE_CXX_FLAGS:<span class="keyword">STRING</span>=<span class="variable">$&#123;CMAKE_CXX_FLAGS&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们配置外部项目，使它进行构建:</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BUILD_ALWAYS</span></span><br><span class="line"><span class="keyword">	</span><span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装步骤不会执行任何操作(我们将在第4节中重新讨论安装，在第10章中安装超级构建，并编写安装程序):</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSTALL_COMMAND</span></span><br><span class="line"><span class="keyword">	</span><span class="string">""</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>现在，我们来看看<code>src/CMakeLists.txt</code>。由于我们将“Hello, World”源文件作为一个外部项目添加，这是一个独立项目的<code>CMakeLists.txt</code>文件:</p>
+<ol>
+<li><p>这里声明CMake版本最低要求:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>声明一个C++项目：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">01</span>_core LANGUAGES CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最终，使用<code>hello-world.cpp</code>源码文件生成可执行目标<code>hello-world</code>：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(hello-world hello-world.cpp)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>配置构建项目：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>mkdir -p build</span><br><span class="line"><span class="variable">$ </span>cmake ..</span><br><span class="line"><span class="variable">$ </span>cmake --build .</span><br></pre></td></tr></table></figure>
+<p>构建目录的结构稍微复杂一些，<code>subprojects</code>文件夹的内容如下:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">build/subprojects/</span><br><span class="line">├── Build</span><br><span class="line">│    └── recipe<span class="number">-01</span>_core</span><br><span class="line">│        ├── CMakeCache.txt</span><br><span class="line">│        ├── CMakeFiles</span><br><span class="line">│        ├── cmake_install.cmake</span><br><span class="line">│        ├── hello-world</span><br><span class="line">│        └── Makefile</span><br><span class="line">├── Download</span><br><span class="line">│    └── recipe<span class="number">-01</span>_core</span><br><span class="line">├── Install</span><br><span class="line">│    └── recipe<span class="number">-01</span>_core</span><br><span class="line">├── Stamp</span><br><span class="line">│    └── recipe<span class="number">-01</span>_core</span><br><span class="line">│        ├── recipe<span class="number">-01</span>_core-configure</span><br><span class="line">│        ├── recipe<span class="number">-01</span>_core-done</span><br><span class="line">│        ├── recipe<span class="number">-01</span>_core-download</span><br><span class="line">│        ├── recipe<span class="number">-01</span>_core-install</span><br><span class="line">│        ├── recipe<span class="number">-01</span>_core-mkdir</span><br><span class="line">│        ├── recipe<span class="number">-01</span>_core-patch</span><br><span class="line">│        └── recipe<span class="number">-01</span>_core-update</span><br><span class="line">└── tmp</span><br><span class="line">    └── recipe<span class="number">-01</span>_core</span><br><span class="line">        ├── recipe<span class="number">-01</span>_core-cache-.cmake</span><br><span class="line">        ├── recipe<span class="number">-01</span>_core-cfgcmd.txt</span><br><span class="line">        └── recipe<span class="number">-01</span>_core-cfgcmd.txt.in</span><br></pre></td></tr></table></figure>
+<p><code>recipe-01_core</code>已经构建到<code>build/subprojects</code>子目录中，称为<code>Build/recipe-01_core</code>(这是我们设置的<code>EP_BASE</code>)。</p>
+<p><code>hello-world</code>可执行文件在<code>Build/recipe-01_core</code>下创建，其他子文件夹<code>tmp/recipe-01_core</code>和<code>Stamp/recipe-01_core</code>包含临时文件，比如：CMake缓存脚本<code>recipe-01_core-cache-.cmake</code>和已执行的外部构建项目的各步骤的时间戳文件。</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p><code>ExternalProject_Add</code>命令可用于添加第三方源。然而，第一个例子展示了，如何将自己的项目，分为不同CMake项目的集合管理。本例中，主<code>CMakeLists.txt</code>和子<code>CMakeLists.txt</code>都声明了一个CMake项目，它们都使用了<code>project</code>命令。</p>
+<p><code>ExternalProject_Add</code>有许多选项，可用于外部项目的配置和编译等所有方面。这些选择可以分为以下几类:</p>
+<ul>
+<li><p><strong>Directory</strong>：它们用于调优源码的结构，并为外部项目构建目录。本例中，我们使用<code>SOURCE_DIR</code>选项让CMake知道源文件在<code>${CMAKE_CURRENT_LIST_DIR}/src</code>文件夹中。用于构建项目和存储临时文件的目录，也可以在此类选项或目录属性中指定。通过设置<code>EP_BASE</code>目录属性，CMake将按照以下布局为各个子项目设置所有目录:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">TMP_DIR = <span class="params">&lt;EP_BASE&gt;</span><span class="meta-keyword">/tmp/</span><span class="params">&lt;name&gt;</span></span><br><span class="line">STAMP_DIR = <span class="params">&lt;EP_BASE&gt;</span>/Stamp/<span class="params">&lt;name&gt;</span></span><br><span class="line">DOWNLOAD_DIR = <span class="params">&lt;EP_BASE&gt;</span>/Download/<span class="params">&lt;name&gt;</span></span><br><span class="line">SOURCE_DIR = <span class="params">&lt;EP_BASE&gt;</span>/Source/<span class="params">&lt;name&gt;</span></span><br><span class="line">BINARY_DIR = <span class="params">&lt;EP_BASE&gt;</span>/Build/<span class="params">&lt;name&gt;</span></span><br><span class="line">INSTALL_DIR = <span class="params">&lt;EP_BASE&gt;</span>/Install/<span class="params">&lt;name&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Download</strong>：外部项目的代码可能需要从在线存储库或资源处下载。</p>
+</li>
+<li><p><strong>Update</strong>和<strong>Patch</strong>：可用于定义如何更新外部项目的源代码或如何应用补丁。</p>
+</li>
+<li><p><strong>Configure</strong>：默认情况下，CMake会假定外部项目是使用CMake配置的。如下面的示例所示，我们并不局限于这种情况。如果外部项目是CMake项目，<code>ExternalProject_Add</code>将调用CMake可执行文件，并传递选项。对于当前的示例，我们通过<code>CMAKE_ARGS</code>和<code>CMAKE_CACHE_ARGS</code>选项传递配置参数。前者作为命令行参数直接传递，而后者通过CMake脚本文件传递。示例中，脚本文件位于<code>build/subprojects/tmp/recipe-01_core/recipe-01_core- cache-.cmake</code>。然后，配置如以下所示:</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_STANDARD=<span class="number">11</span></span><br><span class="line">-DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_CXX_STANDARD_REQUIRED=ON</span><br><span class="line">-C<span class="regexp">/home/</span>roberto<span class="regexp">/Workspace/</span>robertodr<span class="regexp">/cmake-cookbook/</span>chapter-<span class="number">08</span><span class="regexp">/recipe-01/</span>cxx-example<span class="regexp">/build/</span><span class="keyword">subprojects</span><span class="regexp">/tmp/</span>recipe-<span class="number">01</span>_core<span class="regexp">/recipe-01_core-cache-.cmake "-GUnix Makefiles" /</span>home<span class="regexp">/roberto/</span>Workspace<span class="regexp">/robertodr/</span>cmake-cookbook<span class="regexp">/chapter-08/</span>recipe-<span class="number">01</span><span class="regexp">/cxx-example/</span>src</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Build</strong>：可用于调整外部项目的实际编译。我们的示例使用<code>BUILD_ALWAYS</code>选项确保外部项目总会重新构建。</p>
+</li>
+<li><p><strong>Install</strong>：这些选项用于配置应该如何安装外部项目。我们的示例将<code>INSTALL_COMMAND</code>保留为空，我们将在第10章(编写安装程序)中更详细地讨论与CMake的安装。</p>
+</li>
+<li><p><strong>Test</strong>：为基于源代码构建的软件运行测试总是不错的想法。<code>ExternalProject_Add</code>的这类选项可以用于此目的。我们的示例没有使用这些选项，因为“Hello, World”示例没有任何测试，但是在第5节中，您将管理超级构建的项目，届时将触发一个测试步骤。</p>
+</li>
+</ul>
+<p><code>ExternalProject.cmake</code>定义了<code>ExternalProject_Get_Property</code>命令，该命令对于检索外部项目的属性非常有用。外部项目的属性是在首次调用<code>ExternalProject_Add</code>命令时设置的。例如，在配置<code>recipe-01_core</code>时，检索要传递给CMake的参数可以通过以下方法实现:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">ExternalProject_Get_Property</span><span class="params">($&#123;PROJECT_NAME&#125;_core CMAKE_ARGS)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"CMAKE_ARGS of $&#123;PROJECT_NAME&#125;_core $&#123;CMAKE_ARGS&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>NOTE</strong>:<em><code>ExternalProject_Add</code>的完整选项列表可以在CMake文档中找到:<a href="https://cmake.org/cmake/help/v3.5/module/ExternalProject.html#command:ExternalProject_Add" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/module/ExternalProject.html#command:ExternalProject_Add</a></em></p>
+<h2 id="更多信息"><a href="#更多信息" class="headerlink" title="更多信息"></a>更多信息</h2><p>下面的示例中，我们将详细讨论<code>ExternalProject_Add</code>命令的灵活性。然而，有时我们希望使用的外部项目可能需要执行额外的步骤。由于这个原因，<code>ExternalProject.cmake</code>模块定义了以下附加命令:</p>
+<ol>
+<li><code>ExternalProject_Add_Step</code>: 当添加了外部项目，此命令允许将附加的命令作为自定义步骤锁定在其上。参见:<a href="https://cmake.org/cmake/help/v3.5/module/externalproject.htm#command:externalproject_add_step" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/module/externalproject.htm#command:externalproject_add_step</a></li>
+<li><code>ExternalProject_Add_StepTargets</code>:允许将外部项目中的步骤(例如：构建和测试步骤)定义为单独的目标。这意味着可以从完整的外部项目中单独触发这些步骤，并允许对项目中的复杂依赖项，进行细粒度控制。参见:<a href="https://cmake.org/cmake/help/v3.5/module/ExternalProject.htm#command:externalproject_add_steptargets" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/module/ExternalProject.htm#command:externalproject_add_steptargets</a></li>
+<li><code>ExternalProject_Add_StepDependencies</code>:外部项目的步骤有时可能依赖于外部目标，而这个命令的设计目的就是处理这些情况。参见:<a href="https://cmake.org/cmake/help/v3.5/module/ExternalProject.html#command:externalproject_add_stepdependencies" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/module/ExternalProject.html#command:externalproject_add_stepdependencies</a></li>
+</ol>
+<h1 id="8-2-使用超级构建管理依赖项-Ⅰ-Boost库"><a href="#8-2-使用超级构建管理依赖项-Ⅰ-Boost库" class="headerlink" title="8.2 使用超级构建管理依赖项:Ⅰ.Boost库"></a>8.2 使用超级构建管理依赖项:Ⅰ.Boost库</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-02" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-02</a> 中找到，其中有一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>Boost库提供了丰富的C++基础工具，在C++开发人员中很受欢迎。第3章中，已经展示了如何在系统上找到Boost库。然而，有时系统上可能没有项目所需的Boost版本。这个示例将展示如何利用超级构建模式来交付代码，并确保在缺少依赖项时，不会让CMake停止配置。我们将重用在第3章第8节的示例代码，以超构建的形式重新组织。这是项目的文件结构:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── external</span><br><span class="line">│    └── upstream</span><br><span class="line">│        ├── boost</span><br><span class="line">│        │    └── CMakeLists.txt</span><br><span class="line">│        └── CMakeLists.txt</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    └── path-info.cpp</span><br></pre></td></tr></table></figure>
+<p>注意到项目源代码树中有四个<code>CMakeLists.txt</code>文件。下面的部分将对这些文件进行详解。</p>
+<h2 id="具体实施-1"><a href="#具体实施-1" class="headerlink" title="具体实施"></a>具体实施</h2><p>从根目录的<code>CMakeLists.txt</code>开始：</p>
+<ol>
+<li><p>声明一个C++11项目：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">02</span> LANGUAGES CXX)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对<code>EP_BASE</code>进行属性设置：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set_property(DIRECTORY <span class="keyword">PROPERTY</span><span class="title"> </span>EP_BASE $&#123;CMAKE_BINARY_DIR&#125;/subprojects)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们设置了<code>STAGED_INSTALL_PREFIX</code>变量。此目录将用于安装构建树中的依赖项:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(STAGED_INSTALL_PREFIX $&#123;CMAKE_BINARY_DIR&#125;/stage)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"$&#123;PROJECT_NAME&#125; staged install: $&#123;STAGED_INSTALL_PREFIX&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>项目需要Boost库的文件系统和系统组件。我们声明了一个列表变量来保存这个信息，并设置了Boost所需的最低版本:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">list</span><span class="params">(APPEND BOOST_COMPONENTS_REQUIRED filesystem system)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(Boost_MINIMUM_REQUIRED <span class="number">1.61</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加<code>external/upstream</code>子目录，它将依次添加<code>external/upstream/boost</code>子目录:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(external/upstream)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，包括<code>ExternalProject.cmake</code>标准模块，其中定义了<code>ExternalProject_Add</code>命令，它是超级构建的关键:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">include</span><span class="params">(ExternalProject)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>项目位于<code>src</code>子目录下，我们将它添加为一个外部项目。使用<code>CMAKE_ARGS</code>和<code>CMAKE_CACHE_ARGS</code>传递CMake选项:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">ExternalProject_Add(<span class="variable">$&#123;PROJECT_NAME&#125;</span>_core</span><br><span class="line">  DEPENDS</span><br><span class="line">  	boost_external</span><br><span class="line">  SOURCE_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_LIST_DIR&#125;</span>/src</span><br><span class="line">  CMAKE_ARGS</span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_COMPILER</span>=<span class="variable">$&#123;CMAKE_CXX_COMPILER&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_STANDARD</span>=<span class="variable">$&#123;CMAKE_CXX_STANDARD&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_EXTENSIONS</span>=<span class="variable">$&#123;CMAKE_CXX_EXTENSIONS&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_STANDARD_REQUIRED</span>=<span class="variable">$&#123;CMAKE_CXX_STANDARD_REQUIRED&#125;</span></span><br><span class="line">  CMAKE_CACHE_ARGS</span><br><span class="line">    -DCMAKE_CXX_FLAGS:<span class="attribute">STRING</span>=<span class="variable">$&#123;CMAKE_CXX_FLAGS&#125;</span></span><br><span class="line">    -DCMAKE_INCLUDE_PATH:<span class="attribute">PATH</span>=<span class="variable">$&#123;BOOST_INCLUDEDIR&#125;</span></span><br><span class="line">    -DCMAKE_LIBRARY_PATH:<span class="attribute">PATH</span>=<span class="variable">$&#123;BOOST_LIBRARYDIR&#125;</span></span><br><span class="line">  BUILD_ALWAYS</span><br><span class="line">  	1</span><br><span class="line">  INSTALL_COMMAND</span><br><span class="line">  	<span class="string">""</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>现在让我们看看<code>external/upstream</code>中的<code>CMakeLists.txt</code>。这个文件只是添加了boost文件夹作为一个额外的目录:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(boost)</span></span></span><br></pre></td></tr></table></figure>
+<p><code>external/upstream/boost</code>中的<code>CMakeLists.txt</code>描述了满足对Boost的依赖所需的操作。我们的目标很简单，如果没有安装所需的版本，下载源打包文件并构建它:</p>
+<ol>
+<li><p>首先，我们试图找到所需Boost组件的最低版本:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(Boost $&#123;Boost_MINIMUM_REQUIRED&#125; QUIET COMPONENTS <span class="string">"$&#123;BOOST_COMPONENTS_REQUIRED&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果找到这些，则添加一个接口库目标<code>boost_external</code>。这是一个虚拟目标，需要在我们的超级构建中正确处理构建顺序:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(Boost_FOUND)</span><br><span class="line">	message(STATUS <span class="string">"Found Boost version <span class="variable">$&#123;Boost_MAJOR_VERSION&#125;</span>.<span class="variable">$&#123;Boost_MINOR_VERSION&#125;</span>.<span class="variable">$&#123;Boost_SUBMINOR_VERSION&#125;</span>"</span>)</span><br><span class="line">  add_library(boost_external INTERFACE)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">	<span class="comment"># ... discussed below</span></span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果<code>find_package</code>没有成功，或者正在强制进行超级构建，我们需要建立一个本地构建的Boost。为此，我们进入<code>else</code>部分:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">else()</span><br><span class="line">	message(<span class="name">STATUS</span> <span class="string">"Boost $&#123;Boost_MINIMUM_REQUIRED&#125; could not be located, Building Boost 1.61.0 instead."</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于这些库不使用CMake，我们需要为它们的原生构建工具链准备参数。首先为Boost设置编译器:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">if(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES <span class="string">"GNU"</span>)</span><br><span class="line">  if(<span class="name">APPLE</span>)</span><br><span class="line">  	set(<span class="name">_toolset</span> <span class="string">"darwin"</span>)</span><br><span class="line">  else()</span><br><span class="line">  	set(<span class="name">_toolset</span> <span class="string">"gcc"</span>)</span><br><span class="line">  endif()</span><br><span class="line">elseif(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES <span class="string">".*Clang"</span>)</span><br><span class="line">  set(<span class="name">_toolset</span> <span class="string">"clang"</span>)</span><br><span class="line">elseif(<span class="name">CMAKE_CXX_COMPILER_ID</span> MATCHES <span class="string">"Intel"</span>)</span><br><span class="line">  if(<span class="name">APPLE</span>)</span><br><span class="line">  	set(<span class="name">_toolset</span> <span class="string">"intel-darwin"</span>)</span><br><span class="line">  else()</span><br><span class="line">  	set(<span class="name">_toolset</span> <span class="string">"intel-linux"</span>)</span><br><span class="line">  endif()</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们准备了基于所需组件构建的库列表，定义了一些列表变量:<code>_build_byproducts</code>，包含要构建的库的绝对路径;<code>_b2_select_libraries</code>，包含要构建的库的列；和<code>_bootstrap_select_libraries</code>，这是一个字符串，与<code>_b2_needed_components</code>具有相同的内容，但格式不同:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">if(<span class="name">NOT</span> <span class="string">"$&#123;BOOST_COMPONENTS_REQUIRED&#125;"</span> STREQUAL <span class="string">""</span>)</span><br><span class="line">  # Replace unit_test_framework (<span class="name">used</span> by CMake's find_package) with test (<span class="name">understood</span> by Boost build toolchain)</span><br><span class="line">  string(<span class="name">REPLACE</span> <span class="string">"unit_test_framework"</span> <span class="string">"test"</span> _b2_needed_components <span class="string">"$&#123;BOOST_COMPONENTS_REQUIRED&#125;"</span>)</span><br><span class="line">  # Generate argument for BUILD_BYPRODUCTS</span><br><span class="line">  set(<span class="name">_build_byproducts</span>)</span><br><span class="line">  set(<span class="name">_b2_select_libraries</span>)</span><br><span class="line">  foreach(<span class="name">_lib</span> IN LISTS _b2_needed_components)</span><br><span class="line">  	list(<span class="name">APPEND</span> _build_byproducts $&#123;STAGED_INSTALL_PREFIX&#125;/boost/lib/libboost_$&#123;_lib&#125;$&#123;CMAKE_SHARED_LIBRARY_SUFFIX&#125;)</span><br><span class="line">  	list(<span class="name">APPEND</span> _b2_select_libraries --with-$&#123;_lib&#125;)</span><br><span class="line">  endforeach()</span><br><span class="line">  # Transform the <span class="comment">;-separated list to a ,-separated list (digested by the Boost build toolchain!)</span></span><br><span class="line">  string(<span class="name">REPLACE</span> <span class="string">";"</span> <span class="string">","</span> _b2_needed_components <span class="string">"$&#123;_b2_needed_components&#125;"</span>)</span><br><span class="line">  set(<span class="name">_bootstrap_select_libraries</span> <span class="string">"--with-libraries=$&#123;_b2_needed_components&#125;"</span>)</span><br><span class="line">  string(<span class="name">REPLACE</span> <span class="string">";"</span> <span class="string">", "</span> printout <span class="string">"$&#123;BOOST_COMPONENTS_REQUIRED&#125;"</span>)</span><br><span class="line">  message(<span class="name">STATUS</span> <span class="string">" Libraries to be built: $&#123;printout&#125;"</span>)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在，可以将Boost添加为外部项目。首先，在下载选项类中指定下载URL和checksum。<code>DOWNLOAD_NO_PROGRESS</code>设置为1，以禁止打印下载进度信息:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">include(ExternalProject)</span><br><span class="line">ExternalProject_Add(boost_external</span><br><span class="line">  URL</span><br><span class="line">  	https:<span class="regexp">//</span>sourceforge.net<span class="regexp">/projects/</span>boost<span class="regexp">/files/</span>boost<span class="regexp">/1.61.0/</span>boost_1_61_0.zip</span><br><span class="line">  URL_HASH</span><br><span class="line">  	SHA256=<span class="number">02</span>d420e6908016d4ac74dfc712eec7d9616a7fc0da78b0a1b5b937536b2e01e8</span><br><span class="line">  DOWNLOAD_NO_PROGRESS</span><br><span class="line">  	<span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来，设置更新/补丁和配置选项:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">UPDATE_COMMAND</span><br><span class="line">	<span class="string">""</span></span><br><span class="line">CONFIGURE_COMMAND</span><br><span class="line">	&lt;SOURCE_DIR&gt;/bootstrap.sh</span><br><span class="line">		<span class="attribute">--with-toolset</span>=<span class="variable">$&#123;_toolset&#125;</span></span><br><span class="line">		<span class="attribute">--prefix</span>=<span class="variable">$&#123;STAGED_INSTALL_PREFIX&#125;</span>/boost</span><br><span class="line"><span class="variable">$&#123;_bootstrap_select_libraries&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构建选项使用<code>BUILD_COMMAND</code>设置。<code>BUILD_IN_SOURCE</code>设置为1时，表示构建将在源目录中发生。这里，将<code>LOG_BUILD</code>设置为1，以便将生成脚本中的输出记录到文件中:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">BUILD_COMMAND</span><br><span class="line">  &lt;SOURCE_DIR&gt;/b2 -q</span><br><span class="line">    <span class="attribute">link</span>=shared</span><br><span class="line">    <span class="attribute">threading</span>=multi</span><br><span class="line">    <span class="attribute">variant</span>=release</span><br><span class="line">    <span class="attribute">toolset</span>=<span class="variable">$&#123;_toolset&#125;</span></span><br><span class="line">    <span class="variable">$&#123;_b2_select_libraries&#125;</span></span><br><span class="line">LOG_BUILD</span><br><span class="line">  1</span><br><span class="line">BUILD_IN_SOURCE</span><br><span class="line">  1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装选项是使用<code>INSTALL_COMMAND</code>指令设置的。注意使用<code>LOG_INSTALL</code>选项，还可以将安装步骤记录到文件中:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">INSTALL_COMMAND</span><br><span class="line">  &lt;SOURCE_DIR&gt;/b2 -q install</span><br><span class="line">    <span class="attribute">link</span>=shared</span><br><span class="line">    <span class="attribute">threading</span>=multi</span><br><span class="line">    <span class="attribute">variant</span>=release</span><br><span class="line">    <span class="attribute">toolset</span>=<span class="variable">$&#123;_toolset&#125;</span></span><br><span class="line">    <span class="variable">$&#123;_b2_select_libraries&#125;</span></span><br><span class="line">LOG_INSTALL</span><br><span class="line">	1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，库列表为<code>BUILD_BYPRODUCTS</code>并关闭 <code>ExternalProject_Add</code>命令:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BUILD_BYPRODUCTS</span><br><span class="line">  "$&#123;_build_byproducts&#125;"</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们设置了一些变量来指导检测新安装的Boost:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>(</span><br><span class="line">  BOOST_ROOT $&#123;STAGED_INSTALL_PREFIX&#125;/boost</span><br><span class="line">  <span class="keyword">CACHE</span> <span class="keyword">PATH</span> <span class="string">"Path to internally built Boost installation root"</span></span><br><span class="line">  <span class="keyword">FORCE</span></span><br><span class="line">  )</span><br><span class="line"><span class="keyword">set</span>(</span><br><span class="line">  BOOST_INCLUDEDIR $&#123;BOOST_ROOT&#125;/<span class="keyword">include</span></span><br><span class="line">  <span class="keyword">CACHE</span> <span class="keyword">PATH</span> <span class="string">"Path to internally built Boost include directories"</span></span><br><span class="line">  <span class="keyword">FORCE</span></span><br><span class="line">  )</span><br><span class="line"><span class="keyword">set</span>(</span><br><span class="line">  BOOST_LIBRARYDIR $&#123;BOOST_ROOT&#125;/lib</span><br><span class="line">  <span class="keyword">CACHE</span> <span class="keyword">PATH</span> <span class="string">"Path to internally built Boost library directories"</span></span><br><span class="line">  <span class="keyword">FORCE</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>else</code>分支中，执行的最后一个操作是取消所有内部变量的设置:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">unset</span><span class="params">(_toolset)</span></span></span><br><span class="line"><span class="function"><span class="title">unset</span><span class="params">(_b2_needed_components)</span></span></span><br><span class="line"><span class="function"><span class="title">unset</span><span class="params">(_build_byproducts)</span></span></span><br><span class="line"><span class="function"><span class="title">unset</span><span class="params">(_b2_select_libraries)</span></span></span><br><span class="line"><span class="function"><span class="title">unset</span><span class="params">(_boostrap_select_libraries)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>最后，让我们看看<code>src/CMakeLists.txt</code>。这个文件描述了一个独立的项目:</p>
+<ol>
+<li><p>声明一个C++项目：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">02</span>_core LANGUAGES CXX)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用<code>find_package</code>寻找项目依赖的Boost。从主<code>CMakeLists.txt</code>中配置的项目，可以保证始终满足依赖关系，方法是使用预先安装在系统上的Boost，或者使用我们作为子项目构建的Boost:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">find_package</span><span class="params">(Boost <span class="number">1.61</span> REQUIRED COMPONENTS filesystem)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加可执行目标，并链接库:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">add_executable(<span class="name">path-info</span> path-info.cpp)</span><br><span class="line">target_link_libraries(<span class="name">path-info</span></span><br><span class="line">  PUBLIC</span><br><span class="line">  	Boost:<span class="symbol">:filesystem</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><strong>NOTE</strong>:<em>导入目标虽然很简单，但不能保证对任意Boost和CMake版本组合都有效。这是因为CMake的<code>FindBoost.cmake</code>模块会创建手工导入的目标。因此，当CMake有未知版本发布时，可能会有<code>Boost_LIBRARIES</code>和<code>Boost_INCLUDE_DIRS</code>，没有导入情况(<a href="https://stackoverflow.com/questions/42123509/cmake-finds-boost-but-the-imported-targets-not-available-for-boost-version" target="_blank" rel="noopener">https://stackoverflow.com/questions/42123509/cmake-finds-boost-but-the-imported-targets-not-available-for-boost-version</a> )。</em></p>
+<h2 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h2><p>此示例展示了如何利用超级构建模式，来整合项目的依赖项。让我们再看一下项目的文件结构:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── external</span><br><span class="line">│    └── upstream</span><br><span class="line">│        ├── boost</span><br><span class="line">│        │    └── CMakeLists.txt</span><br><span class="line">│        └── CMakeLists.txt</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    └── path-info.cpp</span><br></pre></td></tr></table></figure>
+<p>我们在项目源代码树中，引入了4个<code>CMakeLists.txt</code>文件:</p>
+<ol>
+<li>主<code>CMakeLists.txt</code>将配合超级构建。</li>
+<li><code>external/upstream</code>中的文件将引导我们到<code>boost</code>子目录。</li>
+<li><code>external/upstream/boost/CMakeLists.txt</code>将处理Boost的依赖。</li>
+<li>最后，<code>src</code>下的<code>CMakeLists.txt</code>将构建我们的示例代码(其依赖于Boost)。</li>
+</ol>
+<p>从<code>external/upstream/boost/CMakeLists.txt</code>文件开始讨论。Boost使用它自己的构建系统，因此需要在<code>ExternalProject_Add</code>中详细配置，以便正确设置所有内容:</p>
+<ol>
+<li><p>保留目录选项的默认值。</p>
+</li>
+<li><p>下载步骤将从在线服务器下载所需版本的Boost。因此，我们设置了<code>URL</code>和<code>URL_HASH</code>。<code>URL_HASH</code>用于检查下载文件的完整性。由于我们不希望看到下载的进度报告，所以将<code>DOWNLOAD_NO_PROGRESS</code>选项设置为true。</p>
+</li>
+<li><p>更新步骤留空。如果需要重新构建，我们不想再次下载Boost。</p>
+</li>
+<li><p>配置步骤将使用由Boost在<code>CONFIGURE_COMMAND</code>中提供的配置工具完成。由于我们希望超级构建是跨平台的，所以我们使用<code>&lt;SOURCE_DIR&gt;</code>变量来引用未打包源的位置:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CONFIGURE_COMMAND</span><br><span class="line">&lt;SOURCE_DIR&gt;/bootstrap.sh</span><br><span class="line"><span class="attribute">--with-toolset</span>=<span class="variable">$&#123;_toolset&#125;</span></span><br><span class="line"><span class="attribute">--prefix</span>=<span class="variable">$&#123;STAGED_INSTALL_PREFIX&#125;</span>/boost</span><br><span class="line"><span class="variable">$&#123;_bootstrap_select_libraries&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>BUILD_IN_SOURCE</code>选项设置为true，说明这是一个内置的构建。<code>BUILD_COMMAND</code>使用Boost本机构建工具<code>b2</code>。由于我们将在源代码中构建，所以我们再次使用<code>&lt;SOURCE_DIR&gt;</code>变量来引用未打包源代码的位置。</p>
+</li>
+<li><p>然后，来看安装选项。Boost使用本地构建工具管理安装。事实上，构建和安装命令可以整合为一个命令。</p>
+</li>
+<li><p>输出日志选项<code>LOG_BUILD</code>和<code>LOG_INSTALL</code> 直接用于为<code>ExternalProject_Add</code>构建和安装操作编写日志文件，而不是输出到屏幕上。</p>
+</li>
+<li><p>最后，<code>BUILD_BYPRODUCTS</code>选项允许<code>ExternalProject_Add</code>在后续构建中，跟踪新构建的Boost库。</p>
+</li>
+</ol>
+<p>构建Boost之后，构建目录中的<code>${STAGED_INSTALL_PREFIX}/Boost</code>文件夹将包含所需的库。我们需要将此信息传递给我们的项目，该构建系统是在<code>src/CMakeLists.txt</code>中生成的。为了实现这个目标，我们在主<code>CMakeLists.txt</code>的<code>ExternalProject_Add</code>中传递两个额外的<code>CMAKE_CACHE_ARGS</code>:</p>
+<ol>
+<li>CMAKE_INCLUDE_PATH: CMake查找C/C++头文件的路径</li>
+<li>CMAKE_LIBRARY_PATH: CMake将查找库的路径</li>
+</ol>
+<p>将这些变量设置成新构建的Boost安装路径，可以确保正确地获取依赖项。</p>
+<p><strong>TIPS</strong>:<em>在配置项目时将<code>CMAKE_DISABLE_FIND_PACKAGE_Boost</code>设置为<code>ON</code>，将跳过对Boost库的检测，并始终执行超级构建。参考文档:<a href="https://cmake.org/cmake/help/v3.5/variable/CMAKE_DISABLE_FIND_PACKAGE_PackageName.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/variable/CMAKE_DISABLE_FIND_PACKAGE_PackageName.html</a> 。</em></p>
+<h1 id="8-3-使用超级构建管理依赖项-Ⅱ-FFTW库"><a href="#8-3-使用超级构建管理依赖项-Ⅱ-FFTW库" class="headerlink" title="8.3 使用超级构建管理依赖项:Ⅱ.FFTW库"></a>8.3 使用超级构建管理依赖项:Ⅱ.FFTW库</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-03" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-03</a> 中找到，其中有一个C示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p>对于CMake支持的所有项目，超级构建模式可用于管理相当复杂的依赖关系。正如在前面的示例所演示的，CMake并不需要管理各种子项目。与前一个示例相反，这个示例中的外部子项目将是一个CMake项目，并将展示如何使用超级构建，下载、构建和安装FFTW库。FFTW是一个快速傅里叶变换库，可在<a href="http://www.fftw.org/" target="_blank" rel="noopener">http://www.fftw.org</a> 免费获得。</p>
+<p>我们项目的代码<code>fftw_example.c</code>位于src子目录中，它将计算源代码中定义的函数的傅里叶变换。</p>
+<h2 id="准备工作-1"><a href="#准备工作-1" class="headerlink" title="准备工作"></a>准备工作</h2><p>这个示例的目录布局，是超级构建中非常常见的结构:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── external</span><br><span class="line">│    └── upstream</span><br><span class="line">│        ├── CMakeLists.txt</span><br><span class="line">│        └── fftw3</span><br><span class="line">│            └── CMakeLists.txt</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    └── fftw_example.c</span><br></pre></td></tr></table></figure>
+<p>代码<code>fftw_example.c</code>位于<code>src</code>子目录中，它将调用傅里叶变换函数。</p>
+<h2 id="具体实施-2"><a href="#具体实施-2" class="headerlink" title="具体实施"></a>具体实施</h2><p>从主<code>CMakeLists.txt</code>开始，这里将整个超级构建过程放在一起:</p>
+<ol>
+<li><p>声明一个支持C99的项目：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">03</span> LANGUAGES C)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_C_STANDARD <span class="number">99</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_C_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_C_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>和上一个示例一样，我们设置了<code>EP_BASE</code>目录属性和阶段安装目录:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set_property</span><span class="params">(DIRECTORY PROPERTY EP_BASE $&#123;CMAKE_BINARY_DIR&#125;/subprojects)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(STAGED_INSTALL_PREFIX $&#123;CMAKE_BINARY_DIR&#125;/stage)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"$&#123;PROJECT_NAME&#125; staged install: $&#123;STAGED_INSTALL_PREFIX&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对FFTW的依赖关系在<code>external/upstream</code>子目录中检查，我们会将这个子目录添加到构建系统中:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(external/upstream)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>包含<code>ExternalProject.cmake</code>模块：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">include</span><span class="params">(ExternalProject)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们为<code>recipe-03_core</code>声明了外部项目。这个项目的源代码在<code>${CMAKE_CURRENT_LIST_DIR}/src</code>文件夹中。该项目设置为<code>FFTW3_DIR</code>选项，选择正确的FFTW库:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ExternalProject_Add(<span class="variable">$&#123;PROJECT_NAME&#125;</span>_core</span><br><span class="line">  DEPENDS</span><br><span class="line">  	fftw3_external</span><br><span class="line">  SOURCE_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_LIST_DIR&#125;</span>/src</span><br><span class="line">  CMAKE_ARGS</span><br><span class="line">    <span class="attribute">-DFFTW3_DIR</span>=<span class="variable">$&#123;FFTW3_DIR&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_C_STANDARD</span>=<span class="variable">$&#123;CMAKE_C_STANDARD&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_C_EXTENSIONS</span>=<span class="variable">$&#123;CMAKE_C_EXTENSIONS&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_C_STANDARD_REQUIRED</span>=<span class="variable">$&#123;CMAKE_C_STANDARD_REQUIRED&#125;</span></span><br><span class="line">  CMAKE_CACHE_ARGS</span><br><span class="line">    -DCMAKE_C_FLAGS:<span class="attribute">STRING</span>=<span class="variable">$&#123;CMAKE_C_FLAGS&#125;</span></span><br><span class="line">    -DCMAKE_PREFIX_PATH:<span class="attribute">PATH</span>=<span class="variable">$&#123;CMAKE_PREFIX_PATH&#125;</span></span><br><span class="line">  BUILD_ALWAYS</span><br><span class="line">  	1</span><br><span class="line">  INSTALL_COMMAND</span><br><span class="line">  	<span class="string">""</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>external/upstream</code>子目录还包含一个<code>CMakeLists.txt</code>:</p>
+<p>这个文件中，添加<code>fftw3</code>文件夹作为构建系统中的另一个子目录:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(fftw3)</span></span></span><br></pre></td></tr></table></figure>
+<p><code>external/upstream/fftw3</code>中的<code>CMakeLists.txt</code>负责处理依赖关系:</p>
+<ol>
+<li><p>首先，尝试在系统上找到FFTW3库。注意，我们配置<code>find_package</code>使用的参数:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find_package(FFTW3<span class="built_in"> CONFIG </span>QUIET)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果找到了库，就可以导入目标<code>FFTW3::FFTW3</code>来链接它。我们向用户打印一条消息，显示库的位置。我们添加一个虚拟<code>INTERFACE</code>库<code>fftw3_external</code>。超级建设中，这需要正确地固定子项目之间的依赖树:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">find_package(FFTW3<span class="built_in"> CONFIG </span>QUIET)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(FFTW3_FOUND)</span><br><span class="line">  get_property(_loc TARGET FFTW3::fftw3 PROPERTY LOCATION)</span><br><span class="line">  message(STATUS <span class="string">"Found FFTW3: <span class="variable">$&#123;_loc&#125;</span> (found version <span class="variable">$&#123;FFTW3_VERSION&#125;</span>)"</span>)</span><br><span class="line">	add_library(fftw3_external INTERFACE) # dummy</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">	# this branch will be discussed below</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果CMake无法找到预安装版本的FFTW，我们将进入<code>else</code>分支。这个分支中，使用<code>ExternalProject_Add</code>下载、构建和安装它。外部项目的名称为<code>fftw3_external</code>。<code>fftw3_external</code>项目将从官方地址下载，下载完成后将使用MD5校验和进行文件完整性检查:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Suitable FFTW3 could not be located. Downloading and building!"</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(ExternalProject)</span></span></span><br><span class="line">ExternalProject_Add(fftw3_external</span><br><span class="line">  URL</span><br><span class="line">  	http:<span class="comment">//www.fftw.org/fftw-3.3.8.tar.gz</span></span><br><span class="line">  URL_HASH</span><br><span class="line">  	MD5=<span class="number">8</span>aac833c943d8e90d51b697b27d4384d</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁用打印下载进程，并将更新命令定义为空:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">OWNLOAD_NO_PROGRESS</span><br><span class="line">	<span class="number">1</span></span><br><span class="line">UPDATE_COMMAND</span><br><span class="line">	<span class="string">""</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置、构建和安装输出将被记录到一个文件中:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LOG_CONFIGURE</span><br><span class="line">	<span class="number">1</span></span><br><span class="line">LOG_BUILD</span><br><span class="line">	<span class="number">1</span></span><br><span class="line">LOG_INSTALL</span><br><span class="line">	<span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>fftw3_external</code>项目的安装前缀设置为之前定义的<code>STAGED_INSTALL_PREFIX</code>目录，并关闭FFTW3的测试套件构建:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_ARGS</span><br><span class="line">  <span class="attribute">-DCMAKE_INSTALL_PREFIX</span>=<span class="variable">$&#123;STAGED_INSTALL_PREFIX&#125;</span></span><br><span class="line">  <span class="attribute">-DBUILD_TESTS</span>=OFF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果在Windows上构建，通过生成器表达式设置<code>WITH_OUR_MALLOC</code>预处理器选项，并关闭<code>ExternalProject_Add</code>命令:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_CACHE_ARGS</span><br><span class="line">	-<span class="ruby"><span class="symbol">DCMAKE_C_FLAGS:</span>STRING=$&lt;$&lt;<span class="symbol">BOOL:</span>WIN32&gt;<span class="symbol">:-DWITH_OUR_MALLOC&gt;</span></span></span><br><span class="line"><span class="ruby">)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，定义<code>FFTW3_DIR</code>变量并缓存它。CMake将使用该变量作为<code>FFTW3::FFTW3</code>目标的搜索目录:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(GNUInstallDirs)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(</span><br><span class="line">  FFTW3_DIR <span class="variable">$&#123;STAGED_INSTALL_PREFIX&#125;</span>/<span class="variable">$&#123;CMAKE_INSTALL_LIBDIR&#125;</span>/cmake/fftw3</span><br><span class="line">  CACHE PATH <span class="string">"Path to internally built FFTW3Config.cmake"</span></span><br><span class="line">  FORCE</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>src</code>文件夹中的CMakeLists.txt相当简洁:</p>
+<ol>
+<li><p>同样在这个文件中，我们声明了一个C项目:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.5</span> FATAL_ERROR)</span></span></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">03</span>_core LANGUAGES C)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>find_package</code>来检测FFTW库，再次使用配置检测模式:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find_package(FFTW3<span class="built_in"> CONFIG </span>REQUIRED)</span><br><span class="line">get_property(_loc TARGET FFTW3::fftw3 PROPERTY LOCATION)</span><br><span class="line">message(STATUS <span class="string">"Found FFTW3: <span class="variable">$&#123;_loc&#125;</span> (found version <span class="variable">$&#123;FFTW3_VERSION&#125;</span>)"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>fftw_example.c</code>源文件添加到可执行目标<code>fftw_example</code>:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_executable</span><span class="params">(fftw_example fftw_example.c)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为可执行目标设置链接库:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(<span class="name">fftw_example</span></span><br><span class="line">  PRIVATE</span><br><span class="line">  	FFTW3:<span class="symbol">:fftw3</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-2"><a href="#工作原理-2" class="headerlink" title="工作原理"></a>工作原理</h2><p>本示例演示了如何下载、构建和安装由CMake管理其构建系统的外部项目。与前一个示例(必须使用自定义构建系统)相反，这个超级构建设置相当简洁。需要注意的是，使用<code>find_package</code>命令了配置选项；这说明CMake首先查找<code>FFTW3Config.cmake</code>，以定位FFTW3库，将库导出为第三方项目获取的目标。目标包含库的版本、配置和位置，即关于如何配置和构建目标的完整信息。如果系统上没有安装库，我们需要声明<code>FFTW3Config.cmake</code>文件的位置。这可以通过设置<code>FFTW3_DIR</code>变量来实现。这是<code>external/upstream/fftw3/CMakeLists.txt</code>文件中的最后一步。使用<code>GNUInstallDirs.cmake</code>模块，我们将<code>FFTW3_DIR</code>设置为缓存变量，以便稍后在超级构建中使用。</p>
+<p><strong>TIPS</strong>:<em>配置项目时将<code>CMAKE_DISABLE_FIND_PACKAGE_FFTW3</code>设置为<code>ON</code>，将跳过对FFTW库的检测，并始终执行超级构建。参考:<a href="https://cmake.org/cmake/help/v3.5/variable/CMAKE_DISABLE_FIND_PACKAGE_PackageName.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.5/variable/CMAKE_DISABLE_FIND_PACKAGE_PackageName.html</a></em></p>
+<h1 id="8-4-使用超级构建管理依赖项-Ⅲ-Google-Test框架"><a href="#8-4-使用超级构建管理依赖项-Ⅲ-Google-Test框架" class="headerlink" title="8.4 使用超级构建管理依赖项:Ⅲ.Google Test框架"></a>8.4 使用超级构建管理依赖项:Ⅲ.Google Test框架</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-04" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-04</a> 中找到，其中有一个C++示例。该示例在CMake 3.11版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。在库中也有一个例子可以在CMake 3.5下使用。</em></p>
+<p>第4章第3节中，我们使用Google Test框架实现单元测试，并在配置时使用<code>FetchContent</code>模块获取Google Test源(自CMake 3.11开始可用)。本章中，我们将重新讨论这个方法，较少关注测试方面，并更深入地研究<code>FetchContent</code>。它提供了一个简单通用的模块，可以在配置时组装项目依赖项。对于3.11以下的CMake，我们还将讨论如何在配置时使用<code>ExternalProject_Add</code>模拟<code>FetchContent</code>。</p>
+<h2 id="准备工作-2"><a href="#准备工作-2" class="headerlink" title="准备工作"></a>准备工作</h2><p>这个示例中，我们将复用第4章第3节的源码，构建<code>main.cpp</code>、<code>sum_integer.cpp</code>和<code>sum_integers.hpp</code>和<code>test.cpp</code>。我们将在配置时使用<code>FetchContent</code>或<code>ExternalProject_Add</code>下载所有必需的Google Test源，在此示例中，只关注在配置时获取依赖项，而不是实际的源代码及其单元测试。</p>
+<h2 id="具体实施-3"><a href="#具体实施-3" class="headerlink" title="具体实施"></a>具体实施</h2><p>这个示例中，我们只关注如何获取Google Test源来构建<code>gtest_main</code>，并链接到Google Test库。关于这个目标如何用于测试示例源的讨论，请读者参考第4章第3节:</p>
+<ol>
+<li><p>首先包括<code>FetchContent</code>模块，它将提供需要的声明、查询和填充依赖项函数:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">include</span><span class="params">(FetchContent)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，声明内容——名称、存储库位置和要获取的精确版本:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">FetchContent_Declare</span>(</span><br><span class="line">  googletest</span><br><span class="line">  GIT_REPOSITORY <span class="attribute">https</span>:<span class="comment">//github.com/google/googletest.git</span></span><br><span class="line">  GIT_TAG release-<span class="number">1.8</span>.<span class="number">0</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查询内容是否已经被获取/填充:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">FetchContent_GetProperties</span><span class="params">(googletest)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>前面的函数定义了<code>googletest_POPULATED</code>。如果内容还没有填充，我们获取内容并配置子项目:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">NOT</span> googletest_POPULATED)</span><br><span class="line">  FetchContent_Populate(googletest)</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># adds the targets: gtest, gtest_main, gmock, gmock_main</span></span><br><span class="line">  <span class="keyword">add_subdirectory</span>(</span><br><span class="line">    <span class="variable">$&#123;googletest_SOURCE_DIR&#125;</span></span><br><span class="line">    <span class="variable">$&#123;googletest_BINARY_DIR&#125;</span></span><br><span class="line">    )</span><br><span class="line">    </span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意配置时获取内容的方式:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> build</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cmake ..</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这将生成以下构建目录树。Google Test源现已就绪，剩下的就交由CMake处理，并提供所需的目标:</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">build/</span><br><span class="line">├── ...</span><br><span class="line">├── _deps</span><br><span class="line">│    ├── googletest-build</span><br><span class="line">│    │    ├── ...</span><br><span class="line">│    │    └── ...</span><br><span class="line">│    ├── googletest-src</span><br><span class="line">│    │    ├── ...</span><br><span class="line">│    │    └── ...</span><br><span class="line">│    └── googletest-subbuild</span><br><span class="line">│         ├── ...</span><br><span class="line">│         └── ...</span><br><span class="line">└── ...</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-3"><a href="#工作原理-3" class="headerlink" title="工作原理"></a>工作原理</h2><p><code>FetchContent</code>模块支持在配置时填充内容。例子中，获取了一个Git库，其中有一个Git标签:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">FetchContent_Declare</span>(</span><br><span class="line">  googletest</span><br><span class="line">  GIT_REPOSITORY <span class="attribute">https</span>:<span class="comment">//github.com/google/googletest.git</span></span><br><span class="line">  GIT_TAG release-<span class="number">1.8</span>.<span class="number">0</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>CMake的3.11版本中，<code>FetchContent</code>已经成为CMake的标准部分。下面的代码中，将尝试在配置时使用<code>ExternalProject_Add</code>模拟<code>FetchContent</code>。这不仅适用于较老的CMake版本，而且可以让我们更深入地了解<code>FetchContent</code>层下面发生了什么，并为使用<code>ExternalProject_Add</code>在构建时获取项目，提供一个有趣的替代方法。我们的目标是编写一个<code>fetch_git_repo</code>宏，并将它放在<code>fetch_git_repo</code>中。这样就可以获取相应的内容了:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(fetch_git_repo.cmake)</span><br><span class="line"></span><br><span class="line">fetch_git_repo(</span><br><span class="line">  googletest</span><br><span class="line">  <span class="variable">$&#123;CMAKE_BINARY_DIR&#125;</span>/_deps</span><br><span class="line">  https://github.com/google/googletest.git</span><br><span class="line">  release-<span class="number">1.8</span>.<span class="number">0</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># adds the targets: gtest, gtest_main, gmock, gmock_main</span></span><br><span class="line"><span class="keyword">add_subdirectory</span>(</span><br><span class="line">  <span class="variable">$&#123;googletest_SOURCE_DIR&#125;</span></span><br><span class="line">  <span class="variable">$&#123;googletest_BINARY_DIR&#125;</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"><span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
+<p>这类似于<code>FetchContent</code>的使用。在底层实现中，我们将使用<code>ExternalProject_Add</code>。现在打开模块，检查<code>fetch_git_repo.cmake</code>中定义的<code>fetch_git_repo</code>:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">macro</span>(fetch_git_repo _project_name _download_root _git_url _git_tag)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">set</span>(<span class="variable">$&#123;_project_name&#125;</span>_SOURCE_DIR <span class="variable">$&#123;_download_root&#125;</span>/<span class="variable">$&#123;_project_name&#125;</span>-src)</span><br><span class="line">  <span class="keyword">set</span>(<span class="variable">$&#123;_project_name&#125;</span>_BINARY_DIR <span class="variable">$&#123;_download_root&#125;</span>/<span class="variable">$&#123;_project_name&#125;</span>-build)</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># variables used configuring fetch_git_repo_sub.cmake</span></span><br><span class="line">  <span class="keyword">set</span>(FETCH_PROJECT_NAME <span class="variable">$&#123;_project_name&#125;</span>)</span><br><span class="line">  <span class="keyword">set</span>(FETCH_SOURCE_DIR <span class="variable">$&#123;$&#123;_project_name&#125;</span>_SOURCE_DIR&#125;)</span><br><span class="line">  <span class="keyword">set</span>(FETCH_BINARY_DIR <span class="variable">$&#123;$&#123;_project_name&#125;</span>_BINARY_DIR&#125;)</span><br><span class="line">  <span class="keyword">set</span>(FETCH_GIT_REPOSITORY <span class="variable">$&#123;_git_url&#125;</span>)</span><br><span class="line">  <span class="keyword">set</span>(FETCH_GIT_TAG <span class="variable">$&#123;_git_tag&#125;</span>)</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">configure_file</span>(</span><br><span class="line">    <span class="variable">$&#123;CMAKE_CURRENT_LIST_DIR&#125;</span>/fetch_at_configure_step.in</span><br><span class="line">    <span class="variable">$&#123;_download_root&#125;</span>/CMakeLists.txt</span><br><span class="line">    @ONLY</span><br><span class="line">    )</span><br><span class="line">    </span><br><span class="line">  <span class="comment"># undefine them again</span></span><br><span class="line">  <span class="keyword">unset</span>(FETCH_PROJECT_NAME)</span><br><span class="line">  <span class="keyword">unset</span>(FETCH_SOURCE_DIR)</span><br><span class="line">  <span class="keyword">unset</span>(FETCH_BINARY_DIR)</span><br><span class="line">  <span class="keyword">unset</span>(FETCH_GIT_REPOSITORY)</span><br><span class="line">  <span class="keyword">unset</span>(FETCH_GIT_TAG)</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># configure sub-project</span></span><br><span class="line">  <span class="keyword">execute_process</span>(</span><br><span class="line">    <span class="keyword">COMMAND</span></span><br><span class="line">    <span class="string">"$&#123;CMAKE_COMMAND&#125;"</span> -G <span class="string">"$&#123;CMAKE_GENERATOR&#125;"</span> .</span><br><span class="line">    WORKING_DIRECTORY</span><br><span class="line">    <span class="variable">$&#123;_download_root&#125;</span></span><br><span class="line">    )</span><br><span class="line">    </span><br><span class="line">  <span class="comment"># build sub-project which triggers ExternalProject_Add</span></span><br><span class="line">  <span class="keyword">execute_process</span>(</span><br><span class="line">    <span class="keyword">COMMAND</span></span><br><span class="line">    <span class="string">"$&#123;CMAKE_COMMAND&#125;"</span> --build .</span><br><span class="line">    WORKING_DIRECTORY</span><br><span class="line">    <span class="variable">$&#123;_download_root&#125;</span></span><br><span class="line">    )</span><br><span class="line"><span class="keyword">endmacro</span>()</span><br></pre></td></tr></table></figure>
+<p>宏接收项目名称、下载根目录、Git存储库URL和一个Git标记。宏定义了<code>${_project_name}_SOURCE_DIR</code>和<code>${_project_name}_BINARY_DIR</code>，我们需要在<code>fetch_git_repo</code>生命周期范围内使用定义的<code>${_project_name}_SOURCE_DIR</code>和<code>${_project_name}_BINARY_DIR</code>，因为要使用它们对子目录进行配置:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_subdirectory</span>(</span><br><span class="line">  <span class="variable">$&#123;googletest_SOURCE_DIR&#125;</span></span><br><span class="line">  <span class="variable">$&#123;googletest_BINARY_DIR&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p><code>fetch_git_repo</code>宏中，我们希望使用<code>ExternalProject_Add</code>在配置时获取外部项目，通过三个步骤实现了这一点:</p>
+<ol>
+<li><p>首先，配置<code>fetch_at_configure_step.in</code>:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">cmake_minimum_required</span>(VERSION <span class="number">3.5</span> FATAL_ERROR)</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">project</span>(fetch_git_repo_sub LANGUAGES NONE)</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">include</span>(ExternalProject)</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">ExternalProject_Add</span>(</span><br><span class="line">  <span class="variable">@FETCH_PROJECT_NAME</span>@</span><br><span class="line">  SOURCE_DIR <span class="string">"@FETCH_SOURCE_DIR@"</span></span><br><span class="line">  BINARY_DIR <span class="string">"@FETCH_BINARY_DIR@"</span></span><br><span class="line">  GIT_REPOSITORY</span><br><span class="line">  <span class="variable">@FETCH_GIT_REPOSITORY</span>@</span><br><span class="line">  GIT_TAG</span><br><span class="line">  <span class="variable">@FETCH_GIT_TAG</span>@</span><br><span class="line">  CONFIGURE_COMMAND <span class="string">""</span></span><br><span class="line">  BUILD_COMMAND <span class="string">""</span></span><br><span class="line">  INSTALL_COMMAND <span class="string">""</span></span><br><span class="line">  TEST_COMMAND <span class="string">""</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>使用<code>configure_file</code>，可以生成一个<code>CMakeLists.txt</code>文件，前面的占位符被<code>fetch_git_repo.cmake</code>中的值替换。注意，前面的<code>ExternalProject_Add</code>命令仅用于获取，而不仅是配置、构建、安装或测试。</p>
+</li>
+<li><p>其次，使用配置步骤在配置时触发<code>ExternalProject_Add</code>(从主项目的角度):</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># configure sub-project</span></span><br><span class="line">execute_process(</span><br><span class="line">  COMMAND</span><br><span class="line">  	<span class="string">"<span class="variable">$&#123;CMAKE_COMMAND&#125;</span>"</span> -G <span class="string">"<span class="variable">$&#123;CMAKE_GENERATOR&#125;</span>"</span> .</span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">  	<span class="variable">$&#123;_download_root&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后在<code>fetch_git_repo.cmake</code>中触发配置时构建步骤:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build sub-project which triggers ExternalProject_Add</span></span><br><span class="line"><span class="keyword">execute_process</span>(</span><br><span class="line">  <span class="keyword">COMMAND</span></span><br><span class="line">  	<span class="string">"$&#123;CMAKE_COMMAND&#125;"</span> --build .</span><br><span class="line">  WORKING_DIRECTORY</span><br><span class="line">  	<span class="variable">$&#123;_download_root&#125;</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>这个解决方案的一个优点是，由于外部依赖项不是由<code>ExternalProject_Add</code>配置的，所以不需要通过<code>ExternalProject_Add</code>调用任何配置，将其引导至项目。我们可以使用<code>add_subdirectory</code>配置和构建模块，就像外部依赖项是项目源代码树的一部分一样。聪明的伪装!</p>
+<h2 id="更多信息-1"><a href="#更多信息-1" class="headerlink" title="更多信息"></a>更多信息</h2><p>有关<code>FetchContent</code>选项的详细讨论，请参考<a href="https://cmake.org/cmake/help/v3.11/module/FetchContent.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.11/module/FetchContent.html</a> 配置时<code>ExternalProject_Add</code>的解决方案灵感来自Craig Scott，博客文章:<a href="https://crascit.com/2015/07/25/cgtest/" target="_blank" rel="noopener">https://crascit.com/2015/07/25/cgtest/</a></p>
+<h1 id="8-5-使用超级构建支持项目"><a href="#8-5-使用超级构建支持项目" class="headerlink" title="8.5 使用超级构建支持项目"></a>8.5 使用超级构建支持项目</h1><p><strong>NOTE</strong>:<em>此示例代码可以在 <a href="https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-05" target="_blank" rel="noopener">https://github.com/dev-cafe/cmake-cookbook/tree/v1.0/chapter-8/recipe-05</a> 中找到，其中有一个C++示例。该示例在CMake 3.5版(或更高版本)中是有效的，并且已经在GNU/Linux、macOS和Windows上进行过测试。</em></p>
+<p><code>ExternalProject</code>和<code>FetchContent</code>是CMake库中两个非常强大的工具。经过前面的示例，我们应该相信超级构建方法，在管理复杂依赖关系的项目时是多么有用。目前为止，我们已经展示了如何使用<code>ExternalProject</code>来处理以下问题:</p>
+<ul>
+<li>存储在源树中的源</li>
+<li>从在线服务器上，检索/获取可用的存档资源</li>
+</ul>
+<p>前面的示例展示了，如何使用<code>FetchContent</code>处理开源Git存储库中可用的依赖项。本示例将展示，如何使用<code>ExternalProject</code>达到同样的效果。最后，将介绍一个示例，该示例将在第10章第4节中重用。</p>
+<h2 id="准备工作-3"><a href="#准备工作-3" class="headerlink" title="准备工作"></a>准备工作</h2><p>这个超级构建的源代码树现在应该很熟悉了:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── external</span><br><span class="line">│    └── upstream</span><br><span class="line">│        ├── CMakeLists.txt</span><br><span class="line">│        └── message</span><br><span class="line">│            └── CMakeLists.txt</span><br><span class="line">└── src</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    └── use_message.cpp</span><br></pre></td></tr></table></figure>
+<p>根目录有一个<code>CMakeLists.txt</code>，我们知道它会配合超级构建。子目录<code>src</code>和<code>external</code>中是我们自己的源代码，CMake指令需要满足对消息库的依赖，我们将在本例中构建消息库。</p>
+<h2 id="具体实施-4"><a href="#具体实施-4" class="headerlink" title="具体实施"></a>具体实施</h2><p>目前为止，建立超级构建的过程应该已经很熟悉了。让我们再次看看必要的步骤，从根目录的<code>CMakeLists.txt</code>开始:</p>
+<ol>
+<li><p>声明一个C++11项目，并对项目构建类型的默认值进行设置。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.6</span> FATAL_ERROR)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">project</span><span class="params">(recipe-<span class="number">05</span> LANGUAGES CXX)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(NOT DEFINED CMAKE_BUILD_TYPE OR <span class="string">"$&#123;CMAKE_BUILD_TYPE&#125;"</span> STREQUAL <span class="string">""</span>)</span></span></span><br><span class="line">	set(CMAKE_BUILD_TYPE Release CACHE STRING <span class="string">"Build type"</span> FORCE)</span><br><span class="line"><span class="function"><span class="title">endif</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Build type set to $&#123;CMAKE_BUILD_TYPE&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置<code>EP_BASE</code>目录属性。这将固定<code>ExternalProject</code>管理所有子项目的布局:</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set_property(DIRECTORY <span class="keyword">PROPERTY</span><span class="title"> </span>EP_BASE $&#123;CMAKE_BINARY_DIR&#125;/subprojects)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们设置了<code>STAGED_INSTALL_PREFIX</code>。与之前一样，这个位置将作为依赖项的构建树中的安装目录:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">set</span><span class="params">(STAGED_INSTALL_PREFIX $&#123;CMAKE_BINARY_DIR&#125;/stage)</span></span></span><br><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"$&#123;PROJECT_NAME&#125; staged install: $&#123;STAGED_INSTALL_PREFIX&#125;"</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>external/upstream</code>作为子目录添加：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(external/upstream)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加<code>ExternalProject_Add</code>，这样我们的项目也将由超级构建管理:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">include(ExternalProject)</span><br><span class="line">ExternalProject_Add(<span class="variable">$&#123;PROJECT_NAME&#125;</span>_core</span><br><span class="line">  DEPENDS</span><br><span class="line">  	message_external</span><br><span class="line">  SOURCE_DIR</span><br><span class="line">  	<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/src</span><br><span class="line">  CMAKE_ARGS</span><br><span class="line">    <span class="attribute">-DCMAKE_BUILD_TYPE</span>=<span class="variable">$&#123;CMAKE_BUILD_TYPE&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_COMPILER</span>=<span class="variable">$&#123;CMAKE_CXX_COMPILER&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_STANDARD</span>=<span class="variable">$&#123;CMAKE_CXX_STANDARD&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_EXTENSIONS</span>=<span class="variable">$&#123;CMAKE_CXX_EXTENSIONS&#125;</span></span><br><span class="line">    <span class="attribute">-DCMAKE_CXX_STANDARD_REQUIRED</span>=<span class="variable">$&#123;CMAKE_CXX_STANDARD_REQUIRED&#125;</span></span><br><span class="line">    <span class="attribute">-Dmessage_DIR</span>=<span class="variable">$&#123;message_DIR&#125;</span></span><br><span class="line">    CMAKE_CACHE_ARGS</span><br><span class="line">    -DCMAKE_CXX_FLAGS:<span class="attribute">STRING</span>=<span class="variable">$&#123;CMAKE_CXX_FLAGS&#125;</span></span><br><span class="line">    -DCMAKE_PREFIX_PATH:<span class="attribute">PATH</span>=<span class="variable">$&#123;CMAKE_PREFIX_PATH&#125;</span></span><br><span class="line">  BUILD_ALWAYS</span><br><span class="line">  	1</span><br><span class="line">  INSTALL_COMMAND</span><br><span class="line">  	<span class="string">""</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>external/upstream</code>的<code>CMakeLists.txt</code>中只包含一条命令:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">add_subdirectory</span><span class="params">(message)</span></span></span><br></pre></td></tr></table></figure>
+<p>跳转到<code>message</code>文件夹，我们会看到对消息库的依赖的常用命令:</p>
+<ol>
+<li><p>首先，调用<code>find_package</code>找到一个合适版本的库:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find_package(message 1<span class="built_in"> CONFIG </span>QUIET)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果找到，会通知用户，并添加一个虚拟<code>INTERFACE</code>库:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">get_property</span>(_loc <span class="keyword">TARGET</span> <span class="keyword">message</span>::<span class="keyword">message</span>-shared PROPERTY LOCATION)</span><br><span class="line"><span class="keyword">message</span>(STATUS <span class="string">"Found message: $&#123;_loc&#125; (found version $&#123;message_VERSION&#125;)"</span>)</span><br><span class="line"><span class="keyword">add_library</span>(message_external INTERFACE) <span class="comment"># dummy</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果没有找到，再次通知用户并继续使用<code>ExternalProject_Add</code>:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">message</span><span class="params">(STATUS <span class="string">"Suitable message could not be located, Building message instead."</span>)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>该项目托管在一个公共Git库中，使用<code>GIT_TAG</code>选项指定下载哪个分支。和之前一样，将<code>UPDATE_COMMAND</code>选项置为空:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">include(<span class="name">ExternalProject</span>)</span><br><span class="line">ExternalProject_Add(<span class="name">message_external</span></span><br><span class="line">  GIT_REPOSITORY</span><br><span class="line">  	https<span class="symbol">://github</span>.com/dev-cafe/message.git</span><br><span class="line">  GIT_TAG</span><br><span class="line">  	master</span><br><span class="line">  UPDATE_COMMAND</span><br><span class="line">  	<span class="string">""</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>外部项目使用CMake配置和构建，传递必要的构建选项:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_ARGS</span><br><span class="line">  -<span class="ruby">DCMAKE_INSTALL_PREFIX=$&#123;STAGED_INSTALL_PREFIX&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_BUILD_TYPE=$&#123;CMAKE_BUILD_TYPE&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_COMPILER=$&#123;CMAKE_CXX_COMPILER&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_STANDARD=$&#123;CMAKE_CXX_STANDARD&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_EXTENSIONS=$&#123;CMAKE_CXX_EXTENSIONS&#125;</span></span><br><span class="line"><span class="ruby">  -DCMAKE_CXX_STANDARD_REQUIRED=$&#123;CMAKE_CXX_STANDARD_REQUIRED&#125;</span></span><br><span class="line"><span class="ruby">CMAKE_CACHE_ARGS</span></span><br><span class="line"><span class="ruby">	-<span class="symbol">DCMAKE_CXX_FLAGS:</span>STRING=$&#123;CMAKE_CXX_FLAGS&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>项目安装后进行测试:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TEST_AFTER_INSTALL</span><br><span class="line">	<span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们不希望看到下载进度，也不希望在屏幕上报告配置、构建和安装信息，所以选择关闭<code>ExternalProject_Add</code>:</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  DOWNLOAD_NO_PROGRESS</span><br><span class="line">  	<span class="number">1</span></span><br><span class="line">  LOG_CONFIGURE</span><br><span class="line">  	<span class="number">1</span></span><br><span class="line">  LOG_BUILD</span><br><span class="line">  	<span class="number">1</span></span><br><span class="line">  LOG_INSTALL</span><br><span class="line">  	<span class="number">1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为了确保子项目在超级构建的其余部分中是可见的，我们设置了<code>message_DIR</code>目录:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(WIN32 <span class="keyword">AND</span> <span class="keyword">NOT</span> CYGWIN)</span><br><span class="line">	<span class="builtin-name">set</span>(DEF_message_DIR <span class="variable">$&#123;STAGED_INSTALL_PREFIX&#125;</span>/CMake)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">	<span class="builtin-name">set</span>(DEF_message_DIR <span class="variable">$&#123;STAGED_INSTALL_PREFIX&#125;</span>/share/cmake/message)</span><br><span class="line">endif()</span><br><span class="line">	</span><br><span class="line">file(TO_NATIVE_PATH <span class="string">"<span class="variable">$&#123;DEF_message_DIR&#125;</span>"</span> DEF_message_DIR)</span><br><span class="line"><span class="builtin-name">set</span>(message_DIR <span class="variable">$&#123;DEF_message_DIR&#125;</span></span><br><span class="line">CACHE PATH <span class="string">"Path to internally built messageConfig.cmake"</span> FORCE)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>最后，来看一下<code>src</code>目录上的<code>CMakeLists.txt</code>：</p>
+<ol>
+<li><p>同样，声明一个C++11项目:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">cmake_minimum_required</span><span class="params">(VERSION <span class="number">3.6</span> FATAL_ERROR)</span></span></span><br><span class="line">project(recipe-<span class="number">05</span>_core</span><br><span class="line">LANGUAGES CXX</span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD <span class="number">11</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_EXTENSIONS OFF)</span></span></span><br><span class="line"><span class="function"><span class="title">set</span><span class="params">(CMAKE_CXX_STANDARD_REQUIRED ON)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>项目需要消息库:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find_package(message 1<span class="built_in"> CONFIG </span>REQUIRED)</span><br><span class="line">get_property(_loc TARGET message::message-shared PROPERTY LOCATION)</span><br><span class="line">message(STATUS <span class="string">"Found message: <span class="variable">$&#123;_loc&#125;</span> (found version <span class="variable">$&#123;message_VERSION&#125;</span>)"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>声明一个可执行目标，并将其链接到消息动态库:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">add_executable(<span class="name">use_message</span> use_message.cpp)</span><br><span class="line"></span><br><span class="line">target_link_libraries(<span class="name">use_message</span></span><br><span class="line">  PUBLIC</span><br><span class="line">  	message:<span class="symbol">:message-shared</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="工作原理-4"><a href="#工作原理-4" class="headerlink" title="工作原理"></a>工作原理</h2><p>示例展示了<code>ExternalProject_Add</code>的一些新选项:</p>
+<ol>
+<li><strong>GIT_REPOSITORY</strong>:这可以用来指定包含依赖项源的存储库的URL。CMake还可以使用其他版本控制系统，比如CVS (CVS_REPOSITORY)、SVN (SVN_REPOSITORY)或Mercurial (HG_REPOSITORY)。</li>
+<li><strong>GIT_TAG</strong>:默认情况下，CMake将检出给定存储库的默认分支。然而，最好依赖于一个稳定的版本。这可以通过这个选项指定，它可以接受Git将任何标识符识别为“版本”信息，例如：Git提交SHA、Git标记或分支名称。CMake所理解的其他版本控制系统也可以使用类似的选项。</li>
+<li><strong>TEST_AFTER_INSTALL</strong>:依赖项很可能有自己的测试套件，您可能希望运行测试套件，以确保在超级构建期间一切顺利。此选项将在安装步骤之后立即运行测试。</li>
+</ol>
+<p><code>ExternalProject_Add</code>可以理解的其他测试选项如下:</p>
+<ul>
+<li><strong>TEST_BEFORE_INSTALL</strong>:将在安装步骤之前运行测试套件</li>
+<li><strong>TEST_EXCLUDE_FROM_MAIN</strong>:可以从测试套件中，删除对外部项目的主要目标的依赖</li>
+</ul>
+<p>这些选项都假定外部项目使用CTest管理测试。如果外部项目不使用CTest来管理测试，我们可以通过<code>TEST_COMMAND</code>选项来执行测试。</p>
+<p>即使是为属于自己项目的模块引入超级构建模式，也需要引入额外的层，重新声明小型CMake项目，并通过<code>ExternalProject_Add</code>显式地传递配置设置。引入这个附加层的好处是，清晰地分离了变量和目标范围，这可以帮助管理由多个组件组成的项目中的复杂性、依赖性和名称空间，这些组件可以是内部的，也可以是外部的，并由CMake组合在一起。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2021/03/100660.html" class="pre-post btn btn-default" title='CMake 完整使用教程 之十 语言混合项目'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之十 语言混合项目</span>
+        </a>
+    
+    
+        <a href="/archives/2021/03/100658.html" class="next-post btn btn-default" title='CMake 完整使用教程 之八 构建项目'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">CMake 完整使用教程 之八 构建项目</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#8-1-使用超级构建模式"><span class="toc-text">8.1 使用超级构建模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-2-使用超级构建管理依赖项-Ⅰ-Boost库"><span class="toc-text">8.2 使用超级构建管理依赖项:Ⅰ.Boost库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-1"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-1"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-3-使用超级构建管理依赖项-Ⅱ-FFTW库"><span class="toc-text">8.3 使用超级构建管理依赖项:Ⅱ.FFTW库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-1"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-2"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-2"><span class="toc-text">工作原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-4-使用超级构建管理依赖项-Ⅲ-Google-Test框架"><span class="toc-text">8.4 使用超级构建管理依赖项:Ⅲ.Google Test框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-2"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-3"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-3"><span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更多信息-1"><span class="toc-text">更多信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-5-使用超级构建支持项目"><span class="toc-text">8.5 使用超级构建支持项目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作-3"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实施-4"><span class="toc-text">具体实施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工作原理-4"><span class="toc-text">工作原理</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

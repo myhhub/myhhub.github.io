@@ -1,0 +1,386 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,sql,spark">
+
+
+    <meta name="description" content="一、简单聚合1.1 数据准备12345678// 需要导入spark sql内置的函数包import org.apache.spark.sql.functions._val spark = Sp...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>Spark聚合函数Aggregations | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Spark聚合函数Aggregations">
+            
+	            Spark聚合函数Aggregations
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/sql/">sql</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/11</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1365</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="一、简单聚合"><a href="#一、简单聚合" class="headerlink" title="一、简单聚合"></a>一、简单聚合</h2><h3 id="1-1-数据准备"><a href="#1-1-数据准备" class="headerlink" title="1.1 数据准备"></a>1.1 数据准备</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要导入spark sql内置的函数包</span></span><br><span class="line">import org<span class="selector-class">.apache</span><span class="selector-class">.spark</span><span class="selector-class">.sql</span><span class="selector-class">.functions</span>._</span><br><span class="line"></span><br><span class="line">val spark = SparkSession.builder().appName(<span class="string">"aggregations"</span>).master(<span class="string">"local[2]"</span>).getOrCreate()</span><br><span class="line">val empDF = spark<span class="selector-class">.read</span><span class="selector-class">.json</span>(<span class="string">"/usr/file/json/emp.json"</span>)</span><br><span class="line"><span class="comment">// 注册为临时视图，用于后面演示SQL查询</span></span><br><span class="line">empDF.createOrReplaceTempView(<span class="string">"emp"</span>)</span><br><span class="line">empDF.show()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：emp.json可以从本仓库的<a href="https://github.com/myhhub/BigData-Notes/tree/master/resources" target="_blank" rel="noopener">resources</a>目录下载。</p>
+</blockquote>
+<h3 id="1-2-count"><a href="#1-2-count" class="headerlink" title="1.2 count"></a>1.2 count</h3><figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算员工人数</span></span><br><span class="line">empDF.<span class="keyword">select</span>(<span class="built_in">count</span>(<span class="string">"ename"</span>)).<span class="built_in">show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-countDistinct"><a href="#1-3-countDistinct" class="headerlink" title="1.3 countDistinct"></a>1.3 countDistinct</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算姓名不重复的员工人数</span></span><br><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.select</span>(countDistinct(<span class="string">"deptno"</span>))<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-approx-count-distinct"><a href="#1-4-approx-count-distinct" class="headerlink" title="1.4 approx_count_distinct"></a>1.4 approx_count_distinct</h3><p>通常在使用大型数据集时，你可能关注的只是近似值而不是准确值，这时可以使用approx_count_distinct函数，并可以使用第二个参数指定最大允许误差。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.select</span>(<span class="selector-tag">approx_count_distinct</span> ("<span class="selector-tag">ename</span>",0<span class="selector-class">.1</span>))<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-5-first-amp-last"><a href="#1-5-first-amp-last" class="headerlink" title="1.5 first &amp; last"></a>1.5 first &amp; last</h3><p>获取DataFrame中指定列的第一个值或者最后一个值。</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">empDF.select(<span class="built_in">first</span>(<span class="string">"ename"</span>),<span class="built_in">last</span>(<span class="string">"job"</span>)).<span class="built_in">show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-6-min-amp-max"><a href="#1-6-min-amp-max" class="headerlink" title="1.6 min &amp; max"></a>1.6 min &amp; max</h3><p>获取DataFrame中指定列的最小值或者最大值。</p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">empDF.<span class="keyword">select</span>(<span class="built_in">min</span>(<span class="string">"sal"</span>),<span class="built_in">max</span>(<span class="string">"sal"</span>)).<span class="built_in">show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-7-sum-amp-sumDistinct"><a href="#1-7-sum-amp-sumDistinct" class="headerlink" title="1.7 sum &amp; sumDistinct"></a>1.7 sum &amp; sumDistinct</h3><p>求和以及求指定列所有不相同的值的和。</p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">empDF.<span class="keyword">select</span>(<span class="built_in">sum</span>(<span class="string">"sal"</span>)).<span class="built_in">show</span>()</span><br><span class="line">empDF.<span class="keyword">select</span>(sumDistinct(<span class="string">"sal"</span>)).<span class="built_in">show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-8-avg"><a href="#1-8-avg" class="headerlink" title="1.8 avg"></a>1.8 avg</h3><p>内置的求平均数的函数。</p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">empDF.<span class="keyword">select</span>(<span class="built_in">avg</span>(<span class="string">"sal"</span>)).<span class="built_in">show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-9-数学函数"><a href="#1-9-数学函数" class="headerlink" title="1.9 数学函数"></a>1.9 数学函数</h3><p>Spark SQL中还支持多种数学聚合函数，用于通常的数学计算，以下是一些常用的例子：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.计算总体方差、均方差、总体标准差、样本标准差</span></span><br><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.select</span>(var_pop(<span class="string">"sal"</span>), var_samp(<span class="string">"sal"</span>), stddev_pop(<span class="string">"sal"</span>), stddev_samp(<span class="string">"sal"</span>))<span class="selector-class">.show</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2.计算偏度和峰度</span></span><br><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.select</span>(skewness(<span class="string">"sal"</span>), kurtosis(<span class="string">"sal"</span>))<span class="selector-class">.show</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 计算两列的皮尔逊相关系数、样本协方差、总体协方差。(这里只是演示，员工编号和薪资两列实际上并没有什么关联关系)</span></span><br><span class="line"><span class="selector-tag">empDF</span><span class="selector-class">.select</span>(corr(<span class="string">"empno"</span>, <span class="string">"sal"</span>), covar_samp(<span class="string">"empno"</span>, <span class="string">"sal"</span>),covar_pop(<span class="string">"empno"</span>, <span class="string">"sal"</span>))<span class="selector-class">.show</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="1-10-聚合数据到集合"><a href="#1-10-聚合数据到集合" class="headerlink" title="1.10 聚合数据到集合"></a>1.10 聚合数据到集合</h3><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">scala&gt;  empDF.agg(collect<span class="emphasis">_set("job"), collect_</span>list("ename")).show()</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"><span class="code">+--------------------+</span>--------------------+</span><br><span class="line">|    collect<span class="emphasis">_set(job)| collect_</span>list(ename)|</span><br><span class="line"><span class="code">+--------------------+</span>--------------------+</span><br><span class="line">|[MANAGER, SALESMA...|[SMITH, ALLEN, WA...|</span><br><span class="line"><span class="code">+--------------------+</span>--------------------+</span><br></pre></td></tr></table></figure>
+<h2 id="二、分组聚合"><a href="#二、分组聚合" class="headerlink" title="二、分组聚合"></a>二、分组聚合</h2><h3 id="2-1-简单分组"><a href="#2-1-简单分组" class="headerlink" title="2.1 简单分组"></a>2.1 简单分组</h3><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">empDF.groupBy(<span class="string">"deptno"</span>, <span class="string">"job"</span>).count().show()</span><br><span class="line">//等价SQL</span><br><span class="line">spark.sql(<span class="string">"SELECT deptno, job, count(*) FROM emp GROUP BY deptno, job"</span>).show()</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">+------+---------+-----+</span><br><span class="line">|<span class="string">deptno</span>|<span class="string">      job</span>|<span class="string">count</span>|</span><br><span class="line">+------+---------+-----+</span><br><span class="line">|<span class="string">    10</span>|<span class="string">PRESIDENT</span>|<span class="string">    1</span>|</span><br><span class="line">|<span class="string">    30</span>|<span class="string">    CLERK</span>|<span class="string">    1</span>|</span><br><span class="line">|<span class="string">    10</span>|<span class="string">  MANAGER</span>|<span class="string">    1</span>|</span><br><span class="line">|<span class="string">    30</span>|<span class="string">  MANAGER</span>|<span class="string">    1</span>|</span><br><span class="line">|<span class="string">    20</span>|<span class="string">    CLERK</span>|<span class="string">    2</span>|</span><br><span class="line">|<span class="string">    30</span>|<span class="string"> SALESMAN</span>|<span class="string">    4</span>|</span><br><span class="line">|<span class="string">    20</span>|<span class="string">  ANALYST</span>|<span class="string">    2</span>|</span><br><span class="line">|<span class="string">    10</span>|<span class="string">    CLERK</span>|<span class="string">    1</span>|</span><br><span class="line">|<span class="string">    20</span>|<span class="string">  MANAGER</span>|<span class="string">    1</span>|</span><br><span class="line">+------+---------+-----+</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-分组聚合"><a href="#2-2-分组聚合" class="headerlink" title="2.2 分组聚合"></a>2.2 分组聚合</h3><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">empDF.groupBy("deptno").agg(count("ename").alias("人数"), sum("sal").alias("总工资")).show()</span><br><span class="line"><span class="comment">// 等价语法</span></span><br><span class="line">empDF.groupBy("deptno").agg("ename"-&gt;"count","sal"-&gt;"sum").show()</span><br><span class="line"><span class="comment">// 等价SQL</span></span><br><span class="line">spark.sql("SELECT deptno, count(ename) ,sum(sal) FROM emp GROUP BY deptno").show()</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"><span class="code">+------+</span>----<span class="code">+------+</span></span><br><span class="line">|deptno|人数|总工资|</span><br><span class="line"><span class="code">+------+</span>----<span class="code">+------+</span></span><br><span class="line">|    10|   3|8750.0|</span><br><span class="line">|    30|   6|9400.0|</span><br><span class="line">|    20|   5|9375.0|</span><br><span class="line"><span class="code">+------+</span>----<span class="code">+------+</span></span><br></pre></td></tr></table></figure>
+<h2 id="三、自定义聚合函数"><a href="#三、自定义聚合函数" class="headerlink" title="三、自定义聚合函数"></a>三、自定义聚合函数</h2><p>Scala提供了两种自定义聚合函数的方法，分别如下：</p>
+<ul>
+<li>有类型的自定义聚合函数，主要适用于DataSet；</li>
+<li>无类型的自定义聚合函数，主要适用于DataFrame。</li>
+</ul>
+<p>以下分别使用两种方式来自定义一个求平均值的聚合函数，这里以计算员工平均工资为例。两种自定义方式分别如下：</p>
+<h3 id="3-1-有类型的自定义函数"><a href="#3-1-有类型的自定义函数" class="headerlink" title="3.1 有类型的自定义函数"></a>3.1 有类型的自定义函数</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.sql.expressions.<span class="type">Aggregator</span></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.&#123;<span class="type">Encoder</span>, <span class="type">Encoders</span>, <span class="type">SparkSession</span>, functions&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1.定义员工类,对于可能存在null值的字段需要使用Option进行包装</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Emp</span>(<span class="params">ename: <span class="type">String</span>, comm: scala.<span class="type">Option</span>[<span class="type">Double</span>], deptno: <span class="type">Long</span>, empno: <span class="type">Long</span>,</span></span></span><br><span class="line"><span class="class"><span class="params">               hiredate: <span class="type">String</span>, job: <span class="type">String</span>, mgr: scala.<span class="type">Option</span>[<span class="type">Long</span>], sal: <span class="type">Double</span></span>)</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">//</span> 2.<span class="title">定义聚合操作的中间输出类型</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">SumAndCount</span>(<span class="params">var sum: <span class="type">Double</span>, var count: <span class="type">Long</span></span>)</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">/*</span> 3.<span class="title">自定义聚合函数</span></span></span><br><span class="line"><span class="class"> <span class="title">*</span> <span class="title">@IN</span>  <span class="title">聚合操作的输入类型</span></span></span><br><span class="line"><span class="class"> <span class="title">*</span> <span class="title">@BUF</span> <span class="title">reduction操作输出值的类型</span></span></span><br><span class="line"><span class="class"> <span class="title">*</span> <span class="title">@OUT</span> <span class="title">聚合操作的输出类型</span></span></span><br><span class="line"><span class="class"> <span class="title">*/</span></span></span><br><span class="line"><span class="class"><span class="title">object</span> <span class="title">MyAverage</span> <span class="keyword">extends</span> <span class="title">Aggregator</span>[<span class="type">Emp</span>, <span class="type">SumAndCount</span>, <span class="type">Double</span>] </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 4.用于聚合操作的的初始零值</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">zero</span></span>: <span class="type">SumAndCount</span> = <span class="type">SumAndCount</span>(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 5.同一分区中的reduce操作</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">reduce</span></span>(avg: <span class="type">SumAndCount</span>, emp: <span class="type">Emp</span>): <span class="type">SumAndCount</span> = &#123;</span><br><span class="line">        avg.sum += emp.sal</span><br><span class="line">        avg.count += <span class="number">1</span></span><br><span class="line">        avg</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 6.不同分区中的merge操作</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">merge</span></span>(avg1: <span class="type">SumAndCount</span>, avg2: <span class="type">SumAndCount</span>): <span class="type">SumAndCount</span> = &#123;</span><br><span class="line">        avg1.sum += avg2.sum</span><br><span class="line">        avg1.count += avg2.count</span><br><span class="line">        avg1</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 7.定义最终的输出类型</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">finish</span></span>(reduction: <span class="type">SumAndCount</span>): <span class="type">Double</span> = reduction.sum / reduction.count</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 8.中间类型的编码转换</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">bufferEncoder</span></span>: <span class="type">Encoder</span>[<span class="type">SumAndCount</span>] = <span class="type">Encoders</span>.product</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 9.输出类型的编码转换</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">outputEncoder</span></span>: <span class="type">Encoder</span>[<span class="type">Double</span>] = <span class="type">Encoders</span>.scalaDouble</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">SparkSqlApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试方法</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> spark = <span class="type">SparkSession</span>.builder().appName(<span class="string">"Spark-SQL"</span>).master(<span class="string">"local[2]"</span>).getOrCreate()</span><br><span class="line">        <span class="keyword">import</span> spark.implicits._</span><br><span class="line">        <span class="keyword">val</span> ds = spark.read.json(<span class="string">"file/emp.json"</span>).as[<span class="type">Emp</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 10.使用内置avg()函数和自定义函数分别进行计算，验证自定义函数是否正确</span></span><br><span class="line">        <span class="keyword">val</span> myAvg = ds.select(<span class="type">MyAverage</span>.toColumn.name(<span class="string">"average_sal"</span>)).first()</span><br><span class="line">        <span class="keyword">val</span> avg = ds.select(functions.avg(ds.col(<span class="string">"sal"</span>))).first().get(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        println(<span class="string">"自定义average函数 : "</span> + myAvg)</span><br><span class="line">        println(<span class="string">"内置的average函数 : "</span> + avg)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>自定义聚合函数需要实现的方法比�多，这里以绘图的方式来演示其执行流程，以及每个方法的作用：</p>
+<div align="center"> <img src="/img/bigdata/spark-sql-hs.png"> </div>
+
+
+
+<p>关于<code>zero</code>,<code>reduce</code>,<code>merge</code>,<code>finish</code>方法的作用在上图都有说明，这里解释一下中间类型和输出类型的编码转换，这个写法比较固定，基本上就是两种情况：</p>
+<ul>
+<li>自定义类型Case Class或者元组就使用<code>Encoders.product</code>方法；</li>
+<li>基本类型就使用其对应名称的方法，如<code>scalaByte</code>，<code>scalaFloat</code>，<code>scalaShort</code>等，示例如下：</li>
+</ul>
+<figure class="highlight flix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">override <span class="function"><span class="keyword">def</span> <span class="title">bufferEncoder</span></span>: Encoder[SumAndCount] = Encoders.product</span><br><span class="line">override <span class="function"><span class="keyword">def</span> <span class="title">outputEncoder</span></span>: Encoder[Double] = Encoders.scalaDouble</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-无类型的自定义聚合函数"><a href="#3-2-无类型的自定义聚合函数" class="headerlink" title="3.2 无类型的自定义聚合函数"></a>3.2 无类型的自定义聚合函数</h3><p>理解了有类型的自定义聚合函数后，无类型的定义方式也基本相同，代码如下：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.spark.sql.expressions.&#123;<span class="type">MutableAggregationBuffer</span>, <span class="type">UserDefinedAggregateFunction</span>&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.types._</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.&#123;<span class="type">Row</span>, <span class="type">SparkSession</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">MyAverage</span> <span class="keyword">extends</span> <span class="title">UserDefinedAggregateFunction</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 1.聚合操作输入参数的类型,字段名称可以自定义</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">inputSchema</span></span>: <span class="type">StructType</span> = <span class="type">StructType</span>(<span class="type">StructField</span>(<span class="string">"MyInputColumn"</span>, <span class="type">LongType</span>) :: <span class="type">Nil</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2.聚合操作中间值的类型,字段名称可以自定义</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">bufferSchema</span></span>: <span class="type">StructType</span> = &#123;</span><br><span class="line">    <span class="type">StructType</span>(<span class="type">StructField</span>(<span class="string">"sum"</span>, <span class="type">LongType</span>) :: <span class="type">StructField</span>(<span class="string">"MyCount"</span>, <span class="type">LongType</span>) :: <span class="type">Nil</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3.聚合操作输出参数的类型</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">dataType</span></span>: <span class="type">DataType</span> = <span class="type">DoubleType</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 4.此函数是否始终在相同输入上返回相同的输出,通常为true</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">deterministic</span></span>: <span class="type">Boolean</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 5.定义零值</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(buffer: <span class="type">MutableAggregationBuffer</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    buffer(<span class="number">0</span>) = <span class="number">0</span>L</span><br><span class="line">    buffer(<span class="number">1</span>) = <span class="number">0</span>L</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 6.同一分区中的reduce操作</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">update</span></span>(buffer: <span class="type">MutableAggregationBuffer</span>, input: <span class="type">Row</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">if</span> (!input.isNullAt(<span class="number">0</span>)) &#123;</span><br><span class="line">      buffer(<span class="number">0</span>) = buffer.getLong(<span class="number">0</span>) + input.getLong(<span class="number">0</span>)</span><br><span class="line">      buffer(<span class="number">1</span>) = buffer.getLong(<span class="number">1</span>) + <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 7.不同分区中的merge操作</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">merge</span></span>(buffer1: <span class="type">MutableAggregationBuffer</span>, buffer2: <span class="type">Row</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    buffer1(<span class="number">0</span>) = buffer1.getLong(<span class="number">0</span>) + buffer2.getLong(<span class="number">0</span>)</span><br><span class="line">    buffer1(<span class="number">1</span>) = buffer1.getLong(<span class="number">1</span>) + buffer2.getLong(<span class="number">1</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 8.计算最终的输出值</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">evaluate</span></span>(buffer: <span class="type">Row</span>): <span class="type">Double</span> = buffer.getLong(<span class="number">0</span>).toDouble / buffer.getLong(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">SparkSqlApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 测试方法</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> spark = <span class="type">SparkSession</span>.builder().appName(<span class="string">"Spark-SQL"</span>).master(<span class="string">"local[2]"</span>).getOrCreate()</span><br><span class="line">    <span class="comment">// 9.注册自定义的聚合函数</span></span><br><span class="line">    spark.udf.register(<span class="string">"myAverage"</span>, <span class="type">MyAverage</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> df = spark.read.json(<span class="string">"file/emp.json"</span>)</span><br><span class="line">    df.createOrReplaceTempView(<span class="string">"emp"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 10.使用自定义函数和内置函数分别进行计算</span></span><br><span class="line">    <span class="keyword">val</span> myAvg = spark.sql(<span class="string">"SELECT myAverage(sal) as avg_sal FROM emp"</span>).first()</span><br><span class="line">    <span class="keyword">val</span> avg = spark.sql(<span class="string">"SELECT avg(sal) as avg_sal FROM emp"</span>).first()</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"自定义average函数 : "</span> + myAvg)</span><br><span class="line">    println(<span class="string">"内置的average函数 : "</span> + avg)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Matei Zaharia, Bill Chambers . Spark: The Definitive Guide[M] . 2018-02 </li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100410.html" class="pre-post btn btn-default" title='Spark SQL JOIN'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Spark SQL JOIN</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100408.html" class="next-post btn btn-default" title='Spark SQL外部数据源'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">Spark SQL外部数据源</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、简单聚合"><span class="toc-text">一、简单聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-数据准备"><span class="toc-text">1.1 数据准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-count"><span class="toc-text">1.2 count</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-countDistinct"><span class="toc-text">1.3 countDistinct</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-approx-count-distinct"><span class="toc-text">1.4 approx_count_distinct</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-first-amp-last"><span class="toc-text">1.5 first &amp; last</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-min-amp-max"><span class="toc-text">1.6 min &amp; max</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-sum-amp-sumDistinct"><span class="toc-text">1.7 sum &amp; sumDistinct</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-8-avg"><span class="toc-text">1.8 avg</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-9-数学函数"><span class="toc-text">1.9 数学函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-10-聚合数据到集合"><span class="toc-text">1.10 聚合数据到集合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、分组聚合"><span class="toc-text">二、分组聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-简单分组"><span class="toc-text">2.1 简单分组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-分组聚合"><span class="toc-text">2.2 分组聚合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、自定义聚合函数"><span class="toc-text">三、自定义聚合函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-有类型的自定义函数"><span class="toc-text">3.1 有类型的自定义函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-无类型的自定义聚合函数"><span class="toc-text">3.2 无类型的自定义聚合函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

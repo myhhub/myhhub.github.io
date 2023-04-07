@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,yarn,spark">
+
+
+    <meta name="description" content="1. 软件环境123Ubuntu 14.04.1 LTS (GNU/Linux 3.13.0-32-generic x86_64)Hadoop: 2.6.0Spark: 1.6.0
+2. 环境准...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 四十六.Spark基于YARN的部署方案 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 四十六.Spark基于YARN的部署方案">
+            
+	            大数据hadoop之 四十六.Spark基于YARN的部署方案
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/spark/">spark</a> <a class="tag-link" href="/tags/yarn/">yarn</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/07/01</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1375</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="1-软件环境"><a href="#1-软件环境" class="headerlink" title="1. 软件环境"></a>1. 软件环境</h2><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Ubuntu <span class="number">14.04</span><span class="meta">.1</span> LTS (GNU/Linux <span class="number">3.13</span><span class="meta">.0</span>-<span class="number">32</span>-generic x86_64)</span><br><span class="line"><span class="symbol">Hadoop:</span> <span class="number">2.6</span><span class="meta">.0</span></span><br><span class="line"><span class="symbol">Spark:</span> <span class="number">1.6</span><span class="meta">.0</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-环境准备"><a href="#2-环境准备" class="headerlink" title="2. 环境准备"></a>2. 环境准备</h2><p><strong>修改主机名</strong></p>
+<p>我们将搭建1个Master，2个Slave的集群方案。首先修改主机名<code>nano /etc/hostname</code>，在Master上修改为Master，其中一个Slave上修改为Slave1，另一个同理。</p>
+<p><strong>配置hosts</strong></p>
+<p>在每台主机上修改host文件</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">nano /etc/hosts</span><br><span class="line"></span><br><span class="line"><span class="number">192.168</span><span class="number">.1</span><span class="number">.80</span>      Master</span><br><span class="line"><span class="number">192.168</span><span class="number">.1</span><span class="number">.82</span>      Slave1</span><br><span class="line"><span class="number">192.168</span><span class="number">.1</span><span class="number">.84</span>      Slave2</span><br></pre></td></tr></table></figure>
+<p>配置之后ping一下用户名看是否生效</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping Slave1</span><br><span class="line">ping Slave2</span><br></pre></td></tr></table></figure>
+<h2 id="3-SSH-免密码登录"><a href="#3-SSH-免密码登录" class="headerlink" title="3. SSH 免密码登录"></a>3. SSH 免密码登录</h2><p><strong>安装Openssh server</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="builtin-name">get</span> install openssh-server</span><br></pre></td></tr></table></figure>
+<p><strong>在所有机器上都生成私钥和公钥</strong></p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa   <span class="meta">#一路回车</span></span><br></pre></td></tr></table></figure>
+<p>需要让机器间都能相互访问，就把每个机子上的id_rsa.pub发给Master节点，传输公钥可以用scp来传输。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp ~/.ssh/id_rsa<span class="selector-class">.pub</span> spark@Master:~/.ssh/id_rsa<span class="selector-class">.pub</span><span class="selector-class">.Slave1</span></span><br></pre></td></tr></table></figure>
+<p>在Master上，将所有公钥加到用于认证的公钥文件authorized_keys中</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~<span class="regexp">/.ssh/id</span>_rsa.pub* <span class="meta">&gt;&gt; </span>~<span class="regexp">/.ssh/authorized</span>_keys</span><br></pre></td></tr></table></figure>
+<p>将公钥文件authorized_keys分发给每台Slave</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp ~<span class="regexp">/.ssh/authorized</span>_keys spark<span class="variable">@Master</span><span class="symbol">:~/</span>.ssh/</span><br></pre></td></tr></table></figure>
+<p>在每台机子上验证SSH无密码通信</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh <span class="literal">Master</span></span><br><span class="line">ssh Slave1</span><br><span class="line">ssh Slave2</span><br></pre></td></tr></table></figure>
+<p>如果登陆测试不成功，则可能需要修改文件authorized_keys的权限（权限的设置非常重要，因为不安全的设置安全设置,会让你不能使用RSA功能 ）</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod <span class="number">600</span> ~<span class="regexp">/.ssh/</span>authorized_keys</span><br></pre></td></tr></table></figure>
+<h2 id="4-安装-Java"><a href="#4-安装-Java" class="headerlink" title="4. 安装 Java"></a>4. 安装 Java</h2><p>从官网下载最新版 Java 就可以，Spark官方说明 Java 只要是6以上的版本都可以，我下的是 jdk-7u75-linux-x64.gz在~/workspace目录下直接解压</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-zxvf</span> <span class="selector-tag">jdk-7u75-linux-x64</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
+<p>修改环境变量sudo vi /etc/profile，添加下列内容，注意将home路径替换成你的：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/lib/jvm/</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JRE_HOME</span>=<span class="variable">$&#123;JAVA_HOME&#125;</span>/jre</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">CLASSPATH</span>=.:$&#123;JAVA_HOME&#125;/lib:<span class="variable">$&#123;JRE_HOME&#125;</span>/lib:/usr/local/hive/lib</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$&#123;JAVA_HOME&#125;</span>/bin:$PATH</span><br><span class="line"></span><br><span class="line"><span class="comment">#HADOOP VARIABLES START</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/lib/jvm/</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_INSTALL</span>=/usr/local/hadoop</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$PATH</span>:$HADOOP_INSTALL/bin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$PATH</span>:$JAVA_HOME/bin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$PATH</span>:$HADOOP_INSTALL/sbin</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_MAPRED_HOME</span>=<span class="variable">$HADOOP_INSTALL</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_COMMON_HOME</span>=<span class="variable">$HADOOP_INSTALL</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_HDFS_HOME</span>=<span class="variable">$HADOOP_INSTALL</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">YARN_HOME</span>=<span class="variable">$HADOOP_INSTALL</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_COMMON_LIB_NATIVE_DIR</span>=<span class="variable">$HADOOP_INSTALL</span>/lib/native</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_OPTS</span>=<span class="string">"-Djava.library.path=<span class="variable">$HADOOP_INSTALL</span>/lib"</span></span><br><span class="line"><span class="comment">#HADOOP VARIABLES END</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HIVE_HOME</span>=/usr/local/hive</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$PATH</span>:$HIVE_HOME/bin:/usr/local/hbase/bin</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_LIBRARY_PATH</span>=/usr/local/hadoop/lib/native</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">SCALA_HOME</span>=/usr/lib/scala</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$PATH</span>:$SCALA_HOME/bin</span><br></pre></td></tr></table></figure>
+<p>然后使环境变量生效，并验证 Java 是否安装成功</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ source /etc<span class="built_in">/profile </span>  #生效环境变量</span><br><span class="line">$ java -version         #如果打印出如下版本信息，则说明安装成功</span><br><span class="line">java version <span class="string">"1.7.0_75"</span></span><br><span class="line">Java(TM) SE Runtime Environment (build 1.7.0_75-b13)</span><br><span class="line">Java HotSpot(TM) 64-Bit<span class="built_in"> Server </span>VM (build 24.75-b04, mixed mode)</span><br></pre></td></tr></table></figure>
+<h2 id="5-安装-Scala"><a href="#5-安装-Scala" class="headerlink" title="5. 安装 Scala"></a>5. 安装 Scala</h2><p>Spark官方要求 Scala 版本为 2.10.x，注意不要下错版本，我这里下了 2.10.6</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-zxvf</span> <span class="selector-tag">scala-2</span><span class="selector-class">.10</span><span class="selector-class">.4</span><span class="selector-class">.tgz</span></span><br></pre></td></tr></table></figure>
+<p>再次修改环境变量sudo vi /etc/profile，添加以下内容：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">SCALA_HOME</span>=/usr/lib/scala</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$PATH</span>:$SCALA_HOME/bin</span><br></pre></td></tr></table></figure></p>
+<p>同样的方法使环境变量生效，并验证 scala 是否安装成功<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ source /etc<span class="built_in">/profile </span>  #生效环境变量</span><br><span class="line">$ scala -version        #如果打印出如下版本信息，则说明安装成功</span><br><span class="line">Scala code runner version 2.10.6 -- Copyright 2002-2013, LAMP/EPFL</span><br></pre></td></tr></table></figure></p>
+<h2 id="6-安装配置-Hadoop-YARN"><a href="#6-安装配置-Hadoop-YARN" class="headerlink" title="6. 安装配置 Hadoop YARN"></a>6. 安装配置 Hadoop YARN</h2><p>此处参考以前的安装过程</p>
+<h2 id="7-Spark安装"><a href="#7-Spark安装" class="headerlink" title="7. Spark安装"></a>7. Spark安装</h2><p>下载解压进入官方下载地址下载最新版 Spark。我下载的是 spark-1.6.0-bin-hadoop2.6.tgz。</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf spark<span class="number">-1.6</span><span class="number">.0</span>-bin-hadoop2<span class="number">.6</span>.tgz</span><br><span class="line">mv spark<span class="number">-1.6</span><span class="number">.0</span>-bin-hadoop2<span class="number">.4</span> /usr/local/spark</span><br></pre></td></tr></table></figure>
+<p>配置 Spark<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 775 /usr/local/spark</span><br><span class="line">chown -R hadoop:hadoop /usr/local/spark</span><br><span class="line">cd /usr/local/spark/conf    #进入spark配置目录</span><br><span class="line">cp spark-env.sh.template spark-env.sh   #从配置模板复制</span><br><span class="line">vi spark-env.sh     #添加配置内容</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">SCALA_HOME</span>=/usr/lib/scala</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">JAVA_HOME</span>=/usr/lib/jvm/</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_HOME</span>=/usr/local/hadoop</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">HADOOP_CONF_DIR</span>=<span class="variable">$HADOOP_HOME</span>/etc/hadoop</span><br><span class="line"><span class="attribute">SPARK_MASTER_IP</span>=Master</span><br><span class="line"><span class="attribute">SPARK_LOCAL_DIRS</span>=/usr/local/spark</span><br><span class="line"><span class="attribute">SPARK_DRIVER_MEMORY</span>=1G</span><br></pre></td></tr></table></figure></p>
+<p>注：在设置Worker进程的CPU个数和内存大小，要注意机器的实际硬件条件，如果配置的超过当前Worker节点的硬件条件，Worker进程会启动失败。</p>
+<p>nano Slaves在slaves文件下填上Slave主机名：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Slave1</span><br><span class="line">Slave2</span><br></pre></td></tr></table></figure></p>
+<p>将配置好的spark-1.6.0文件夹分发给所有Slaves吧</p>
+<p>启动Spark<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sbin/start-<span class="keyword">all</span>.<span class="keyword">sh</span></span><br></pre></td></tr></table></figure></p>
+<p>验证 Spark 是否安装成功</p>
+<p>用jps检查，在 master 上应该有以下几个进程：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ jps</span><br><span class="line"><span class="number">7949</span> Jps</span><br><span class="line"><span class="number">7328</span> SecondaryNameNode</span><br><span class="line"><span class="number">7805</span> Master</span><br><span class="line"><span class="number">7137</span> NameNode</span><br><span class="line"><span class="number">7475</span> ResourceManager</span><br></pre></td></tr></table></figure></p>
+<p>在 slave 上应该有以下几个进程：<br><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">$jps</span></span></span><br><span class="line"><span class="number">3132</span> DataNode</span><br><span class="line"><span class="number">3759</span> Worker</span><br><span class="line"><span class="number">3858</span> Jps</span><br><span class="line"><span class="number">3231</span> NodeManager</span><br><span class="line">进入Spark的Web管理页面： http:<span class="comment">//192.168.1.80:8080</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="8-运行示例"><a href="#8-运行示例" class="headerlink" title="8. 运行示例"></a>8. 运行示例</h2><p><strong>本地模式两线程运行</strong><br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/run-example SparkPi <span class="number">10</span> --<span class="keyword">master</span> <span class="title">local</span>[<span class="number">2</span>]</span><br></pre></td></tr></table></figure></p>
+<p><strong>Spark Standalone 集群模式运行</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./spark-submit --class org<span class="selector-class">.apache</span><span class="selector-class">.spark</span><span class="selector-class">.examples</span><span class="selector-class">.SparkPi</span> --master spark:<span class="comment">//Master:7077 /usr/local/spark/lib/spark-examples-1.6.0-hadoop2.6.0.jar 100</span></span><br></pre></td></tr></table></figure>
+<p><strong>Spark on YARN 集群上 yarn-cluster 模式运行</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./spark-submit --class org<span class="selector-class">.apache</span><span class="selector-class">.spark</span><span class="selector-class">.examples</span><span class="selector-class">.SparkPi</span> --master yarn-cluster /usr/local/spark/lib/spark-examples-<span class="number">1.6</span>.<span class="number">0</span>-hadoop2.<span class="number">6.0</span><span class="selector-class">.jar</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p><img src="/img/hadoop/13/chapter1301sparkfinish.png" alt><br>注意 Spark on YARN 支持两种运行模式，分别为yarn-cluster和yarn-client，具体的区别可以看这篇博文，从广义上讲，yarn-cluster适用于生产环境；而yarn-client适用于交互和调试，也就是希望快速地看到application的输出。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/07/100353.html" class="pre-post btn btn-default" title='大数据hadoop之 四十七.Hadoop与Spark的区别'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十七.Hadoop与Spark的区别</span>
+        </a>
+    
+    
+        <a href="/archives/2019/07/100351.html" class="next-post btn btn-default" title='大数据hadoop之 四十五.Spark介绍'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十五.Spark介绍</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-软件环境"><span class="toc-text">1. 软件环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-环境准备"><span class="toc-text">2. 环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-SSH-免密码登录"><span class="toc-text">3. SSH 免密码登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-安装-Java"><span class="toc-text">4. 安装 Java</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-安装-Scala"><span class="toc-text">5. 安装 Scala</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-安装配置-Hadoop-YARN"><span class="toc-text">6. 安装配置 Hadoop YARN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Spark安装"><span class="toc-text">7. Spark安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-运行示例"><span class="toc-text">8. 运行示例</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

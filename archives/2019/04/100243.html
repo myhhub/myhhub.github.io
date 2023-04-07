@@ -1,0 +1,389 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="java,stackoverflow">
+
+
+    <meta name="description" content="首先声明，下面的代码，都是基本的例子。更严谨的话，还应加入处理各种异常的代码(如IOExceptions、NullPointerException、ArrayIndexOutOfBoundsEx...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>如何使用java.net.URLConnection接收及发送HTTP请求 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="如何使用java.net.URLConnection接收及发送HTTP请求">
+            
+	            如何使用java.net.URLConnection接收及发送HTTP请求
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/stackoverflow/">stackoverflow</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/04/03</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1465</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>首先声明，下面的代码，都是基本的例子。更严谨的话，还应加入处理各种异常的代码(如IOExceptions、NullPointerException、ArrayIndexOutOfBoundsException)</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>首先，需要设置请求的URL以及charset(编码)；额外的参数，则取决于各自url的要求。<br><figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">S</span><br><span class="line"><span class="built_in">String</span> <span class="built_in">url</span> = <span class="string">"http://example.com"</span>;</span><br><span class="line"><span class="built_in">String</span> charset = <span class="string">"UTF-8"</span>;</span><br><span class="line"><span class="built_in">String</span> param1 = <span class="string">"value1"</span>;</span><br><span class="line"><span class="built_in">String</span> param2 = <span class="string">"value2"</span>;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="built_in">String</span> query = <span class="built_in">String</span>.format(<span class="string">"param1=%s&amp;param2=%s"</span>, </span><br><span class="line">     URLEncoder.encode(param1, charset), </span><br><span class="line">     URLEncoder.encode(param2, charset));</span><br></pre></td></tr></table></figure></p>
+<p>url中附带的请求参数，必须是name=value这样的格式，每个参数间用&amp;连接。一般来说，你还得用 <a href="http://docs.oracle.com/javase/6/docs/api/java/net/URLEncoder.html" target="_blank" rel="noopener">URLEncoder#encode()</a>对参数做<a href="http://en.wikipedia.org/wiki/Percent-encoding" target="_blank" rel="noopener">编码</a></p>
+<p>上面例子还用到了String#format()。字符拼接方式，看个人喜好，我更喜欢用这个方式。</p>
+<h2 id="发送一个HTTP-GET请求（可选：带上参数）"><a href="#发送一个HTTP-GET请求（可选：带上参数）" class="headerlink" title="发送一个HTTP GET请求（可选：带上参数）"></a>发送一个<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3" target="_blank" rel="noopener">HTTP GET</a>请求（可选：带上参数）</h2><p>这依然是个繁琐的事情。默认的方式如下：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">URLConnection<span class="built_in"> connection </span>= new URL(url + <span class="string">"?"</span> + query).openConnection();</span><br><span class="line">connection.setRequestProperty(<span class="string">"Accept-Charset"</span>, charset);</span><br><span class="line">InputStream response = connection.getInputStream();</span><br></pre></td></tr></table></figure></p>
+<p>url和参数之间，要用？号连接。请求头（header）中的<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2" target="_blank" rel="noopener">Accept-Charset</a>，用于告诉服务器，你所发送参数的编码。如果你不带送任何参数，也可以不管Accept-Charset。另外如果你无需设置header，也可以用<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URL.html#openStream%28%29" target="_blank" rel="noopener">URL#openStream()</a> 而非openConnection。<br>不管那种方式，假设服务器端是 <a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServlet.html" target="_blank" rel="noopener">HttpServlet</a>，那么你的get请求将会触发它的doGet()方法，它能通过<a href="http://docs.oracle.com/javaee/6/api/javax/servlet/ServletRequest.html#getParameter%28java.lang.String%29" target="_blank" rel="noopener">HttpServletRequest#getParameter()</a>获取你传递的参数。</p>
+<h2 id="发送一个HTTP-POST请求，并带上参数"><a href="#发送一个HTTP-POST请求，并带上参数" class="headerlink" title="发送一个HTTP POST请求，并带上参数"></a>发送一个<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5" target="_blank" rel="noopener">HTTP POST</a>请求，并带上参数</h2><p>设置<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URLConnection.html#setDoOutput%28boolean%29" target="_blank" rel="noopener">URLConnection#setDoOutput()</a>，等于隐式地将请求方法设为POST。标准的HTTP POST 表单，其Content-Tyep为application/x-www-form-urlencoded，请求的内容放到到body中。也就是如下代码：<br><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">URLConnection connection = new URL(url).openConnection()<span class="comment">;</span></span><br><span class="line">connection.setDoOutput(true)<span class="comment">; // Triggers POST.</span></span><br><span class="line">connection.setRequestProperty(<span class="string">"Accept-Charset"</span>, charset)<span class="comment">;</span></span><br><span class="line">connection.setRequestProperty(<span class="string">"Content-Type"</span>, <span class="string">"application/x-www-form-urlencoded;charset="</span> + charset)<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">try (OutputStream output = connection.getOutputStream()) &#123;</span><br><span class="line">    output.write(query.getBytes(charset))<span class="comment">;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">InputStream response = connection.getInputStream()<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>提醒：</p>
+<p>当你要提交一个HTML表单时，务必要把<code>&lt;input type=&quot;hidden&quot;</code>,<code>&lt;input type=&quot;submit&quot;&gt;</code>这类元素的值，也以name=value的形式提交，因为，服务端通常也需要这个信息，已确认哪一个按钮触发了这个提交动作。</p>
+<p>也可以使用<a href="http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html" target="_blank" rel="noopener">HttpURLConnection</a> 来代替<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URLConnection.html" target="_blank" rel="noopener">URLConnection</a> ，然后调用<a href="http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html#setRequestMethod%28java.lang.String%29" target="_blank" rel="noopener">HttpURLConnection#setRequestMethod()</a>来将请求设为POST类型。</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection();</span><br><span class="line">httpConnection.setRequestMethod(<span class="string">"<span class="keyword">POST</span>"</span>);</span><br></pre></td></tr></table></figure>
+<p>同样的，如果服务端是<a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServlet.html" target="_blank" rel="noopener">HttpServlet</a>,将会触发它的<a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServlet.html#doPost%28javax.servlet.http.HttpServletRequest,%20javax.servlet.http.HttpServletResponse%29" target="_blank" rel="noopener">doPost()</a>方法,可以通过<a href="http://docs.oracle.com/javaee/6/api/javax/servlet/ServletRequest.html#getParameter%28java.lang.String%29" target="_blank" rel="noopener">HttpServletRequest#getParameter()</a>获取post参数</p>
+<h2 id="触发HTTP请求的发送"><a href="#触发HTTP请求的发送" class="headerlink" title="触发HTTP请求的发送"></a>触发HTTP请求的发送</h2><p>你可以显式地通过<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URLConnection.html#connect%28%29" target="_blank" rel="noopener">URLConnection#connect()</a>来发送请求，但是，当你调用获取响应信息的方法时，一样将自动发送请求。例如当你使用<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URLConnection.html#getInputStream%28%29" target="_blank" rel="noopener">URLConnection#getInputStream()</a>时，就会自动触发请求，因此，connect()方法往往都是多余的。上面我的例子，也都是直接调用getInputStream()方法。</p>
+<p>获取HTTP响应信息</p>
+<ol>
+<li><p>HTTP响应码：<br>首先默认你使用了 <a href="http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html" target="_blank" rel="noopener">HttpURLConnection</a></p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">int status</span> = httpConnection.getResponseCode();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>HTTP 响应头（headers)</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for (Entry&lt;<span class="built_in">String</span>, <span class="built_in">List</span>&lt;<span class="built_in">String</span>&gt;&gt; <span class="keyword">header</span> : connection.getHeaderFields().entrySet()) &#123;</span><br><span class="line">    System.out.println(<span class="keyword">header</span>.getKey() + <span class="string">"="</span> + <span class="keyword">header</span>.getValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>HTTP响应编码：<br>当Content-Type中包含charset参数时，说明响应内容是基于charset参数指定的编码。因此，解码响应信息时，也要按照这个编码格式来。</p>
+</li>
+</ol>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">String</span> contentType = connection.getHeaderField(<span class="string">"Content-Type"</span>);</span><br><span class="line"><span class="keyword">String</span> charset = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">String</span> param : contentType.replace(<span class="string">" "</span>, <span class="string">""</span>).<span class="built_in">split</span>(<span class="string">";"</span>)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (param.startsWith(<span class="string">"charset="</span>)) &#123;</span><br><span class="line">        charset = param.<span class="built_in">split</span>(<span class="string">"="</span>, <span class="number">2</span>)[<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (charset != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> (<span class="keyword">BufferedReader</span> reader = <span class="keyword">new</span> <span class="keyword">BufferedReader</span>(<span class="keyword">new</span> InputStreamReader(response, charset))) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">String</span> <span class="built_in">line</span>; (<span class="built_in">line</span> = reader.readLine()) != <span class="keyword">null</span>;) &#123;</span><br><span class="line">            <span class="comment">// ... System.out.println(line) ?</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// It's likely binary content, use InputStream/OutputStream.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="session的维护"><a href="#session的维护" class="headerlink" title="session的维护"></a>session的维护</h2><p>服务端session，通常是基于cookie实现的。你可以通过<a href="http://docs.oracle.com/javase/8/docs/api/java/net/CookieHandler.html" target="_blank" rel="noopener">CookieHandlerAPI</a>来管理cookie。在发送HTTP请求前，初始化一个<a href="http://docs.oracle.com/javase/6/docs/api/java/net/CookieManager.html" target="_blank" rel="noopener">CookieManager</a>， 然后设置参数为<a href="http://docs.oracle.com/javase/6/docs/api/java/net/CookiePolicy.html" target="_blank" rel="noopener">CookiePolicy</a>.<a href="http://docs.oracle.com/javase/6/docs/api/java/net/CookiePolicy.html#ACCEPT_ALL" target="_blank" rel="noopener">CCEPT_ALL</a>。<br><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// First set the default cookie manager.</span></span><br><span class="line">CookieHandler.setDefault(<span class="keyword">new</span> <span class="type">CookieManager</span>(<span class="literal">null</span>, CookiePolicy.ACCEPT_ALL));</span><br><span class="line"><span class="comment">// All the following subsequent URLConnections will use the same cookie manager.</span></span><br><span class="line">URLConnection connection = <span class="keyword">new</span> <span class="type">URL</span>(url).openConnection();</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">connection = <span class="keyword">new</span> <span class="type">URL</span>(url).openConnection();</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">connection = <span class="keyword">new</span> <span class="type">URL</span>(url).openConnection();</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure></p>
+<p>请注意，这个方式并非适用于所有场景。如果使用这个方式失败了，你可以尝试自己设置cookie：你需要从响应头中拿到Set-Cookie参数，然后再把cookie设置到接下来的其他请求中。<br><figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Gather all cookies on the first request.</span></span><br><span class="line">URLConnection connection = <span class="keyword">new</span> <span class="type">URL</span>(url).openConnection();</span><br><span class="line">List&lt;<span class="keyword">String</span>&gt; cookies = connection.getHeaderFields().<span class="keyword">get</span>(<span class="string">"Set-Cookie"</span>);</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Then use the same cookies on all subsequent requests.</span></span><br><span class="line">connection = <span class="keyword">new</span> <span class="type">URL</span>(url).openConnection();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">String</span> cookie : <span class="type">cookies</span>) &#123;</span><br><span class="line">    connection.addRequestProperty(<span class="string">"Cookie"</span>, cookie.split(<span class="string">";"</span>, <span class="number">2</span>)[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的split(“;”, 2)[0],作用是去掉一些跟服务端无关的cookie信息（例如expores，path等）。也可用cookie.substring(0, cookie.indexOf(‘;’))达到同样的目的</p>
+<h2 id="流的处理"><a href="#流的处理" class="headerlink" title="流的处理"></a>流的处理</h2><p>不管你是否通过connection.setRequestProperty(“Content-Length”, contentLength)方法，为content设置了定长，  <a href="http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html" target="_blank" rel="noopener">HttpURLConnection</a>在发送请求前，默认都会缓存整个请求的body。如果发送一个比较大的post请求（例如上传文件），有可能会导致OutOfMemoryException。为了避免这个问题，可以设置<a href="http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html#setFixedLengthStreamingMode%28int%29" target="_blank" rel="noopener">HttpURLConnection#setFixedLengthStreamingMode()</a><br><figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpConnection.setFixedLengthStreamingMode(contentLength)<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>但如果content长度是未知的，则可以用<a href="http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html#setChunkedStreamingMode%28int%29" target="_blank" rel="noopener">HttpURLConnection#setChunkedStreamingMode()</a>。这样，header中Transfer-Encoding会变成chunked，你的请求将会分块发送，例如下面的例子，请求的body，将会按1KB一块，分块发送<br><figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">httpConnection.setChunkedStreamingMode(<span class="number">1024</span>)<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User-Agent"></a>User-Agent</h2><p>有时候，你发送的请求，可能只有在浏览器下才能正常返回，而其他方式却不行。这可能跟请求头中的User-Agent有关。通过URLConnection发送的请求，默认会带上的User-Agent信息是Java/1.6.0_19,也就是java+jre的版本。你可以重写这个信息：<br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connection.setRequestProperty(<span class="string">"User-Agent"</span>, <span class="string">"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401"</span>); // <span class="keyword">Do</span> as <span class="keyword">if</span> you<span class="symbol">'re</span> using Firefox <span class="number">3.6</span>.<span class="number">3</span>.</span><br></pre></td></tr></table></figure></p>
+<p>这里有一份更全的浏览器<a href="http://www.useragentstring.com/pages/useragentstring.php" target="_blank" rel="noopener">User-Agent清单</a></p>
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>如果HTTP的响应码是4xx(客户端异常）或者5xx(服务端异常），你可以通过HttpURLConnection#getErrorStream()获取信息，服务端可能会将一些有用的错误信息放到这里面。<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">InputStream error</span> = ((HttpURLConnection) connection).getErrorStream();</span><br></pre></td></tr></table></figure></p>
+<h2 id="上传文件"><a href="#上传文件" class="headerlink" title="上传文件"></a>上传文件</h2><p>一般来说，你需要将post的内容设为<a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2" target="_blank" rel="noopener">multipart/form-data</a>(相关的RFC文档：<a href="http://www.faqs.org/rfcs/rfc2388.html" target="_blank" rel="noopener">RFC2388</a>)<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">String param = <span class="string">"value"</span>;</span><br><span class="line"><span class="keyword">File</span> textFile = <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"/path/to/file.txt"</span>);</span><br><span class="line"><span class="keyword">File</span> binaryFile = <span class="keyword">new</span> <span class="keyword">File</span>(<span class="string">"/path/to/file.bin"</span>);</span><br><span class="line">String boundary = <span class="keyword">Long</span>.toHexString(System.currentTimeMillis()); <span class="comment">// Just generate some unique random value.</span></span><br><span class="line">String CRLF = <span class="string">"\r\n"</span>; <span class="comment">// Line separator required by multipart/form-data.</span></span><br><span class="line">URLConnection connection = <span class="keyword">new</span> URL(url).openConnection();</span><br><span class="line">connection.setDoOutput(<span class="keyword">true</span>);</span><br><span class="line">connection.setRequestProperty(<span class="string">"Content-Type"</span>, <span class="string">"multipart/form-data; boundary="</span> + boundary);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> (</span><br><span class="line">    OutputStream output = connection.getOutputStream();</span><br><span class="line">    PrintWriter writer = <span class="keyword">new</span> PrintWriter(<span class="keyword">new</span> OutputStreamWriter(output, charset), <span class="keyword">true</span>);</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="comment">// Send normal param.</span></span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"--"</span> + boundary).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Disposition: form-data; name=\"param\""</span>).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Type: text/plain; charset="</span> + charset).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(CRLF).<span class="keyword">append</span>(param).<span class="keyword">append</span>(CRLF).flush();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Send text file.</span></span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"--"</span> + boundary).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Disposition: form-data; name=\"textFile\"; filename=\""</span> + textFile.getName() + <span class="string">"\""</span>).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Type: text/plain; charset="</span> + charset).<span class="keyword">append</span>(CRLF); <span class="comment">// Text file itself must be saved in this charset!</span></span><br><span class="line">    writer.<span class="keyword">append</span>(CRLF).flush();</span><br><span class="line">    Files.<span class="keyword">copy</span>(textFile.toPath(), output);</span><br><span class="line">    output.flush(); <span class="comment">// Important before continuing with writer!</span></span><br><span class="line">    writer.<span class="keyword">append</span>(CRLF).flush(); <span class="comment">// CRLF is important! It indicates end of boundary.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Send binary file.</span></span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"--"</span> + boundary).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Disposition: form-data; name=\"binaryFile\"; filename=\""</span> + binaryFile.getName() + <span class="string">"\""</span>).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Type: "</span> + URLConnection.guessContentTypeFromName(binaryFile.getName())).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"Content-Transfer-Encoding: binary"</span>).<span class="keyword">append</span>(CRLF);</span><br><span class="line">    writer.<span class="keyword">append</span>(CRLF).flush();</span><br><span class="line">    Files.<span class="keyword">copy</span>(binaryFile.toPath(), output);</span><br><span class="line">    output.flush(); <span class="comment">// Important before continuing with writer!</span></span><br><span class="line">    writer.<span class="keyword">append</span>(CRLF).flush(); <span class="comment">// CRLF is important! It indicates end of boundary.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// End of multipart/form-data.</span></span><br><span class="line">    writer.<span class="keyword">append</span>(<span class="string">"--"</span> + boundary + <span class="string">"--"</span>).<span class="keyword">append</span>(CRLF).flush();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>假设服务端还是一个<a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServlet.html" target="_blank" rel="noopener">HttpServlet</a>,它的doPost()方法将会处理这个请求，服务端通过<a href="http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html#getPart%28java.lang.String%29" target="_blank" rel="noopener">HttpServletRequest#getPart()</a>获取你发送的内容（注意了，不是getParameter()）。getPart()是个比较新的方法，是在Servlet 3.0后才引入的。如果你是Servlet 3.0之前的版本，则可以选用<a href="http://commons.apache.org/fileupload]来解析multipart/form-data的请求。可以参考这里的[例子](http://stackoverflow.com/questions/2422468/upload-big-file-to-servlet/2424824#2424824" target="_blank" rel="noopener">Apache Commons FileUpload</a></p>
+<h2 id="最后的话"><a href="#最后的话" class="headerlink" title="最后的话"></a>最后的话</h2><p>上面啰嗦了很多，Apache提供了工具包，帮助我们更方便地完成这些事情<br><a href="http://stackoverflow.com/questions/2422468/upload-big-file-to-servlet/2424824#2424824" target="_blank" rel="noopener">Apache HttpComponents HttpClient</a>：</p>
+<ul>
+<li><a href="http://hc.apache.org/httpcomponents-client-ga/tutorial/html/" target="_blank" rel="noopener">HttpClient Tutorial</a></li>
+<li><a href="http://hc.apache.org/httpcomponents-client-ga/examples.html" target="_blank" rel="noopener">HttpClient Examples</a></li>
+</ul>
+<p>google也有类似的<a href="https://code.google.com/p/google-http-java-client/" target="_blank" rel="noopener">工具包</a></p>
+<p>解析、提取HTML内容<br>如果你是想解析提取html的内容，你可以用<a href="http://jsoup.org/" target="_blank" rel="noopener">Jsoup</a>等解析器</p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/3152138/what-are-the-pros-and-cons-of-the-leading-java-html-parsers/3154281#3154281" target="_blank" rel="noopener">一些比较有名的HTML解析器的优缺点</a></li>
+<li><a href="http://stackoverflow.com/questions/2835505/how-to-scan-a-website-or-page-for-info-and-bring-it-into-my-program/2835555#2835555" target="_blank" rel="noopener">用java如何扫描和解析网页</a></li>
+</ul>
+<p>stackoverflow原址：<br><a href="http://stackoverflow.com/questions/2793150/using-java-net-urlconnection-to-fire-and-handle-http-requests" target="_blank" rel="noopener">http://stackoverflow.com/questions/2793150/using-java-net-urlconnection-to-fire-and-handle-http-requests</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/04/100244.html" class="pre-post btn btn-default" title='StringBuilder和StringBuffer有哪些区别呢'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">StringBuilder和StringBuffer有哪些区别呢</span>
+        </a>
+    
+    
+        <a href="/archives/2019/04/100242.html" class="next-post btn btn-default" title='JavaBean 到底是什么？'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">JavaBean 到底是什么？</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备"><span class="toc-text">准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发送一个HTTP-GET请求（可选：带上参数）"><span class="toc-text">发送一个HTTP GET请求（可选：带上参数）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发送一个HTTP-POST请求，并带上参数"><span class="toc-text">发送一个HTTP POST请求，并带上参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#触发HTTP请求的发送"><span class="toc-text">触发HTTP请求的发送</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#session的维护"><span class="toc-text">session的维护</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#流的处理"><span class="toc-text">流的处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#User-Agent"><span class="toc-text">User-Agent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#错误处理"><span class="toc-text">错误处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上传文件"><span class="toc-text">上传文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最后的话"><span class="toc-text">最后的话</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

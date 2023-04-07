@@ -1,0 +1,885 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hive">
+
+
+    <meta name="description" content="Hive优化内容
+Fetch抓取
+Hive 中对某些情况的查询可以不必使用 MapReduce 计算
+
+
+本地模式
+当数据量非常小的时候，通过设置本地模式在单台机器上处理所有任务，可提高效率
+
+...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 二十一.Hive优化 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 二十一.Hive优化">
+            
+	            大数据hadoop之 二十一.Hive优化
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hive/">hive</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/19</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1388</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="Hive优化内容"><a href="#Hive优化内容" class="headerlink" title="Hive优化内容"></a>Hive优化内容</h2><ul>
+<li>Fetch抓取<ul>
+<li>Hive 中对某些情况的查询可以不必使用 MapReduce 计算</li>
+</ul>
+</li>
+<li>本地模式<ul>
+<li>当数据量非常小的时候，通过设置本地模式在单台机器上处理所有任务，可提高效率</li>
+</ul>
+</li>
+<li>表的优化<ul>
+<li>小表join大表</li>
+<li>大表join大表<ul>
+<li>空KEY过滤</li>
+<li>空Key转化</li>
+</ul>
+</li>
+<li>MapJoin<ul>
+<li>注意：MapJoin的工作机制</li>
+<li>mapjoin对分桶表join的优化</li>
+</ul>
+</li>
+<li>Group By<ul>
+<li>Map端的聚合</li>
+</ul>
+</li>
+<li>Count(Distinct) 去重统计<ul>
+<li>一般 COUNT DISTINCT 使用先 GROUP BY 再 COUNT 的方式替换</li>
+</ul>
+</li>
+<li>笛卡尔积<ul>
+<li>避免使用笛卡尔积</li>
+</ul>
+</li>
+<li>行列过滤<ul>
+<li>避免使用select *</li>
+<li>通过子查询后，再关联表</li>
+</ul>
+</li>
+<li>动态分区的调整<ul>
+<li>注意动态分区的语法</li>
+</ul>
+</li>
+<li>分桶<ul>
+<li>分桶的理解以及插入数据时注意事项</li>
+</ul>
+</li>
+<li>分区<ul>
+<li>分区的理解</li>
+</ul>
+</li>
+<li>left semi join<ul>
+<li>对 in/exists的子查询提供了更高效的优化方式</li>
+</ul>
+</li>
+<li>insert into 代替 union all</li>
+</ul>
+</li>
+<li>数据倾斜<ul>
+<li>合理设置Map数量</li>
+<li>小文件合并</li>
+<li>复杂文件增加Map数</li>
+<li>合理设置Reduce数量</li>
+</ul>
+</li>
+<li>并行执行</li>
+<li>严格模式</li>
+<li>JVM重用（同一个job中的tasks）</li>
+<li>推测执行</li>
+<li>压缩</li>
+<li>执行计划</li>
+</ul>
+<h2 id="一、Fetch抓取"><a href="#一、Fetch抓取" class="headerlink" title="一、Fetch抓取"></a>一、Fetch抓取</h2><ul>
+<li><p>概念：</p>
+<ul>
+<li>Fetch 抓取是指，Hive 中对某些情况的查询可以不必使用 MapReduce 计算。</li>
+<li>例如：<ul>
+<li>SELECT * FROM emp;</li>
+<li>在这种情况下，Hive 可以简单地读取 emp 对应的存储目录下的文件，然后输出查询结果到控制台。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>操作</p>
+<ul>
+<li><p>在 hive-default.xml.template 文件中 hive.fetch.task.conversion属性值设置</p>
+</li>
+<li><p>修改属性值：</p>
+<ul>
+<li><p>hive.fetch.task.conversion</p>
+<ul>
+<li><p>CDH5.3.6中对应的hive 0.13.1中，该属性值默认为minimal</p>
+</li>
+<li><p>之后新版中该属性值默认为more</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> * none : <span class="builtin-name">disable</span> hive.fetch.task.conversion</span><br><span class="line"> </span><br><span class="line">* minimal : SELECT STAR,<span class="built_in"> FILTER </span>on partition columns, LIMIT only</span><br><span class="line">    </span><br><span class="line">    * minimal格式下：只有select * ; filter分区列过滤 下不走MR</span><br><span class="line">        </span><br><span class="line"> * more : SELECT, FILTER, LIMIT only (support TABLESAMPLE <span class="keyword">and</span> virtual columns)</span><br><span class="line">        </span><br><span class="line">    * more格式下：select；filter；limit不走MR</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="二、本地模式（小任务）"><a href="#二、本地模式（小任务）" class="headerlink" title="二、本地模式（小任务）"></a>二、本地模式（小任务）</h2><ul>
+<li>概念<ul>
+<li>当数据量非常小时，在这种情况下，为查询触发执行任务时消耗可能会比实际 job 的执行时间要多的多。</li>
+<li>可以联系到hadoop运行MapReduce job时候：<ul>
+<li>当job很小时，application master会在自己的本地虚拟机中运行tasks，这时相比较于allocating and running in new containers的成本而言的，也就是说相比较于开启一个新的container并耗费资源拉取数据的时间比job执行时间都长。</li>
+</ul>
+</li>
+<li>满足以下条件时，可以使Hive 通过本地模式在单台机器上处理所有的任务。<ul>
+<li>job的输入数据大小必须小于参数：hive.exec.mode.local.auto.inputbytes.max(默认128MB)</li>
+<li>输入文件的个数必须小于参数hive.exec.mode.local.auto.input.files.max，默认为4</li>
+<li>job的reduce数必须为0或者1</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>操作<ul>
+<li>set hive.exec.mode.local.auto=true; //开启本地 mr</li>
+<li>set hive.exec.mode.local.auto.inputbytes.max=50000000;<ul>
+<li>设置 local mr 的最大输入数据量，当输入数据量小于这个值时采用 local mr 的方式，默认为 134217728，即 128M</li>
+</ul>
+</li>
+<li>set hive.exec.mode.local.auto.input.files.max=10;<ul>
+<li>设置 local mr 的最大输入文件个数，当输入文件个数小于这个值时采用 local mr 的方式，默认为 4</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="三、表的优化"><a href="#三、表的优化" class="headerlink" title="三、表的优化"></a>三、表的优化</h2><h3 id="1-小表join大表"><a href="#1-小表join大表" class="headerlink" title="1. 小表join大表"></a>1. 小表join大表</h3><ul>
+<li>概念<ul>
+<li>大表放在后面<ul>
+<li>hive在处理每一个MR阶段的join时，the last table in the sequence is streamed through the reducers whereas the others are buffered。即最后一张表是通过reducer拉取数据得到的，而前面的表均是缓存到内存中的，因此，为了减少reducer内存的使用，选择将数据量大的表放在最后边，其他表缓存到reducer中)</li>
+<li>因此通常需要将小表放前面，或者标记哪张表是大表：/<em>streamtable(table_name) </em>/</li>
+<li>将 key 相对分散，并且数据量小的表放在 join 的左边，这样可以有效减少内存溢出错误发生的几率；再进一步，可以使用 Group 让小的维度表（1000 条以下的记录条数）先进内存。在 map 端完成 reduce。（也就是开启map端的聚合）、</li>
+</ul>
+</li>
+<li>使用相同连接键<ul>
+<li>首先要明白： hive是将joins转化为MR任务去执行的，当多张表的连接条件为同一个join clause则开启一个MR任务，当不同的join clauses时，则开启多个MR任务。</li>
+<li>因此，当对3个或者更多个表进行join连接时，如果每个on子句都使用相同的连接键的话，那么只会产生一个MapReduce job。</li>
+</ul>
+</li>
+<li>实际测试发现：新版的 hive 已经对小表 JOIN 大表和大表 JOIN 小表进行了优化。小表放在左边和右边已经没有明显区别。</li>
+<li>其实开启map端join后，还可以避免数据倾斜问题</li>
+</ul>
+</li>
+<li>操作<ul>
+<li>设置属性值hive.auto.convert.join，默认为true</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-大表join大表"><a href="#2-大表join大表" class="headerlink" title="2. 大表join大表"></a>2. 大表join大表</h3><h4 id="2-1-空KEY过滤"><a href="#2-1-空KEY过滤" class="headerlink" title="2.1 空KEY过滤"></a>2.1 空KEY过滤</h4><ul>
+<li><p>概念</p>
+<ul>
+<li><p>有时 join 超时是因为某些 key 对应的数据太多，而相同 key 对应的数据都会发送到相同的 reducer 上，从而导致内存不够，</p>
+</li>
+<li><p>此时我们应该仔细分析这些异常的 key，很多情况下，这些 key 对应的数据是异常数据，我们需要在 SQL 语句中进行过滤。例如 key 对应的字段为空</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> overwrite <span class="keyword">table</span> jointable </span><br><span class="line"><span class="keyword">select</span></span><br><span class="line">    n.*</span><br><span class="line"><span class="keyword">from</span> (</span><br><span class="line">    <span class="keyword">select</span> </span><br><span class="line">            *</span><br><span class="line">    <span class="keyword">from</span></span><br><span class="line">        nullidtable </span><br><span class="line">    <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">null</span> ) n </span><br><span class="line"><span class="keyword">left</span> <span class="keyword">join</span> ori o <span class="keyword">on</span> n.id = o.id;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-2-空KEY转化"><a href="#2-2-空KEY转化" class="headerlink" title="2.2 空KEY转化"></a>2.2 空KEY转化</h4><ul>
+<li><p>概念</p>
+<ul>
+<li>有时虽然某个 key 为空对应的数据很多，但是相应的数据不是异常数据，必须要包含在join 的结果中，此时我们可以表 a 中 key 为空的字段赋一个随机的值，使得数据随机均匀地分不到不同的 reducer 上。</li>
+<li>此时注意：空key表full join表，防止数据丢失</li>
+</ul>
+</li>
+<li><p>操作</p>
+<ul>
+<li><p>设置reduce个数</p>
+<p>set mapreduce.job.reduces = 5;</p>
+</li>
+<li><p>join（空KEY转化）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> overwrite <span class="keyword">table</span> jointable</span><br><span class="line"><span class="keyword">select</span></span><br><span class="line">    n.*</span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    nullidtable n </span><br><span class="line"><span class="keyword">full</span> <span class="keyword">join</span> ori o</span><br><span class="line"><span class="keyword">on</span> <span class="keyword">case</span> <span class="keyword">when</span> n.id <span class="keyword">is</span> <span class="literal">null</span> <span class="keyword">then</span> <span class="keyword">concat</span>(<span class="string">'hive'</span>, <span class="keyword">rand</span>()) <span class="keyword">else</span> n.id <span class="keyword">end</span> = o.id;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-MapJoin"><a href="#3-MapJoin" class="headerlink" title="3. MapJoin"></a>3. MapJoin</h3><ul>
+<li><p>概念</p>
+<ul>
+<li>如果不指定 MapJoin 或者不符合 MapJoin 的条件，那么 Hive 解析器会将 Join 操作转换，成 Common Join</li>
+<li>即：在 Reduce 阶段完成 join。容易发生数据倾斜。可以用 MapJoin 把小表全部加载到内存在 map 端进行 join，避免 reducer 处理。</li>
+</ul>
+</li>
+<li><p>参数设置</p>
+<ul>
+<li>hive.auto.convert.join 设置mapjoin打开关闭；默认为true</li>
+<li>hive.mapjoin.smalltable.filesize 设置小表阈值，默认为25000000;25M</li>
+</ul>
+</li>
+<li><p>深入理解</p>
+<ul>
+<li><p>当满足mapjoin条件时，会自动更改为mapJoin</p>
+</li>
+<li><p>也可以手动指定为MapJoin</p>
+</li>
+<li><p>But the mapjoin hint should only be used for the following query</p>
+<ul>
+<li><p>if all the inputs are bucketed or sorted,and the join should be converted to a bucketed map-side join or bucketized sort-merge join.</p>
+</li>
+<li><p>当两张join的表根据同一列进行分桶，且表的分桶数相同或者成倍数，则两表连接时会对应join</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select <span class="comment">/* + MAPJOIN(b)*/</span> <span class="selector-tag">a</span><span class="selector-class">.key</span>,<span class="selector-tag">a</span><span class="selector-class">.value</span> from <span class="selector-tag">a</span> join <span class="selector-tag">b</span> on <span class="selector-tag">a</span><span class="selector-class">.key</span> = <span class="selector-tag">b</span>.key</span><br></pre></td></tr></table></figure>
+<ul>
+<li>join can be done on the mapper only</li>
+<li>Instead of fetching B completely for each mapper of A,only the required buckets are fetched.</li>
+<li>the mapper processing bucket 1 for A will only fetch bucket 1 of B</li>
+<li>需要设置属性：set hive.optimize.bucketmapjoin = true;</li>
+</ul>
+</li>
+<li><p>当两张join的表根据同一列进行分桶且桶内根据此列有序，且表的分桶数相同，a sort-merge join can be performed. The corresponding buckets are joined with each other at the mapper.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-Group-By"><a href="#4-Group-By" class="headerlink" title="4. Group By"></a>4. Group By</h3><ul>
+<li><p>概念</p>
+<ul>
+<li>默认情况下，Map 阶段同一 Key 数据分发给一个 reduce，当一个 key 数据过大时就倾斜了。</li>
+<li>并不是所有的聚合操作都需要在 Reduce 端完成，很多聚合操作都可以先在 Map 端进行部分聚合，最后在 Reduce 端得出最终结果。</li>
+<li>可对应于hadoop的MapReduce中的combine操作，与reduce实现相同业务逻辑，运行每一个map task中，减轻shuffle中从map到reduce的传输。</li>
+<li>不是所有的聚合都需要进行此项优化。当group by 的字段没有相同的时，则无效<ul>
+<li>select * from emp group by empno;</li>
+<li>因为empno没有重复的，因此map聚合没有太大意义，并且浪费资源。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>参数设置</p>
+<ul>
+<li><p>是否在 Map 端进行聚合，默认为 True</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hive.map.aggr</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 Map 端进行聚合操作的条目数目</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.groupby</span><span class="selector-class">.mapaggr</span><span class="selector-class">.checkinterval</span> = <span class="number">100000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>有数据倾斜的时候进行负载均衡（默认是 false）</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hive.groupby.skewindata = <span class="literal">true</span></span><br><span class="line">    </span><br><span class="line">* 当选项设定为 <span class="literal">true</span>，生成的查询计划会有两个 MR Job。</span><br><span class="line"></span><br><span class="line">* 第一个 MR Job 中，Map 的输出结果会随机分布到 Reduce 中，每个 Reduce 做部分聚合操作，并输出结果，这样处理的结果是相同的<span class="built_in"> Group </span>By Key 有可能被分发到不同的 Reduce 中，从而达到负载均衡的目的；、</span><br><span class="line"></span><br><span class="line">* 第二个 MR Job 再根据预处理的数据结果按照<span class="built_in"> Group </span>By Key 分布到 Reduce 中（这个过程可以保证相同的<span class="built_in"> Group </span>By Key 被分布到同一个 Reduce 中），最后完成最终的聚合操作。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-count-distinct-去重统计"><a href="#5-count-distinct-去重统计" class="headerlink" title="5. count(distinct) 去重统计"></a>5. count(distinct) 去重统计</h3><ul>
+<li><p>概念</p>
+<ul>
+<li>数据量小的时候无所谓，数据量大的情况下，由于 COUNT DISTINCT 操作需要用一个Reduce Task 来完成，这一个 Reduce 需要处理的数据量太大，就会导致整个 Job 很难完成，</li>
+<li>一般 COUNT DISTINCT 使用先 GROUP BY 再 COUNT 的方式替换：</li>
+</ul>
+</li>
+<li><p>参数设置</p>
+<ul>
+<li><p>set mapreduce.job.reduces = xxxx;             对reduce个数进行设置</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">select </span><br><span class="line">    count(id)</span><br><span class="line"><span class="keyword">from</span> (</span><br><span class="line">    select </span><br><span class="line">        id</span><br><span class="line">    <span class="keyword">from</span></span><br><span class="line">        bigtable</span><br><span class="line">   <span class="built_in"> group </span>by</span><br><span class="line">        id) a;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>先根据id进行部分聚合，然后统计个数</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-笛卡尔积"><a href="#6-笛卡尔积" class="headerlink" title="6. 笛卡尔积"></a>6. 笛卡尔积</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* 尽量避免笛卡尔积，join 的时候不加 <span class="keyword">on</span> 条件，或者无效的 <span class="keyword">on</span> 条件，Hive 只能使用 <span class="number">1</span>个 reducer 来完成笛卡尔积</span><br></pre></td></tr></table></figure>
+<h3 id="7-行列过滤"><a href="#7-行列过滤" class="headerlink" title="7. 行列过滤"></a>7. 行列过滤</h3><ul>
+<li><p>列处理：</p>
+<ul>
+<li>在 SELECT 中，只拿需要的列，如果有，尽量使用分区过滤，少用 SELECT *。</li>
+</ul>
+</li>
+<li><p>行处理：</p>
+<ul>
+<li><p>在分区剪裁中，当使用外关联时，如果将副表的过滤条件写在 Where 后面那么就会先全表关联，之后再过滤，应该通过子查询后，再关联表</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">select </span><br><span class="line">    b.<span class="built_in">id</span></span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    bigtable b</span><br><span class="line">join (</span><br><span class="line">    select</span><br><span class="line">        <span class="built_in">id</span></span><br><span class="line">    <span class="keyword">from</span></span><br><span class="line">        ori </span><br><span class="line">    <span class="keyword">where</span> <span class="built_in">id</span> &lt;= <span class="number">10</span> ) o </span><br><span class="line"><span class="keyword">on</span> b.<span class="built_in">id</span> = o.<span class="built_in">id</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="8-动态分区调整"><a href="#8-动态分区调整" class="headerlink" title="8. 动态分区调整"></a>8. 动态分区调整</h3><ul>
+<li><p>概念</p>
+<ul>
+<li>关系型数据库中，对分区表 Insert 数据时候，数据库自动会根据分区字段的值，将数据插入到相应的分区中</li>
+<li>Hive 中也提供了类似的机制，即动态分区(Dynamic Partition)，只不过，使用 Hive 的动态分区，需要进行相应的配置。</li>
+</ul>
+</li>
+<li><p>参数设置</p>
+<ul>
+<li><p>开启动态分区功能（默认 true，开启）</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.dynamic</span><span class="selector-class">.partition</span>=true</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置为非严格模式（动态分区的模式，默认 strict，表示必须指定至少一个分区为静态分区，nonstrict 模式表示允许所有的分区字段都可以使用动态分区。）</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.dynamic</span><span class="selector-class">.partition</span><span class="selector-class">.mode</span>=nonstrict</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在所有执行 MR 的节点上，最大一共可以创建多少个动态分区。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.max</span><span class="selector-class">.dynamic</span><span class="selector-class">.partitions</span>=<span class="number">1000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在每个执行 MR 的节点上，最大可以创建多少个动态分区。该参数需要根据实际的数据来设定。比如：源数据中包含了一年的数据，即 day 字段有 365 个值，那么该参数就需要设置成大于 365，如果使用默认值 100，则会报错。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.max</span><span class="selector-class">.dynamic</span><span class="selector-class">.partitions</span><span class="selector-class">.pernode</span>=<span class="number">100</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>整个 MR Job 中，最大可以创建多少个 HDFS 文件。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.max</span><span class="selector-class">.created</span><span class="selector-class">.files</span>=<span class="number">100000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当有空分区生成时，是否抛出异常。一般不需要设置。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.error</span><span class="selector-class">.on</span><span class="selector-class">.empty</span><span class="selector-class">.partition</span>=false</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>操作</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> overwrite <span class="keyword">table</span> ori_partitioned_target</span><br><span class="line"><span class="keyword">partition</span> (p_time)                              //指定分区列</span><br><span class="line"><span class="keyword">select</span></span><br><span class="line">    <span class="keyword">id</span>, <span class="built_in">time</span>, uid, keyword, url_rank, click_num, click_url, p_time          //分区列也要作为一个字段查出</span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    ori_partitioned;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="9-分区"><a href="#9-分区" class="headerlink" title="9. 分区"></a>9. 分区</h3><ul>
+<li><p>分区的理解：</p>
+<ul>
+<li><p>分区是一种根据“分区列”的值对表进行粗略划分的机制</p>
+</li>
+<li><p>Hive中的每个分区对应着数据库中相应分区列的一个索引；</p>
+<ul>
+<li>每个分区对应着表下的一个目录</li>
+<li>分区在HDFS上的表现形式与表在 HDFS上的表现形式相同，都是以子目录的形式存在</li>
+</ul>
+</li>
+<li><p>查询时通过where选择查询的指定分区，可提高查询效率。</p>
+<ul>
+<li>当只需要遍历小范围内的数据时或一定条件下的数据，可有效减少扫描数据的数量</li>
+</ul>
+</li>
+<li><p>一个表可在多个维度上进行分区，且分区可以嵌套使用，建表时通过partitioned by 来创建分区</p>
+<ul>
+<li>partitioned by (year string)</li>
+<li>partitioned by (year string,month string)</li>
+</ul>
+</li>
+<li><p>将分区加载到表内之前，需要指定添加分区列，否则报错。</p>
+<ul>
+<li><p>此时联系到动分区的调整</p>
+</li>
+<li><p>动态分区需要：</p>
+<p>①开启动态分区</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.dynamic</span><span class="selector-class">.partition</span>=true</span><br></pre></td></tr></table></figure>
+<p>②设置为非严格模式</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.dynamic</span><span class="selector-class">.partition</span><span class="selector-class">.mode</span>=nonstrict</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>partitioned by 子句中的列是表中正式的列（分区列，通过select * 可查到），但是表数据中并不包含这些列</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="10-分桶"><a href="#10-分桶" class="headerlink" title="10. 分桶"></a>10. 分桶</h3><ul>
+<li>分桶的理解<ul>
+<li>桶为表提供了额外的结构，hive在处理某些查询时利用这个结构，能提高查询效率</li>
+<li>桶通过对指定列进行哈希计算来实现的，通过对哈希值将一个列名下的数据切分为一组桶，并使每个桶对应于该列名下的存储文件</li>
+<li>建立桶之前，需要设置hive.enforce.bucketing = true;</li>
+<li>分区和分桶其中一个区别在于<ul>
+<li>分区中的指定列在表数据中不存在，即数据文件中不存在</li>
+<li>分桶中的指定列在表数据中存在</li>
+</ul>
+</li>
+<li>向桶中插入数据，若分为4个桶，则在插入数据时，对应于4个reduce操作，输出4个文件</li>
+</ul>
+</li>
+<li>分区中的分桶<ul>
+<li>注意分区中分桶的数据插入</li>
+<li>clustered by (id) sorted by (age) into 4 buckets<ul>
+<li>clustered by 和 sorted by 不会影响数据的导入，插入的数据若需要排序，则需要手动定义</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="11-left-semi-join"><a href="#11-left-semi-join" class="headerlink" title="11. left semi join"></a>11. left semi join</h3><ul>
+<li><p>概念</p>
+<ul>
+<li><p>left semi join是对in/exists子查询提供了更高效的方式</p>
+</li>
+<li><p>下面两个语句等价</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> </span><br><span class="line">    a.<span class="keyword">key</span>,a.<span class="keyword">value</span></span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    a</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    a.<span class="keyword">key</span> <span class="keyword">in</span>(</span><br><span class="line">    <span class="keyword">select</span> b.<span class="keyword">key</span> <span class="keyword">from</span> B);</span><br><span class="line">    </span><br><span class="line">等价于</span><br><span class="line">    </span><br><span class="line"><span class="keyword">select</span></span><br><span class="line">    a.<span class="keyword">key</span>,a.<span class="keyword">value</span></span><br><span class="line"><span class="keyword">from</span></span><br><span class="line">    a</span><br><span class="line"><span class="keyword">left</span> <span class="keyword">semi</span> <span class="keyword">join</span> b</span><br><span class="line"><span class="keyword">on</span> (a.<span class="keyword">key</span> = b.<span class="keyword">key</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>The restrictions of using left semi join are that the right-side join table should only be referened in the join condition, but not in where or select clause etc.（left semi join中右边的表只能在on 中被引用，不可在where，select中等使用）</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="12-insert-into-代替-union-all"><a href="#12-insert-into-代替-union-all" class="headerlink" title="12. insert into 代替 union all"></a>12. insert into 代替 union all</h3><ul>
+<li><p>不同表的union all相当于multiple inputs，同一个表的union all，相当map一次输出多条。</p>
+</li>
+<li><p>如果union all的部分个数大于2，或者每个union部分数据量大，应该拆成多个insert into 语句，实际测试过程中，执行时间能提升50%</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> overwite <span class="keyword">table</span> tablename <span class="keyword">partition</span> (dt= ....)    </span><br><span class="line"><span class="keyword">select</span> ..... <span class="keyword">from</span> ( <span class="keyword">select</span> ... <span class="keyword">from</span> A       </span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span> 　     </span><br><span class="line"><span class="keyword">select</span> ... <span class="keyword">from</span> B 　<span class="keyword">union</span> <span class="keyword">all</span> <span class="keyword">select</span> ... <span class="keyword">from</span> C ) R 　    </span><br><span class="line"><span class="keyword">where</span> ...;</span><br><span class="line"></span><br><span class="line">可以改写为：</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> tablename <span class="keyword">partition</span> (dt= ....) <span class="keyword">select</span> .... <span class="keyword">from</span> A <span class="keyword">WHERE</span> ...;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> tablename <span class="keyword">partition</span> (dt= ....) <span class="keyword">select</span> .... <span class="keyword">from</span> B 　<span class="keyword">WHERE</span> ...;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">table</span> tablename <span class="keyword">partition</span> (dt= ....) <span class="keyword">select</span> .... <span class="keyword">from</span> C <span class="keyword">WHERE</span> ...;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="四、数据倾斜"><a href="#四、数据倾斜" class="headerlink" title="四、数据倾斜"></a>四、数据倾斜</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ul>
+<li><p>数据倾斜表现：</p>
+<ul>
+<li>任务进度长时间维持在99%（或100%），查看任务监控页面，发现只有少量（1个或几个）reduce子任务未完成。因为其处理的数据量和其他reduce差异过大。</li>
+</ul>
+</li>
+<li><p>数据倾斜原因：</p>
+<ul>
+<li><p>key分布不均匀</p>
+</li>
+<li><p>业务数据本身的特性</p>
+</li>
+<li><p>建表时考虑不周</p>
+</li>
+<li><p>某些SQL语句本身就有数据倾斜</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">关键词                  情形                                          后果</span><br><span class="line"> -----------------|----------------------------------------------|--------------------------------------------------</span><br><span class="line"> join                其中一个表较小，但是key集中                     分发到某一个或几个Reduce上的数据远高于平均值</span><br><span class="line"> -----------------|----------------------------------------------|-------------------------------------------------</span><br><span class="line"> join                大表与大表，但是分桶的判断字段0值或空值过多          这些空值都由一个reduce处理，非常慢</span><br><span class="line"> -----------------|----------------------------------------------|------------------------------------------------</span><br><span class="line"><span class="built_in"> group </span>by           <span class="built_in"> group </span>by 维度过小，某值的数量过多                   处理某值的reduce非常耗时</span><br><span class="line"> -----------------|----------------------------------------------|-------------------------------------------------</span><br><span class="line"> count distinct      某特殊值过多                                      处理此特殊值reduce耗时</span><br><span class="line"> -----------------|----------------------------------------------|-------------------------------------------------</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-合理设置map数量"><a href="#1-合理设置map数量" class="headerlink" title="1. 合理设置map数量"></a>1. 合理设置map数量</h3><ul>
+<li>概念<ul>
+<li>通常情况下，作业会通过 input 的目录产生一个或者多个 map 任务<ul>
+<li>主要的决定因素有：input 的文件总个数，input 的文件大小，集群设置的文件块大小。</li>
+<li>涉及到split切片机制<ul>
+<li>size = Math.max(minSize,Math.min(maxSize,blockSize));</li>
+</ul>
+</li>
+<li>如果集群性能好的话，可设置blockSize</li>
+<li>开启map端的聚合</li>
+</ul>
+</li>
+<li>也可以适当调整环形缓冲区的大小以提高效率</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-小文件进行合并"><a href="#2-小文件进行合并" class="headerlink" title="2. 小文件进行合并"></a>2. 小文件进行合并</h3><ul>
+<li><p>在 map 执行前合并小文件，减少 map 数：</p>
+<ul>
+<li><p>CombineHiveInputFormat 具有对小文件进行合并的功能（系统默认的格式）。</p>
+</li>
+<li><p>HiveInputFormat 没有对小文件合并功能。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.<span class="built_in">input</span>.<span class="built_in">format</span>= org.apache.hadoop.hive.ql.<span class="built_in">io</span>.CombineHiveInputFormat;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-复杂文件增加-Map-数"><a href="#3-复杂文件增加-Map-数" class="headerlink" title="3. 复杂文件增加 Map 数"></a>3. 复杂文件增加 Map 数</h3><ul>
+<li><p>当 input 的文件都很大，任务逻辑复杂，map 执行非常慢的时候，可以考虑增加 Map数，来使得每个 map 处理的数据量减少，从而提高任务的执行效率。</p>
+</li>
+<li><p>增加 map 的方法为：根据</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">computeSliteSize(Math.<span class="keyword">max</span>(<span class="keyword">min</span>Size,Math.<span class="keyword">min</span>(<span class="keyword">max</span>Size,blocksize)))=blocksize=<span class="number">128</span>M 公式</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调整 maxSize 最大值。让 maxSize 最大值低于 blocksize 就可以增加 map 的个数。</p>
+</li>
+</ul>
+<h3 id="4-合理设置-Reduce-数"><a href="#4-合理设置-Reduce-数" class="headerlink" title="4. 合理设置 Reduce 数"></a>4. 合理设置 Reduce 数</h3><h4 id="4-1-调整-reduce-个数方法一"><a href="#4-1-调整-reduce-个数方法一" class="headerlink" title="4.1 调整 reduce 个数方法一"></a>4.1 调整 reduce 个数方法一</h4><ul>
+<li><p>每个 Reduce 处理的数据量默认是 256MB</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.reducers</span><span class="selector-class">.bytes</span><span class="selector-class">.per</span><span class="selector-class">.reducer</span>=<span class="number">256000000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>每个任务最大的 reduce 数，默认为 1009</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="selector-class">.exec</span><span class="selector-class">.reducers</span><span class="selector-class">.max</span>=<span class="number">1009</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>计算 reducer 数的公式</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">N</span>=<span class="built_in">min</span>(参数 <span class="number">2</span>，总输入数据量/参数 <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="4-2-调整-reduce-个数方法二"><a href="#4-2-调整-reduce-个数方法二" class="headerlink" title="4.2 调整 reduce 个数方法二"></a>4.2 调整 reduce 个数方法二</h4><ul>
+<li><p>在 hadoop 的 mapred-default.xml 文件中修改</p>
+<figure class="highlight cos"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">设置每个 <span class="keyword">job</span> 的 Reduce 个数</span><br><span class="line"><span class="keyword">set</span> mapreduce.<span class="keyword">job</span>.reduces = <span class="number">15</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>具体的个数需要经过测试来得知</p>
+</li>
+</ul>
+<h2 id="五、并行执行"><a href="#五、并行执行" class="headerlink" title="五、并行执行"></a>五、并行执行</h2><ul>
+<li><p>概念</p>
+<ul>
+<li>Hive 会将一个查询转化成一个或者多个阶段。这样的阶段可以是 MapReduce 阶段、抽样阶段、合并阶段、limit 阶段。或者 Hive 执行过程中可能需要的其他阶段。</li>
+<li>默认情况下，Hive 一次只会执行一个阶段。</li>
+<li>不过，如果某些阶段不是互相依赖，是可以并行执行的。</li>
+</ul>
+</li>
+<li><p>参数设置</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> hive.<span class="built_in">exec</span>.parallel=<span class="literal">true</span>; <span class="comment">//打开任务并行执行</span></span><br><span class="line"><span class="built_in">set</span> hive.<span class="built_in">exec</span>.parallel.thread.number=<span class="number">16</span>; <span class="comment">//同一个 sql 允许最大并行度，默认为 8。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不过，在共享集群中，需要注意下，如果 job 中并行阶段增多，那么集群利用率就会增加。当然，得是在系统资源比较空闲的时候才有优势，否则，没资源，并行也起不来</p>
+</li>
+</ul>
+<h2 id="六、严格模式"><a href="#六、严格模式" class="headerlink" title="六、严格模式"></a>六、严格模式</h2><blockquote>
+<p>开启严格模式可以禁止 3 种类型的查询。</p>
+</blockquote>
+<h3 id="1-分区表——where过滤"><a href="#1-分区表——where过滤" class="headerlink" title="1. 分区表——where过滤"></a>1. 分区表——where过滤</h3><ul>
+<li>对于分区表，除非 where 语句中含有分区字段过滤条件来限制范围，否则不允许执行。</li>
+<li>就是用户不允许扫描所有分区。进行这个限制的原因是，通常分区表都拥有非常大的数据集，而且数据增加迅速。没有进行分区限制的查询可能会消耗令人不可接受的巨大资源来处理这个表。</li>
+</ul>
+<h3 id="2-order-by-搭配limit使用"><a href="#2-order-by-搭配limit使用" class="headerlink" title="2. order by 搭配limit使用"></a>2. order by 搭配limit使用</h3><ul>
+<li>对于使用了 order by 语句的查询，要求必须使用 limit 语句。</li>
+<li>因为 order by 为了执行排序过程会将所有的结果数据分发到同一个 Reducer 中进行处理，强制要求用户增加这个 LIMIT语句可以防止 Reducer 额外执行很长一段时间。</li>
+</ul>
+<h3 id="3-限制笛卡尔积的查询。"><a href="#3-限制笛卡尔积的查询。" class="headerlink" title="3. 限制笛卡尔积的查询。"></a>3. 限制笛卡尔积的查询。</h3><ul>
+<li>多表join时，指定join条件</li>
+</ul>
+<h2 id="七、JVM重用（针对同一个job的tasks而言的）"><a href="#七、JVM重用（针对同一个job的tasks而言的）" class="headerlink" title="七、JVM重用（针对同一个job的tasks而言的）"></a>七、JVM重用（针对同一个job的tasks而言的）</h2><ul>
+<li>概念<ul>
+<li>JVM 重用是 Hadoop 调优参数的内容，其对 Hive 的性能具有非常大的影响，特别是对于很难避免小文件的场景或 task 特别多的场景，这类场景大多数执行时间都很短。</li>
+<li>Hadoop中有个参数是mapred.job.reuse.jvm.num.tasks，默认是1，表示一个JVM上最多可以顺序执行的task数目（属于同一个Job）是1。也就是说一个task启一个JVM。</li>
+<li>为每个task启动一个新的JVM将耗时1秒左右，对于运行时间较长（比如1分钟以上）的job影响不大，但如果都是时间很短的task，那么频繁启停JVM会有开销。</li>
+</ul>
+</li>
+<li>参数设置<ul>
+<li>如果我们想使用JVM重用技术来提高性能，那么可以将mapred.job.reuse.jvm.num.tasks设置成大于1的数。这表示属于同一job的顺序执行的task可以共享一个JVM，也就是说第二轮的map可以重用前一轮的JVM，而不是第一轮结束后关闭JVM，第二轮再启动新的JVM。</li>
+<li>那么最多一个JVM能顺序执行多少个task才关闭呢？<ul>
+<li>这个值就是mapred.job.reuse.jvm.num.tasks。如果设置成-1，那么只要是同一个job的task（无所谓多少个），都可以按顺序在一个JVM上连续执行</li>
+</ul>
+</li>
+<li>如果task属于不同的job，那么JVM重用机制无效，不同job的task需要不同的JVM来运行</li>
+</ul>
+</li>
+<li>注意事项<ul>
+<li>JVM重用技术不是指同一Job的两个或两个以上的task可以同时运行于同一JVM上，而是排队按顺序执行。</li>
+<li>一个tasktracker最多可以同时运行的task数目由mapred.tasktracker.map.tasks.maximum和mapred.tasktracker.reduce.tasks.maximum决定，并且这两个参数在mapred-site.xml中设置。</li>
+<li>其他方法，如在JobClient端通过命令行-Dmapred.tasktracker.map.tasks.maximum=number或者conf.set(“mapred.tasktracker.map.tasks.maximum”,”number”)设置都是无效的。</li>
+<li>这个功能的缺点是，开启 JVM 重用将一直占用使用到的 task 插槽，以便进行重用，直到任务完成后才能释放。如果某个“不平衡的”job 中有某几个 reduce task 执行的时间要比其他 Reduce task 消耗的时间多的多的话，那么保留的插槽就会一直空闲着却无法被其他的 job使用，直到所有的 task 都结束了才会释放。</li>
+</ul>
+</li>
+</ul>
+<h2 id="八、推测执行"><a href="#八、推测执行" class="headerlink" title="八、推测执行"></a>八、推测执行</h2><ul>
+<li><p>概念</p>
+<ul>
+<li>在分布式集群环境下，因为程序 Bug（包括 Hadoop 本身的 bug），负载不均衡或者资源分布不均等原因，会造成同一个作业的多个任务之间运行速度不一致，有些任务的运行速度可能明显慢于其他任务（比如一个作业的某个任务进度只有 50%，而其他所有任务已经运行完毕），则这些任务会拖慢作业的整体执行进度。</li>
+<li>为了避免这种情况发生，Hadoop 采用了推测执行（Speculative Execution）机制，它根据一定的法则推测出“拖后腿”的任务，并为这样的任务启动一个备份任务，让该任务与原始任务同时处理同一份数据，并最终选用最先成功运行完成任务的计算结果作为最终结果。</li>
+</ul>
+</li>
+<li><p>参数设置</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="keyword">property</span>&gt;</span><br><span class="line">     &lt;<span class="built_in">name</span>&gt;mapreduce.map.speculative&lt;/<span class="built_in">name</span>&gt;</span><br><span class="line">     &lt;value&gt;<span class="literal">true</span>&lt;/value&gt;</span><br><span class="line">     &lt;description&gt;If <span class="literal">true</span>, <span class="keyword">then</span> multiple instances <span class="keyword">of</span> <span class="keyword">some</span> map tasks may be executed <span class="keyword">in</span> parallel.&lt;/description&gt;</span><br><span class="line">&lt;/<span class="keyword">property</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;<span class="keyword">property</span>&gt;</span><br><span class="line">     &lt;<span class="built_in">name</span>&gt;mapreduce.reduce.speculative&lt;/<span class="built_in">name</span>&gt;</span><br><span class="line">     &lt;value&gt;<span class="literal">true</span>&lt;/value&gt;</span><br><span class="line">     &lt;description&gt;If <span class="literal">true</span>, <span class="keyword">then</span> multiple instances <span class="keyword">of</span> <span class="keyword">some</span> reduce tasks  may be executed <span class="keyword">in</span> parallel.&lt;/description&gt;</span><br><span class="line">&lt;/<span class="keyword">property</span>&gt;</span><br><span class="line">  </span><br><span class="line">&lt;<span class="keyword">property</span>&gt;</span><br><span class="line">     &lt;<span class="built_in">name</span>&gt;hive.mapred.reduce.tasks.speculative.execution&lt;/<span class="built_in">name</span>&gt;</span><br><span class="line">     &lt;value&gt;<span class="literal">true</span>&lt;/value&gt;</span><br><span class="line">     &lt;description&gt;Whether speculative execution <span class="keyword">for</span> reducers should be turned <span class="keyword">on</span>.&lt;/description&gt;</span><br><span class="line"> &lt;/<span class="keyword">property</span>&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>如果用户因为输入数据量很大而需要执行长时间的 map 或者 Reduce task 的话，那么启动推测执行造成的浪费是非常巨大大。</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100327.html" class="pre-post btn btn-default" title='大数据hadoop之 二十二.Hive综合案例实战'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 二十二.Hive综合案例实战</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100326.html" class="next-post btn btn-default" title='大数据hadoop之 二十.Hive的模式设计和事务性'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 二十.Hive的模式设计和事务性</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive优化内容"><span class="toc-text">Hive优化内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Fetch抓取"><span class="toc-text">一、Fetch抓取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、本地模式（小任务）"><span class="toc-text">二、本地模式（小任务）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、表的优化"><span class="toc-text">三、表的优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-小表join大表"><span class="toc-text">1. 小表join大表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-大表join大表"><span class="toc-text">2. 大表join大表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-空KEY过滤"><span class="toc-text">2.1 空KEY过滤</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-空KEY转化"><span class="toc-text">2.2 空KEY转化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-MapJoin"><span class="toc-text">3. MapJoin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Group-By"><span class="toc-text">4. Group By</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-count-distinct-去重统计"><span class="toc-text">5. count(distinct) 去重统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-笛卡尔积"><span class="toc-text">6. 笛卡尔积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-行列过滤"><span class="toc-text">7. 行列过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-动态分区调整"><span class="toc-text">8. 动态分区调整</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-分区"><span class="toc-text">9. 分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-分桶"><span class="toc-text">10. 分桶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-left-semi-join"><span class="toc-text">11. left semi join</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-insert-into-代替-union-all"><span class="toc-text">12. insert into 代替 union all</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、数据倾斜"><span class="toc-text">四、数据倾斜</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-合理设置map数量"><span class="toc-text">1. 合理设置map数量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-小文件进行合并"><span class="toc-text">2. 小文件进行合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-复杂文件增加-Map-数"><span class="toc-text">3. 复杂文件增加 Map 数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-合理设置-Reduce-数"><span class="toc-text">4. 合理设置 Reduce 数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-调整-reduce-个数方法一"><span class="toc-text">4.1 调整 reduce 个数方法一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-调整-reduce-个数方法二"><span class="toc-text">4.2 调整 reduce 个数方法二</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、并行执行"><span class="toc-text">五、并行执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、严格模式"><span class="toc-text">六、严格模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-分区表——where过滤"><span class="toc-text">1. 分区表——where过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-order-by-搭配limit使用"><span class="toc-text">2. order by 搭配limit使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-限制笛卡尔积的查询。"><span class="toc-text">3. 限制笛卡尔积的查询。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七、JVM重用（针对同一个job的tasks而言的）"><span class="toc-text">七、JVM重用（针对同一个job的tasks而言的）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#八、推测执行"><span class="toc-text">八、推测执行</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

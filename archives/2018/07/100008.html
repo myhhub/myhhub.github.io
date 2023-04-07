@@ -1,0 +1,431 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="kubernetes,集群,高可用,安装">
+
+
+    <meta name="description" content="接上文：手动搭建高可用的kubernetes集群(三) 
+
+10. 部署Dashboard 插件官方文件目录：kubernetes/cluster/addons/dashboard
+使用的文件如...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>二进制搭建高可用的kubernetes集群(四) | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="二进制搭建高可用的kubernetes集群(四)">
+            
+	            二进制搭建高可用的kubernetes集群(四)
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/install/">安装</a> <a class="tag-link" href="/tags/colony/">集群</a> <a class="tag-link" href="/tags/availability/">高可用</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/07/06</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1735</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>接上文：<a href="100007.html">手动搭建高可用的kubernetes集群(三)</a> </p>
+<hr>
+<h1 id="10-部署Dashboard-插件"><a href="#10-部署Dashboard-插件" class="headerlink" title="10. 部署Dashboard 插件"></a>10. 部署Dashboard 插件</h1><p>官方文件目录：kubernetes/cluster/addons/dashboard</p>
+<p>使用的文件如下：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls *.yaml</span><br><span class="line">dashboard-controller<span class="selector-class">.yaml</span>  dashboard-rbac<span class="selector-class">.yaml</span>  dashboard-service.yaml</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>新加了 dashboard-rbac.yaml 文件，定义 dashboard 使用的 RoleBinding。</li>
+</ul>
+<p>由于 kube-apiserver 启用了 RBAC 授权，而官方源码目录的 dashboard-controller.yaml 没有定义授权的 ServiceAccount，所以后续访问 kube-apiserver 的 API 时会被拒绝，前端界面提示：</p>
+<div align="center"><img src="/img/posts/dashboard-403.png" alt="image">403</div>
+
+<p>解决办法是：定义一个名为dashboard 的ServiceAccount，然后将它和Cluster Role view 绑定：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">&gt; dashboard-rbac.yaml&lt;&lt;EOF</span></span><br><span class="line"><span class="string"></span><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">dashboard</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1alpha1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">dashboard</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">  - kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">dashboard</span></span><br><span class="line"><span class="attr">    namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="配置dashboard-controller"><a href="#配置dashboard-controller" class="headerlink" title="配置dashboard-controller"></a>配置dashboard-controller</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">20a21</span><br><span class="line"><span class="quote">&gt;       serviceAccountName: dashboard</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用名为 dashboard 的自定义 ServiceAccount</li>
+</ul>
+<h2 id="配置dashboard-service"><a href="#配置dashboard-service" class="headerlink" title="配置dashboard-service"></a>配置dashboard-service</h2><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ diff dashboard-service<span class="selector-class">.yaml</span><span class="selector-class">.orig</span> dashboard-service.yaml</span><br><span class="line"><span class="number">10</span>a11</span><br><span class="line">&gt;   type: NodePort</span><br></pre></td></tr></table></figure>
+<ul>
+<li>指定端口类型为 NodePort，这样外界可以通过地址 nodeIP:nodePort 访问 dashboard<h2 id="执行所有定义文件"><a href="#执行所有定义文件" class="headerlink" title="执行所有定义文件"></a>执行所有定义文件</h2><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ pwd</span><br><span class="line">/home/ych/k8s-repo/dashboard</span><br><span class="line">$ ls *.yaml</span><br><span class="line">dashboard-controller<span class="selector-class">.yaml</span>  dashboard-rbac<span class="selector-class">.yaml</span>  dashboard-service.yaml</span><br><span class="line">$ kubectl create -f  .</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="检查执行结果"><a href="#检查执行结果" class="headerlink" title="检查执行结果"></a>检查执行结果</h2><p>查看分配的 NodePort<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> services kubernetes-dashboard -n kube-system</span><br><span class="line">NAME                  <span class="built_in"> TYPE </span>      CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">kubernetes-dashboard   NodePort   10.254.104.90   &lt;none&gt;        80:31202/TCP   1m</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>NodePort 31202映射到dashboard pod 80端口；</li>
+</ul>
+<p>检查 controller<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get deployment kubernetes-dashboard  -n kube-system</span><br><span class="line">NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">kubernetes-dashboard   <span class="number">1</span>         <span class="number">1</span>         <span class="number">1</span>            <span class="number">1</span>           <span class="number">3</span>m</span><br><span class="line"></span><br><span class="line">$ kubectl get pods  -n kube-system | grep dashboard</span><br><span class="line">kubernetes-dashboard<span class="number">-6667</span>f9b4c<span class="number">-4</span>xbpz   <span class="number">1</span>/<span class="number">1</span>       Running   <span class="number">0</span>          <span class="number">3</span>m</span><br></pre></td></tr></table></figure></p>
+<h2 id="访问dashboard"><a href="#访问dashboard" class="headerlink" title="访问dashboard"></a>访问dashboard</h2><ol>
+<li>kubernetes-dashboard 服务暴露了 NodePort，可以使用 <a href="http://NodeIP:nodePort" target="_blank" rel="noopener">http://NodeIP:nodePort</a> 地址访问 dashboard</li>
+<li>通过 kube-apiserver 访问 dashboard</li>
+<li>通过 kubectl proxy 访问 dashboard</li>
+</ol>
+<div align="center"><img src="/img/posts/dashboard.png" alt="image">dashboard ui</div>
+
+<p>由于缺少 Heapster 插件，当前 dashboard 不能展示 Pod、Nodes 的 CPU、内存等 metric 图形</p>
+<blockquote>
+<p>注意：如果你的后端apiserver是高可用的集群模式的话，那么Dashboard的apiserver-host最好手动指定，不然，当你apiserver某个节点挂了的时候，Dashboard可能不能正常访问，如下配置</p>
+</blockquote>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">image:</span> gcr.io<span class="regexp">/google_containers/</span>kubernetes-dashboard-<span class="string">amd64:</span>v1<span class="number">.7</span><span class="number">.1</span></span><br><span class="line"><span class="string">ports:</span></span><br><span class="line">- <span class="string">containerPort:</span> <span class="number">9090</span></span><br><span class="line"><span class="symbol">  protocol:</span> TCP</span><br><span class="line"><span class="string">args:</span></span><br><span class="line">  - --apiserver-host=<span class="string">http:</span><span class="comment">//&lt;api_server_ha_addr&gt;:8080</span></span><br></pre></td></tr></table></figure>
+<h1 id="11-部署Heapster-插件"><a href="#11-部署Heapster-插件" class="headerlink" title="11. 部署Heapster 插件"></a>11. 部署Heapster 插件</h1><p>到heapster release 页面下载最新版的heapster<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ wget https:<span class="comment">//github.com/kubernetes/heapster/archive/v1.4.3.tar.gz</span></span><br><span class="line">$ tar -xzvf v1.<span class="number">4.3</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure></p>
+<p>部署相关文件目录：/home/ych/k8s-repo/heapster-1.4.3/deploy/kube-config<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ls influxdb/ &amp;&amp; ls rbac/</span><br><span class="line">grafana<span class="selector-class">.yaml</span>  heapster<span class="selector-class">.yaml</span>  influxdb.yaml</span><br><span class="line">heapster-rbac.yaml</span><br></pre></td></tr></table></figure></p>
+<p>为方便测试访问，将grafana.yaml下面的服务类型设置为type=NodePort</p>
+<h2 id="执行所有文件"><a href="#执行所有文件" class="headerlink" title="执行所有文件"></a>执行所有文件</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f rbac/heapster-rbac.yaml</span><br><span class="line">clusterrolebinding <span class="string">"heapster"</span> created</span><br><span class="line">$ kubectl create -f influxdb</span><br><span class="line">deployment <span class="string">"monitoring-grafana"</span> created</span><br><span class="line">service <span class="string">"monitoring-grafana"</span> created</span><br><span class="line">serviceaccount <span class="string">"heapster"</span> created</span><br><span class="line">deployment <span class="string">"heapster"</span> created</span><br><span class="line">service <span class="string">"heapster"</span> created</span><br><span class="line">deployment <span class="string">"monitoring-influxdb"</span> created</span><br><span class="line">service <span class="string">"monitoring-influxdb"</span> created</span><br></pre></td></tr></table></figure>
+<h2 id="检查执行结果-1"><a href="#检查执行结果-1" class="headerlink" title="检查执行结果"></a>检查执行结果</h2><p>检查 Deployment<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get deployments -n kube-system | grep -E 'heapster|monitoring'</span><br><span class="line">heapster               <span class="number">1</span>         <span class="number">1</span>         <span class="number">1</span>            <span class="number">1</span>           <span class="number">2</span>m</span><br><span class="line">monitoring-grafana     <span class="number">1</span>         <span class="number">1</span>         <span class="number">1</span>            <span class="number">0</span>           <span class="number">2</span>m</span><br><span class="line">monitoring-influxdb    <span class="number">1</span>         <span class="number">1</span>         <span class="number">1</span>            <span class="number">1</span>           <span class="number">2</span>m</span><br></pre></td></tr></table></figure></p>
+<p>检查 Pods<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pods -n kube-system | grep -E 'heapster|monitoring'</span><br><span class="line">heapster<span class="number">-7</span>cf895f48f-p98tk              <span class="number">1</span>/<span class="number">1</span>       Running            <span class="number">0</span>          <span class="number">2</span>m</span><br><span class="line">monitoring-grafana-c9d5cd98d-gb9xn     <span class="number">0</span>/<span class="number">1</span>       CrashLoopBackOff   <span class="number">4</span>          <span class="number">2</span>m</span><br><span class="line">monitoring-influxdb<span class="number">-67</span>f8d587dd-zqj6p   <span class="number">1</span>/<span class="number">1</span>       Running            <span class="number">0</span>          <span class="number">2</span>m</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到monitoring-grafana的POD 是没有执行成功的，通过查看日志可以看到下面的错误信息：</p>
+<blockquote>
+<p>Failed to parse /etc/grafana/grafana.ini, open /etc/grafana/grafana.ini: no such file or directory</p>
+</blockquote>
+<p>要解决这个问题(heapster issues)我们需要将grafana 的镜像版本更改成：gcr.io/google_containers/heapster-grafana-amd64:v4.0.2，然后重新执行，即可正常。</p>
+<h2 id="访问-grafana"><a href="#访问-grafana" class="headerlink" title="访问 grafana"></a>访问 grafana</h2><p>上面我们修改grafana 的Service 为NodePort 类型：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> svc -n kube-system</span><br><span class="line">NAME                  <span class="built_in"> TYPE </span>       CLUSTER-IP      EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">monitoring-grafana     NodePort    10.254.34.89    &lt;none&gt;        80:30191/TCP    28m</span><br></pre></td></tr></table></figure></p>
+<p>则我们就可以通过任意一个节点加上上面的30191端口就可以访问grafana 了。</p>
+<div align="center"><img src="/img/posts/WX20171110-141935.png" alt="image">grafana ui</div>
+
+<p>heapster 正确安装后，我们便可以回去看我们的dashboard 是否有图表出现了：</p>
+<div align="center"><img src="/img/posts/WX20171110-105351.png" alt="image">dashboard</div>
+
+<h1 id="12-安装Ingress"><a href="#12-安装Ingress" class="headerlink" title="12. 安装Ingress"></a>12. 安装Ingress</h1><p>Ingress其实就是从kuberenets集群外部访问集群的一个入口，将外部的请求转发到集群内不同的Service 上，其实就相当于nginx、apache 等负载均衡代理服务器，再加上一个规则定义，路由信息的刷新需要靠Ingress controller来提供</p>
+<p>Ingress controller可以理解为一个监听器，通过不断地与kube-apiserver打交道，实时的感知后端service、pod 等的变化，当得到这些变化信息后，Ingress controller再结合Ingress的配置，更新反向代理负载均衡器，达到服务发现的作用。其实这点和服务发现工具consul的consul-template非常类似。</p>
+<h2 id="部署traefik"><a href="#部署traefik" class="headerlink" title="部署traefik"></a>部署traefik</h2><p>Traefik是一款开源的反向代理与负载均衡工具。它最大的优点是能够与常见的微服务系统直接整合，可以实现自动化动态配置。目前支持Docker、Swarm、Mesos/Marathon、 Mesos、Kubernetes、Consul、Etcd、Zookeeper、BoltDB、Rest API等等后端模型。</p>
+<div align="center"><img src="/img/posts/traefik-architecture.png" alt="image">traefik</div>
+
+<p>创建rbac<br>创建文件：ingress-rbac.yaml，用于service account验证<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">ingress</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1beta1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">ingress</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">  - kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">ingress</span></span><br><span class="line"><span class="attr">    namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>DaemonSet 形式部署traefik</strong><br>创建文件：traefik-daemonset.yaml，为保证traefik 总能提供服务，在每个节点上都部署一个traefik，所以这里使用DaemonSet 的形式<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">traefik-conf</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line"><span class="attr">  traefik-config:</span> <span class="string">|-</span></span><br><span class="line">    <span class="string">defaultEntryPoints</span> <span class="string">=</span> <span class="string">["http","https"]</span></span><br><span class="line">    <span class="string">[entryPoints]</span></span><br><span class="line">      <span class="string">[entryPoints.http]</span></span><br><span class="line">      <span class="string">address</span> <span class="string">=</span> <span class="string">":80"</span></span><br><span class="line">        <span class="string">[entryPoints.http.redirect]</span></span><br><span class="line">          <span class="string">entryPoint</span> <span class="string">=</span> <span class="string">"https"</span></span><br><span class="line">      <span class="string">[entryPoints.https]</span></span><br><span class="line">      <span class="string">address</span> <span class="string">=</span> <span class="string">":443"</span></span><br><span class="line">        <span class="string">[entryPoints.https.tls]</span></span><br><span class="line">          <span class="string">[[entryPoints.https.tls.certificates]]</span></span><br><span class="line">          <span class="string">CertFile</span> <span class="string">=</span> <span class="string">"/ssl/ssl.crt"</span></span><br><span class="line">          <span class="string">KeyFile</span> <span class="string">=</span> <span class="string">"/ssl/ssl.key"</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line">	<span class="attr">kind:</span> <span class="string">DaemonSet</span></span><br><span class="line">	<span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line">	<span class="attr">metadata:</span></span><br><span class="line">	  <span class="attr">name:</span> <span class="string">traefik-ingress</span></span><br><span class="line">	  <span class="attr">namespace:</span> <span class="string">kube-system</span></span><br><span class="line">	  <span class="attr">labels:</span></span><br><span class="line">	    <span class="attr">k8s-app:</span> <span class="string">traefik-ingress</span></span><br><span class="line">	<span class="attr">spec:</span></span><br><span class="line">	  <span class="attr">template:</span></span><br><span class="line">	    <span class="attr">metadata:</span></span><br><span class="line">	      <span class="attr">labels:</span></span><br><span class="line">	        <span class="attr">k8s-app:</span> <span class="string">traefik-ingress</span></span><br><span class="line">	        <span class="attr">name:</span> <span class="string">traefik-ingress</span></span><br><span class="line">	    <span class="attr">spec:</span></span><br><span class="line">	      <span class="attr">terminationGracePeriodSeconds:</span> <span class="number">60</span></span><br><span class="line">	      <span class="attr">restartPolicy:</span> <span class="string">Always</span></span><br><span class="line">	      <span class="attr">serviceAccountName:</span> <span class="string">ingress</span></span><br><span class="line">	      <span class="attr">containers:</span></span><br><span class="line">	      <span class="bullet">-</span> <span class="attr">image:</span> <span class="attr">traefik:latest</span></span><br><span class="line">	        <span class="attr">name:</span> <span class="string">traefik-ingress</span></span><br><span class="line">	        <span class="attr">ports:</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">	          <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">	          <span class="attr">hostPort:</span> <span class="number">80</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">https</span></span><br><span class="line">	          <span class="attr">containerPort:</span> <span class="number">443</span></span><br><span class="line">	          <span class="attr">hostPort:</span> <span class="number">443</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">admin</span></span><br><span class="line">	          <span class="attr">containerPort:</span> <span class="number">8080</span></span><br><span class="line">	        <span class="attr">args:</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="bullet">--configFile=/etc/traefik/traefik.toml</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="bullet">-d</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="bullet">--web</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="bullet">--kubernetes</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="bullet">--logLevel=DEBUG</span></span><br><span class="line">	        <span class="attr">volumeMounts:</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">traefik-config-volume</span></span><br><span class="line">	          <span class="attr">mountPath:</span> <span class="string">/etc/traefik</span></span><br><span class="line">	        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">traefik-ssl-volume</span></span><br><span class="line">	          <span class="attr">mountPath:</span> <span class="string">/ssl</span></span><br><span class="line">	      <span class="attr">volumes:</span></span><br><span class="line">	      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">traefik-config-volume</span></span><br><span class="line">	        <span class="attr">configMap:</span></span><br><span class="line">	          <span class="attr">name:</span> <span class="string">traefik-conf</span></span><br><span class="line">	          <span class="attr">items:</span></span><br><span class="line">	          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">traefik-config</span></span><br><span class="line">	            <span class="attr">path:</span> <span class="string">traefik.toml</span></span><br><span class="line">	      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">traefik-ssl-volume</span></span><br><span class="line">	        <span class="attr">secret:</span></span><br><span class="line">	          <span class="attr">secretName:</span> <span class="string">traefik-ssl</span></span><br></pre></td></tr></table></figure></p>
+<p>注意上面的yaml 文件中我们添加了一个名为traefik-conf的ConfigMap，该配置是用来将http 请求强制跳转成https，并指定https 所需CA 文件地址，这里我们使用secret的形式来指定CA 文件的路径：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ls</span><br><span class="line">ssl.crt     ssl.key</span><br><span class="line">$ kubectl create<span class="built_in"> secret </span>generic traefik-ssl <span class="attribute">--from-file</span>=ssl.crt <span class="attribute">--from-file</span>=ssl.key <span class="attribute">--namespace</span>=kube-system</span><br><span class="line">secret <span class="string">"traefik-ssl"</span> created</span><br></pre></td></tr></table></figure></p>
+<p><strong>创建ingress</strong><br>创建文件：traefik-ingress.yaml，现在可以通过创建ingress文件来定义请求规则了，根据自己集群中的service 自己修改相应的serviceName 和servicePort<br><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: extensions/v1beta1</span><br><span class="line"><span class="attribute">kind</span>: Ingress</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">name</span>: traefik-ingress</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">rules</span>:</span><br><span class="line">  - <span class="attribute">host</span>: traefik.nginx.io</span><br><span class="line">    <span class="attribute">http</span>:</span><br><span class="line">      <span class="attribute">paths</span>:</span><br><span class="line">      - <span class="attribute">path</span>: /</span><br><span class="line">        <span class="attribute">backend</span>:</span><br><span class="line">          <span class="attribute">serviceName</span>: my-nginx</span><br><span class="line">          <span class="attribute">servicePort</span>: <span class="number">80</span></span><br></pre></td></tr></table></figure></p>
+<p>执行创建命令：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create -f ingress-rbac.yaml</span><br><span class="line">serviceaccount <span class="string">"ingress"</span> created</span><br><span class="line">clusterrolebinding <span class="string">"ingress"</span> created</span><br><span class="line">$ kubectl create -f traefik-daemonset.yaml</span><br><span class="line">configmap <span class="string">"traefik-conf"</span> created</span><br><span class="line">daemonset <span class="string">"traefik-ingress"</span> created</span><br><span class="line">$ kubectl create -f traefik-ingress.yaml</span><br><span class="line">ingress <span class="string">"traefik-ingress"</span> created</span><br></pre></td></tr></table></figure></p>
+<p><strong>Traefik UI</strong><br>创建文件：traefik-ui.yaml，<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">traefik-ui</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">traefik-ingress</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">web</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">8080</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">traefik-ui</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  rules:</span></span><br><span class="line"><span class="attr">  - host:</span> <span class="string">traefik-ui.local</span></span><br><span class="line"><span class="attr">    http:</span></span><br><span class="line"><span class="attr">      paths:</span></span><br><span class="line"><span class="attr">      - path:</span> <span class="string">/</span></span><br><span class="line"><span class="attr">        backend:</span></span><br><span class="line"><span class="attr">          serviceName:</span> <span class="string">traefik-ui</span></span><br><span class="line"><span class="attr">          servicePort:</span> <span class="string">web</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>部署完成后，在本地/etc/hosts添加一条配置：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 将下面的<span class="selector-tag">xx</span><span class="selector-class">.xx</span><span class="selector-class">.xx</span><span class="selector-class">.xx</span>替换成任意节点<span class="selector-tag">IP</span></span><br><span class="line"><span class="selector-tag">xx</span><span class="selector-class">.xx</span><span class="selector-class">.xx</span><span class="selector-class">.xx</span> <span class="selector-tag">master03</span> <span class="selector-tag">traefik</span><span class="selector-class">.nginx</span><span class="selector-class">.io</span> <span class="selector-tag">traefik-ui</span><span class="selector-class">.local</span></span><br></pre></td></tr></table></figure></p>
+<p>配置完成后，在本地访问：traefik-ui.local，则可以访问到traefik的dashboard页面：</p>
+<div align="center"><img src="/img/posts/WX20171110-140151.png" alt="image">traefik dashboard</div>
+
+<p>同样的可以访问traefik.nginx.io，得到正确的结果页面：</p>
+<div align="center"><img src="/img/posts/WX20171110-140306.png" alt="image">nginx</div>
+
+<p>上面配置完成后，就可以将我们的所有节点加入到一个SLB中，然后配置相应的域名解析到SLB即可。</p>
+<h2 id="13-问题汇总"><a href="#13-问题汇总" class="headerlink" title="13. 问题汇总"></a>13. 问题汇总</h2><p><strong>1. dashboard无法显示监控图</strong><br>dashboard 和heapster influxdb都部署完成后 dashboard依旧无法显示监控图 通过排查 heapster log有超时错误<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl logs -<span class="keyword">f</span> pods/heapster-<span class="number">2882613285</span>-<span class="number">58</span>d9r -n kube-<span class="built_in">system</span></span><br><span class="line"></span><br><span class="line">E0630 <span class="number">17</span>:<span class="number">23</span>:<span class="number">47.339987</span> <span class="number">1</span> reflector.<span class="keyword">go</span>:<span class="number">203</span>] k8s.io/heapster/metrics/sources/kubelet/kubelet.<span class="keyword">go</span>:<span class="number">342</span>: Failed <span class="keyword">to</span> <span class="keyword">list</span> *api.Node: Get http://kubernetes.default/api/v1/nodes?resourceVersion=<span class="number">0</span>: dial tcp: i/<span class="keyword">o</span> timeout E0630 <span class="number">17</span>:<span class="number">23</span>:<span class="number">47.340274</span> <span class="number">1</span> reflector.<span class="keyword">go</span>:<span class="number">203</span>] k8s.io/heapster/metrics/heapster.<span class="keyword">go</span>:<span class="number">319</span>: Failed <span class="keyword">to</span> <span class="keyword">list</span> *api.Pod: Get http://kubernetes.default/api/v1/pods?resourceVersion=<span class="number">0</span>: dial tcp: i/<span class="keyword">o</span> timeout E0630 <span class="number">17</span>:<span class="number">23</span>:<span class="number">47.340498</span> <span class="number">1</span> reflector.<span class="keyword">go</span>:<span class="number">203</span>] k8s.io/heapster/metrics/processors/namespace_based_enricher.<span class="keyword">go</span>:<span class="number">84</span>: Failed <span class="keyword">to</span> <span class="keyword">list</span> *api.Namespace: Get http://kubernetes.default/api/v1/namespaces?resourceVersion=<span class="number">0</span>: dial tcp: lookup kubernetes.default <span class="keyword">on</span> <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: dial udp <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: i/<span class="keyword">o</span> timeout E0630 <span class="number">17</span>:<span class="number">23</span>:<span class="number">47.340563</span> <span class="number">1</span> reflector.<span class="keyword">go</span>:<span class="number">203</span>] k8s.io/heapster/metrics/heapster.<span class="keyword">go</span>:<span class="number">327</span>: Failed <span class="keyword">to</span> <span class="keyword">list</span> *api.Node: Get http://kubernetes.default/api/v1/nodes?resourceVersion=<span class="number">0</span>: dial tcp: lookup kubernetes.default <span class="keyword">on</span> <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: dial udp <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: i/<span class="keyword">o</span> timeout E0630 <span class="number">17</span>:<span class="number">23</span>:<span class="number">47.340623</span> <span class="number">1</span> reflector.<span class="keyword">go</span>:<span class="number">203</span>] k8s.io/heapster/metrics/processors/node_autoscaling_enricher.<span class="keyword">go</span>💯 Failed <span class="keyword">to</span> <span class="keyword">list</span> *api.Node: Get http://kubernetes.default/api/v1/nodes?resourceVersion=<span class="number">0</span>: dial tcp: lookup kubernetes.default <span class="keyword">on</span> <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: dial udp <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: i/<span class="keyword">o</span> timeout E0630 <span class="number">17</span>:<span class="number">23</span>:<span class="number">55.014414</span> <span class="number">1</span> influxdb.<span class="keyword">go</span>:<span class="number">150</span>] Failed <span class="keyword">to</span> create infuxd<span class="variable">b:</span> failed <span class="keyword">to</span> ping InfluxDB server at <span class="string">"monitoring-influxdb:8086"</span> - Get http://monitoring-influxd<span class="variable">b:8086</span>/pin<span class="variable">g:</span> dial tcp: lookup monitoring-influxdb <span class="keyword">on</span> <span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: <span class="keyword">read</span> udp <span class="number">172.30</span>.<span class="number">45.4</span>:<span class="number">48955</span>-&gt;<span class="number">10.254</span>.<span class="number">0.2</span>:<span class="number">53</span>: i/<span class="keyword">o</span> timeout`</span><br></pre></td></tr></table></figure></p>
+<p>我是docker的systemd Unit文件忘记添加<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">ExecStart</span>=/root/local/bin/dockerd <span class="attribute">--log-level</span>=error <span class="variable">$DOCKER_NETWORK_OPTIONS</span></span><br></pre></td></tr></table></figure></p>
+<p>后边的$DOCKER_NETWORK_OPTIONS，导致docker0的网段跟flannel.1不一致。</p>
+<p><strong>2. kube-proxy报错kube-proxy[2241]: E0502 15:55:13.889842 2241 conntrack.go:42] conntrack returned error: error looking for path of conntrack: exec: “conntrack”: executable file not found in $PATH</strong><br>导致现象：kubedns启动成功，运行正常，但是service 之间无法解析，kubernetes中的DNS解析异常</p>
+<p>解决方法：CentOS中安装conntrack-tools包后重启kubernetes 集群即可。</p>
+<p><strong>3. Unable to access kubernetes services: no route to host</strong><br>导致现象: 在POD 内访问集群的某个服务的时候出现no route to host<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl my-nginx.nx.svc.cluster.local</span><br><span class="line">curl: (7) Failed connect <span class="keyword">to</span> my-nginx.nx.svc.cluster.local:80; <span class="literal">No</span><span class="built_in"> route </span><span class="keyword">to</span> host</span><br></pre></td></tr></table></figure></p>
+<p>解决方法：清除所有的防火墙规则，然后重启docker 服务<br><figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ iptables --<span class="built_in">flush</span> &amp;&amp; iptables -tnat --<span class="built_in">flush</span></span><br><span class="line">$ systemctl <span class="built_in">restart</span> docker</span><br></pre></td></tr></table></figure></p>
+<p><strong>4. 使用NodePort 类型的服务，只能在POD 所在节点进行访问</strong><br>导致现象: 使用NodePort 类型的服务，只能在POD 所在节点进行访问，其他节点通过NodePort 不能正常访问</p>
+<p>解决方法: kube-proxy 默认使用的是proxy_model就是iptables，正常情况下是所有节点都可以通过NodePort 进行访问的，我这里将阿里云的安全组限制全部去掉即可，然后根据需要进行添加安全限制。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://github.com/opsnull/follow-me-install-kubernetes-cluster" target="_blank" rel="noopener">和我一步步部署 kubernetes 集群</a><br><a href="http://www.rfyy.net/archives/1504.html" target="_blank" rel="noopener">keepalived 配置</a><br><a href="https://github.com/kubernetes/kubernetes/issues" target="_blank" rel="noopener">kubernetes issue</a><br><a href="https://github.com/kubernetes/heapster/issues" target="_blank" rel="noopener">kubernetes heapster issue</a></p>
+<hr>
+<p><strong>全文完</strong></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/07/100119.html" class="pre-post btn btn-default" title='使用kubeadm搭建kubernetes集群'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">使用kubeadm搭建kubernetes集群</span>
+        </a>
+    
+    
+        <a href="/archives/2018/07/100007.html" class="next-post btn btn-default" title='二进制搭建高可用的kubernetes集群(三)'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">二进制搭建高可用的kubernetes集群(三)</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#10-部署Dashboard-插件"><span class="toc-text">10. 部署Dashboard 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置dashboard-controller"><span class="toc-text">配置dashboard-controller</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置dashboard-service"><span class="toc-text">配置dashboard-service</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行所有定义文件"><span class="toc-text">执行所有定义文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检查执行结果"><span class="toc-text">检查执行结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问dashboard"><span class="toc-text">访问dashboard</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#11-部署Heapster-插件"><span class="toc-text">11. 部署Heapster 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#执行所有文件"><span class="toc-text">执行所有文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检查执行结果-1"><span class="toc-text">检查执行结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问-grafana"><span class="toc-text">访问 grafana</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#12-安装Ingress"><span class="toc-text">12. 安装Ingress</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#部署traefik"><span class="toc-text">部署traefik</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-问题汇总"><span class="toc-text">13. 问题汇总</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

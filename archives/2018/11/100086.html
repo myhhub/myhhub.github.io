@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="java,poi,excel">
+
+
+    <meta name="description" content="1. Excel2003与Excel2007两个版本的最大行数和列数不同，2003版最大行数是65536行，最大列数是256列，2007版及以后的版本最大行数是1048576行，最大列数是163...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>解决POI读写几万行大数据量excel而导致内存溢出的情况 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="解决POI读写几万行大数据量excel而导致内存溢出的情况">
+            
+	            解决POI读写几万行大数据量excel而导致内存溢出的情况
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/excel/">excel</a> <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/poi/">poi</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2018/11/16</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1602</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h1 id="1-Excel2003与Excel2007"><a href="#1-Excel2003与Excel2007" class="headerlink" title="1. Excel2003与Excel2007"></a>1. Excel2003与Excel2007</h1><p>两个版本的最大行数和列数不同，2003版最大行数是65536行，最大列数是256列，2007版及以后的版本最大行数是1048576行，最大列数是16384列。</p>
+<p>excel2003是以二进制的方式存储，这种格式不易被其他软件读取使用；而excel2007采用了基于XML的ooxml开放文档标准，ooxml使用XML和ZIP技术结合进行文件存储，XML是一个基于文本的格式，而且ZIP容器支持内容的压缩，所以其一大优势是可以大大减小文件的尺寸。</p>
+<h1 id="2-大批量数据读写"><a href="#2-大批量数据读写" class="headerlink" title="2. 大批量数据读写"></a>2. 大批量数据读写</h1><div align="center"><img src="/img/posts/1217276-20180120163349053-226959473.png" alt="img"></div>
+
+<h2 id="2-1-大批量数据写入"><a href="#2-1-大批量数据写入" class="headerlink" title="2.1 大批量数据写入"></a>2.1 大批量数据写入</h2><p>对于大数据的Xlsx文件的写入，POI3.8提供了SXSSFSXSSFWorkbook类，采用缓存方式进行大批量写文件。</p>
+<p>详情可以查看poi官网示例：</p>
+<p><a href="http://poi.apache.org/spreadsheet/how-to.html#sxssf" target="_blank" rel="noopener">http://poi.apache.org/spreadsheet/how-to.html#sxssf</a></p>
+<h2 id="2-2-大批量数据读取"><a href="#2-2-大批量数据读取" class="headerlink" title="2.2 大批量数据读取"></a>2.2 大批量数据读取</h2><p>POI读取Excel有两种模式，一种是用户模式，一种是SAX事件驱动模式，将xlsx格式的文档转换成CSV格式后进行读取。用户模式API接口丰富，使用POI的API可以很容易读取Excel，但用户模式消耗的内存很大，当遇到很大sheet、大数据网格，假空行、公式等问题时，很容易导致内存溢出。POI官方推荐解决内存溢出的方式使用CVS格式解析，即SAX事件驱动模式。下面主要是讲解如何读取大批量数据：</p>
+<h3 id="2-2-1-pom-xml所需jar包"><a href="#2-2-1-pom-xml所需jar包" class="headerlink" title="2.2.1 pom.xml所需jar包"></a>2.2.1 pom.xml所需jar包</h3><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.poi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @author y</span></span><br><span class="line"><span class="comment"> * @create 2018-01-19 0:13</span></span><br><span class="line"><span class="comment"> * @desc</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> class ExcelReaderUtil &#123;</span><br><span class="line">    <span class="comment">//excel2003扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL03_EXTENSION = <span class="string">".xls"</span>;</span><br><span class="line">    <span class="comment">//excel2007扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL07_EXTENSION = <span class="string">".xlsx"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 每获取一条记录，即打印</span></span><br><span class="line"><span class="comment">     * 在flume里每获取一条记录即发送，而不必缓存起来，可以大大减少内存的消耗，这里主要是针对flume读取大数据量excel来说的</span></span><br><span class="line"><span class="comment">     * @param sheetName</span></span><br><span class="line"><span class="comment">     * @param sheetIndex</span></span><br><span class="line"><span class="comment">     * @param curRow</span></span><br><span class="line"><span class="comment">     * @param cellList</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> sendRows(<span class="keyword">String</span> filePath, <span class="keyword">String</span> sheetName, <span class="built_in">int</span> sheetIndex, <span class="built_in">int</span> curRow, List&lt;<span class="keyword">String</span>&gt; cellList) &#123;</span><br><span class="line">            StringBuffer oneLineSb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(filePath);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"sheet"</span> + sheetIndex);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span> + sheetName);<span class="comment">//加上sheet名</span></span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"row"</span> + curRow);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">String</span> cell : cellList) &#123;</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(cell.<span class="built_in">trim</span>());</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(<span class="string">"|"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">String</span> oneLine = oneLineSb.toString();</span><br><span class="line">            <span class="keyword">if</span> (oneLine.endsWith(<span class="string">"|"</span>)) &#123;</span><br><span class="line">                oneLine = oneLine.substring(<span class="number">0</span>, oneLine.lastIndexOf(<span class="string">"|"</span>));</span><br><span class="line">            &#125;<span class="comment">// 去除最后一个分隔符</span></span><br><span class="line"></span><br><span class="line">            System.out.<span class="built_in">println</span>(oneLine);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> readExcel(<span class="keyword">String</span> fileName) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="built_in">int</span> totalRows =<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (fileName.endsWith(EXCEL03_EXTENSION)) &#123; <span class="comment">//处理excel2003文件</span></span><br><span class="line">            ExcelXlsReader excelXls=<span class="keyword">new</span> ExcelXlsReader();</span><br><span class="line">            totalRows =excelXls.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fileName.endsWith(EXCEL07_EXTENSION)) &#123;<span class="comment">//处理excel2007文件</span></span><br><span class="line">            ExcelXlsxReader excelXlsxReader = <span class="keyword">new</span> ExcelXlsxReader();</span><br><span class="line">            totalRows = excelXlsxReader.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"文件格式错误，fileName的扩展名只能是xls或xlsx。"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"发送的总行数："</span> + totalRows);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">String</span> path=<span class="string">"C:\\Users\\y****\\Desktop\\TestSample\\H_20171226_***_*****_0430.xlsx"</span>;</span><br><span class="line">        ExcelReaderUtil.readExcel(path);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-2-POI以SAX解析excel2007文件"><a href="#2-2-2-POI以SAX解析excel2007文件" class="headerlink" title="2.2.2 POI以SAX解析excel2007文件"></a><strong>2.2.2 POI以SAX解析excel2007文件</strong></h3><p>解决思路：通过继承DefaultHandler类，重写process()，startElement()，characters()，endElement()这四个方法。process()方式主要是遍历所有的sheet，并依次调用startElement()、characters()方法、endElement()这三个方法。startElement()用于设定单元格的数字类型（如日期、数字、字符串等等）。characters()用于获取该单元格对应的索引值或是内容值（如果单元格类型是字符串、INLINESTR、数字、日期则获取的是索引值；其他如布尔值、错误、公式则获取的是内容值）。endElement()根据startElement()的单元格数字类型和characters()的索引值或内容值，最终得出单元格的内容值，并打印出来。</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.poi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @author y</span></span><br><span class="line"><span class="comment"> * @create 2018-01-19 0:13</span></span><br><span class="line"><span class="comment"> * @desc</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> class ExcelReaderUtil &#123;</span><br><span class="line">    <span class="comment">//excel2003扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL03_EXTENSION = <span class="string">".xls"</span>;</span><br><span class="line">    <span class="comment">//excel2007扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL07_EXTENSION = <span class="string">".xlsx"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 每获取一条记录，即打印</span></span><br><span class="line"><span class="comment">     * 在flume里每获取一条记录即发送，而不必缓存起来，可以大大减少内存的消耗，这里主要是针对flume读取大数据量excel来说的</span></span><br><span class="line"><span class="comment">     * @param sheetName</span></span><br><span class="line"><span class="comment">     * @param sheetIndex</span></span><br><span class="line"><span class="comment">     * @param curRow</span></span><br><span class="line"><span class="comment">     * @param cellList</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> sendRows(<span class="keyword">String</span> filePath, <span class="keyword">String</span> sheetName, <span class="built_in">int</span> sheetIndex, <span class="built_in">int</span> curRow, List&lt;<span class="keyword">String</span>&gt; cellList) &#123;</span><br><span class="line">            StringBuffer oneLineSb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(filePath);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"sheet"</span> + sheetIndex);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span> + sheetName);<span class="comment">//加上sheet名</span></span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"row"</span> + curRow);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">String</span> cell : cellList) &#123;</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(cell.<span class="built_in">trim</span>());</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(<span class="string">"|"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">String</span> oneLine = oneLineSb.toString();</span><br><span class="line">            <span class="keyword">if</span> (oneLine.endsWith(<span class="string">"|"</span>)) &#123;</span><br><span class="line">                oneLine = oneLine.substring(<span class="number">0</span>, oneLine.lastIndexOf(<span class="string">"|"</span>));</span><br><span class="line">            &#125;<span class="comment">// 去除最后一个分隔符</span></span><br><span class="line"></span><br><span class="line">            System.out.<span class="built_in">println</span>(oneLine);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> readExcel(<span class="keyword">String</span> fileName) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="built_in">int</span> totalRows =<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (fileName.endsWith(EXCEL03_EXTENSION)) &#123; <span class="comment">//处理excel2003文件</span></span><br><span class="line">            ExcelXlsReader excelXls=<span class="keyword">new</span> ExcelXlsReader();</span><br><span class="line">            totalRows =excelXls.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fileName.endsWith(EXCEL07_EXTENSION)) &#123;<span class="comment">//处理excel2007文件</span></span><br><span class="line">            ExcelXlsxReader excelXlsxReader = <span class="keyword">new</span> ExcelXlsxReader();</span><br><span class="line">            totalRows = excelXlsxReader.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"文件格式错误，fileName的扩展名只能是xls或xlsx。"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"发送的总行数："</span> + totalRows);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">String</span> path=<span class="string">"C:\\Users\\y****\\Desktop\\TestSample\\H_20171226_***_*****_0430.xlsx"</span>;</span><br><span class="line">        ExcelReaderUtil.readExcel(path);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-3-POI通过继承HSSFListener类来解决Excel2003文件"><a href="#2-2-3-POI通过继承HSSFListener类来解决Excel2003文件" class="headerlink" title="2.2.3 POI通过继承HSSFListener类来解决Excel2003文件"></a><strong>2.2.3 POI通过继承HSSFListener类来解决Excel2003文件</strong></h3><p> 解决思路：重写process()，processRecord()两个方法，其中processRecord是核心方法，用于处理sheetName和各种单元格数字类型。</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.poi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @author y</span></span><br><span class="line"><span class="comment"> * @create 2018-01-19 0:13</span></span><br><span class="line"><span class="comment"> * @desc</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> class ExcelReaderUtil &#123;</span><br><span class="line">    <span class="comment">//excel2003扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL03_EXTENSION = <span class="string">".xls"</span>;</span><br><span class="line">    <span class="comment">//excel2007扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL07_EXTENSION = <span class="string">".xlsx"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 每获取一条记录，即打印</span></span><br><span class="line"><span class="comment">     * 在flume里每获取一条记录即发送，而不必缓存起来，可以大大减少内存的消耗，这里主要是针对flume读取大数据量excel来说的</span></span><br><span class="line"><span class="comment">     * @param sheetName</span></span><br><span class="line"><span class="comment">     * @param sheetIndex</span></span><br><span class="line"><span class="comment">     * @param curRow</span></span><br><span class="line"><span class="comment">     * @param cellList</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> sendRows(<span class="keyword">String</span> filePath, <span class="keyword">String</span> sheetName, <span class="built_in">int</span> sheetIndex, <span class="built_in">int</span> curRow, List&lt;<span class="keyword">String</span>&gt; cellList) &#123;</span><br><span class="line">            StringBuffer oneLineSb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(filePath);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"sheet"</span> + sheetIndex);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span> + sheetName);<span class="comment">//加上sheet名</span></span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"row"</span> + curRow);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">String</span> cell : cellList) &#123;</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(cell.<span class="built_in">trim</span>());</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(<span class="string">"|"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">String</span> oneLine = oneLineSb.toString();</span><br><span class="line">            <span class="keyword">if</span> (oneLine.endsWith(<span class="string">"|"</span>)) &#123;</span><br><span class="line">                oneLine = oneLine.substring(<span class="number">0</span>, oneLine.lastIndexOf(<span class="string">"|"</span>));</span><br><span class="line">            &#125;<span class="comment">// 去除最后一个分隔符</span></span><br><span class="line"></span><br><span class="line">            System.out.<span class="built_in">println</span>(oneLine);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> readExcel(<span class="keyword">String</span> fileName) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="built_in">int</span> totalRows =<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (fileName.endsWith(EXCEL03_EXTENSION)) &#123; <span class="comment">//处理excel2003文件</span></span><br><span class="line">            ExcelXlsReader excelXls=<span class="keyword">new</span> ExcelXlsReader();</span><br><span class="line">            totalRows =excelXls.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fileName.endsWith(EXCEL07_EXTENSION)) &#123;<span class="comment">//处理excel2007文件</span></span><br><span class="line">            ExcelXlsxReader excelXlsxReader = <span class="keyword">new</span> ExcelXlsxReader();</span><br><span class="line">            totalRows = excelXlsxReader.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"文件格式错误，fileName的扩展名只能是xls或xlsx。"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"发送的总行数："</span> + totalRows);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">String</span> path=<span class="string">"C:\\Users\\y****\\Desktop\\TestSample\\H_20171226_***_*****_0430.xlsx"</span>;</span><br><span class="line">        ExcelReaderUtil.readExcel(path);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-4-辅助类ExcelReaderUtil"><a href="#2-2-4-辅助类ExcelReaderUtil" class="headerlink" title="2.2.4 辅助类ExcelReaderUtil"></a><strong>2.2.4 辅助类ExcelReaderUtil</strong></h3><p><strong>调用ExcelXlsReader类和ExcelXlsxReader类对excel2003和excel2007两个版本进行大批量数据读取：</strong></p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.poi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @author y</span></span><br><span class="line"><span class="comment"> * @create 2018-01-19 0:13</span></span><br><span class="line"><span class="comment"> * @desc</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> class ExcelReaderUtil &#123;</span><br><span class="line">    <span class="comment">//excel2003扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL03_EXTENSION = <span class="string">".xls"</span>;</span><br><span class="line">    <span class="comment">//excel2007扩展名</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EXCEL07_EXTENSION = <span class="string">".xlsx"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 每获取一条记录，即打印</span></span><br><span class="line"><span class="comment">     * 在flume里每获取一条记录即发送，而不必缓存起来，可以大大减少内存的消耗，这里主要是针对flume读取大数据量excel来说的</span></span><br><span class="line"><span class="comment">     * @param sheetName</span></span><br><span class="line"><span class="comment">     * @param sheetIndex</span></span><br><span class="line"><span class="comment">     * @param curRow</span></span><br><span class="line"><span class="comment">     * @param cellList</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> sendRows(<span class="keyword">String</span> filePath, <span class="keyword">String</span> sheetName, <span class="built_in">int</span> sheetIndex, <span class="built_in">int</span> curRow, List&lt;<span class="keyword">String</span>&gt; cellList) &#123;</span><br><span class="line">            StringBuffer oneLineSb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(filePath);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"sheet"</span> + sheetIndex);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span> + sheetName);<span class="comment">//加上sheet名</span></span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"--"</span>);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"row"</span> + curRow);</span><br><span class="line">            oneLineSb.<span class="built_in">append</span>(<span class="string">"::"</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">String</span> cell : cellList) &#123;</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(cell.<span class="built_in">trim</span>());</span><br><span class="line">                oneLineSb.<span class="built_in">append</span>(<span class="string">"|"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">String</span> oneLine = oneLineSb.toString();</span><br><span class="line">            <span class="keyword">if</span> (oneLine.endsWith(<span class="string">"|"</span>)) &#123;</span><br><span class="line">                oneLine = oneLine.substring(<span class="number">0</span>, oneLine.lastIndexOf(<span class="string">"|"</span>));</span><br><span class="line">            &#125;<span class="comment">// 去除最后一个分隔符</span></span><br><span class="line"></span><br><span class="line">            System.out.<span class="built_in">println</span>(oneLine);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> readExcel(<span class="keyword">String</span> fileName) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="built_in">int</span> totalRows =<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (fileName.endsWith(EXCEL03_EXTENSION)) &#123; <span class="comment">//处理excel2003文件</span></span><br><span class="line">            ExcelXlsReader excelXls=<span class="keyword">new</span> ExcelXlsReader();</span><br><span class="line">            totalRows =excelXls.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fileName.endsWith(EXCEL07_EXTENSION)) &#123;<span class="comment">//处理excel2007文件</span></span><br><span class="line">            ExcelXlsxReader excelXlsxReader = <span class="keyword">new</span> ExcelXlsxReader();</span><br><span class="line">            totalRows = excelXlsxReader.process(fileName);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"文件格式错误，fileName的扩展名只能是xls或xlsx。"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.<span class="built_in">println</span>(<span class="string">"发送的总行数："</span> + totalRows);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">String</span> path=<span class="string">"C:\\Users\\y****\\Desktop\\TestSample\\H_20171226_***_*****_0430.xlsx"</span>;</span><br><span class="line">        ExcelReaderUtil.readExcel(path);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>github地址</strong>：</p>
+<p><a href="https://github.com/SwordfallYeung/POIExcel" target="_blank" rel="noopener">https://github.com/SwordfallYeung/POIExcel</a></p>
+<hr>
+<p><strong>参考资料</strong><br><a href="https://www.cnblogs.com/huangjian2/p/6238237.html" target="_blank" rel="noopener">https://www.cnblogs.com/huangjian2/p/6238237.html</a><br><a href="https://www.cnblogs.com/yfrs/p/5689347.html" target="_blank" rel="noopener">https://www.cnblogs.com/yfrs/p/5689347.html</a><br><a href="http://blog.csdn.net/lishengbo/article/details/40711769" target="_blank" rel="noopener">http://blog.csdn.net/lishengbo/article/details/40711769</a><br><a href="https://www.cnblogs.com/wshsdlau/p/5643847.html" target="_blank" rel="noopener">https://www.cnblogs.com/wshsdlau/p/5643847.html</a><br><a href="http://blog.csdn.net/lipinganq/article/details/78775195" target="_blank" rel="noopener">http://blog.csdn.net/lipinganq/article/details/78775195</a><br><a href="http://blog.csdn.net/lipinganq/article/details/53389501" target="_blank" rel="noopener">http://blog.csdn.net/lipinganq/article/details/53389501</a><br><a href="http://blog.csdn.net/zmx729618/article/details/72639037" target="_blank" rel="noopener">http://blog.csdn.net/zmx729618/article/details/72639037</a><br><a href="http://blog.csdn.net/daiyutage/article/details/53010491" target="_blank" rel="noopener">http://blog.csdn.net/daiyutage/article/details/53010491</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2018/11/100087.html" class="pre-post btn btn-default" title='Linux Shell脚本编程'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">Linux Shell脚本编程</span>
+        </a>
+    
+    
+        <a href="/archives/2018/11/100085.html" class="next-post btn btn-default" title='浅析RPC原理'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">浅析RPC原理</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Excel2003与Excel2007"><span class="toc-text">1. Excel2003与Excel2007</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-大批量数据读写"><span class="toc-text">2. 大批量数据读写</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-大批量数据写入"><span class="toc-text">2.1 大批量数据写入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-大批量数据读取"><span class="toc-text">2.2 大批量数据读取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-pom-xml所需jar包"><span class="toc-text">2.2.1 pom.xml所需jar包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-POI以SAX解析excel2007文件"><span class="toc-text">2.2.2 POI以SAX解析excel2007文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-3-POI通过继承HSSFListener类来解决Excel2003文件"><span class="toc-text">2.2.3 POI通过继承HSSFListener类来解决Excel2003文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-4-辅助类ExcelReaderUtil"><span class="toc-text">2.2.4 辅助类ExcelReaderUtil</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

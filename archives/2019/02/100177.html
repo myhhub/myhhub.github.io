@@ -1,0 +1,441 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="web,javascript">
+
+
+    <meta name="description" content="前言JavaScript中有一个被称为作用域(Scope)的特性。虽然对于许多新手开发者来说，作用域的概念并不是很容易理解，本文我会尽我所能用最简单的方式来解释作用域和作用域链，希望大家有所收获...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>全面阐析JavaScript作用域和作用域链 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="全面阐析JavaScript作用域和作用域链">
+            
+	            全面阐析JavaScript作用域和作用域链
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/front/">前端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/javascript/">javascript</a> <a class="tag-link" href="/tags/web/">web</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/02/03</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1524</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>JavaScript中有一个被称为作用域(Scope)的特性。虽然对于许多新手开发者来说，作用域的概念并不是很容易理解，本文我会尽我所能用最简单的方式来解释作用域和作用域链，希望大家有所收获！</p>
+<h2 id="作用域-Scope"><a href="#作用域-Scope" class="headerlink" title="作用域(Scope)"></a>作用域(Scope)</h2><h3 id="1-什么是作用域"><a href="#1-什么是作用域" class="headerlink" title="1.什么是作用域"></a>1.什么是作用域</h3><p>作用域是在运行时代码中的某些特定部分中变量，函数和对象的可访问性。换句话说，作用域决定了代码区块中变量和其他资源的可见性。可能这两句话并不好理解，我们先来看个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">outFun2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> inVariable = <span class="string">"内层变量2"</span>;</span><br><span class="line">&#125;</span><br><span class="line">outFun2();<span class="comment">//要先执行这个函数，否则根本不知道里面是啥</span></span><br><span class="line"><span class="built_in">console</span>.log(inVariable); <span class="comment">// Uncaught ReferenceError: inVariable is not defined</span></span><br></pre></td></tr></table></figure>
+<p>从上面的例子可以体会到作用域的概念，变量inVariable在全局作用域没有声明，所以在全局作用域下取值会报错。我们可以这样理解：<strong>作用域就是一个独立的地盘，让变量不会外泄、暴露出去</strong>。也就是说<strong>作用域最大的用处就是隔离变量，不同作用域下同名变量不会有冲突。</strong></p>
+<p><strong>ES6 之前 JavaScript 没有块级作用域,只有全局作用域和函数作用域</strong>。ES6的到来，为我们提供了‘块级作用域’,可通过新增命令let和const来体现。</p>
+<h3 id="2-全局作用域和函数作用域"><a href="#2-全局作用域和函数作用域" class="headerlink" title="2.全局作用域和函数作用域"></a>2.全局作用域和函数作用域</h3><p>在代码中任何地方都能访问到的对象拥有全局作用域，一般来说以下几种情形拥有全局作用域：</p>
+<ul>
+<li>最外层函数 和在最外层函数外面定义的变量拥有全局作用域</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> outVariable = <span class="string">"我是最外层变量"</span>; <span class="comment">//最外层变量</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">outFun</span>(<span class="params"></span>) </span>&#123; <span class="comment">//最外层函数</span></span><br><span class="line">    <span class="keyword">var</span> inVariable = <span class="string">"内层变量"</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">innerFun</span>(<span class="params"></span>) </span>&#123; <span class="comment">//内层函数</span></span><br><span class="line">        <span class="built_in">console</span>.log(inVariable);</span><br><span class="line">    &#125;</span><br><span class="line">    innerFun();</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(outVariable); <span class="comment">//我是最外层变量</span></span><br><span class="line">outFun(); <span class="comment">//内层变量</span></span><br><span class="line"><span class="built_in">console</span>.log(inVariable); <span class="comment">//inVariable is not defined</span></span><br><span class="line">innerFun(); <span class="comment">//innerFun is not defined</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>所有末定义直接赋值的变量自动声明为拥有全局作用域</li>
+</ul>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function outFun2() &#123;</span><br><span class="line">    <span class="keyword">variable</span> = <span class="string">"未定义直接赋值的变量"</span>;</span><br><span class="line">    var inVariable2 = <span class="string">"内层变量2"</span>;</span><br><span class="line">&#125;</span><br><span class="line">outFun2();<span class="comment">//要先执行这个函数，否则根本不知道里面是啥</span></span><br><span class="line">console.<span class="built-in">log</span>(<span class="keyword">variable</span>); <span class="comment">//未定义直接赋值的变量</span></span><br><span class="line">console.<span class="built-in">log</span>(inVariable2); <span class="comment">//inVariable2 is not defined</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>所有window对象的属性拥有全局作用域</li>
+</ul>
+<p>一般情况下，window对象的内置属性都拥有全局作用域，例如window.name、window.location、window.top等等。</p>
+<p>全局作用域有个弊端：如果我们写了很多行 JS 代码，变量定义都没有用函数包括，那么它们就全部都在全局作用域中。这样就会 污染全局命名空间, 容易引起命名冲突。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 张三写的代码中</span></span><br><span class="line"><span class="selector-tag">var</span> data = &#123;<span class="selector-tag">a</span>: <span class="number">100</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 李四写的代码中</span></span><br><span class="line"><span class="selector-tag">var</span> data = &#123;x: true&#125;</span><br></pre></td></tr></table></figure>
+<p>这就是为何 jQuery、Zepto 等库的源码，所有的代码都会放在<code>(function(){....})()</code>中。因为放在里面的所有变量，都不会被外泄和暴露，不会污染到外面，不会对其他的库或者 JS 脚本造成影响。这是函数作用域的一个体现。</p>
+<p>函数作用域,是指声明在函数内部的变量，和全局作用域相反，局部作用域一般只在固定的代码片段内可访问到，最常见的例如函数内部。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doSomething</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> blogName=<span class="string">"浪里行舟"</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">innerSay</span><span class="params">()</span></span>&#123;</span><br><span class="line">        alert(blogName);</span><br><span class="line">    &#125;</span><br><span class="line">    innerSay();</span><br><span class="line">&#125;</span><br><span class="line">alert(blogName); <span class="comment">//脚本错误</span></span><br><span class="line">innerSay(); <span class="comment">//脚本错误</span></span><br></pre></td></tr></table></figure>
+<p><strong>作用域是分层的，内层作用域可以访问外层作用域的变量，反之则不行</strong>。我们看个例子，用泡泡来比喻作用域可能好理解一点：</p>
+<p><img src="/img/fronts/26733d3337323634.png" alt="img"></p>
+<p>最后输出的结果为 2, 4, 12</p>
+<ul>
+<li>泡泡1是全局作用域，有标识符foo；</li>
+<li>泡泡2是作用域foo，有标识符a,bar,b；</li>
+<li>泡泡3是作用域bar，仅有标识符c。</li>
+</ul>
+<p>值得注意的是：<strong>块语句（大括号“｛｝”中间的语句），如 if 和 switch 条件语句或 for 和 while 循环语句，不像函数，它们不会创建一个新的作用域</strong>。在块语句中定义的变量将保留在它们已经存在的作用域中。</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">// 'if' 条件语句块不会创建一个新的作用域</span></span><br><span class="line">    var <span class="built_in">name</span> = <span class="string">'Hammad'</span>; <span class="comment">// name 依然在全局作用域中</span></span><br><span class="line">&#125;</span><br><span class="line">console.<span class="built_in">log</span>(<span class="built_in">name</span>); <span class="comment">// logs 'Hammad'</span></span><br></pre></td></tr></table></figure>
+<p>JS 的初学者经常需要花点时间才能习惯变量提升，而如果不理解这种特有行为，就可能导致<br>bug 。正因为如此， ES6 引入了块级作用域，让变量的生命周期更加可控。</p>
+<h3 id="3-块级作用域"><a href="#3-块级作用域" class="headerlink" title="3.块级作用域"></a>3.块级作用域</h3><p>块级作用域可通过新增命令let和const声明，所声明的变量在指定块的作用域外无法被访问。块级作用域在如下情况被创建：</p>
+<ol>
+<li>在一个函数内部</li>
+<li>在一个代码块（由一对花括号包裹）内部</li>
+</ol>
+<p>let 声明的语法与 var 的语法一致。你基本上可以用 let 来代替 var 进行变量声明，但会将变量的作用域限制在当前代码块中。块级作用域有以下几个特点：</p>
+<ul>
+<li>声明变量不会提升到代码块顶部</li>
+</ul>
+<p>let/const 声明并不会被提升到当前代码块的顶部，因此你需要手动将 let/const 声明放置到顶部，以便让变量在整个代码块内部可用。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">function <span class="title">getValue</span>(<span class="params">condition</span>)</span> &#123;</span><br><span class="line"><span class="keyword">if</span> (condition) &#123;</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">value</span> = <span class="string">"blue"</span>;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">value</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="comment">// value 在此处不可用</span></span><br><span class="line"><span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// value 在此处不可用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>禁止重复声明</li>
+</ul>
+<p>如果一个标识符已经在代码块内部被定义，那么在此代码块内使用同一个标识符进行 let 声明就会导致抛出错误。例如：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="built_in">count</span> = <span class="number">30</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="built_in">count</span> = <span class="number">40</span>; <span class="comment">// Uncaught SyntaxError: Identifier 'count' has already been declared</span></span><br></pre></td></tr></table></figure>
+<p>在本例中， count 变量被声明了两次：一次使用 var ，另一次使用 let 。因为 let 不能在同一作用域内重复声明一个已有标识符，此处的 let 声明就会抛出错误。但如果在嵌套的作用域内使用 let 声明一个同名的新变量，则不会抛出错误。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="built_in">count</span> = <span class="number">30</span>;</span><br><span class="line"><span class="comment">// 不会抛出错误</span></span><br><span class="line"><span class="keyword">if</span> (condition) &#123;</span><br><span class="line"><span class="keyword">let</span> <span class="built_in">count</span> = <span class="number">40</span>;</span><br><span class="line"><span class="comment">// 其他代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>循环中的绑定块作用域的妙用</li>
+</ul>
+<p>开发者可能最希望实现for循环的块级作用域了，因为可以把声明的计数器变量限制在循环内，例如：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (let i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">  /<span class="regexp">/ ...</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br><span class="line"><span class="regexp">console.log(i);</span></span><br><span class="line"><span class="regexp">/</span><span class="regexp">/ ReferenceError: i is not defined</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中，计数器i只在for循环体内有效，在循环体外引用就会报错。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">  a[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(i);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line">a[<span class="number">6</span>](); <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中，变量i是var命令声明的，在全局范围内都有效，所以全局只有一个变量i。每一次循环，变量i的值都会发生改变，而循环内被赋给数组a的函数内部的console.log(i)，里面的i指向的就是全局的i。也就是说，所有数组a的成员里面的i，指向的都是同一个i，导致运行时输出的是最后一轮的i的值，也就是 10。</p>
+<p>如果使用let，声明的变量仅在块级作用域内有效，最后输出的是 6。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = [];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">  a[i] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(i);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line">a[<span class="number">6</span>](); <span class="comment">// 6</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中，变量i是let声明的，当前的i只在本轮循环有效，所以每一次循环的i其实都是一个新的变量，所以最后输出的是6。你可能会问，如果每一轮循环的变量i都是重新声明的，那它怎么知道上一轮循环的值，从而计算出本轮循环的值？这是因为 JavaScript 引擎内部会记住上一轮循环的值，初始化本轮的变量i时，就在上一轮循环的基础上进行计算。</p>
+<p>另外，for循环还有一个特别之处，就是设置循环变量的那部分是一个父作用域，而循环体内部是一个单独的子作用域。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">  <span class="keyword">let</span> i = <span class="string">'abc'</span>;</span><br><span class="line">  <span class="built_in">console</span>.log(i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// abc</span></span><br><span class="line"><span class="comment">// abc</span></span><br><span class="line"><span class="comment">// abc</span></span><br></pre></td></tr></table></figure>
+<p>上面代码正确运行，输出了 3 次abc。这表明函数内部的变量i与循环变量i不在同一个作用域，有各自单独的作用域。</p>
+<h2 id="作用域链"><a href="#作用域链" class="headerlink" title="作用域链"></a>作用域链</h2><h3 id="1-什么是自由变量"><a href="#1-什么是自由变量" class="headerlink" title="1.什么是自由变量"></a>1.什么是自由变量</h3><p>首先认识一下什么叫做 <strong>自由变量</strong> 。如下代码中，<code>console.log(a)</code>要得到a变量，但是在当前的作用域中没有定义a（可对比一下b）。当前作用域没有定义的变量，这成为 自由变量 。自由变量的值如何得到 —— 向父级作用域寻找（注意：这种说法并不严谨，下文会重点解释）。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> = <span class="number">100</span></span><br><span class="line">function fn() &#123;</span><br><span class="line">    <span class="selector-tag">var</span> <span class="selector-tag">b</span> = <span class="number">200</span></span><br><span class="line">    console.log(a) <span class="comment">// 这里的a在这里就是一个自由变量</span></span><br><span class="line">    console.log(b)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fn</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="2-什么是作用域链"><a href="#2-什么是作用域链" class="headerlink" title="2.什么是作用域链"></a>2.什么是作用域链</h3><p>如果父级也没呢？再一层一层向上寻找，直到找到全局作用域还是没找到，就宣布放弃。这种一层一层的关系，就是 作用域链 。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> = <span class="number">100</span></span><br><span class="line">function F1() &#123;</span><br><span class="line">    <span class="selector-tag">var</span> <span class="selector-tag">b</span> = <span class="number">200</span></span><br><span class="line">    function F2() &#123;</span><br><span class="line">        <span class="selector-tag">var</span> c = <span class="number">300</span></span><br><span class="line">        console.log(a) <span class="comment">// 自由变量，顺作用域链向父作用域找</span></span><br><span class="line">        console.log(b) <span class="comment">// 自由变量，顺作用域链向父作用域找</span></span><br><span class="line">        console.log(c) <span class="comment">// 本作用域的变量</span></span><br><span class="line">    &#125;</span><br><span class="line">    F2()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">F1</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="3-关于自由变量的取值"><a href="#3-关于自由变量的取值" class="headerlink" title="3.关于自由变量的取值"></a>3.关于自由变量的取值</h3><p>关于自由变量的值，上文提到要到父作用域中取，其实有时候这种解释会产生歧义。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = <span class="number">10</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span>(<span class="params">f</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> x = <span class="number">20</span></span><br><span class="line">  (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    f() <span class="comment">//10，而不是20</span></span><br><span class="line">  &#125;)()</span><br><span class="line">&#125;</span><br><span class="line">show(fn)</span><br></pre></td></tr></table></figure>
+<p>在fn函数中，取自由变量x的值时，要到哪个作用域中取？——要到创建fn函数的那个作用域中取，<strong>无论fn函数将在哪里调用</strong>。</p>
+<p>所以，不要在用以上说法了。相比而言，用这句话描述会更加贴切:<strong>要到创建这个函数的那个域”。作用域中取值,这里强调的是“创建”，而不是“调用”</strong>，切记切记——其实这就是所谓的”静态作用域”</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> = <span class="number">10</span></span><br><span class="line">function fn() &#123;</span><br><span class="line">  <span class="selector-tag">var</span> <span class="selector-tag">b</span> = <span class="number">20</span></span><br><span class="line">  function bar() &#123;</span><br><span class="line">    console.log(<span class="selector-tag">a</span> + b) <span class="comment">//30</span></span><br><span class="line">  &#125;</span><br><span class="line">  return bar</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">var</span> x = fn(),</span><br><span class="line">  <span class="selector-tag">b</span> = <span class="number">200</span></span><br><span class="line"><span class="function"><span class="title">x</span><span class="params">()</span></span> <span class="comment">//bar()</span></span><br></pre></td></tr></table></figure>
+<p>fn()返回的是bar函数，赋值给x。执行x()，即执行bar函数代码。取b的值时，直接在fn作用域取出。取a的值时，试图在fn作用域取，但是取不到，只能转向创建fn的那个作用域中去查找，结果找到了,所以最后的结果是30</p>
+<h2 id="作用域与执行上下文"><a href="#作用域与执行上下文" class="headerlink" title="作用域与执行上下文"></a>作用域与执行上下文</h2><p>许多开发人员经常混淆作用域和执行上下文的概念，误认为它们是相同的概念，但事实并非如此。</p>
+<p>我们知道JavaScript属于解释型语言，JavaScript的执行分为：解释和执行两个阶段,这两个阶段所做的事并不一样：</p>
+<h3 id="解释阶段："><a href="#解释阶段：" class="headerlink" title="解释阶段："></a>解释阶段：</h3><ul>
+<li>词法分析</li>
+<li>语法分析</li>
+<li>作用域规则确定</li>
+</ul>
+<h3 id="执行阶段："><a href="#执行阶段：" class="headerlink" title="执行阶段："></a>执行阶段：</h3><ul>
+<li>创建执行上下文</li>
+<li>执行函数代码</li>
+<li>垃圾回收</li>
+</ul>
+<p>JavaScript解释阶段便会确定作用域规则，因此作用域在函数定义时就已经确定了，而不是在函数调用时确定，但是执行上下文是函数执行之前创建的。执行上下文最明显的就是this的指向是执行时确定的。而作用域访问的变量是编写代码的结构确定的。</p>
+<p>作用域和执行上下文之间最大的区别是：<br><strong>执行上下文在运行时确定，随时可能改变；作用域在定义时就确定，并且不会改变</strong>。</p>
+<p>一个作用域下可能包含若干个上下文环境。有可能从来没有过上下文环境（函数从来就没有被调用过）；有可能有过，现在函数被调用完毕后，上下文环境被销毁了；有可能同时存在一个或多个（闭包）。<strong>同一个作用域下，不同的调用会产生不同的执行上下文环境，继而产生不同的变量的值</strong>。</p>
+<h2 id="参考文章和书籍"><a href="#参考文章和书籍" class="headerlink" title="参考文章和书籍"></a>参考文章和书籍</h2><ul>
+<li><a href="http://www.cnblogs.com/wangfupeng1988/p/4001284.html" target="_blank" rel="noopener">深入理解javascript原型和闭包系列</a></li>
+<li><a href="https://juejin.im/book/5a8f9ddcf265da4e9f6fb959/section/5a8f9ed96fb9a0633229bddf" target="_blank" rel="noopener">Web 前端面试指南与高频考题解析</a></li>
+<li><a href="https://github.com/creeperyang/blog/issues/16" target="_blank" rel="noopener">深入理解JS中声明提升、作用域（链）和<code>this</code>关键字</a></li>
+<li><a href="http://www.cnblogs.com/lhb25/archive/2011/09/06/javascript-scope-chain.html" target="_blank" rel="noopener">JavaScript 开发进阶：理解 JavaScript 作用域和作用域链</a></li>
+<li><a href="https://gaohaoyang.github.io/2015/05/20/scope/#top" target="_blank" rel="noopener">JavaScript 作用域和作用域链</a></li>
+<li><a href="https://book.douban.com/subject/27072230/" target="_blank" rel="noopener">深入理解ES6</a></li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/02/100178.html" class="pre-post btn btn-default" title='全面阐析JavaScript执行上下文和执行栈'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">全面阐析JavaScript执行上下文和执行栈</span>
+        </a>
+    
+    
+        <a href="/archives/2019/02/100176.html" class="next-post btn btn-default" title='JavaScript数据类型转换方法'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">JavaScript数据类型转换方法</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#作用域-Scope"><span class="toc-text">作用域(Scope)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-什么是作用域"><span class="toc-text">1.什么是作用域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-全局作用域和函数作用域"><span class="toc-text">2.全局作用域和函数作用域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-块级作用域"><span class="toc-text">3.块级作用域</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#作用域链"><span class="toc-text">作用域链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-什么是自由变量"><span class="toc-text">1.什么是自由变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-什么是作用域链"><span class="toc-text">2.什么是作用域链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-关于自由变量的取值"><span class="toc-text">3.关于自由变量的取值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#作用域与执行上下文"><span class="toc-text">作用域与执行上下文</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#解释阶段："><span class="toc-text">解释阶段：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行阶段："><span class="toc-text">执行阶段：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章和书籍"><span class="toc-text">参考文章和书籍</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>

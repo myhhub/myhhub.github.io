@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="hadoop,hbase,hive">
+
+
+    <meta name="description" content="概述将数据移到Hbase的方法有以下几种:
+
+使用Hbase的Put API
+使用HBase的批量加载工具
+使用自定义的MapReduce方法
+
+使用HBase的Put API是最直接的方法.这...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>大数据hadoop之 四十.HBASE的数据迁移 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="大数据hadoop之 四十.HBASE的数据迁移">
+            
+	            大数据hadoop之 四十.HBASE的数据迁移
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/cloud/">云计算</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a> <a class="tag-link" href="/tags/hive/">hive</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2019/06/28</span>
+        </span>
+        
+    
+</div>
+            
+            
+            <p class="fa fa-exclamation-triangle warning">
+                本文于<strong>1378</strong>天之前发表，文中内容可能已经过时。
+            </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>将数据移到Hbase的方法有以下几种:</p>
+<ul>
+<li>使用Hbase的Put API</li>
+<li>使用HBase的批量加载工具</li>
+<li>使用自定义的MapReduce方法</li>
+</ul>
+<p>使用HBase的Put API是最直接的方法.这种方法的使用并不难学,但大多数情况下,它并非总是最有效的方法.特别是在有一大批数据需要移入Hbase并且对移入都是问题又有限定的情况下,这种方法的效率并不高.我们需要处理的数据通常都有很大的数据量,这可能也是我们使用Hbase而不是其他数据库的原因.你必须在HBase的项目的开始阶段就仔细考虑如何将所有数据转入Hbase,否则你将会遇到一些严重的性能问题.</p>
+<p>Hbase提供了批量加载的功能来支持高效地将大量数据加载到HBase中.批量加载功能使用了一个MapReduce任务将数据加载到一个特定的Hbase表中.它会生成一些HBase内部的HFile数据格式的文件,然后再将这些数据文件直接加载到正在运行的集群中.使用批量加载功能最简单的方法是使用importtsv工具.Importtsv是一个可将数据从TSV文件加载到HBase中的内置工具.它会运行一些MapReduce任务来读取TSV文件中的数据,然后将其输出直接写入HBASE表或HBASE内部数据格式的文件中.</p>
+<p>虽然importtsv工具在将文本数据导入HBASE的时候非常有用,但是在有些情况下,比如导入一些其他格式的数据时,你可能必须以编程的方式来生成数据.MapReduce是处理海量数据最有效方法.它可能也是将海量数据加载到Hbase中唯一可行的方法.当然我们也可以使用Mapreduce将数据导入到HBASE中.然而当数据量非常大的时候,MapReduce任务的负载也可能非常重,如果不正确对待,重负载mapreduce任务运行进的吞吐量也可能很差的.</p>
+<p>数据迁移是HBASE上一项写密集的任务,除非我们能先生成好一些内部数据文件然后再把它们直接加载到HBASE中去.尽管HBASE的写操作总是非常快,但是如果不正确配置,在迁移的过程中也会经常出现写操作堵塞的情况.写密集任务的另一个问题是:所有写操作可能针对的都是同一台区域服务器,尤其是在将大量数据加载到一个新的HBASE安装的时候,这种情况更容易发生.因为所有负载都集中在一台服务器上,不能均衡分配给集群中的各个服务器,所以写入速度也会明显减慢.</p>
+<h2 id="方案的选择"><a href="#方案的选择" class="headerlink" title="方案的选择"></a>方案的选择</h2><p>HBase本身提供了很多种数据导入的方式，通常有两种常用方式：</p>
+<ol>
+<li>使用HBase提供的TableOutputFormat，原理是通过一个Mapreduce作业将数据导入HBase</li>
+<li>另一种方式就是使用HBase原生Client API</li>
+</ol>
+<p>这两种方式由于需要频繁的与数据所存储的RegionServer通信，一次性入库大量数据时，特别占用资源，所以都不是最有效的。了解过HBase底层原理的应该都知道，HBase在HDFS中是以HFile文件结构存储的，一个比较高效便捷的方法就是使用 “Bulk Loading”方法直接生成HFile，即HBase提供的HFileOutputFormat类。</p>
+<h2 id="一-MapReduce的方式来实现数据导入"><a href="#一-MapReduce的方式来实现数据导入" class="headerlink" title="一. MapReduce的方式来实现数据导入"></a>一. MapReduce的方式来实现数据导入</h2><p>我们采用hbase自带的importtsv工具来导入数据，首先要把数据文件上传到hdfs上，然后导入hbase表,该方法只能导入tsv格式的数据，需要先将txt格式转换为tsv格式.</p>
+<h3 id="1-下载数据"><a href="#1-下载数据" class="headerlink" title="1. 下载数据"></a>1. 下载数据</h3><p>本文中使用 “美国国家海洋和大气管理局 气候平均值”的公共数据集合。访问<a href="http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/supplemental/products/hourly-10yr/" target="_blank" rel="noopener">http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/</a>下载。 在目录 products | hourly 下的小时温度数据。下载hly-temp-10pctl.txt文件。此数据下载巨慢,可以从内网获取,我已放到FTP服务器Hadoop目录中的TestData目录中.</p>
+<h3 id="2-转换数据"><a href="#2-转换数据" class="headerlink" title="2. 转换数据"></a>2. 转换数据</h3><p>用python脚本将txt文件转换为tsv格式文件,生成之后上传到虚拟机linux下的/home/hadoop/data下,python脚本<a href="/other/to_tsv_hly.rar">下载链接</a><br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python to_tsv_hly<span class="selector-class">.py</span> -f hly-temp-<span class="number">10pc</span>tl<span class="selector-class">.txt</span> -t hly-temp-<span class="number">10pc</span>tl.tsv</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-在hdfs上创建数据存放目录"><a href="#3-在hdfs上创建数据存放目录" class="headerlink" title="3.在hdfs上创建数据存放目录"></a>3.在hdfs上创建数据存放目录</h3><figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop <span class="built_in">fs</span> -<span class="built_in">mkdir</span> /input</span><br></pre></td></tr></table></figure>
+<h3 id="4-将数据库copy到hdfs数据存放目录中"><a href="#4-将数据库copy到hdfs数据存放目录中" class="headerlink" title="4. 将数据库copy到hdfs数据存放目录中"></a>4. 将数据库copy到hdfs数据存放目录中</h3><figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hadoop@Master:~$ hadoop fs -ls</span><br><span class="line">Found 7 items</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          0 2016<span class="string">-02</span><span class="string">-25</span> 18:41 .sparkStaging</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          0 2016<span class="string">-03</span><span class="string">-03</span> 02:24 cdsgus</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          0 2016<span class="string">-01</span><span class="string">-27</span> 21:32 chu888chu888</span><br><span class="line">drwxrwxr-x   - hadoop supergroup          0 2016<span class="string">-01</span><span class="string">-28</span> 18:54 hive</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          0 2016<span class="string">-01</span><span class="string">-27</span> 22:15 input</span><br><span class="line">drwxr-xr-x   - hadoop supergroup          0 2016<span class="string">-01</span><span class="string">-27</span> 22:19 output</span><br><span class="line">drwxrwxr-x   - hadoop supergroup          0 2016<span class="string">-01</span><span class="string">-28</span> 18:53 tmp</span><br><span class="line">hadoop@Master:~$ hadoop fs -copyFromLocal /home/hadoop/hly-temp<span class="string">-10</span>pctl.tsv /input</span><br></pre></td></tr></table></figure>
+<h3 id="5-在hbase中创建要导入数据的表"><a href="#5-在hbase中创建要导入数据的表" class="headerlink" title="5. 在hbase中创建要导入数据的表"></a>5. 在hbase中创建要导入数据的表</h3><figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hbase(main)<span class="symbol">:001</span><span class="symbol">:0</span>&gt; create 'hly_temp', &#123;NAME =&gt; '<span class="built_in">t</span>', VERSIONS =&gt; <span class="number">1</span>&#125;</span><br><span class="line"><span class="number">0</span> <span class="built_in">row</span>(s) in <span class="number">1.6740</span> seconds</span><br><span class="line"></span><br><span class="line">=&gt; Hba<span class="symbol">se:</span><span class="symbol">:Ta</span>ble - hly_temp</span><br><span class="line">hbase(main)<span class="symbol">:002</span><span class="symbol">:0</span>&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="6-执行数据导入"><a href="#6-执行数据导入" class="headerlink" title="6. 执行数据导入"></a>6. 执行数据导入</h3><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.ImportTsv  -Dimporttsv.columns=HBASE_ROW_KEY,<span class="variable">t:v01</span>,<span class="variable">t:v02</span>,<span class="variable">t:v03</span>,<span class="variable">t:v04</span>,<span class="variable">t:v05</span>,<span class="variable">t:v06</span>,<span class="variable">t:v07</span>,<span class="variable">t:v08</span>,<span class="variable">t:v09</span>,<span class="variable">t:v10</span>,<span class="variable">t:v11</span>,<span class="variable">t:v12</span>,<span class="variable">t:v13</span>,<span class="variable">t:v14</span>,<span class="variable">t:v15</span>,<span class="variable">t:v16</span>,<span class="variable">t:v17</span>,<span class="variable">t:v18</span>,<span class="variable">t:v19</span>,<span class="variable">t:v20</span>,<span class="variable">t:v21</span>,<span class="variable">t:v22</span>,<span class="variable">t:v23</span>,<span class="variable">t:v24</span> hly_temp  /<span class="built_in">input</span></span><br></pre></td></tr></table></figure>
+<p><img src="/img/hadoop/12/importtsvok.png" alt></p>
+<h3 id="7-导入后检查数据"><a href="#7-导入后检查数据" class="headerlink" title="7. 导入后检查数据"></a>7. 导入后检查数据</h3><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):<span class="number">002</span>:<span class="number">0</span>&gt; count 'hly_temp'</span><br><span class="line">Current count: <span class="number">1000</span>, row: FMW000405040927                                                                                             </span><br><span class="line">Current count: <span class="number">2000</span>, row: GQW000414150624                                                                                             </span><br><span class="line">Current count: <span class="number">3000</span>, row: RMW000407100321    </span><br><span class="line">..................................................................        </span><br><span class="line">Current count: <span class="number">166000</span>, row: USW000949101017                                                                                           </span><br><span class="line"><span class="number">166805</span> row(s) <span class="keyword">in</span> <span class="number">35.6090</span> seconds</span><br><span class="line">=&gt; <span class="number">166805</span></span><br><span class="line"></span><br><span class="line">hbase(main):<span class="number">004</span>:<span class="number">0</span>&gt; scan 'hly_temp', &#123;<span class="attr">COLUMNS</span> =&gt; 't', <span class="attr">LIMIT</span> =&gt; <span class="number">2</span>&#125;</span><br><span class="line">ROW                                COLUMN+CELL                                                                                        </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v01,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759P</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v02,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=766C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v03,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v04,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v05,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v06,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v07,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=752C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v08,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=775C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v09,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=801C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v10,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v11,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v12,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v13,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v14,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=808C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v15,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=806C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v16,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v17,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=808C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v18,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=801C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v19,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=801C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v20,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=790C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v21,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=781C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v22,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=781C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v23,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=770C</span>                                                  </span><br><span class="line"> AQW000617050101                   <span class="attr">column=t:v24,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=770C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v01,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=768P</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v02,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=766C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v03,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v04,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v05,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v06,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=759C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v07,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=757C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v08,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=775C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v09,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=801C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v10,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v11,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v12,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v13,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=811C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v14,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v15,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=810C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v16,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=808C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v17,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=808C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v18,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=801C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v19,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=795C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v20,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=790C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v21,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=781C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v22,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=781C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v23,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=774C</span>                                                  </span><br><span class="line"> AQW000617050102                   <span class="attr">column=t:v24,</span> <span class="attr">timestamp=1450924204703,</span> <span class="attr">value=770C</span>                                                  </span><br><span class="line"><span class="number">2</span> row(s) <span class="keyword">in</span> <span class="number">0.4910</span> seconds</span><br><span class="line"></span><br><span class="line">至此，导入成功！</span><br></pre></td></tr></table></figure>
+<h2 id="二-Put-API的方法实现导入"><a href="#二-Put-API的方法实现导入" class="headerlink" title="二. Put API的方法实现导入"></a>二. Put API的方法实现导入</h2><p>数据迁移最常见的情况可能就是从现有的RDBMS将数据导入到HBASE中了.对于这类任务,可能最简单也最直接的方法就是:用一个客户端来读取数据,然后通过HBASE的PUT API把数据送到HBASE中去.如果需要传输的数据不太多,这种方法非常合适.</p>
+<h3 id="1-准备数据"><a href="#1-准备数据" class="headerlink" title="1. 准备数据"></a>1. 准备数据</h3><p>本文中使用 “美国国家海洋和大气管理局 气候平均值”的公共数据集合。访问<a href="http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/supplemental/products/hourly-10yr/" target="_blank" rel="noopener">http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/</a>下载。 在目录 products | hourly 下的小时温度数据。下载hly-temp-10pctl.txt文件。此数据下载巨慢,可以从内网获取,我已放到FTP服务器Hadoop目录中的TestData目录中.</p>
+<p>在MYSQL数据库中创建一个表 hly_temp_normal</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> hly_temp_normal</span><br><span class="line">(</span><br><span class="line"><span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">not</span> <span class="literal">null</span> auto_increment primary <span class="keyword">key</span>,</span><br><span class="line">stnid <span class="built_in">char</span>(<span class="number">11</span>),</span><br><span class="line"><span class="keyword">month</span> <span class="built_in">tinyint</span>,</span><br><span class="line"><span class="keyword">day</span> <span class="built_in">tinyint</span>,</span><br><span class="line">value1 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value2 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value3 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value4 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value5 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value6 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value7 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value8 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value9 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value10 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value11 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value12 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value13 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value14 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value15 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value16 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value17 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value18 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value19 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value20 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value21 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value22 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value23 <span class="built_in">VARCHAR</span>(<span class="number">5</span>),</span><br><span class="line">value24 <span class="built_in">VARCHAR</span>(<span class="number">5</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>使用insert_gly.py脚本将数据载入到MYSQL数据库中.需要修改insert_gly.py这个脚本中的主机名用户名密码和数据库名称<br><a href="/other/insert_hly.rar">附带脚本下载</a></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">python</span> insert_hly.<span class="keyword">py</span> -<span class="keyword">f</span> hly-temp-<span class="keyword">normal</span>.txt -t hly_temp_normal</span><br></pre></td></tr></table></figure>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+        <a href="/archives/2019/06/100346.html" class="pre-post btn btn-default" title='大数据hadoop之 四十一.HBASE基于Bulk load的数据迁移'>
+            <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+            <span class="hidden-xs">大数据hadoop之 四十一.HBASE基于Bulk load的数据迁移</span>
+        </a>
+    
+    
+        <a href="/archives/2019/06/100344.html" class="next-post btn btn-default" title='大数据hadoop之 三十九.HBASE整合SQL引擎层'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">大数据hadoop之 三十九.HBASE整合SQL引擎层</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方案的选择"><span class="toc-text">方案的选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一-MapReduce的方式来实现数据导入"><span class="toc-text">一. MapReduce的方式来实现数据导入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-下载数据"><span class="toc-text">1. 下载数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-转换数据"><span class="toc-text">2. 转换数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-在hdfs上创建数据存放目录"><span class="toc-text">3.在hdfs上创建数据存放目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-将数据库copy到hdfs数据存放目录中"><span class="toc-text">4. 将数据库copy到hdfs数据存放目录中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-在hbase中创建要导入数据的表"><span class="toc-text">5. 在hbase中创建要导入数据的表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-执行数据导入"><span class="toc-text">6. 执行数据导入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-导入后检查数据"><span class="toc-text">7. 导入后检查数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-Put-API的方法实现导入"><span class="toc-text">二. Put API的方法实现导入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-准备数据"><span class="toc-text">1. 准备数据</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2023&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
