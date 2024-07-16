@@ -1,0 +1,369 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="https://www.ljjyy.com">
+    <!--SEO-->
+
+    <meta name="keywords" content="ubuntu">
+
+
+    <meta name="description" content="虚拟机系统盘的根目录空间不够用，在无加盘条件下，只能考虑给系统盘空间扩容。这种方法风险较高，开始之前，在虚拟机内创建了快照。
+一、修改分配内存在主机中对虚拟机的分配内存进行修改通常使用esxi，...">
+
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+
+    <!--Title-->
+
+
+<title>虚拟机ubuntu系统下对lvm系统盘扩容的方法 | 来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</title>
+
+
+    <link rel="alternate" href="/atom.xml" title="来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟" type="application/atom+xml">
+
+
+    <link rel="icon" href="/favicon.ico">
+
+    
+
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+
+
+
+    
+	<div class="hide">
+        <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+        <script>LA.init({id: "JgbNOaw1xxsmUUsQ",ck: "JgbNOaw1xxsmUUsQ"})</script>
+	</div>
+
+
+
+
+
+
+    
+    <meta name="baidu-site-verification" content="dTHILoORpx">
+
+
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+
+</head>
+
+</html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+
+<body>
+    <header class="main-header"  >
+    <div class="main-header-box">
+        <!--a class="header-avatar" href="/" title='Ljjyy.com'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a-->
+        <div class="branding">
+            
+                <h2> 多读书多实践，勤思考善领悟 </h2>
+            
+    	  </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                    <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="web-logo"  href="/" title='Ljjyy.com'></a>
+                    <!--a class="navbar-brand" href="https://www.ljjyy.com">来唧唧歪歪(Ljjyy.com) - 多读书多实践，勤思考善领悟</a-->
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu" style="">
+                    <ul class="menu">
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/"><i class="fa "></i>首页</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/cloud/"><i class="fa "></i>云计算</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/front/"><i class="fa "></i>前端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/back/"><i class="fa "></i>后端</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/devops/"><i class="fa "></i>运维</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/crack/"><i class="fa "></i>破解</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/penetration/"><i class="fa "></i>渗透</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/tool/"><i class="fa "></i>工具</a>
+                            </li>
+                        
+                            <li role="presentation" class="text-center">
+                                <a href="/categories/other/"><i class="fa "></i>其他</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="虚拟机ubuntu系统下对lvm系统盘扩容的方法">
+            
+	            虚拟机ubuntu系统下对lvm系统盘扩容的方法
+            
+        </h1>
+        <div class="post-meta">
+    
+        <span class="categories-meta fa-wrap">
+            <i class="fa fa-folder-open-o"></i>
+            <a class="category-link" href="/categories/back/">后端</a>
+        </span>
+    
+
+    
+        <span class="fa-wrap">
+            <i class="fa fa-tags"></i>
+            <span class="tags-meta">
+                
+                    <a class="tag-link" href="/tags/ubuntu/">ubuntu</a>
+                
+            </span>
+        </span>
+    
+
+    
+        
+        <span class="fa-wrap">
+            <i class="fa fa-clock-o"></i>
+            <span class="date-meta">2024/07/16</span>
+        </span>
+        
+    
+</div>
+            
+            
+    </div>
+    
+    <div class="post-body post-content">
+        <p>虚拟机系统盘的根目录空间不够用，在无加盘条件下，只能考虑给系统盘空间扩容。这种方法风险较高，开始之前，在虚拟机内创建了快照。</p>
+<h1 id="一、修改分配内存"><a href="#一、修改分配内存" class="headerlink" title="一、修改分配内存"></a>一、修改分配内存</h1><p><strong>在主机中对虚拟机的分配内存进行修改</strong><br>通常使用esxi，对虚拟机进行扩容操作，我这里直接加了40G，由原来的40G空间，扩容至80G。更改完成后保存即可，接下来就要到机器内继续进行后续操作。</p>
+<p>VirtualBox中也可以用以下方法：</p>
+<p>a.下VirtualBox安装目录下，在命令行中输入：<code>VBoxManage list hdds</code><br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">C:</span>\Program Files\Oracle\VirtualBox&gt;VBoxManage list hdds</span><br><span class="line"><span class="string">UUID:</span>           e7543ad8<span class="number">-6667</span><span class="number">-4</span>cb9-bf40<span class="number">-84627</span>a31371d</span><br><span class="line">Parent <span class="string">UUID:</span>    base</span><br><span class="line"><span class="string">State:</span>          created</span><br><span class="line"><span class="string">Type:</span>           normal (base)</span><br><span class="line"><span class="string">Location:</span>       <span class="string">C:</span>\Users\mmm\VirtualBox VMs\ubuntu22\ubuntu22.vdi</span><br><span class="line">Storage <span class="string">format:</span> VDI</span><br><span class="line"><span class="string">Capacity:</span>       <span class="number">40960</span> MBytes</span><br><span class="line"><span class="string">Encryption:</span>     disabled</span><br></pre></td></tr></table></figure></p>
+<p>b.查看当前各个虚拟机的状态，在命令行中输入：<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">VBoxManage modifyhd UUID <span class="comment">--resize xxxx</span></span><br><span class="line"><span class="comment">#修改要修改虚拟机的内存大小。UUID为修改虚拟机的ID，xxxx填自己想要修改的大小。</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="二、登录检查分区"><a href="#二、登录检查分区" class="headerlink" title="二、登录检查分区"></a>二、登录检查分区</h1><p><strong>登录后使用lsblk命令检查发现，增加的空间到了硬盘，并没有到所需要的分区。</strong><br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">lsblk</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">root@0-125:~<span class="comment"># lsblk</span></span><br><span class="line">NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">loop0                       7:0   <span class="number"> 0 </span>63.3M <span class="number"> 1 </span>loop /snap/core20/1778</span><br><span class="line">loop1                       7:1   <span class="number"> 0 </span>63.3M <span class="number"> 1 </span>loop /snap/core20/1822</span><br><span class="line">loop2                       7:2   <span class="number"> 0 </span>67.2M <span class="number"> 1 </span>loop /snap/lxd/21835</span><br><span class="line">loop3                       7:3   <span class="number"> 0 </span>49.8M <span class="number"> 1 </span>loop /snap/snapd/17950</span><br><span class="line">loop4                       7:4   <span class="number"> 0 </span>91.9M <span class="number"> 1 </span>loop /snap/lxd/24061</span><br><span class="line">loop5                       7:5   <span class="number"> 0 </span>49.9M <span class="number"> 1 </span>loop /snap/snapd/18357</span><br><span class="line">sda                         8:0   <span class="number"> 0 </span>  80G <span class="number"> 0 </span>disk</span><br><span class="line">├─sda1                      8:1   <span class="number"> 0 </span>   1M <span class="number"> 0 </span>part</span><br><span class="line">├─sda2                      8:2   <span class="number"> 0 </span> 1.5G <span class="number"> 0 </span>part /boot</span><br><span class="line">└─sda3                      8:3   <span class="number"> 0 </span>38.5G <span class="number"> 0 </span>part</span><br><span class="line">  └─vgubuntu-root          253:0   <span class="number"> 0 </span>38.5G <span class="number"> 0 </span>lvm  /</span><br><span class="line">sr0                        11:0   <span class="number"> 1 </span>1024M <span class="number"> 0 </span>rom</span><br><span class="line">root@0-125:~<span class="comment"># df -Th</span></span><br><span class="line">Filesystem                        Type      Size  Used Avail Use% Mounted on</span><br><span class="line">udev                              devtmpfs  7.8G    <span class="number"> 0 </span> 7.8G   0% /dev</span><br><span class="line">tmpfs                             tmpfs     1.6G  1.3M  1.6G   1% /run</span><br><span class="line">/dev/mapper/vgubuntu-root         ext4       78G  8.6G   66G  12% /</span><br><span class="line">tmpfs                             tmpfs     7.9G    <span class="number"> 0 </span> 7.9G   0% /dev/shm</span><br><span class="line">tmpfs                             tmpfs     5.0M    <span class="number"> 0 </span> 5.0M   0% /run/lock</span><br><span class="line">tmpfs                             tmpfs     7.9G    <span class="number"> 0 </span> 7.9G   0% /sys/fs/cgroup</span><br><span class="line">/dev/loop1                        squashfs   64M   64M    <span class="number"> 0 </span>100% /snap/core20/1822</span><br><span class="line">/dev/loop2                        squashfs   68M   68M    <span class="number"> 0 </span>100% /snap/lxd/21835</span><br><span class="line">/dev/loop0                        squashfs   64M   64M    <span class="number"> 0 </span>100% /snap/core20/1778</span><br><span class="line">/dev/sda2                         ext4      1.5G  303M  1.1G  22% /boot</span><br><span class="line">/dev/loop3                        squashfs   50M   50M    <span class="number"> 0 </span>100% /snap/snapd/17950</span><br><span class="line">/dev/loop4                        squashfs   92M   92M    <span class="number"> 0 </span>100% /snap/lxd/24061</span><br><span class="line">/dev/loop5                        squashfs   50M   50M    <span class="number"> 0 </span>100% /snap/snapd/18357</span><br><span class="line">tmpfs                             tmpfs     1.6G    <span class="number"> 0 </span> 1.6G   0% /run/user/0</span><br></pre></td></tr></table></figure>
+<p>其实这里可以重新对硬盘进行分区，创建lvm逻辑卷进行扩容，本着折腾为主，尝试直接对/dev/sda3进行扩容。</p>
+<h1 id="三、对硬盘分区"><a href="#三、对硬盘分区" class="headerlink" title="三、对硬盘分区"></a>三、对硬盘分区</h1><p><strong>使用fdisk命令对硬盘进行分区操作。</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk <span class="regexp">/dev/</span>sda</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里我先输入p，查看扇区，记录下起始扇区，后面重新分区时，要保持一致。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">root@0-125:~<span class="comment"># fdisk /dev/sda</span></span><br><span class="line"></span><br><span class="line">Welcome to fdisk (util-linux 2.34).</span><br><span class="line">Changes will remain in memory only, until you decide to write them.</span><br><span class="line">Be careful before using the write command.</span><br><span class="line"></span><br><span class="line">Command (m for <span class="keyword">help</span>): p   <span class="comment">#查看扇区，记录sda3起始扇区号</span></span><br><span class="line"></span><br><span class="line">Disk /dev/sda: <span class="number">80</span> GiB, <span class="number">85899345920</span> <span class="keyword">bytes</span>, <span class="number">167772160</span> sectors</span><br><span class="line">Disk <span class="keyword">model</span>: <span class="keyword">Virtual</span> disk</span><br><span class="line">Units: sectors <span class="keyword">of</span> <span class="number">1</span> * <span class="number">512</span> = <span class="number">512</span> <span class="keyword">bytes</span></span><br><span class="line">Sector <span class="keyword">size</span> (<span class="keyword">logical</span>/<span class="keyword">physical</span>): <span class="number">512</span> <span class="keyword">bytes</span> / <span class="number">512</span> <span class="keyword">bytes</span></span><br><span class="line">I/O <span class="keyword">size</span> (<span class="keyword">minimum</span>/<span class="keyword">optimal</span>): <span class="number">512</span> <span class="keyword">bytes</span> / <span class="number">512</span> <span class="keyword">bytes</span></span><br><span class="line">Disklabel <span class="keyword">type</span>: gpt</span><br><span class="line">Disk identifier: <span class="number">7</span>F13220A-DDDB<span class="number">-44</span>AD-BC0D-E3F369DDE708</span><br><span class="line"></span><br><span class="line">Device       <span class="keyword">Start</span>      <span class="keyword">End</span>  Sectors  <span class="keyword">Size</span> <span class="keyword">Type</span></span><br><span class="line">/dev/sda1     <span class="number">2048</span>     <span class="number">4095</span>     <span class="number">2048</span>    <span class="number">1</span>M BIOS boot</span><br><span class="line">/dev/sda2     <span class="number">4096</span>  <span class="number">3149823</span>  <span class="number">3145728</span>  <span class="number">1.5</span>G Linux filesystem</span><br><span class="line">/dev/sda3  <span class="number">3149824</span> <span class="number">83884031</span> <span class="number">80734208</span> <span class="number">38.5</span>G Linux filesystem    <span class="comment">#扇区起始号为3149824</span></span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="keyword">help</span>): d   <span class="comment">#删除分区</span></span><br><span class="line"><span class="keyword">Partition</span> <span class="built_in">number</span> (<span class="number">1</span><span class="number">-3</span>, <span class="keyword">default</span> <span class="number">3</span>): <span class="number">3</span>   <span class="comment">#删除3号分区</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Partition</span> <span class="number">3</span> has been deleted.</span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="keyword">help</span>): n   <span class="comment">#新建分区</span></span><br><span class="line"><span class="keyword">Partition</span> <span class="built_in">number</span> (<span class="number">3</span><span class="number">-128</span>, <span class="keyword">default</span> <span class="number">3</span>): <span class="number">3</span>   <span class="comment">#分区号为3，与之前的保持一致</span></span><br><span class="line"><span class="keyword">First</span> sector (<span class="number">3149824</span><span class="number">-167772126</span>, <span class="keyword">default</span> <span class="number">3149824</span>): <span class="number">3149824</span>    <span class="comment">#扇区起始号，与之前的保持一致</span></span><br><span class="line"><span class="keyword">Last</span> sector, +/-sectors <span class="keyword">or</span> +/-<span class="keyword">size</span>&#123;K,M,G,T,P&#125; (<span class="number">3149824</span><span class="number">-167772126</span>, <span class="keyword">default</span> <span class="number">167772126</span>):   <span class="comment">#结束扇区，这里直接回车默认使用所有</span></span><br><span class="line"></span><br><span class="line">Created a <span class="keyword">new</span> <span class="keyword">partition</span> <span class="number">3</span> <span class="keyword">of</span> <span class="keyword">type</span> <span class="string">'Linux filesystem'</span> <span class="keyword">and</span> <span class="keyword">of</span> <span class="keyword">size</span> <span class="number">78.5</span> GiB.</span><br><span class="line"><span class="keyword">Partition</span> <span class="comment">#3 contains a LVM2_member signature.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Do</span> you want <span class="keyword">to</span> remove the signature? [Y]es/[N]o: n    <span class="comment">#这里一定要选n，不然原来存在的lvm卷就会被干掉</span></span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="keyword">help</span>): w    <span class="comment">#最后输入w，保存退出</span></span><br><span class="line"></span><br><span class="line">The <span class="keyword">partition</span> <span class="keyword">table</span> has been altered.</span><br><span class="line">Syncing disks.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>然后执行lsblk查看/dev/sda3的空间已经由原来的38.5G增加至78.5G</p>
+</blockquote>
+<h1 id="四、物理卷大小调整"><a href="#四、物理卷大小调整" class="headerlink" title="四、物理卷大小调整"></a>四、物理卷大小调整</h1><p><strong>使用lvm命令查看，此时虽然增加了/dev/sda3的可用空间，但是lvm物理卷空间是没有增加的</strong></p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">lvm</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">lvm&gt; vgdisplay</span><br><span class="line">  --- Volume<span class="built_in"> group </span>---</span><br><span class="line">  VG Name               vgubuntu</span><br><span class="line"> <span class="built_in"> System </span>ID</span><br><span class="line">  Format                lvm2</span><br><span class="line">  Metadata Areas        1</span><br><span class="line">  Metadata Sequence <span class="literal">No</span>  3</span><br><span class="line">  VG Access             read/write</span><br><span class="line">  VG Status             resizable</span><br><span class="line">  MAX LV                0</span><br><span class="line">  Cur LV                1</span><br><span class="line">  Open LV               1</span><br><span class="line">  Max PV                0</span><br><span class="line">  Cur PV                1</span><br><span class="line">  Act PV                1</span><br><span class="line">  VG Size               &lt;38.50 GiB</span><br><span class="line">  PE Size               4.00 MiB</span><br><span class="line">  Total PE              9855</span><br><span class="line">  Alloc PE / Size       9855 / &lt;38.50 GiB</span><br><span class="line">  Free  PE / Size       0 / 0              #可用空间为0</span><br><span class="line">  VG UUID               que55V-3g38-XqKx-yKdZ-QjQZ-Sy8S-JyQ6bn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>接着折腾lvm物理卷，使用pvresize命令对物理卷大小进行调整</p>
+</blockquote>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">lvm&gt; vgs     <span class="meta">#查看空间</span></span><br><span class="line">  VG        <span class="meta">#PV #LV #SN Attr   VSize   VFree</span></span><br><span class="line">  ubuntu-vg   <span class="number">1</span>   <span class="number">1</span>   <span class="number">0</span> wz--n- &lt;<span class="number">38.50</span>g    <span class="number">0</span></span><br><span class="line">  </span><br><span class="line">lvm&gt; pvresize -t /dev/sda3     <span class="meta">#先测试一下</span></span><br><span class="line">  TEST MODE: Metadata will <span class="keyword">NOT</span> be updated <span class="keyword">and</span> volumes will <span class="keyword">not</span> <span class="built_in">be</span> (de)activated.</span><br><span class="line">  Physical <span class="built_in">volume</span> <span class="string">"/dev/sda3"</span> changed</span><br><span class="line">  <span class="number">1</span> physical <span class="built_in">volume</span>(s) resized <span class="keyword">or</span> updated / <span class="number">0</span> physical <span class="built_in">volume</span>(s) <span class="keyword">not</span> resized</span><br><span class="line">  </span><br><span class="line">lvm&gt; pvresize  /dev/sda3     <span class="meta">#测试成功去掉 -t 执行</span></span><br><span class="line">  Physical <span class="built_in">volume</span> <span class="string">"/dev/sda3"</span> changed</span><br><span class="line">  <span class="number">1</span> physical <span class="built_in">volume</span>(s) resized <span class="keyword">or</span> updated / <span class="number">0</span> physical <span class="built_in">volume</span>(s) <span class="keyword">not</span> resized</span><br><span class="line">  </span><br><span class="line">lvm&gt; pvs         <span class="meta">#再次查看空间大小已经更改</span></span><br><span class="line">  PV         VG        Fmt  Attr PSize   PFree</span><br><span class="line">  /dev/sda3  vgubuntu lvm2 a--  &lt;<span class="number">78.50</span>g <span class="number">40.00</span>g</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>稳妥起见，退出检查可用空间是否增加</p>
+</blockquote>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">root@0-125:~# vgdisplay vgubuntu</span><br><span class="line">  --- Volume<span class="built_in"> group </span>---</span><br><span class="line">  VG Name               vgubuntu</span><br><span class="line"> <span class="built_in"> System </span>ID</span><br><span class="line">  Format                lvm2</span><br><span class="line">  Metadata Areas        1</span><br><span class="line">  Metadata Sequence <span class="literal">No</span>  4</span><br><span class="line">  VG Access             read/write</span><br><span class="line">  VG Status             resizable</span><br><span class="line">  MAX LV                0</span><br><span class="line">  Cur LV                1</span><br><span class="line">  Open LV               1</span><br><span class="line">  Max PV                0</span><br><span class="line">  Cur PV                1</span><br><span class="line">  Act PV                1</span><br><span class="line">  VG Size               &lt;78.50 GiB</span><br><span class="line">  PE Size               4.00 MiB</span><br><span class="line">  Total PE              20095</span><br><span class="line">  Alloc PE / Size       9855 / &lt;38.50 GiB</span><br><span class="line">  Free  PE / Size       10240 / 40.00 GiB       #这里可用空间已经增加</span><br><span class="line">  VG UUID               que55V-3g38-XqKx-yKdZ-QjQZ-Sy8S-JyQ6bn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里还需要将可用的物理卷空间扩容至逻辑卷</p>
+</blockquote>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@<span class="number">0</span><span class="number">-125</span>:~<span class="comment"># lvextend -l +100%FREE /dev/vgubuntu/root      #将可用空间全部给逻辑卷</span></span><br><span class="line">  Size <span class="keyword">of</span> logical volume vgubuntu/root changed <span class="keyword">from</span> &lt;<span class="number">38.50</span> GiB (<span class="number">9855</span> extents) <span class="keyword">to</span> &lt;<span class="number">78.50</span> GiB (<span class="number">20095</span> extents).</span><br><span class="line">  Logical volume vgubuntu/root successfully resized.</span><br><span class="line"></span><br><span class="line">root@<span class="number">0</span><span class="number">-125</span>:~<span class="comment"># resize2fs /dev/vgubuntu/root    #重新调整一下大小</span></span><br><span class="line">resize2fs <span class="number">1.45</span><span class="number">.5</span> (<span class="number">07</span>-Jan<span class="number">-2020</span>)</span><br><span class="line">Filesystem <span class="keyword">at</span> /dev/vgubuntu/root <span class="keyword">is</span> mounted <span class="keyword">on</span> /; <span class="keyword">on</span>-line resizing required</span><br><span class="line">old_desc_blocks = <span class="number">5</span>, new_desc_blocks = <span class="number">10</span></span><br><span class="line">The filesystem <span class="keyword">on</span> /dev/vgubuntu/root <span class="keyword">is</span> now <span class="number">20577280</span> (<span class="number">4</span>k) blocks long.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>最后看看根目录空间是否已经增加</p>
+</blockquote>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">root@0-125:~<span class="comment"># lsblk</span></span><br><span class="line">NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">loop0                       7:0   <span class="number"> 0 </span>63.3M <span class="number"> 1 </span>loop /snap/core20/1778</span><br><span class="line">loop1                       7:1   <span class="number"> 0 </span>63.3M <span class="number"> 1 </span>loop /snap/core20/1822</span><br><span class="line">loop2                       7:2   <span class="number"> 0 </span>67.2M <span class="number"> 1 </span>loop /snap/lxd/21835</span><br><span class="line">loop3                       7:3   <span class="number"> 0 </span>49.8M <span class="number"> 1 </span>loop /snap/snapd/17950</span><br><span class="line">loop4                       7:4   <span class="number"> 0 </span>91.9M <span class="number"> 1 </span>loop /snap/lxd/24061</span><br><span class="line">loop5                       7:5   <span class="number"> 0 </span>49.9M <span class="number"> 1 </span>loop /snap/snapd/18357</span><br><span class="line">sda                         8:0   <span class="number"> 0 </span>  80G <span class="number"> 0 </span>disk</span><br><span class="line">├─sda1                      8:1   <span class="number"> 0 </span>   1M <span class="number"> 0 </span>part</span><br><span class="line">├─sda2                      8:2   <span class="number"> 0 </span> 1.5G <span class="number"> 0 </span>part /boot</span><br><span class="line">└─sda3                      8:3   <span class="number"> 0 </span>78.5G <span class="number"> 0 </span>part</span><br><span class="line">  └─vgubuntu-root          253:0   <span class="number"> 0 </span>78.5G <span class="number"> 0 </span>lvm  /</span><br><span class="line">sr0                        11:0   <span class="number"> 1 </span>1024M <span class="number"> 0 </span>rom</span><br><span class="line">root@0-125:~<span class="comment"># df -Th</span></span><br><span class="line">Filesystem                        Type      Size  Used Avail Use% Mounted on</span><br><span class="line">udev                              devtmpfs  7.8G    <span class="number"> 0 </span> 7.8G   0% /dev</span><br><span class="line">tmpfs                             tmpfs     1.6G  1.3M  1.6G   1% /run</span><br><span class="line">/dev/mapper/vgubuntu-root         ext4       78G  8.6G   66G  12% /</span><br><span class="line">tmpfs                             tmpfs     7.9G    <span class="number"> 0 </span> 7.9G   0% /dev/shm</span><br><span class="line">tmpfs                             tmpfs     5.0M    <span class="number"> 0 </span> 5.0M   0% /run/lock</span><br><span class="line">tmpfs                             tmpfs     7.9G    <span class="number"> 0 </span> 7.9G   0% /sys/fs/cgroup</span><br><span class="line">/dev/loop1                        squashfs   64M   64M    <span class="number"> 0 </span>100% /snap/core20/1822</span><br><span class="line">/dev/loop2                        squashfs   68M   68M    <span class="number"> 0 </span>100% /snap/lxd/21835</span><br><span class="line">/dev/loop0                        squashfs   64M   64M    <span class="number"> 0 </span>100% /snap/core20/1778</span><br><span class="line">/dev/sda2                         ext4      1.5G  303M  1.1G  22% /boot</span><br><span class="line">/dev/loop3                        squashfs   50M   50M    <span class="number"> 0 </span>100% /snap/snapd/17950</span><br><span class="line">/dev/loop4                        squashfs   92M   92M    <span class="number"> 0 </span>100% /snap/lxd/24061</span><br><span class="line">/dev/loop5                        squashfs   50M   50M    <span class="number"> 0 </span>100% /snap/snapd/18357</span><br><span class="line">tmpfs                             tmpfs     1.6G    <span class="number"> 0 </span> 1.6G   0% /run/user/0</span><br></pre></td></tr></table></figure>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+                转载声明：商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="/" target="_blank">Ljjyy.com</a>
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+
+<div class="article-nav prev-next-wrap clearfix">
+    
+    
+        <a href="/archives/2024/02/100720.html" class="next-post btn btn-default" title='汇编语言简明教程'>
+            <span class="hidden-lg">下一篇</span>
+            <span class="hidden-xs">汇编语言简明教程</span><i class="fa fa-angle-right fa-fw"></i>
+        </a>
+    
+</div>
+
+
+    <div id="comments">
+        
+	
+    <div id="vcomments" class="valine"></div>
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+    <script>
+        new Valine({
+            av: AV,
+            el: '#vcomments',
+            appId: '5MzTXYXkt03k101j0PmSDN34-gzGzoHsz',
+            appKey: 'iwjYgwno6qj3wtDVVSbe8nYQ',
+            placeholder: '说点什么吧',
+            notify: false,
+            verify: true,
+            avatar: 'mm',
+            meta: 'nick,mail'.split(','),
+            pageSize: '10',
+            path: window.location.pathname,
+            lang: 'zh-CN'.toLowerCase()
+        })
+    </script>
+
+
+    </div>
+
+
+
+
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">文章目录</h3>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、修改分配内存"><span class="toc-text">一、修改分配内存</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、登录检查分区"><span class="toc-text">二、登录检查分区</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三、对硬盘分区"><span class="toc-text">三、对硬盘分区</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四、物理卷大小调整"><span class="toc-text">四、物理卷大小调整</span></a></li></ol>
+        
+    </div>
+</aside>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+
+<a id="back-to-top" class="icon-btn hide">
+	<i class="fa fa-chevron-up"></i>
+</a>
+
+
+
+
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                </span> |
+                <span>
+                    <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
+                </span> |                
+                <span>
+                    <a href="/sitemap.xml" class="copyright-links" target="_blank" rel="nofollow">网站地图</a>
+                </span> |
+                <span>
+                    <a href="/archives/" class="copyright-links" target="_blank" rel="nofollow">时间轴</a>
+                </span>              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+
+</body>
+</html>
