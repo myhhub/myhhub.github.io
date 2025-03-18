@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,17 +18,17 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="java,stackoverflow">
+    <meta name="keywords" content="java,stackoverflow" />
 
 
-    <meta name="description" content="问题描述为什么不能用string类型进行switch判断？在java的后续版本中，是否会增加这个新特性？有人能给我一篇文章，解释一下为什么不能这样做，或者进一步说明java中switch语句的运...">
+    <meta name="description" content="问题描述为什么不能用string类型进行switch判断？在java的后续版本中，是否会增加这个新特性？有人能给我一篇文章，解释一下为什么不能这样做，或者进一步说明java中switch语句的运..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -45,9 +45,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -64,7 +66,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -82,9 +84,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -189,7 +191,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/stackoverflow/">stackoverflow</a>
+                    <a class="tag-none-link" href="/tags/java/" rel="tag">java</a> <a class="tag-none-link" href="/tags/stackoverflow/" rel="tag">stackoverflow</a>
                 
             </span>
         </span>
@@ -207,28 +209,33 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>1947</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2192</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
     
     <div class="post-body post-content">
         <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>为什么不能用string类型进行switch判断？<br>在java的后续版本中，是否会增加这个新特性？<br>有人能给我一篇文章，解释一下为什么不能这样做，或者进一步说明java中switch语句的运行方式？</p>
-<h2 id="回答"><a href="#回答" class="headerlink" title="回答"></a>回答</h2><p>在switch语句中用string作为case，这个特性已经在java SE7 中被实现了，距离 <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=1223179" target="_blank" rel="noopener">这个’bug’</a> 被提出至少也有16年了。为何迟迟不提供这个特性，原因不明。但可以推测，可能跟性能有关。</p>
+<h2 id="回答"><a href="#回答" class="headerlink" title="回答"></a>回答</h2><p>在switch语句中用string作为case，这个特性已经在java SE7 中被实现了，距离 <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=1223179">这个’bug’</a> 被提出至少也有16年了。为何迟迟不提供这个特性，原因不明。但可以推测，可能跟性能有关。</p>
 <p><strong>Implementtation in JDK 7</strong></p>
 <p>在JDK7中，这个特性已经实现了。在编译阶段，以string作为case值的代码，会按照特定的模式，被转换为更加复杂的代码。最终的执行代码将是一些使用了JVM指令的代码。</p>
-<p>究竟是如何转换的呢？我们直接看看源码及编译后的代码。源代码：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StringInSwitchCase</span> &#123; </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params">String[] args</span>)</span> &#123; </span><br><span class="line">            String mode = args[<span class="number">0</span>]; </span><br><span class="line">            <span class="keyword">switch</span> (mode) &#123; </span><br><span class="line">                  <span class="keyword">case</span> <span class="string">"ACTIVE"</span>: </span><br><span class="line">                        System.<span class="keyword">out</span>.println(<span class="string">"Application is running on Active mode"</span>); </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="string">"PASSIVE"</span>:</span><br><span class="line">                        System.<span class="keyword">out</span>.println(<span class="string">"Application is running on Passive mode"</span>); </span><br><span class="line">                         <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="string">"SAFE"</span>: </span><br><span class="line">                          System.<span class="keyword">out</span>.println(<span class="string">"Application is running on Safe mode"</span>); </span><br><span class="line">          &#125; </span><br><span class="line">      &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>编译后再反编译的代码：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">import java.io.PrintStream; </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StringInSwitchCase</span>&#123; </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">StringInSwitchCase</span>(<span class="params"></span>)</span> &#123; &#125; </span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params"><span class="keyword">string</span> args[]</span>)</span> &#123; </span><br><span class="line">             String mode = args[<span class="number">0</span>]; </span><br><span class="line">            String s; <span class="keyword">switch</span> ((s = mode).hashCode()) &#123; </span><br><span class="line">                  <span class="keyword">default</span>: <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="number">-74056953</span>: </span><br><span class="line">                        <span class="keyword">if</span> (s.<span class="keyword">equals</span>(<span class="string">"PASSIVE"</span>)) &#123; </span><br><span class="line">                                    System.<span class="keyword">out</span>.println(<span class="string">"Application is running on Passive mode"</span>); </span><br><span class="line">                         &#125; </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="number">2537357</span>: </span><br><span class="line">                        <span class="keyword">if</span> (s.<span class="keyword">equals</span>(<span class="string">"SAFE"</span>)) &#123; </span><br><span class="line">                              System.<span class="keyword">out</span>.println(<span class="string">"Application is running on Safe mode"</span>); </span><br><span class="line">                         &#125; </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="number">1925346054</span>: </span><br><span class="line">                        <span class="keyword">if</span> (s.<span class="keyword">equals</span>(<span class="string">"ACTIVE"</span>)) &#123; </span><br><span class="line">                              System.<span class="keyword">out</span>.println(<span class="string">"Application is running on Active mode"</span>); </span><br><span class="line">                         &#125; </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">               &#125; </span><br><span class="line">          &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>究竟是如何转换的呢？我们直接看看源码及编译后的代码。源代码：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StringInSwitchCase</span> &#123; </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params">String[] <span class="keyword">args</span></span>)</span> &#123; </span><br><span class="line">            String mode = <span class="keyword">args</span>[<span class="number">0</span>]; </span><br><span class="line">            <span class="keyword">switch</span> (mode) &#123; </span><br><span class="line">                  <span class="keyword">case</span> <span class="string">&quot;ACTIVE&quot;</span>: </span><br><span class="line">                        System.<span class="keyword">out</span>.println(<span class="string">&quot;Application is running on Active mode&quot;</span>); </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="string">&quot;PASSIVE&quot;</span>:</span><br><span class="line">                        System.<span class="keyword">out</span>.println(<span class="string">&quot;Application is running on Passive mode&quot;</span>); </span><br><span class="line">                         <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="string">&quot;SAFE&quot;</span>: </span><br><span class="line">                          System.<span class="keyword">out</span>.println(<span class="string">&quot;Application is running on Safe mode&quot;</span>); </span><br><span class="line">          &#125; </span><br><span class="line">      &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译后再反编译的代码：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">import java.io.PrintStream; </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">StringInSwitchCase</span>&#123; </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">StringInSwitchCase</span>()</span> &#123; &#125; </span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params"><span class="built_in">string</span> <span class="keyword">args</span>[]</span>)</span> &#123; </span><br><span class="line">             String mode = <span class="keyword">args</span>[<span class="number">0</span>]; </span><br><span class="line">            String s; <span class="keyword">switch</span> ((s = mode).hashCode()) &#123; </span><br><span class="line">                  <span class="literal">default</span>: <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="number">-74056953</span>: </span><br><span class="line">                        <span class="keyword">if</span> (s.<span class="keyword">equals</span>(<span class="string">&quot;PASSIVE&quot;</span>)) &#123; </span><br><span class="line">                                    System.<span class="keyword">out</span>.println(<span class="string">&quot;Application is running on Passive mode&quot;</span>); </span><br><span class="line">                         &#125; </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="number">2537357</span>: </span><br><span class="line">                        <span class="keyword">if</span> (s.<span class="keyword">equals</span>(<span class="string">&quot;SAFE&quot;</span>)) &#123; </span><br><span class="line">                              System.<span class="keyword">out</span>.println(<span class="string">&quot;Application is running on Safe mode&quot;</span>); </span><br><span class="line">                         &#125; </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">                  <span class="keyword">case</span> <span class="number">1925346054</span>: </span><br><span class="line">                        <span class="keyword">if</span> (s.<span class="keyword">equals</span>(<span class="string">&quot;ACTIVE&quot;</span>)) &#123; </span><br><span class="line">                              System.<span class="keyword">out</span>.println(<span class="string">&quot;Application is running on Active mode&quot;</span>); </span><br><span class="line">                         &#125; </span><br><span class="line">                        <span class="keyword">break</span>; </span><br><span class="line">               &#125; </span><br><span class="line">          &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>包含case string的 switch 语句，在编译时会转为为嵌套代码（switch+if）。第一个switch将 case 中的string转为唯一的integer值。这个integer值就是原先string的hashcode值。在case的逻辑中，会加入if语句，这个if语句用于进一步检查string值是否跟原先的case string匹配。这样可以防止hash碰撞，确保代码的健壮。这本质上是一种语法糖，既支持了string作为case值这一特性，又能确保逻辑正确性。</p>
 <p><strong>Switchs in the JVM</strong></p>
-<p>switch的更多深层技术实现，可以参考JVM规范，<a href="http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-3.html#jvms-3.10" target="_blank" rel="noopener">compliation of switch statements</a>。简单概括说，根据使用的常量的多寡，switch会对应到两种不同的JVM指令。JVM指令有所不同，归根结底都是为了代码的效率。</p>
+<p>switch的更多深层技术实现，可以参考JVM规范，<a href="http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-3.html#jvms-3.10">compliation of switch statements</a>。简单概括说，根据使用的常量的多寡，switch会对应到两种不同的JVM指令。JVM指令有所不同，归根结底都是为了代码的效率。</p>
 <p>如果常量很多，会将case的int值去掉最低位后作为索引，放到一个指针表中——也就是所谓的<code>tablewitch</code>指令</p>
 <p>如果常量相对较少，那么可用二分查找来找到正确的case–也就是所谓的<code>lookupswitch</code>指令</p>
-<p>这两种指令，都要求在编译时确保case的对应值是integer常量。在运行时，虽然<code>tableswitch</code>O（1）的性能通常要好于<code>lookupswitch</code>O(log(n))的性能。但是前者需要更多的空间开销，因此需要兼顾空间及时间综合考虑性价比。Bill Venners的文章<a href="http://www.artima.com/underthehood/flowP.html" target="_blank" rel="noopener">a great article</a>有更多深入的分析。</p>
+<p>这两种指令，都要求在编译时确保case的对应值是integer常量。在运行时，虽然<code>tableswitch</code>O（1）的性能通常要好于<code>lookupswitch</code>O(log(n))的性能。但是前者需要更多的空间开销，因此需要兼顾空间及时间综合考虑性价比。Bill Venners的文章<a href="http://www.artima.com/underthehood/flowP.html">a great article</a>有更多深入的分析。</p>
 <p><strong>Before JDK 7</strong></p>
-<p>在JDK之前，可以用枚举来实现类似的需求。它和在case中使用string有异曲同工之妙。例如如下：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pill p = Pill.valueOf(str);</span><br><span class="line"><span class="keyword">switch</span>(p) &#123;</span><br><span class="line">    <span class="keyword">case</span> RED:<span class="keyword">pop</span>();<span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> BLUE:<span class="keyword">push</span>();<span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://stackoverflow.com/questions/338206/why-cant-i-switch-on-a-string" target="_blank" rel="noopener">stackoverflow原链接：Why can`t I switch on a String</a></p>
-<p><a href="http://www.deepinmind.com/java/2014/05/08/how-string-in-switch-works-in-java-7.html" target="_blank" rel="noopener">可参考中文文章《Java中字符串switch的实现细节》</a></p>
+<p>在JDK之前，可以用枚举来实现类似的需求。它和在case中使用string有异曲同工之妙。例如如下：</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pill p = Pill.valueOf(str);</span><br><span class="line"><span class="keyword">switch</span>(p) &#123;</span><br><span class="line">    <span class="keyword">case</span> RED:<span class="built_in">pop</span>();<span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> BLUE:<span class="built_in">push</span>();<span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>[stackoverflow原链接：Why can&#96;t I switch on a String](<a href="http://stackoverflow.com/questions/338206/why-cant-i-switch-on-a-string">http://stackoverflow.com/questions/338206/why-cant-i-switch-on-a-string</a>)</p>
+<p><a href="http://www.deepinmind.com/java/2014/05/08/how-string-in-switch-works-in-java-7.html">可参考中文文章《Java中字符串switch的实现细节》</a></p>
 
     </div>
     
@@ -264,8 +271,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -297,7 +306,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题描述"><span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#回答"><span class="toc-text">回答</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E7%AD%94"><span class="toc-text">回答</span></a></li></ol>
         
     </div>
 </aside>
@@ -330,7 +339,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -352,7 +361,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

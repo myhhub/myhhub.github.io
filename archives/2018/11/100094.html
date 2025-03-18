@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,20 +18,20 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="kubernetes,api,downward">
+    <meta name="keywords" content="kubernetes,api,downward" />
 
 
     <meta name="description" content="介绍在容器中获取 POD 的基本信息，kubernetes原生提供了支持，使用Downward API。
 Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
 
-环境变量...">
+环境变量..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -48,9 +48,11 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -67,7 +69,7 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -85,9 +87,9 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -192,7 +194,7 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/api/">api</a> <a class="tag-link" href="/tags/downward/">downward</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a>
+                    <a class="tag-none-link" href="/tags/api/" rel="tag">api</a> <a class="tag-none-link" href="/tags/downward/" rel="tag">downward</a> <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                 
             </span>
         </span>
@@ -210,7 +212,7 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2060</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2305</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -223,22 +225,28 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
 <li><code>Volume</code>挂载：将 POD 信息生成为文件，直接挂载到容器内部中去。</li>
 </ul>
 <h2 id="环境变量的方式"><a href="#环境变量的方式" class="headerlink" title="环境变量的方式"></a>环境变量的方式</h2><p>我们通过<code>Downward API</code>来将 POD 的 IP、名称以及所对应的 namespace 注入到容器的环境变量中去，然后我们在容器中打印全部的环境变量来进行验证，对应的<strong>yaml</strong>文件如下：(<strong>test-env-pod.yaml</strong>)</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">test-env-pod</span></span><br><span class="line"><span class="attr">    namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">    containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">test-env-pod</span></span><br><span class="line"><span class="attr">      image:</span> <span class="attr">busybox:latest</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">["/bin/sh",</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"env"</span><span class="string">]</span></span><br><span class="line"><span class="attr">      env:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">POD_NAME</span></span><br><span class="line"><span class="attr">        valueFrom:</span></span><br><span class="line"><span class="attr">          fieldRef:</span></span><br><span class="line"><span class="attr">            fieldPath:</span> <span class="string">metadata.name</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">POD_NAMESPACE</span></span><br><span class="line"><span class="attr">        valueFrom:</span></span><br><span class="line"><span class="attr">          fieldRef:</span></span><br><span class="line"><span class="attr">            fieldPath:</span> <span class="string">metadata.namespace</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">POD_IP</span></span><br><span class="line"><span class="attr">        valueFrom:</span></span><br><span class="line"><span class="attr">          fieldRef:</span></span><br><span class="line"><span class="attr">            fieldPath:</span> <span class="string">status.podIP</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">test-env-pod</span></span><br><span class="line">    <span class="attr">namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">    <span class="attr">containers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">test-env-pod</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">busybox:latest</span></span><br><span class="line">      <span class="attr">command:</span> [<span class="string">&quot;/bin/sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, <span class="string">&quot;env&quot;</span>]</span><br><span class="line">      <span class="attr">env:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POD_NAME</span></span><br><span class="line">        <span class="attr">valueFrom:</span></span><br><span class="line">          <span class="attr">fieldRef:</span></span><br><span class="line">            <span class="attr">fieldPath:</span> <span class="string">metadata.name</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POD_NAMESPACE</span></span><br><span class="line">        <span class="attr">valueFrom:</span></span><br><span class="line">          <span class="attr">fieldRef:</span></span><br><span class="line">            <span class="attr">fieldPath:</span> <span class="string">metadata.namespace</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POD_IP</span></span><br><span class="line">        <span class="attr">valueFrom:</span></span><br><span class="line">          <span class="attr">fieldRef:</span></span><br><span class="line">            <span class="attr">fieldPath:</span> <span class="string">status.podIP</span></span><br></pre></td></tr></table></figure>
+
 <p>我们可以看到上面我们使用了一种新的方式来设置<strong>env</strong>的值：<code>valueFrom</code>。另外我们需要注意的是 POD 的 name 和 namespace 属于元数据，是在 POD 创建之前就已经定下来了的，所以我们使用 metata 获取就可以了，但是对于 POD 的 IP 则不一样，因为我们知道 POD IP 是不固定的，POD 重建了就变了，它属于状态数据，所以我们使用 status 去获取。</p>
 <blockquote>
 <p>除了使用<code>fieldRef</code>获取 POD 的基本信息外，还可以通过<code>resourceFieldRef</code>去获取容器的资源请求和资源限制信息。</p>
 </blockquote>
 <p>接下来我们利用<code>kubectl</code>工具创建上面的 POD：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl create -f <span class="built_in">test</span>-env-pod.yaml</span></span><br><span class="line">pod "test-env-pod" created</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f test-env-pod.yaml</span></span><br><span class="line">pod &quot;test-env-pod&quot; created</span><br></pre></td></tr></table></figure>
+
 <p>POD 创建成功后，我们可以查看日志：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs <span class="built_in">test</span>-env-pod -n kube-system |grep POD</span></span><br><span class="line">POD_IP=172.30.19.24</span><br><span class="line">POD_NAME=test-env-pod</span><br><span class="line">POD_NAMESPACE=kube-system</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs test-env-pod -n kube-system |grep POD</span></span><br><span class="line">POD_IP=172.30.19.24</span><br><span class="line">POD_NAME=test-env-pod</span><br><span class="line">POD_NAMESPACE=kube-system</span><br></pre></td></tr></table></figure>
+
 <p>我们可以看到 POD 的 IP、NAME、NAMESPACE 都通过环境变量打印出来了。</p>
 <h2 id="Volume挂载"><a href="#Volume挂载" class="headerlink" title="Volume挂载"></a><code>Volume</code>挂载</h2><p><code>Downward API</code>除了提供环境变量的方式外，还提供了通过<code>Volume</code>挂载的方式去获取 POD 的基本信息。接下来我们通过<code>Downward API</code>将 POD 的 Label、Annotation 等信息通过 Volume 挂载到容器的某个文件中去，然后在容器中打印出该文件的值来验证。 新建文件 yaml 文件：(<strong>test-volume-pod.yaml</strong>)</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">test-volume-pod</span></span><br><span class="line"><span class="attr">    namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">    labels:</span></span><br><span class="line"><span class="attr">        k8s-app:</span> <span class="string">test-volume</span></span><br><span class="line"><span class="attr">        node-env:</span> <span class="string">test</span></span><br><span class="line"><span class="attr">    annotations:</span></span><br><span class="line"><span class="attr">        build:</span> <span class="string">test</span></span><br><span class="line"><span class="attr">        own:</span> <span class="string">qikqiak</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">    containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">test-volume-pod-container</span></span><br><span class="line"><span class="attr">      image:</span> <span class="attr">busybox:latest</span></span><br><span class="line"><span class="attr">      command:</span> <span class="string">["sh",</span> <span class="string">"-c"</span><span class="string">]</span></span><br><span class="line"><span class="attr">      args:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">while</span> <span class="literal">true</span><span class="string">;</span> <span class="string">do</span></span><br><span class="line">          <span class="string">if</span> <span class="string">[[</span> <span class="bullet">-e</span> <span class="string">/etc/podinfo/labels</span> <span class="string">]];</span> <span class="string">then</span></span><br><span class="line">            <span class="string">echo</span> <span class="bullet">-en</span> <span class="string">'\n\n'</span><span class="string">;</span> <span class="string">cat</span> <span class="string">/etc/podinfo/labels;</span> <span class="string">fi;</span></span><br><span class="line">          <span class="string">if</span> <span class="string">[[</span> <span class="bullet">-e</span> <span class="string">/etc/podinfo/annotations</span> <span class="string">]];</span> <span class="string">then</span></span><br><span class="line">            <span class="string">echo</span> <span class="bullet">-en</span> <span class="string">'\n\n'</span><span class="string">;</span> <span class="string">cat</span> <span class="string">/etc/podinfo/annotations;</span> <span class="string">fi;</span></span><br><span class="line">          <span class="string">sleep</span> <span class="number">3600</span><span class="string">;</span></span><br><span class="line">        <span class="string">done;</span></span><br><span class="line"><span class="attr">      volumeMounts:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">podinfo</span></span><br><span class="line"><span class="attr">        mountPath:</span> <span class="string">/etc/podinfo</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">podinfo</span></span><br><span class="line"><span class="attr">      downwardAPI:</span></span><br><span class="line"><span class="attr">        items:</span></span><br><span class="line"><span class="attr">        - path:</span> <span class="string">"labels"</span></span><br><span class="line"><span class="attr">          fieldRef:</span></span><br><span class="line"><span class="attr">            fieldPath:</span> <span class="string">metadata.labels</span></span><br><span class="line"><span class="attr">        - path:</span> <span class="string">"annotations"</span></span><br><span class="line"><span class="attr">          fieldRef:</span></span><br><span class="line"><span class="attr">            fieldPath:</span> <span class="string">metadata.annotations</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">test-volume-pod</span></span><br><span class="line">    <span class="attr">namespace:</span> <span class="string">kube-system</span></span><br><span class="line">    <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">k8s-app:</span> <span class="string">test-volume</span></span><br><span class="line">        <span class="attr">node-env:</span> <span class="string">test</span></span><br><span class="line">    <span class="attr">annotations:</span></span><br><span class="line">        <span class="attr">build:</span> <span class="string">test</span></span><br><span class="line">        <span class="attr">own:</span> <span class="string">qikqiak</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">    <span class="attr">containers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">test-volume-pod-container</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">busybox:latest</span></span><br><span class="line">      <span class="attr">command:</span> [<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>]</span><br><span class="line">      <span class="attr">args:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">while</span> <span class="literal">true</span><span class="string">;</span> <span class="string">do</span></span><br><span class="line">          <span class="string">if</span> [[ <span class="string">-e</span> <span class="string">/etc/podinfo/labels</span> ]]<span class="string">;</span> <span class="string">then</span></span><br><span class="line">            <span class="string">echo</span> <span class="string">-en</span> <span class="string">&#x27;\n\n&#x27;</span><span class="string">;</span> <span class="string">cat</span> <span class="string">/etc/podinfo/labels;</span> <span class="string">fi;</span></span><br><span class="line">          <span class="string">if</span> [[ <span class="string">-e</span> <span class="string">/etc/podinfo/annotations</span> ]]<span class="string">;</span> <span class="string">then</span></span><br><span class="line">            <span class="string">echo</span> <span class="string">-en</span> <span class="string">&#x27;\n\n&#x27;</span><span class="string">;</span> <span class="string">cat</span> <span class="string">/etc/podinfo/annotations;</span> <span class="string">fi;</span></span><br><span class="line">          <span class="string">sleep</span> <span class="number">3600</span><span class="string">;</span></span><br><span class="line">        <span class="string">done;</span></span><br><span class="line">      <span class="attr">volumeMounts:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">podinfo</span></span><br><span class="line">        <span class="attr">mountPath:</span> <span class="string">/etc/podinfo</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">podinfo</span></span><br><span class="line">      <span class="attr">downwardAPI:</span></span><br><span class="line">        <span class="attr">items:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">path:</span> <span class="string">&quot;labels&quot;</span></span><br><span class="line">          <span class="attr">fieldRef:</span></span><br><span class="line">            <span class="attr">fieldPath:</span> <span class="string">metadata.labels</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">path:</span> <span class="string">&quot;annotations&quot;</span></span><br><span class="line">          <span class="attr">fieldRef:</span></span><br><span class="line">            <span class="attr">fieldPath:</span> <span class="string">metadata.annotations</span></span><br></pre></td></tr></table></figure>
+
 <p>我们将元数据 labels 和 annotaions 以文件的形式挂载到了<code>/etc/podinfo</code>目录下，创建上面的 POD ：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl create -f <span class="built_in">test</span>-volume-pod.yaml</span></span><br><span class="line">pod "test-volume-pod" created</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f test-volume-pod.yaml</span></span><br><span class="line">pod &quot;test-volume-pod&quot; created</span><br></pre></td></tr></table></figure>
+
 <p>然后查看日志：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl logs <span class="built_in">test</span>-volume-pod -n kube-system</span></span><br><span class="line">k8s-app="test-volume"</span><br><span class="line">node-env="test"</span><br><span class="line"></span><br><span class="line">build="test"</span><br><span class="line">kubernetes.io/config.seen="2018-03-02T17:51:10.856356259+08:00"</span><br><span class="line">kubernetes.io/config.source="api"</span><br><span class="line">own="qikqiak"</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs test-volume-pod -n kube-system</span></span><br><span class="line">k8s-app=&quot;test-volume&quot;</span><br><span class="line">node-env=&quot;test&quot;</span><br><span class="line"></span><br><span class="line">build=&quot;test&quot;</span><br><span class="line">kubernetes.io/config.seen=&quot;2018-03-02T17:51:10.856356259+08:00&quot;</span><br><span class="line">kubernetes.io/config.source=&quot;api&quot;</span><br><span class="line">own=&quot;qikqiak&quot;</span><br></pre></td></tr></table></figure>
+
 <p>我们通过打印出来的日志可以看到 POD 的 Labels 和 Annotations 信息都被挂载到 <code>/etc/podinfo</code>目录下面的 lables 和 annotations 文件了。</p>
 <p>在实际应用中，如果你的应用有获取 POD 的基本信息的需求，一般我们就可以利用<code>Downward API</code>来获取基本信息，然后编写一个启动脚本或者利用<code>initContainer</code>将 POD 的信息注入到我们容器中去，然后在我们自己的应用中就可以正常的处理相关逻辑了。</p>
 
@@ -276,8 +284,10 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -309,7 +319,7 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境变量的方式"><span class="toc-text">环境变量的方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volume挂载"><span class="toc-text">Volume挂载</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="toc-text">环境变量的方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volume%E6%8C%82%E8%BD%BD"><span class="toc-text">Volume挂载</span></a></li></ol>
         
     </div>
 </aside>
@@ -342,7 +352,7 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -364,7 +374,9 @@ Downward API提供了两种方式用于将 POD 的信息注入到容器内部：
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

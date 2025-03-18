@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,17 +18,17 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="tsdb,chronograf,kapacitor">
+    <meta name="keywords" content="tsdb,chronograf,kapacitor" />
 
 
-    <meta name="description" content="初识TIGK技术栈是一个开源的监控方案，其实本身技术栈为TICK，即Telegraf，InfluxDB，Chronograf，Kapacitor，但是由于Chronograf没有Grafana扩...">
+    <meta name="description" content="初识TIGK技术栈是一个开源的监控方案，其实本身技术栈为TICK，即Telegraf，InfluxDB，Chronograf，Kapacitor，但是由于Chronograf没有Grafana扩..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -45,9 +45,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -64,7 +66,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -82,9 +84,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -189,7 +191,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/chronograf/">chronograf</a> <a class="tag-link" href="/tags/kapacitor/">kapacitor</a> <a class="tag-link" href="/tags/tsdb/">tsdb</a>
+                    <a class="tag-none-link" href="/tags/chronograf/" rel="tag">chronograf</a> <a class="tag-none-link" href="/tags/kapacitor/" rel="tag">kapacitor</a> <a class="tag-none-link" href="/tags/tsdb/" rel="tag">tsdb</a>
                 
             </span>
         </span>
@@ -207,7 +209,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>1779</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2023</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -220,51 +222,61 @@
 <p>Kapacitor TIGK技术栈的告警服务，用户通过tickScript脚本来对时序数据库当中的数据进行过滤，筛选，批处理等进行告警，告警信息可以通过日志保存在本地，或回插到influxdb，还可以直接在告警产生后发起http请求到指定地址，kapacitor支持数据流（stream）和批处理（batch）数据。</p>
 <p>kapacitor是一个脚本定义告警规则服务，与influxdb强相关，安装kapacitor后通过配置kapacitor.conf文件来配置和influxdb连接（通常是与influxdb开放的本地端口8086连接）</p>
 <p>安装：</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http<span class="variable">s:</span>//<span class="keyword">dl</span>.influxdata.<span class="keyword">com</span>/kapacitor/releases/kapacitor-<span class="number">1.5</span>.<span class="number">3</span>.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">wget</span> https://dl.influxdata.com/kapacitor/releases/kapacitor-<span class="number">1</span>.<span class="number">5</span>.<span class="number">3</span>.x86_64.rpm</span><br></pre></td></tr></table></figure>
 <p>启停服务：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service kapacitor start</span><br><span class="line">service kapacitor stop</span><br></pre></td></tr></table></figure>
-<p>如果influxdb安装在本地且开启了8086端口，则不需要进行任何配置，如果influxdb安装在其它机器，则需要配置kapacitor连接influxdb的api<br><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">vi</span> /etc/kapacitor/kapacitor.<span class="keyword">conf</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service kapacitor <span class="literal">start</span></span><br><span class="line">service kapacitor <span class="literal">stop</span></span><br></pre></td></tr></table></figure>
+<p>如果influxdb安装在本地且开启了8086端口，则不需要进行任何配置，如果influxdb安装在其它机器，则需要配置kapacitor连接influxdb的api</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">vi</span> /etc/kapacitor/kapacitor.<span class="keyword">conf</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>kapacitor常用命令</p>
 <p>kapacitor list tasks –显示所有当前kapacitor加载的脚本<br>kapacitor define  -tick  -dbrp  -type  –安装脚本到kapacitor<br>kapacitor enable  –脚本监控开启<br>kapacitor disable  –脚本监控关闭<br>kapacitor show  –显示某一个脚本的执行状态<br>kapacitor record  -task  -duration  –记录某一时间段内某脚本运行状态（测试用）<br>kapacitor replay kapacitor replay -recording  -task  –重复执行测试结果</p>
-<p>比如以下这个脚本：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">vi</span> <span class="selector-tag">task01</span><span class="selector-class">.tick</span></span><br></pre></td></tr></table></figure></p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var data = stream</span><br><span class="line"><span class="string">|from()</span></span><br><span class="line">.measurement('cpu')</span><br><span class="line"><span class="string">|alert()</span></span><br><span class="line">.info(lambda: <span class="string">"usage_idle"</span>&lt;=<span class="number">20</span>)</span><br><span class="line">.post('http://192.168.199.215:<span class="number">9001</span>')</span><br></pre></td></tr></table></figure>
-<p>此脚本作用为，在抓取到cpu表中cpu空闲率低于百分之20时即产生告警，<br>首先需要使用kapacitor define安装<br><figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor <span class="keyword">define</span> <span class="section">task01</span> -tick task01.tick -dbrp <span class="string">"monitor_db.autogen"</span> -type <span class="string">"stream"</span></span><br></pre></td></tr></table></figure></p>
-<p>然后使用 kapacitor record执行脚本采集<br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor <span class="keyword">record</span> stream -<span class="keyword">task</span> task01 -duration <span class="number">10</span>s</span><br></pre></td></tr></table></figure></p>
-<p>此命令会阻塞10秒，十秒以后系统会返回一个rid，通过此rid可以使用命令<br><figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor <span class="built_in">list</span> recordings $rid</span><br></pre></td></tr></table></figure></p>
-<p>来查看脚本执行状态，通常如果size那一栏不为空，则说明脚本有数据流入，则当前脚本是有效的<br>如果脚本当中有触发告警，可以到/vars/log/kapacitor.log或/tmp/alert.log当中查看告警触发结果</p>
-<p>确认告警脚本无误后，使用enable则可开启当前脚本的监控<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor <span class="builtin-name">enable</span> task01</span><br></pre></td></tr></table></figure></p>
+<p>比如以下这个脚本：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi task01.<span class="built_in">tick</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">var</span> <span class="variable">data</span> = <span class="variable">stream</span></span><br><span class="line">|<span class="function"><span class="title">from</span>()</span></span><br><span class="line">.measurement(<span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line">|<span class="function"><span class="title">alert</span>()</span></span><br><span class="line">.info(<span class="variable">lambda</span>: <span class="string">&quot;usage_idle&quot;</span>&lt;=<span class="number">20</span>)</span><br><span class="line">.post(<span class="string">&#x27;http://192.168.199.215:9001&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>此脚本作用为，在抓取到cpu表中cpu空闲率低于百分之20时即产生告警，<br>首先需要使用kapacitor define安装</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor define task01 -<span class="built_in">tick</span> task01.<span class="built_in">tick</span> -dbrp <span class="string">&quot;monitor_db.autogen&quot;</span> -type <span class="string">&quot;stream&quot;</span></span><br></pre></td></tr></table></figure>
+<p>然后使用 kapacitor record执行脚本采集</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor <span class="keyword">record</span> stream -<span class="keyword">task</span> task01 -duration <span class="number">10</span>s</span><br></pre></td></tr></table></figure>
+<p>此命令会阻塞10秒，十秒以后系统会返回一个rid，通过此rid可以使用命令</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">kapacitor</span> list recordings <span class="variable">$rid</span></span><br></pre></td></tr></table></figure>
+<p>来查看脚本执行状态，通常如果size那一栏不为空，则说明脚本有数据流入，则当前脚本是有效的<br>如果脚本当中有触发告警，可以到&#x2F;vars&#x2F;log&#x2F;kapacitor.log或&#x2F;tmp&#x2F;alert.log当中查看告警触发结果</p>
+<p>确认告警脚本无误后，使用enable则可开启当前脚本的监控</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kapacitor <span class="built_in">enable</span> task01</span><br></pre></td></tr></table></figure>
+
 <h2 id="脚本核心概念"><a href="#脚本核心概念" class="headerlink" title="脚本核心概念"></a>脚本核心概念</h2><ul>
 <li><p>task：<br>task是一个tickscript的最大粒度单位，可以说，一个tickscript就是一个task，task标识在kapacitor当中处理一段数据（a set of data）的任务集，一段脚本要起作用，首先需要经过kapacitor对当前的task文件进行编译（define）然后enable，同事还可以使用record命令来检测某一个task最近20分钟进入的数据流和节点处理的结果</p>
 </li>
 <li><p>pipeline<br>和名称类似，pipeline就是指管道，标识数据的流向<br>kapaciotr当中的数据是由influxdb处监听获取，从管道<br>自上而下进行处理，可以有分支，可以有交汇，但是不可以回溯，管道根据数据源来源方式不同，可以分为两种，即stream和batch</p>
 </li>
 <li><p>stream 数据流<br>kapacitor关键字之一，用来标识数据流来源的入口，即它会监听每一个插入influxdb的数据，然后通过管道当中 的各个节点进行处理，最终流向管道底部<br>格式：</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">var</span> varible_name = stream</span><br><span class="line">|<span class="keyword">from</span>()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 </li>
+</ul>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> <span class="built_in">var</span> varible_name = stream</span><br><span class="line">|<span class="keyword">from</span>()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ul>
 <li><p>batch 批处理<br>kapacitor关键字之一，用来标识批处理数据来源的入口，可以理解为每隔一段时间执行一条influxQL去influxdb当中查询数据，查询到的结果集会随当前batch所在的管道流向底部<br>格式：</p>
-<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> <span class="built_in">var</span> varible_name = batch</span><br><span class="line">|query(<span class="string">''</span><span class="string">'select usage_idle from cpu where host = '</span>xxx<span class="string">''</span><span class="string">''</span>)</span><br><span class="line"><span class="params">...</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> <span class="variable">var</span> <span class="variable">varible_name</span> = <span class="variable">batch</span></span><br><span class="line">|<span class="function"><span class="title">query</span>(<span class="string">&#x27;&#x27;</span><span class="string">&#x27;select usage_idle from cpu where host = &#x27;</span><span class="variable">xxx</span><span class="string">&#x27;&#x27;</span><span class="string">&#x27;&#x27;</span>)</span></span><br><span class="line">... </span><br></pre></td></tr></table></figure>
 <p><strong>stream是监听当前influxdb每一个时间点插入的数据流，而batch则是获取的InfluxQL查询的结果集，此结果集应该是单行的，stream下面可以不用直接跟from()方法指定数据库和表（即会监听当前所有插入influxdb的数据）<br>但是batch方法下必须指定query()作为批处理对数据进行筛选</strong></p>
 </li>
 <li><p>node<br>用来组成管道的节点，可以理解为我们常见的水管上用来拼接成管道的连接头，也可以理解为processor point，即数据处理器节点，一个pipeline是通过多个node组成的</p>
 </li>
 <li><p>filed和tag<br>是influxdb数据库的字段类型<br>field表示当前插入数据值，它带有数据类型，包括double int等<br>tag其实就是标签的意思，通常用于数据筛选，它的数据类型一定是字符串类型<br>eg：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">host       cpu<span class="emphasis">_usage_</span>idle</span><br><span class="line">--------------------</span><br><span class="line"><span class="emphasis">'1138'</span>         58.5</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+ <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">host       cpu_usage_idle</span></span><br><span class="line"><span class="section">--------------------</span></span><br><span class="line"><span class="emphasis">&#x27;1138&#x27;</span>         58.5</span><br></pre></td></tr></table></figure>
 <p>表示1138主机上的cpu使用空闲率为58.5%<br>在kapacitor当中是会将filed和tag进行区分的，一个明显的区别就是filed在node的处理过程当中可能会被销毁，但是tag不会</p>
 <ul>
-<li><p>syntax-subspace<br>语法子空间<br>kapacitor借鉴了很多种语言做出了tickscript，而tickscript当中包含语法子空间的<br>简单的说就是在一个task当中，不止包含tickscript语法<br>举个栗子<br>在使用query方法时</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">batch</span><br><span class="line">query(<span class="string">'''select count(usage_idle) from cpu where time &gt; now() - 10s limit 1'''</span>)</span><br></pre></td></tr></table></figure>
-<p>这里包含了influxQL查询语句，influxQL语法，就是一个语法子空间<br>还有比如使用eval模块时</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">|eval(<span class="string">lambda :</span> <span class="keyword">if</span>(<span class="string">"usage_idle"</span> &gt; <span class="number">80</span>)).<span class="keyword">as</span>(<span class="string">'res'</span>)</span><br></pre></td></tr></table></figure>
-</li>
+<li>syntax-subspace<br>语法子空间<br>kapacitor借鉴了很多种语言做出了tickscript，而tickscript当中包含语法子空间的<br>简单的说就是在一个task当中，不止包含tickscript语法<br>举个栗子<br>在使用query方法时</li>
 </ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">batch</span><br><span class="line">query(<span class="string">&#x27;&#x27;&#x27;select count(usage_idle) from cpu where time &gt; now() - 10s limit 1&#x27;&#x27;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>  这里包含了influxQL查询语句，influxQL语法，就是一个语法子空间<br>  还有比如使用eval模块时</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">|<span class="function"><span class="title">eval</span>(<span class="variable">lambda</span> : <span class="title">if</span>(<span class="string">&quot;usage_idle&quot;</span> &gt; <span class="number">80</span>)).as(<span class="string">&#x27;res&#x27;</span>)</span></span><br></pre></td></tr></table></figure>
 <p>这里使用lambda表达式，则使用了tickscript 和 lambda语法<br>通常在kapacitor当中也只会包含这两种另外的语法</p>
 <ul>
-<li>chaining method和property method<br>连接方法和连接方法的属性方法（子方法）<br>之前有说过node<br>定义一个node的方式则是使用一个管道符号（“|”）然后跟一个chaining method，概念上可以把chaining method直接认为是node<br>比如<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">var</span> <span class="meta">data</span> = <span class="keyword">stream</span></span><br><span class="line"><span class="keyword">|from()</span></span><br></pre></td></tr></table></figure>
-</li>
+<li>chaining method和property method<br>连接方法和连接方法的属性方法（子方法）<br>之前有说过node<br>定义一个node的方式则是使用一个管道符号（“|”）然后跟一个chaining method，概念上可以把chaining method直接认为是node<br>比如</li>
 </ul>
-<p>上面的from就是一个chaining method，和管道符号一起组成了一个node<br>而属性方法则是定义在当前连接方法下的子方法<br>比如as()<br>连接方法join()和连接方法eval()都有as()作为properties method 但是是两个完全不同的方法（join()下的as是为交汇的pipeline的结果集字段赋予前缀，eval()下的as是创建一个新的field字段供后面的节点使用）<br>eg：<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> data=stream</span><br><span class="line">|<span class="keyword">from</span>()</span><br><span class="line">  .database(<span class="string">'aomp_monitor_db'</span>)</span><br><span class="line">  .retentionPolicy(<span class="string">'one_day'</span>)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">var</span> data = stream</span><br><span class="line">|<span class="keyword">from</span>()</span><br></pre></td></tr></table></figure>
+<p>上面的from就是一个chaining method，和管道符号一起组成了一个node<br>而属性方法则是定义在当前连接方法下的子方法<br>比如as()<br>连接方法join()和连接方法eval()都有as()作为properties method 但是是两个完全不同的方法（join()下的as是为交汇的pipeline的结果集字段赋予前缀，eval()下的as是创建一个新的field字段供后面的节点使用）<br>eg：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var <span class="attribute">data</span>=stream</span><br><span class="line">|<span class="keyword">from</span>()</span><br><span class="line">  .database(<span class="string">&#x27;aomp_monitor_db&#x27;</span>)</span><br><span class="line">  .retentionPolicy(<span class="string">&#x27;one_day&#x27;</span>)</span><br></pre></td></tr></table></figure>
 <p>这里的database和retentionPolicy都是定义在chaining method下的property method，用来指定数据库和数据保存方法<br><strong>需要注意的是，property method的执行顺序是在chaining method执行之前按顺序执行，property method的同一个chaining method下的property metohd的执行顺序也会影响执行结果（亲测）</strong></p>
 <p>就像不同的水管只能装不同的连接器一样，不同的node后面只能跟指定的node，有的node作为pipeline的终端后面也不可以跟node，具体可以上官网看node之间的关联关系</p>
 <p>kapacitor脚本语法</p>
@@ -272,13 +284,12 @@
 <li>脚本结构：</li>
 </ol>
 <ul>
-<li>通常一个task被拆分为两个部分<br>declaration和expression<br>即声明和操作<br>声明即是声明变量<br>操作则是对数据进行处理评测并发出警告等，即是上面写的pipeline定义和处理<br>比如：<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> v_alarmRuleId=<span class="number">1894653</span></span><br><span class="line"><span class="keyword">var</span> v_alarmPolicyId=<span class="number">1894654</span></span><br><span class="line"><span class="keyword">var</span> v_level=<span class="symbol">'war</span>n'</span><br><span class="line"><span class="keyword">var</span> v_host='&#123;&#123; index .<span class="type">Tags</span> <span class="string">"host"</span> &#125;&#125;'</span><br><span class="line"><span class="keyword">var</span> v_target_id='&#123;&#123; index .<span class="type">Tags</span> <span class="string">"host"</span> &#125;&#125;'</span><br><span class="line"><span class="keyword">var</span> v_db=<span class="symbol">'aomp_monitor_d</span>b'</span><br><span class="line"><span class="keyword">var</span> v_rp=<span class="symbol">'autoge</span>n'</span><br><span class="line"><span class="keyword">var</span> v_measurement=<span class="symbol">'cp</span>u'</span><br><span class="line"><span class="keyword">var</span> v_groupBy=<span class="symbol">'hos</span>t'</span><br><span class="line"><span class="keyword">var</span> v_whereFilter=lambda: (<span class="string">"host"</span>==<span class="symbol">'188991</span>1' <span class="type">OR</span> <span class="string">"host"</span>==<span class="symbol">'187447</span>1' <span class="type">OR</span> <span class="string">"host"</span>==<span class="symbol">'185553</span>4')</span><br><span class="line"><span class="keyword">var</span> v_name='测试'</span><br><span class="line"><span class="keyword">var</span> v_field=<span class="symbol">'usage_idl</span>e'</span><br><span class="line"><span class="keyword">var</span> v_idVar=v_name +':&#123;&#123;.<span class="type">Group</span>&#125;&#125;'</span><br><span class="line"><span class="keyword">var</span> v_message=<span class="symbol">'id</span>:&#123;&#123; .<span class="type">ID</span> &#125;&#125; ,name: &#123;&#123; .<span class="type">Name</span>&#125;&#125;,taskname:&#123;&#123;.<span class="type">TaskName</span>&#125;&#125;,<span class="type">Group</span>:&#123;&#123;.<span class="type">Group</span>&#125;&#125;, host: &#123;&#123; index .<span class="type">Tags</span> <span class="string">"host"</span> &#125;&#125; ,<span class="type">Level</span> :warn, value:&#123;&#123; index .<span class="type">Fields</span> <span class="string">"value"</span> &#125;&#125;,time:&#123;&#123;.<span class="type">Time</span>&#125;&#125;'</span><br><span class="line"><span class="keyword">var</span> v_idTag=<span class="symbol">'alertI</span>D'</span><br><span class="line"><span class="keyword">var</span> v_levelTag=<span class="symbol">'leve</span>l'</span><br><span class="line"><span class="keyword">var</span> v_every=<span class="number">10</span>s</span><br><span class="line"><span class="keyword">var</span> v_messageField=<span class="symbol">'messag</span>e'</span><br><span class="line"><span class="keyword">var</span> v_durationField=<span class="symbol">'duratio</span>n'</span><br><span class="line"><span class="keyword">var</span> v_value='&#123;&#123; index .<span class="type">Fields</span> <span class="string">"value"</span> &#125;&#125;'</span><br><span class="line"><span class="keyword">var</span> data = stream </span><br><span class="line">|from() </span><br><span class="line">   .database(v_db) </span><br><span class="line">   .retentionPolicy(v_rp) </span><br><span class="line">   .measurement(v_measurement) </span><br><span class="line">   .where(v_whereFilter) </span><br><span class="line">   .groupBy(v_groupBy) </span><br><span class="line">   |eval(lambda: <span class="keyword">if</span>((<span class="string">"usage_idle"</span>&lt;=<span class="number">10</span>), <span class="number">1</span>, <span class="number">0</span>)).as(<span class="symbol">'re</span>s').keep() </span><br><span class="line"><span class="keyword">var</span> trigger = data </span><br><span class="line">|alert() </span><br><span class="line">   .info(lambda: <span class="string">"res"</span> == <span class="number">1</span>)</span><br><span class="line">    .id(v_idVar) </span><br><span class="line">    .message(v_message) </span><br><span class="line">    .messageField(v_messageField) </span><br><span class="line">    .durationField(v_durationField) </span><br><span class="line">    .stateChangesOnly() </span><br><span class="line">    .details('&#123;<span class="string">"v_alarmRuleId"</span>:<span class="string">"1894653"</span>,<span class="string">"v_alarmPolicyId"</span>:<span class="string">"1894654"</span>,<span class="string">"v_level"</span>:<span class="string">"warn"</span>,<span class="string">"v_host"</span>:<span class="string">"&#123;&#123; index .Tags "</span><span class="string">host" &#125;&#125;"</span>,<span class="string">"v_target_id"</span>:<span class="string">"&#123;&#123; index .Tags "</span><span class="string">host" &#125;&#125;"</span>,<span class="string">"v_db"</span>:<span class="string">"aomp_monitor_db"</span>,<span class="string">"v_rp"</span>:<span class="string">"autogen"</span>,<span class="string">"v_measurement"</span>:<span class="string">"cpu"</span>,<span class="string">"v_groupBy"</span>:<span class="string">"host"</span>,<span class="string">"v_name"</span>:<span class="string">"测试多条件告警规则策略"</span>,<span class="string">"v_field"</span>:<span class="string">"usage_idle"</span>,<span class="string">"v_idVar"</span>:<span class="string">"v_name +:&#123;&#123;.Group&#125;&#125;"</span>,<span class="string">"v_message"</span>:<span class="string">"id:&#123;&#123; .ID &#125;&#125; ,name: &#123;&#123; .Name&#125;&#125;,taskname:&#123;&#123;.TaskName&#125;&#125;,Group:&#123;&#123;.Group&#125;&#125;, host: &#123;&#123; index .Tags "</span><span class="string">host" &#125;&#125; ,Level :warn, value:&#123;&#123; index .Fields "</span><span class="string">value" &#125;&#125;,time:&#123;&#123;.Time&#125;&#125;"</span>,<span class="string">"v_idTag"</span>:<span class="string">"alertID"</span>,<span class="string">"v_levelTag"</span>:<span class="string">"level"</span>,<span class="string">"v_every"</span>:<span class="string">"10s"</span>,<span class="string">"v_messageField"</span>:<span class="string">"message"</span>,<span class="string">"v_durationField"</span>:<span class="string">"duration"</span>,<span class="string">"v_value"</span>:<span class="string">"&#123;&#123; index .Fields "</span><span class="string">value" &#125;&#125;"</span>&#125;')</span><br><span class="line">    .post(<span class="symbol">'http</span>:<span class="comment">//192.168.183.81:7001/open_api/alarm_notify/receive') </span></span><br><span class="line"><span class="keyword">var</span> solve_trigger = data </span><br><span class="line">| window() </span><br><span class="line">  .period(<span class="number">60</span>s) </span><br><span class="line">  .every(v_every) </span><br><span class="line">|alert() </span><br><span class="line">   .info(lambda: <span class="string">"res"</span> == <span class="number">0</span>)</span><br><span class="line">   .warn(lambda: <span class="string">"res"</span> == <span class="number">1</span>)</span><br><span class="line">    .id(v_idVar) </span><br><span class="line">    .message(v_message) </span><br><span class="line">    .messageField(v_messageField) </span><br><span class="line">    .durationField(v_durationField) </span><br><span class="line">    .stateChangesOnly() </span><br><span class="line">    .details('&#123;<span class="string">"v_alarmRuleId"</span>:<span class="string">"1894653"</span>,<span class="string">"v_alarmPolicyId"</span>:<span class="string">"1894654"</span>,<span class="string">"v_level"</span>:<span class="string">"warn"</span>,<span class="string">"v_host"</span>:<span class="string">"&#123;&#123; index .Tags "</span><span class="string">host" &#125;&#125;"</span>,<span class="string">"v_target_id"</span>:<span class="string">"&#123;&#123; index .Tags "</span><span class="string">host" &#125;&#125;"</span>,<span class="string">"v_db"</span>:<span class="string">"aomp_monitor_db"</span>,<span class="string">"v_rp"</span>:<span class="string">"autogen"</span>,<span class="string">"v_measurement"</span>:<span class="string">"cpu"</span>,<span class="string">"v_groupBy"</span>:<span class="string">"host"</span>,<span class="string">"v_name"</span>:<span class="string">"测试多条件告警规则策略"</span>,<span class="string">"v_field"</span>:<span class="string">"usage_idle"</span>,<span class="string">"v_idVar"</span>:<span class="string">"v_name +:&#123;&#123;.Group&#125;&#125;"</span>,<span class="string">"v_message"</span>:<span class="string">"id:&#123;&#123; .ID &#125;&#125; ,name: &#123;&#123; .Name&#125;&#125;,taskname:&#123;&#123;.TaskName&#125;&#125;,Group:&#123;&#123;.Group&#125;&#125;, host: &#123;&#123; index .Tags "</span><span class="string">host" &#125;&#125; ,Level :warn, value:&#123;&#123; index .Fields "</span><span class="string">value" &#125;&#125;,time:&#123;&#123;.Time&#125;&#125;"</span>,<span class="string">"v_idTag"</span>:<span class="string">"alertID"</span>,<span class="string">"v_levelTag"</span>:<span class="string">"level"</span>,<span class="string">"v_every"</span>:<span class="string">"10s"</span>,<span class="string">"v_messageField"</span>:<span class="string">"message"</span>,<span class="string">"v_durationField"</span>:<span class="string">"duration"</span>,<span class="string">"v_value"</span>:<span class="string">"&#123;&#123; index .Fields "</span><span class="string">value" &#125;&#125;"</span>&#125;')</span><br><span class="line">    .post(<span class="symbol">'http</span>:<span class="comment">//192.168.183.81:7001/open_api/alarm_notify/solve')</span></span><br></pre></td></tr></table></figure>
-</li>
+<li>通常一个task被拆分为两个部分<br>declaration和expression<br>即声明和操作<br>声明即是声明变量<br>操作则是对数据进行处理评测并发出警告等，即是上面写的pipeline定义和处理<br>比如：<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">var v_alarmRuleId=1894653</span></span><br><span class="line"><span class="language-xml">var v_alarmPolicyId=1894654</span></span><br><span class="line"><span class="language-xml">var v_level=&#x27;warn&#x27;</span></span><br><span class="line"><span class="language-xml">var v_host=&#x27;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml">&#x27;</span></span><br><span class="line"><span class="language-xml">var v_target_id=&#x27;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml">&#x27;</span></span><br><span class="line"><span class="language-xml">var v_db=&#x27;aomp_monitor_db&#x27;</span></span><br><span class="line"><span class="language-xml">var v_rp=&#x27;autogen&#x27;</span></span><br><span class="line"><span class="language-xml">var v_measurement=&#x27;cpu&#x27;</span></span><br><span class="line"><span class="language-xml">var v_groupBy=&#x27;host&#x27;</span></span><br><span class="line"><span class="language-xml">var v_whereFilter=lambda: (&quot;host&quot;==&#x27;1889911&#x27; OR &quot;host&quot;==&#x27;1874471&#x27; OR &quot;host&quot;==&#x27;1855534&#x27;)</span></span><br><span class="line"><span class="language-xml">var v_name=&#x27;测试&#x27;</span></span><br><span class="line"><span class="language-xml">var v_field=&#x27;usage_idle&#x27;</span></span><br><span class="line"><span class="language-xml">var v_idVar=v_name +&#x27;:</span><span class="template-variable">&#123;&#123;<span class="name">.Group</span>&#125;&#125;</span><span class="language-xml">&#x27;</span></span><br><span class="line"><span class="language-xml">var v_message=&#x27;id:</span><span class="template-variable">&#123;&#123; <span class="name">.ID</span> &#125;&#125;</span><span class="language-xml"> ,name: </span><span class="template-variable">&#123;&#123; <span class="name">.Name</span>&#125;&#125;</span><span class="language-xml">,taskname:</span><span class="template-variable">&#123;&#123;<span class="name">.TaskName</span>&#125;&#125;</span><span class="language-xml">,Group:</span><span class="template-variable">&#123;&#123;<span class="name">.Group</span>&#125;&#125;</span><span class="language-xml">, host: </span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml"> ,Level :warn, value:</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Fields <span class="string">&quot;value&quot;</span> &#125;&#125;</span><span class="language-xml">,time:</span><span class="template-variable">&#123;&#123;<span class="name">.Time</span>&#125;&#125;</span><span class="language-xml">&#x27;</span></span><br><span class="line"><span class="language-xml">var v_idTag=&#x27;alertID&#x27;</span></span><br><span class="line"><span class="language-xml">var v_levelTag=&#x27;level&#x27;</span></span><br><span class="line"><span class="language-xml">var v_every=10s</span></span><br><span class="line"><span class="language-xml">var v_messageField=&#x27;message&#x27;</span></span><br><span class="line"><span class="language-xml">var v_durationField=&#x27;duration&#x27;</span></span><br><span class="line"><span class="language-xml">var v_value=&#x27;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Fields <span class="string">&quot;value&quot;</span> &#125;&#125;</span><span class="language-xml">&#x27;</span></span><br><span class="line"><span class="language-xml">var data = stream </span></span><br><span class="line"><span class="language-xml">|from() </span></span><br><span class="line"><span class="language-xml">   .database(v_db) </span></span><br><span class="line"><span class="language-xml">   .retentionPolicy(v_rp) </span></span><br><span class="line"><span class="language-xml">   .measurement(v_measurement) </span></span><br><span class="line"><span class="language-xml">   .where(v_whereFilter) </span></span><br><span class="line"><span class="language-xml">   .groupBy(v_groupBy) </span></span><br><span class="line"><span class="language-xml">   |eval(lambda: if((&quot;usage_idle&quot;&lt;=10), 1, 0)).as(&#x27;res&#x27;).keep() </span></span><br><span class="line"><span class="language-xml">var trigger = data </span></span><br><span class="line"><span class="language-xml">|alert() </span></span><br><span class="line"><span class="language-xml">   .info(lambda: &quot;res&quot; == 1)</span></span><br><span class="line"><span class="language-xml">    .id(v_idVar) </span></span><br><span class="line"><span class="language-xml">    .message(v_message) </span></span><br><span class="line"><span class="language-xml">    .messageField(v_messageField) </span></span><br><span class="line"><span class="language-xml">    .durationField(v_durationField) </span></span><br><span class="line"><span class="language-xml">    .stateChangesOnly() </span></span><br><span class="line"><span class="language-xml">    .details(&#x27;&#123;&quot;v_alarmRuleId&quot;:&quot;1894653&quot;,&quot;v_alarmPolicyId&quot;:&quot;1894654&quot;,&quot;v_level&quot;:&quot;warn&quot;,&quot;v_host&quot;:&quot;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml">&quot;,&quot;v_target_id&quot;:&quot;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml">&quot;,&quot;v_db&quot;:&quot;aomp_monitor_db&quot;,&quot;v_rp&quot;:&quot;autogen&quot;,&quot;v_measurement&quot;:&quot;cpu&quot;,&quot;v_groupBy&quot;:&quot;host&quot;,&quot;v_name&quot;:&quot;测试多条件告警规则策略&quot;,&quot;v_field&quot;:&quot;usage_idle&quot;,&quot;v_idVar&quot;:&quot;v_name +:</span><span class="template-variable">&#123;&#123;<span class="name">.Group</span>&#125;&#125;</span><span class="language-xml">&quot;,&quot;v_message&quot;:&quot;id:</span><span class="template-variable">&#123;&#123; <span class="name">.ID</span> &#125;&#125;</span><span class="language-xml"> ,name: </span><span class="template-variable">&#123;&#123; <span class="name">.Name</span>&#125;&#125;</span><span class="language-xml">,taskname:</span><span class="template-variable">&#123;&#123;<span class="name">.TaskName</span>&#125;&#125;</span><span class="language-xml">,Group:</span><span class="template-variable">&#123;&#123;<span class="name">.Group</span>&#125;&#125;</span><span class="language-xml">, host: </span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml"> ,Level :warn, value:</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Fields <span class="string">&quot;value&quot;</span> &#125;&#125;</span><span class="language-xml">,time:</span><span class="template-variable">&#123;&#123;<span class="name">.Time</span>&#125;&#125;</span><span class="language-xml">&quot;,&quot;v_idTag&quot;:&quot;alertID&quot;,&quot;v_levelTag&quot;:&quot;level&quot;,&quot;v_every&quot;:&quot;10s&quot;,&quot;v_messageField&quot;:&quot;message&quot;,&quot;v_durationField&quot;:&quot;duration&quot;,&quot;v_value&quot;:&quot;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Fields <span class="string">&quot;value&quot;</span> &#125;&#125;</span><span class="language-xml">&quot;&#125;&#x27;)</span></span><br><span class="line"><span class="language-xml">    .post(&#x27;http://192.168.183.81:7001/open_api/alarm_notify/receive&#x27;) </span></span><br><span class="line"><span class="language-xml">var solve_trigger = data </span></span><br><span class="line"><span class="language-xml">| window() </span></span><br><span class="line"><span class="language-xml">  .period(60s) </span></span><br><span class="line"><span class="language-xml">  .every(v_every) </span></span><br><span class="line"><span class="language-xml">|alert() </span></span><br><span class="line"><span class="language-xml">   .info(lambda: &quot;res&quot; == 0)</span></span><br><span class="line"><span class="language-xml">   .warn(lambda: &quot;res&quot; == 1)</span></span><br><span class="line"><span class="language-xml">    .id(v_idVar) </span></span><br><span class="line"><span class="language-xml">    .message(v_message) </span></span><br><span class="line"><span class="language-xml">    .messageField(v_messageField) </span></span><br><span class="line"><span class="language-xml">    .durationField(v_durationField) </span></span><br><span class="line"><span class="language-xml">    .stateChangesOnly() </span></span><br><span class="line"><span class="language-xml">    .details(&#x27;&#123;&quot;v_alarmRuleId&quot;:&quot;1894653&quot;,&quot;v_alarmPolicyId&quot;:&quot;1894654&quot;,&quot;v_level&quot;:&quot;warn&quot;,&quot;v_host&quot;:&quot;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml">&quot;,&quot;v_target_id&quot;:&quot;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml">&quot;,&quot;v_db&quot;:&quot;aomp_monitor_db&quot;,&quot;v_rp&quot;:&quot;autogen&quot;,&quot;v_measurement&quot;:&quot;cpu&quot;,&quot;v_groupBy&quot;:&quot;host&quot;,&quot;v_name&quot;:&quot;测试多条件告警规则策略&quot;,&quot;v_field&quot;:&quot;usage_idle&quot;,&quot;v_idVar&quot;:&quot;v_name +:</span><span class="template-variable">&#123;&#123;<span class="name">.Group</span>&#125;&#125;</span><span class="language-xml">&quot;,&quot;v_message&quot;:&quot;id:</span><span class="template-variable">&#123;&#123; <span class="name">.ID</span> &#125;&#125;</span><span class="language-xml"> ,name: </span><span class="template-variable">&#123;&#123; <span class="name">.Name</span>&#125;&#125;</span><span class="language-xml">,taskname:</span><span class="template-variable">&#123;&#123;<span class="name">.TaskName</span>&#125;&#125;</span><span class="language-xml">,Group:</span><span class="template-variable">&#123;&#123;<span class="name">.Group</span>&#125;&#125;</span><span class="language-xml">, host: </span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Tags <span class="string">&quot;host&quot;</span> &#125;&#125;</span><span class="language-xml"> ,Level :warn, value:</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Fields <span class="string">&quot;value&quot;</span> &#125;&#125;</span><span class="language-xml">,time:</span><span class="template-variable">&#123;&#123;<span class="name">.Time</span>&#125;&#125;</span><span class="language-xml">&quot;,&quot;v_idTag&quot;:&quot;alertID&quot;,&quot;v_levelTag&quot;:&quot;level&quot;,&quot;v_every&quot;:&quot;10s&quot;,&quot;v_messageField&quot;:&quot;message&quot;,&quot;v_durationField&quot;:&quot;duration&quot;,&quot;v_value&quot;:&quot;</span><span class="template-variable">&#123;&#123; <span class="name">index</span> .Fields <span class="string">&quot;value&quot;</span> &#125;&#125;</span><span class="language-xml">&quot;&#125;&#x27;)</span></span><br><span class="line"><span class="language-xml">    .post(&#x27;http://192.168.183.81:7001/open_api/alarm_notify/solve&#x27;) </span></span><br></pre></td></tr></table></figure></li>
 </ul>
 <ol start="2">
-<li>变量<br>kapacitor脚本中所有声明的变量都是常量，每一次评估时变量的内容不可以修改<br>类似kapacitor这样的脚本有一个概念叫evaluate，即评估，每一次评估则意味着一次数据进入脚本，在数据在pipeline当中流动的时候，当前脚本定义的变量值和流动的数据本身，是不可修改的<br>变量声明格式类似go和javascript<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> v_db = <span class="string">'monitor_linux_db'</span></span><br></pre></td></tr></table></figure>
-</li>
+<li>变量<br>kapacitor脚本中所有声明的变量都是常量，每一次评估时变量的内容不可以修改<br>类似kapacitor这样的脚本有一个概念叫evaluate，即评估，每一次评估则意味着一次数据进入脚本，在数据在pipeline当中流动的时候，当前脚本定义的变量值和流动的数据本身，是不可修改的<br>变量声明格式类似go和javascript</li>
 </ol>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> v_db = <span class="string">&#x27;monitor_linux_db&#x27;</span></span><br></pre></td></tr></table></figure>
 <p>变量名必须以英文开头，区分大小写，英文开头后可以跟数字，下划线等<br>变量声明不可以用kapacitor关键字，比如stream和batch</p>
 <ol start="3">
 <li><p>空格<br>tickscript中，在expression部分，空格是可以忽略的，但是在声明变量的declaration部分要求必须使用空格将var标识和变量名隔开</p>
@@ -291,29 +302,30 @@
 <li>数据结构<br>常用的数据结构包含<br>string duration int float lamdba list</li>
 </ol>
 <ul>
-<li><p>string<br>使用单引号表示字符串<br>当需要在字符串当中引用变量时:<br>引用当前script当中定义的变量直接使用<code>{{.valrible_name }}</code> 比如<code>{{.ID }}</code><br>引用结果集或者stream当中定义的变量使用<code>{{index .Fileds &quot;usage_idle&quot; }}</code>或者<code>{{index.Tags &quot;host&quot; }}</code></p>
+<li><p>string<br>使用单引号表示字符串<br>当需要在字符串当中引用变量时:<br>引用当前script当中定义的变量直接使用<code>&#123;&#123; '&#123;&#123;' &#125;&#125;.valrible_name &#125;&#125;</code> 比如<code>&#123;&#123; '&#123;&#123;' &#125;&#125;.ID &#125;&#125;</code><br>引用结果集或者stream当中定义的变量使用<code>&#123;&#123; '&#123;&#123;' &#125;&#125;index .Fileds &quot;usage_idle&quot; &#125;&#125;</code>或者<code>&#123;&#123; '&#123;&#123;' &#125;&#125;index.Tags &quot;host&quot; &#125;&#125;</code></p>
 </li>
 <li><p>duration<br>时间数据类型<br>这里列举一下时间数据类型常见字面量<br>1d 1w 1h 1m 1s 1ms 1u<br>天 周 小时 分 秒 毫秒 微秒</p>
 </li>
 <li><p>regular expression<br>正则表达式类型<br>字面量：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> cz_reg = <span class="regexp">/^cz\d+/</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>lambda表达式<br>通常用来做数据处理并返回一个处理后的值<br>常见字面量<br>var my_lambda = lambda:1&gt;0<br>返回一个值为true的lambda表达式类型变量</p>
-</li>
+</ul>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> cz_reg = <span class="regexp">/^cz\d+/</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>lambda表达式<br>通常用来做数据处理并返回一个处理后的值<br>常见字面量<br>var my_lambda &#x3D; lambda:1&gt;0<br>返回一个值为true的lambda表达式类型变量</li>
 <li>int 和 float<br>如果没有在使用lineprotocol插入数据到influxdb的时候指定某个filed字段为int类型，那么默认都是float类型，需要注意的是，有的lambda表达式方法需要的参数限制了数据类型为int，这个时候可以用int()方法强转一下</li>
 </ul>
 <ol start="6">
 <li>comparison operator 比较器</li>
 </ol>
 <ul>
-<li>lamdba比较器<br>使用 == 和 ！=，以及AND 和 OR 进行表达式比较</li>
-<li>influxql比较器<br>除了普遍的sql语法外，influxQL还支持使用=~和！~<br>来进行正则表达式的匹配</li>
+<li>lamdba比较器<br>使用 &#x3D;&#x3D; 和 ！&#x3D;，以及AND 和 OR 进行表达式比较</li>
+<li>influxql比较器<br>除了普遍的sql语法外，influxQL还支持使用&#x3D;<del>和！</del><br>来进行正则表达式的匹配</li>
 </ul>
 <p>7.关于node的分类</p>
 <ul>
 <li>关于node<br>node分类为<br>datasource definition nodes 比如 batch和stream<br>data definition node 比如 from() query()<br>data manipulation nodes 比如 sample() default()<br>processing nodes<br>processing nodes下分<br>数据构造处理节点和传输处理节点<br>比如alert()是数据传输处理节点<br>join()是数据构造处理节点</li>
 </ul>
-<p>8.kapacitor还可以调用自己的go方法<br>使用@+方法名进行调用<br>参考官方文档<br><a href="http://docs.influxdata.com/" target="_blank" rel="noopener">http://docs.influxdata.com/</a></p>
+<p>8.kapacitor还可以调用自己的go方法<br>使用@+方法名进行调用<br>参考官方文档<br><a href="http://docs.influxdata.com/">http://docs.influxdata.com/</a></p>
 
     </div>
     
@@ -349,8 +361,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -382,7 +396,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初识"><span class="toc-text">初识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#脚本核心概念"><span class="toc-text">脚本核心概念</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E8%AF%86"><span class="toc-text">初识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%84%9A%E6%9C%AC%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-text">脚本核心概念</span></a></li></ol>
         
     </div>
 </aside>
@@ -415,7 +429,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -437,7 +451,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

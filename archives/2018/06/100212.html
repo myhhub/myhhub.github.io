@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,19 +18,19 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="docker">
+    <meta name="keywords" content="docker" />
 
 
     <meta name="description" content="接上文: Docker基础之 五.数据共享与持久化
 
-Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0的虚拟网桥，此主机上启动的Docker容器会连接到这个虚拟网桥...">
+Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0的虚拟网桥，此主机上启动的Docker容器会连接到这个虚拟网桥..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -47,9 +47,11 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -66,7 +68,7 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -84,9 +86,9 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -191,7 +193,7 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/docker/">docker</a>
+                    <a class="tag-none-link" href="/tags/docker/" rel="tag">docker</a>
                 
             </span>
         </span>
@@ -209,7 +211,7 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2226</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2471</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -220,34 +222,44 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
 <h2 id="Bridge模式"><a href="#Bridge模式" class="headerlink" title="Bridge模式"></a>Bridge模式</h2><p>当<code>Docker</code>进程启动时，会在主机上创建一个名为<code>docker0</code>的虚拟网桥，此主机上启动的<code>Docker</code>容器会连接到这个虚拟网桥上。虚拟网桥的工作方式和物理交换机类似，这样主机上的所有容器就通过交换机连在了一个二层网络中。从<code>docker0</code>子网中分配一个 IP 给容器使用，并设置 docker0 的 IP 地址为容器的<strong>默认网关</strong>。在主机上创建一对虚拟网卡<code>veth pair</code>设备，Docker 将 veth pair 设备的一端放在新创建的容器中，并命名为<code>eth0</code>（容器的网卡），另一端放在主机中，以<code>vethxxx</code>这样类似的名字命名，并将这个网络设备加入到 docker0 网桥中。可以通过<code>brctl show</code>命令查看。</p>
 <p><code>bridge</code>模式是 docker 的默认网络模式，不写<code>–net</code>参数，就是<code>bridge</code>模式。使用<code>docker run -p</code>时，docker 实际是在<code>iptables</code>做了<code>DNAT</code>规则，实现端口转发功能。可以使用<code>iptables -t nat -vnL</code>查看。<code>bridge</code>模式如下图所示： <img src="/img/docker/docker-netework-bridge.jpeg" alt="bridge network"></p>
 <p>演示：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=bridge --name docker_bri1 \</span><br><span class="line">             ubuntu-base:v3</span><br><span class="line">             docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=bridge --name docker_bri2 \</span><br><span class="line">             ubuntu-base:v3 </span><br><span class="line"></span><br><span class="line">$ brctl show</span><br><span class="line">$ docker exec -ti docker_bri1 /bin/bash</span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>–n</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="built_in">run</span> -tid <span class="attribute">--net</span>=bridge --name docker_bri1 \</span><br><span class="line">             ubuntu-base:v3</span><br><span class="line">             docker <span class="built_in">run</span> -tid <span class="attribute">--net</span>=bridge --name docker_bri2 \</span><br><span class="line">             ubuntu-base:v3 </span><br><span class="line"></span><br><span class="line">$ brctl show</span><br><span class="line">$ docker exec -ti docker_bri1 /bin/bash</span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>–n</span><br></pre></td></tr></table></figure>
+
 <p>如果你之前有 Docker 使用经验，你可能已经习惯了使用<code>--link</code>参数来使容器互联。</p>
 <p>随着 Docker 网络的完善，强烈建议大家将容器加入自定义的 Docker 网络来连接多个容器，而不是使用 –link 参数。</p>
 <p>下面先创建一个新的 Docker 网络。</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker<span class="built_in"> network </span>create -d<span class="built_in"> bridge </span>my-net</span><br></pre></td></tr></table></figure>
+
 <p><code>-d</code>参数指定 Docker 网络类型，有 <code>bridge overlay</code>。其中 overlay 网络类型用于 Swarm mode，在本小节中你可以忽略它。</p>
 <p>运行一个容器并连接到新建的 my-net 网络</p>
 <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="keyword">run</span> -it --<span class="keyword">rm</span> --name busybox1 --network my-<span class="keyword">net</span> busybox <span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+
 <p>打开新的终端，再运行一个容器并加入到 my-net 网络</p>
 <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="keyword">run</span> -it --<span class="keyword">rm</span> --name busybox2 --network my-<span class="keyword">net</span> busybox <span class="keyword">sh</span></span><br></pre></td></tr></table></figure>
+
 <p>再打开一个新的终端查看容器信息</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker container ls</span><br><span class="line"></span><br><span class="line">CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES</span><br><span class="line">b47060aca56b        busybox             <span class="string">"sh"</span>                <span class="number">11</span> minutes ago      Up <span class="number">11</span> minutes                           busybox2</span><br><span class="line"><span class="number">8720575823</span>ec        busybox             <span class="string">"sh"</span>                <span class="number">16</span> minutes ago      Up <span class="number">16</span> minutes                           busybox1</span><br></pre></td></tr></table></figure>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker container ls</span><br><span class="line"></span><br><span class="line">CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES</span><br><span class="line"><span class="keyword">b47060aca56b </span>       <span class="keyword">busybox </span>            <span class="string">&quot;sh&quot;</span>                <span class="number">11</span> minutes ago      Up <span class="number">11</span> minutes                           <span class="keyword">busybox2</span></span><br><span class="line"><span class="keyword"></span><span class="number">8720575823</span>ec        <span class="keyword">busybox </span>            <span class="string">&quot;sh&quot;</span>                <span class="number">16</span> minutes ago      Up <span class="number">16</span> minutes                           <span class="keyword">busybox1</span></span><br></pre></td></tr></table></figure>
+
 <p>下面通过 ping 来证明 busybox1 容器和 busybox2 容器建立了互联关系。 在 busybox1 容器输入以下命令</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/ #<span class="built_in"> ping </span>busybox2</span><br><span class="line">PING busybox2 (172.19.0.3): 56 data bytes</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.3: <span class="attribute">seq</span>=0 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.072 ms</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.3: <span class="attribute">seq</span>=1 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.118 ms</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/ #<span class="built_in"> ping </span>busybox2<span class="built_in"></span></span><br><span class="line"><span class="built_in">PING </span>busybox2 (172.19.0.3): 56 data bytes</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.3: <span class="attribute">seq</span>=0 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.072 ms</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.3: <span class="attribute">seq</span>=1 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.118 ms</span><br></pre></td></tr></table></figure>
+
 <p>用 ping 来测试连接 busybox2 容器，它会解析成 172.19.0.3。 同理在 busybox2 容器执行 ping busybox1，也会成功连接到。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/ #<span class="built_in"> ping </span>busybox1</span><br><span class="line">PING busybox1 (172.19.0.2): 56 data bytes</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.2: <span class="attribute">seq</span>=0 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.064 ms</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.2: <span class="attribute">seq</span>=1 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.143 ms</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/ #<span class="built_in"> ping </span>busybox1<span class="built_in"></span></span><br><span class="line"><span class="built_in">PING </span>busybox1 (172.19.0.2): 56 data bytes</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.2: <span class="attribute">seq</span>=0 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.064 ms</span><br><span class="line">64 bytes <span class="keyword">from</span> 172.19.0.2: <span class="attribute">seq</span>=1 <span class="attribute">ttl</span>=64 <span class="attribute">time</span>=0.143 ms</span><br></pre></td></tr></table></figure>
+
 <p>这样，busybox1 容器和 busybox2 容器建立了互联关系。</p>
 <p>如果你有多个容器之间需要互相连接，推荐使用<code>Docker Compose</code>。</p>
 <h2 id="Host-模式"><a href="#Host-模式" class="headerlink" title="Host 模式"></a>Host 模式</h2><p>如果启动容器的时候使用<code>host</code>模式，那么这个容器将不会获得一个独立的<code>Network Namespace</code>，而是和宿主机共用一个 Network Namespace。容器将不会虚拟出自己的网卡，配置自己的 IP 等，而是使用宿主机的 IP 和端口。但是，容器的其他方面，如文件系统、进程列表等还是和宿主机隔离的。 Host模式如下图所示：</p>
 <p><img src="/img/docker/docker-network-host.jpeg" alt="network host"></p>
 <p>演示：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=host --name docker_host1 ubuntu-base:v3</span><br><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=host --name docker_host2 ubuntu-base:v3</span><br><span class="line"></span><br><span class="line">$ docker exec -ti docker_host1 /bin/bash</span><br><span class="line">$ docker exec -ti docker_host1 /bin/bash</span><br><span class="line"></span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>–n</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -tid --net=host --name docker_host1 ubuntu-base:v3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -tid --net=host --name docker_host2 ubuntu-base:v3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -ti docker_host1 /bin/bash</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -ti docker_host1 /bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ifconfig –a</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">route –n</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="Container-模式"><a href="#Container-模式" class="headerlink" title="Container 模式"></a>Container 模式</h2><p>这个模式指定新创建的容器和已经存在的一个容器共享一个 Network Namespace，而不是和宿主机共享。新创建的容器不会创建自己的网卡，配置自己的 IP，而是和一个指定的容器共享 IP、端口范围等。同样，两个容器除了网络方面，其他的如文件系统、进程列表等还是隔离的。两个容器的进程可以通过 lo 网卡设备通信。 Container模式示意图：<br><img src="/img/docker/docker-network-container.jpeg" alt="network container"> </p>
 <p>演示：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=container:docker_bri1 \</span><br><span class="line">              --name docker_con1 ubuntu-base:v3</span><br><span class="line"></span><br><span class="line">$ docker exec -ti docker_con1 /bin/bash</span><br><span class="line">$ docker exec -ti docker_bri1 /bin/bash</span><br><span class="line"></span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>-n</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -tid --net=container:docker_bri1 \</span></span><br><span class="line"><span class="language-bash">              --name docker_con1 ubuntu-base:v3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -ti docker_con1 /bin/bash</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -ti docker_bri1 /bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ifconfig –a</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">route -n</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="None模式"><a href="#None模式" class="headerlink" title="None模式"></a>None模式</h2><p>使用<code>none</code>模式，Docker 容器拥有自己的 Network Namespace，但是，并不为Docker 容器进行任何网络配置。也就是说，这个 Docker 容器没有网卡、IP、路由等信息。需要我们自己为 Docker 容器添加网卡、配置 IP 等。 None模式示意图:<br><img src="/img/docker/docker-network-none.jpeg" alt="network none"></p>
 <p>演示：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="builtin-name">run</span> -tid <span class="attribute">--net</span>=none --name \</span><br><span class="line">                docker_non1 ubuntu-base:v3</span><br><span class="line"></span><br><span class="line">$ docker exec -ti docker_non1 /bin/bash</span><br><span class="line"></span><br><span class="line">$ ifconfig –a</span><br><span class="line">$<span class="built_in"> route </span>-n</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -tid --net=none --name \</span></span><br><span class="line"><span class="language-bash">                docker_non1 ubuntu-base:v3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker <span class="built_in">exec</span> -ti docker_non1 /bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ifconfig –a</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">route -n</span></span><br></pre></td></tr></table></figure>
+
 <p>Docker 的跨主机通信在这里就先暂时不讲解，在后面的<code>Kubernetes</code>文章当中会讲到。</p>
 <hr>
 <p>接下文: <a href="100213.html">Docker基础之 七.Docker Compose</a></p>
@@ -286,8 +298,10 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -319,7 +333,7 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bridge模式"><span class="toc-text">Bridge模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Host-模式"><span class="toc-text">Host 模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Container-模式"><span class="toc-text">Container 模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#None模式"><span class="toc-text">None模式</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bridge%E6%A8%A1%E5%BC%8F"><span class="toc-text">Bridge模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Host-%E6%A8%A1%E5%BC%8F"><span class="toc-text">Host 模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Container-%E6%A8%A1%E5%BC%8F"><span class="toc-text">Container 模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#None%E6%A8%A1%E5%BC%8F"><span class="toc-text">None模式</span></a></li></ol>
         
     </div>
 </aside>
@@ -352,7 +366,7 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -374,7 +388,9 @@ Bridge模式当Docker进程启动时，会在主机上创建一个名为docker0�
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

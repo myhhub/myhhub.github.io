@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,19 +18,19 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="kubernetes,pod">
+    <meta name="keywords" content="kubernetes,pod" />
 
 
     <meta name="description" content="接上文: 深入理解kubernetes Pod之 一.浅析YAML基本语法
 
-前面给大家讲解了YAML 文件的使用，也手动的创建了一个简单的 Pod，这节课开始我们就来深入的学习下我们的 Pod...">
+前面给大家讲解了YAML 文件的使用，也手动的创建了一个简单的 Pod，这节课开始我们就来深入的学习下我们的 Pod..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -47,9 +47,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -66,7 +68,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -84,9 +86,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -191,7 +193,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/pod/">pod</a>
+                    <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a> <a class="tag-none-link" href="/tags/pod/" rel="tag">pod</a>
                 
             </span>
         </span>
@@ -209,7 +211,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2042</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2287</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -220,28 +222,37 @@
 <p>前面给大家讲解了YAML 文件的使用，也手动的创建了一个简单的 Pod，这节课开始我们就来深入的学习下我们的 Pod。在Kubernetes集群中除了我们经常使用到的普通的 Pod 外，还有一种特殊的 Pod，叫做<code>Static Pod</code>，就是我们说的静态 Pod，静态 Pod 有什么特殊的地方呢？</p>
 <p>静态 Pod 直接由特定节点上的<code>kubelet</code>进程来管理，不通过 master 节点上的<code>apiserver</code>。无法与我们常用的控制器<code>Deployment</code>或者<code>DaemonSet</code>进行关联，它由<code>kubelet</code>进程自己来监控，当<code>pod</code>崩溃时重启该<code>pod</code>，<code>kubelete</code>也无法对他们进行健康检查。静态 pod 始终绑定在某一个<code>kubelet</code>，并且始终运行在同一个节点上。 <code>kubelet</code>会自动为每一个静态 pod 在 Kubernetes 的 apiserver 上创建一个镜像 Pod（Mirror Pod），因此我们可以在 apiserver 中查询到该 pod，但是不能通过 apiserver 进行控制（例如不能删除）。</p>
 <p>创建静态 Pod 有两种方式：配置文件和 HTTP 两种方式</p>
-<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>配置文件就是放在特定目录下的标准的 JSON 或 YAML 格式的 pod 定义文件。用<code>kubelet --pod-manifest-path=&lt;the directory&gt;</code>来启动<code>kubelet</code>进程，kubelet 定期的去扫描这个目录，根据这个目录下出现或消失的 YAML/JSON 文件来创建或删除静态 pod。</p>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>配置文件就是放在特定目录下的标准的 JSON 或 YAML 格式的 pod 定义文件。用<code>kubelet --pod-manifest-path=&lt;the directory&gt;</code>来启动<code>kubelet</code>进程，kubelet 定期的去扫描这个目录，根据这个目录下出现或消失的 YAML&#x2F;JSON 文件来创建或删除静态 pod。</p>
 <p>比如我们在 node01 这个节点上用静态 pod 的方式来启动一个 nginx 的服务。我们登录到node01节点上面，可以通过下面命令找到kubelet对应的启动配置文件</p>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>systemctl status kubelet</span><br></pre></td></tr></table></figure>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>systemctl status kubelet</span><br></pre></td></tr></table></figure>
+
 <p>配置文件路径为：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/systemd/system/kubelet<span class="selector-class">.service</span><span class="selector-class">.d</span>/<span class="number">10</span>-kubeadm.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="regexp">/etc/</span>systemd<span class="regexp">/system/</span>kubelet.service.d/<span class="number">10</span>-kubeadm.conf</span><br></pre></td></tr></table></figure>
+
 <p>打开这个文件我们可以看到其中有一条如下的环境变量配置： <code>Environment=&quot;KUBELET_SYSTEM_PODS_ARGS=--pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true&quot;</code></p>
 <p>所以如果我们通过<code>kubeadm</code>的方式来安装的集群环境，对应的<code>kubelet</code>已经配置了我们的静态 Pod 文件的路径，那就是<code>/etc/kubernetes/manifests</code>，所以我们只需要在该目录下面创建一个标准的 Pod 的 JSON 或者 YAML 文件即可：</p>
 <p>如果你的 kubelet 启动参数中没有配置上面的<code>--pod-manifest-path</code>参数的话，那么添加上这个参数然后重启 kubelet 即可。</p>
-<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@ node01 ~] $ cat <span class="params">&lt;&lt;EOF &gt;</span><span class="meta-keyword">/etc/</span>kubernetes<span class="meta-keyword">/manifest/</span>static-web.yaml</span><br><span class="line"><span class="symbol">apiVersion:</span> v1</span><br><span class="line"><span class="symbol">kind:</span> Pod</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> static-web</span><br><span class="line"><span class="symbol">  labels:</span></span><br><span class="line"><span class="symbol">    app:</span> static</span><br><span class="line"><span class="symbol">spec:</span></span><br><span class="line"><span class="symbol">  containers:</span></span><br><span class="line">    - name: web</span><br><span class="line"><span class="symbol">      image:</span> nginx</span><br><span class="line"><span class="symbol">      ports:</span></span><br><span class="line">        - name: web</span><br><span class="line"><span class="symbol">          containerPort:</span> <span class="number">80</span></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-<h3 id="通过-HTTP-创建静态-Pods"><a href="#通过-HTTP-创建静态-Pods" class="headerlink" title="通过 HTTP 创建静态 Pods"></a>通过 HTTP 创建静态 Pods</h3><p>kubelet 周期地从<code>–manifest-url=</code>参数指定的地址下载文件，并且把它翻译成 JSON/YAML 格式的 pod 定义。此后的操作方式与<code>–pod-manifest-path=</code>相同，kubelet 会不时地重新下载该文件，当文件变化时对应地终止或启动静态 pod。</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@ node01 ~] $ cat <span class="operator">&lt;</span><span class="operator">&lt;</span>EOF <span class="operator">&gt;</span><span class="symbol">/etc/kubernetes/manifest/static-web.yaml</span></span><br><span class="line"><span class="params">apiVersion:</span> v1</span><br><span class="line"><span class="params">kind:</span> Pod</span><br><span class="line"><span class="params">metadata:</span></span><br><span class="line">  <span class="params">name:</span> static-web</span><br><span class="line">  <span class="params">labels:</span></span><br><span class="line">    <span class="params">app:</span> static</span><br><span class="line"><span class="params">spec:</span></span><br><span class="line">  <span class="params">containers:</span></span><br><span class="line">    <span class="operator">-</span> <span class="params">name:</span> web</span><br><span class="line">      <span class="params">image:</span> nginx</span><br><span class="line">      <span class="params">ports:</span></span><br><span class="line">        <span class="operator">-</span> <span class="params">name:</span> web</span><br><span class="line">          <span class="params">containerPort:</span> <span class="number">80</span></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h3 id="通过-HTTP-创建静态-Pods"><a href="#通过-HTTP-创建静态-Pods" class="headerlink" title="通过 HTTP 创建静态 Pods"></a>通过 HTTP 创建静态 Pods</h3><p>kubelet 周期地从<code>–manifest-url=</code>参数指定的地址下载文件，并且把它翻译成 JSON&#x2F;YAML 格式的 pod 定义。此后的操作方式与<code>–pod-manifest-path=</code>相同，kubelet 会不时地重新下载该文件，当文件变化时对应地终止或启动静态 pod。</p>
 <h3 id="静态pods的动作行为"><a href="#静态pods的动作行为" class="headerlink" title="静态pods的动作行为"></a>静态pods的动作行为</h3><p>kubelet 启动时，由<code>--pod-manifest-path= or --manifest-url=</code>参数指定的目录下定义的所有 pod 都会自动创建，例如，我们示例中的 static-web。（可能要花些时间拉取nginx 镜像，耐心等待…）</p>
-<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="title">@node01</span> ~] $ docker ps</span><br><span class="line">CONTAINER ID IMAGE         COMMAND  CREATED        STATUS         PORTS     NAMES</span><br><span class="line">f<span class="number">6</span>d<span class="number">05272</span>b<span class="number">57</span>e nginx:latest  <span class="string">"nginx"</span>  <span class="number">8</span> minutes ago  Up <span class="number">8</span> minutes             k<span class="number">8</span>s_web.<span class="number">6</span>f<span class="number">802</span>af<span class="number">4</span>_static-web-fk-node<span class="number">1</span>_default_<span class="number">67e24</span>ed<span class="number">9466</span>ba<span class="number">55986</span>d<span class="number">120</span><span class="keyword">c</span><span class="number">867395</span>f<span class="number">3</span>c_<span class="number">378e5</span>f<span class="number">3</span><span class="keyword">c</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="title">@node01</span> ~] $ docker ps</span><br><span class="line">CONTAINER ID IMAGE         COMMAND  CREATED        STATUS         PORTS     NAMES</span><br><span class="line">f<span class="number">6</span>d<span class="number">05272</span>b<span class="number">57</span>e nginx:latest  <span class="string">&quot;nginx&quot;</span>  <span class="number">8</span> minutes ago  Up <span class="number">8</span> minutes             k<span class="number">8</span>s_web.<span class="number">6</span>f<span class="number">802</span>af<span class="number">4</span>_static-web-fk-node<span class="number">1</span>_default_<span class="number">67e24</span>ed<span class="number">9466</span>ba<span class="number">55986</span>d<span class="number">120</span><span class="keyword">c</span><span class="number">867395</span>f<span class="number">3</span>c_<span class="number">378e5</span>f<span class="number">3</span><span class="keyword">c</span></span><br></pre></td></tr></table></figure>
+
 <p>现在我们通过<code>kubectl</code>工具可以看到这里创建了一个新的镜像 Pod：</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~] $ kubectl get pods</span><br><span class="line">NAME                       READY     STATUS    RESTARTS   AGE</span><br><span class="line">static-web-my-node01        <span class="number">1</span>/<span class="number">1</span>       Running   <span class="number">0</span>          <span class="number">2</span>m</span><br></pre></td></tr></table></figure>
-<p>静态 pod 的标签会传递给镜像 Pod，可以用来过滤或筛选。 需要注意的是，我们不能通过 API 服务器来删除静态 pod（例如，通过<a href="https://kubernetes.io/docs/user-guide/kubectl/" target="_blank" rel="noopener">kubectl</a>命令），kebelet 不会删除它。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~] $ kubectl <span class="keyword">delete</span> pod <span class="keyword">static</span>-web-my-node01</span><br><span class="line">[root@node01 ~] $ kubectl <span class="keyword">get</span> pods</span><br><span class="line"><span class="keyword">NAME</span>                       READY     <span class="keyword">STATUS</span>    RESTARTS   AGE</span><br><span class="line"><span class="keyword">static</span>-web-my-node01        <span class="number">1</span>/<span class="number">1</span>       Running   <span class="number">0</span>          <span class="number">12</span>s</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@node01</span> <span class="operator">~</span>] $ kubectl <span class="keyword">get</span> pods</span><br><span class="line">NAME                       READY     STATUS    RESTARTS   AGE</span><br><span class="line"><span class="keyword">static</span><span class="operator">-</span>web<span class="operator">-</span>my<span class="operator">-</span>node01        <span class="number">1</span><span class="operator">/</span><span class="number">1</span>       <span class="keyword">Running</span>   <span class="number">0</span>          <span class="number">2</span>m</span><br></pre></td></tr></table></figure>
+
+<p>静态 pod 的标签会传递给镜像 Pod，可以用来过滤或筛选。 需要注意的是，我们不能通过 API 服务器来删除静态 pod（例如，通过<a href="https://kubernetes.io/docs/user-guide/kubectl/">kubectl</a>命令），kebelet 不会删除它。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="variable">@node01</span> <span class="operator">~</span>] $ kubectl <span class="keyword">delete</span> pod <span class="keyword">static</span><span class="operator">-</span>web<span class="operator">-</span>my<span class="operator">-</span>node01</span><br><span class="line">[root<span class="variable">@node01</span> <span class="operator">~</span>] $ kubectl <span class="keyword">get</span> pods</span><br><span class="line">NAME                       READY     STATUS    RESTARTS   AGE</span><br><span class="line"><span class="keyword">static</span><span class="operator">-</span>web<span class="operator">-</span>my<span class="operator">-</span>node01        <span class="number">1</span><span class="operator">/</span><span class="number">1</span>       <span class="keyword">Running</span>   <span class="number">0</span>          <span class="number">12</span>s</span><br></pre></td></tr></table></figure>
+
 <p>我们尝试手动终止容器，可以看到kubelet很快就会自动重启容器。</p>
-<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~] <span class="symbol">$</span> docker ps</span><br><span class="line"><span class="function"><span class="title">CONTAINER</span></span> ID        IMAGE         COMMAND                CREATED       ...</span><br><span class="line"><span class="number">5</span>b920cbaf8b1        nginx:latest  <span class="string">"nginx -g 'daemon of   2 seconds ago ...</span></span><br></pre></td></tr></table></figure>
-<h3 id="静态pods的动态增加和删除"><a href="#静态pods的动态增加和删除" class="headerlink" title="静态pods的动态增加和删除"></a>静态pods的动态增加和删除</h3><p>运行中的kubelet周期扫描配置的目录（我们这个例子中就是/etc/kubernetes/manifests）下文件的变化，当这个目录中有文件出现或消失时创建或删除pods。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="meta">@node</span>01 ~] $ mv <span class="regexp">/etc/</span>kubernetes<span class="regexp">/manifests/</span><span class="keyword">static</span>-web.yaml /tmp</span><br><span class="line">[root<span class="meta">@node</span>01 ~] $ sleep <span class="number">20</span></span><br><span class="line">[root<span class="meta">@node</span>01 ~] $ docker ps</span><br><span class="line"><span class="comment">// no nginx container is running</span></span><br><span class="line">[root<span class="meta">@node</span>01 ~] $ mv <span class="regexp">/tmp/</span><span class="keyword">static</span>-web.yaml  <span class="regexp">/etc/</span>kubernetes/manifests</span><br><span class="line">[root<span class="meta">@node</span>01 ~] $ sleep <span class="number">20</span></span><br><span class="line">[root<span class="meta">@node</span>01 ~] $ docker ps</span><br><span class="line">CONTAINER ID        IMAGE         COMMAND                CREATED           ...</span><br><span class="line">e7a62e3427f1        <span class="string">nginx:</span>latest  <span class="string">"nginx -g 'daemon of   27 seconds ago</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node01 ~] <span class="symbol">$</span> docker ps</span><br><span class="line"><span class="function"><span class="title">CONTAINER</span></span> ID        IMAGE         COMMAND                CREATED       ...</span><br><span class="line"><span class="number">5</span>b920cbaf8b1        nginx:latest  <span class="string">&quot;nginx -g &#x27;daemon of   2 seconds ago ...</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="静态pods的动态增加和删除"><a href="#静态pods的动态增加和删除" class="headerlink" title="静态pods的动态增加和删除"></a>静态pods的动态增加和删除</h3><p>运行中的kubelet周期扫描配置的目录（我们这个例子中就是&#x2F;etc&#x2F;kubernetes&#x2F;manifests）下文件的变化，当这个目录中有文件出现或消失时创建或删除pods。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">node01</span> ~] <span class="variable">$</span> <span class="built_in">mv</span> /etc/kubernetes/manifests/<span class="keyword">static</span><span class="literal">-web</span>.yaml /tmp</span><br><span class="line">[<span class="type">root</span>@<span class="type">node01</span> ~] <span class="variable">$</span> <span class="built_in">sleep</span> <span class="number">20</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">node01</span> ~] <span class="variable">$</span> docker <span class="built_in">ps</span></span><br><span class="line">// no nginx container is running</span><br><span class="line">[<span class="type">root</span>@<span class="type">node01</span> ~] <span class="variable">$</span> <span class="built_in">mv</span> /tmp/<span class="keyword">static</span><span class="literal">-web</span>.yaml  /etc/kubernetes/manifests</span><br><span class="line">[<span class="type">root</span>@<span class="type">node01</span> ~] <span class="variable">$</span> <span class="built_in">sleep</span> <span class="number">20</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">node01</span> ~] <span class="variable">$</span> docker <span class="built_in">ps</span></span><br><span class="line">CONTAINER ID        IMAGE         COMMAND                CREATED           ...</span><br><span class="line">e7a62e3427f1        nginx:latest  <span class="string">&quot;nginx -g &#x27;daemon of   27 seconds ago</span></span><br></pre></td></tr></table></figure>
+
 <p>其实我们用 kubeadm 安装的集群，master 节点上面的几个重要组件都是用静态 Pod 的方式运行的，我们登录到 master 节点上查看<code>/etc/kubernetes/manifests</code>目录：</p>
 <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@<span class="keyword">master</span> <span class="title">~]# ls</span> /etc/kubernetes/manifests/</span><br><span class="line">etcd.yaml  kube-apiserver.yaml  kube-controller-manager.yaml  kube-scheduler.yaml</span><br></pre></td></tr></table></figure>
+
 <p>现在明白了吧，这种方式也为我们将集群的一些组件容器化提供了可能，因为这些 Pod 都不会受到 apiserver 的控制，不然我们这里<code>kube-apiserver</code>怎么自己去控制自己呢？万一不小心把这个 Pod 删掉了呢？所以只能有<code>kubelet</code>自己来进行控制，这就是我们所说的静态 Pod。</p>
 <hr>
 <p>接下文: <a href="100117.html">深入理解kubernetes Pod之 三.Pod Hook</a></p>
@@ -280,8 +291,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -313,7 +326,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件"><span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#通过-HTTP-创建静态-Pods"><span class="toc-text">通过 HTTP 创建静态 Pods</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#静态pods的动作行为"><span class="toc-text">静态pods的动作行为</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#静态pods的动态增加和删除"><span class="toc-text">静态pods的动态增加和删除</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-HTTP-%E5%88%9B%E5%BB%BA%E9%9D%99%E6%80%81-Pods"><span class="toc-text">通过 HTTP 创建静态 Pods</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81pods%E7%9A%84%E5%8A%A8%E4%BD%9C%E8%A1%8C%E4%B8%BA"><span class="toc-text">静态pods的动作行为</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81pods%E7%9A%84%E5%8A%A8%E6%80%81%E5%A2%9E%E5%8A%A0%E5%92%8C%E5%88%A0%E9%99%A4"><span class="toc-text">静态pods的动态增加和删除</span></a></li></ol>
         
     </div>
 </aside>
@@ -346,7 +359,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -368,7 +381,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

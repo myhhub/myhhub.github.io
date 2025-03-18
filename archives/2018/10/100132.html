@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,19 +18,19 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="kubernetes,helm,chart">
+    <meta name="keywords" content="kubernetes,helm,chart" />
 
 
     <meta name="description" content="接上文: kubernetes包管理工具Helm之 三.Helm Hooks使用
 
-Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来说 Helm Chart 模板就并不一定显...">
+Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来说 Helm Chart 模板就并不一定显..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -47,9 +47,11 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -66,7 +68,7 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -84,9 +86,9 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -191,7 +193,7 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/chart/">chart</a> <a class="tag-link" href="/tags/helm/">helm</a> <a class="tag-link" href="/tags/kubernetes/">kubernetes</a>
+                    <a class="tag-none-link" href="/tags/chart/" rel="tag">chart</a> <a class="tag-none-link" href="/tags/helm/" rel="tag">helm</a> <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                 
             </span>
         </span>
@@ -209,7 +211,7 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2093</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2338</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -218,38 +220,51 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
         <p>接上文: <a href="100058.html">kubernetes包管理工具Helm之 三.Helm Hooks使用</a></p>
 <hr>
 <p><a href="https://www.ljjyy.com/tags/helm/">Helm</a> Chart 在我们使用的时候非常方便的，但是对于开发人员来说 Helm Chart 模板就并不一定显得那么友好了，本文主要介绍了 Helm Chart 模板开发人员在构建生产级的 Chart 包时的一些技巧和窍门。</p>
-<h3 id="了解你的模板功能"><a href="#了解你的模板功能" class="headerlink" title="了解你的模板功能"></a>了解你的模板功能</h3><p><a href="https://www.ljjyy.com/tags/helm/">Helm</a> 使用<a href="https://godoc.org/text/template" target="_blank" rel="noopener">Go Template</a>来模板化资源文件。在 Go 提供的内置函数基础上，还添加了许多其他功能。</p>
-<p>首先，添加了<a href="https://godoc.org/github.com/Masterminds/sprig" target="_blank" rel="noopener">Sprig库</a>中的几乎所有函数，出于安全原因，删除了两个函数：<code>env</code>和<code>expandenv</code>（这会让 Chart 模板开发者访问到 Tiller 的环境）。 另外还添加了两个特殊的模板函数：<code>include</code>和<code>required</code>，<code>include</code>函数允许你引入另一个模板，然后将结果传递给其他模板函数。</p>
+<h3 id="了解你的模板功能"><a href="#了解你的模板功能" class="headerlink" title="了解你的模板功能"></a>了解你的模板功能</h3><p><a href="https://www.ljjyy.com/tags/helm/">Helm</a> 使用<a href="https://godoc.org/text/template">Go Template</a>来模板化资源文件。在 Go 提供的内置函数基础上，还添加了许多其他功能。</p>
+<p>首先，添加了<a href="https://godoc.org/github.com/Masterminds/sprig">Sprig库</a>中的几乎所有函数，出于安全原因，删除了两个函数：<code>env</code>和<code>expandenv</code>（这会让 Chart 模板开发者访问到 Tiller 的环境）。 另外还添加了两个特殊的模板函数：<code>include</code>和<code>required</code>，<code>include</code>函数允许你引入另一个模板，然后将结果传递给其他模板函数。</p>
 <p>例如，下面的模板片段中引用了一个名为<code>mytpl</code>的模板，然后将结果转成小写，并用双引号包装起来：</p>
-<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">value: &#123;&#123; include <span class="string">"mytpl"</span> . | <span class="type">lower</span> | <span class="type">quote</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">value: </span><span class="template-variable">&#123;&#123; <span class="name">include</span> <span class="string">&quot;mytpl&quot;</span> . | lower | quote &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p><code>required</code>函数允许你根据模板的需要声明特定的值，如果值为空，则默认渲染的时候会报错。下面的这个示例被声明为 .Values.who 是必须的，为空的时候会打印出一段错误提示信息：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">value: &#123;&#123;required <span class="string">"A valid .Values.who entry required!"</span> <span class="selector-class">.Values</span><span class="selector-class">.who</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">value: </span><span class="template-variable">&#123;&#123;<span class="name">required</span> <span class="string">&quot;A valid .Values.who entry required!&quot;</span> .Values.who &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="引用字符串，不要引用整数"><a href="#引用字符串，不要引用整数" class="headerlink" title="引用字符串，不要引用整数"></a>引用字符串，不要引用整数</h3><p>当你使用字符串数据的时候，为了安全考虑应该总是使用字符串而不是直接暴露出来：露：</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">name</span>: &#123;&#123; .Values.MyName | <span class="literal">quote</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">name: </span><span class="template-variable">&#123;&#123; <span class="name">.Values.MyName</span> | quote &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>当使用整数时，不要直接引用这些值，在很多情况下，可能会导致 <a href="https://www.ljjyy.com/tags/kubernetes/">Kubernetes</a> 内部的解析错误。</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">port: &#123;&#123; <span class="selector-class">.Values</span><span class="selector-class">.Port</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">port: </span><span class="template-variable">&#123;&#123; <span class="name">.Values.Port</span> &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="使用-include-功能"><a href="#使用-include-功能" class="headerlink" title="使用 include 功能"></a>使用 include 功能</h3><p>Go 提供了一种使用内置<code>template</code>指令将一个模板包含在另外一个模板中的方法。但是，内置函数不能用于 Go 模板管道。为了能够包含模板，然后对该模板的输出执行操作，Helm 提供了特殊的<code>include</code>功能：</p>
-<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; include <span class="string">"toYaml"</span> $value | indent <span class="number">2</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="template-variable">&#123;&#123; <span class="name">include</span> <span class="string">&quot;toYaml&quot;</span> $value | indent <span class="number">2</span>&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>上面包含一个名为<code>toYaml</code>的模板，然后将值<code>$value</code>传递给模板，最后将该模板的输出传递给<code>indent</code>函数。</p>
 <p>由于 YAML 对于缩进级别和空格的重要性，所以这是包含代码片段的一种很好的方法，但是需要在相关的上下文中处理缩进。</p>
-<h3 id="使用-tpl-函数"><a href="#使用-tpl-函数" class="headerlink" title="使用 tpl 函数"></a>使用 tpl 函数</h3><figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tpl`函数运行允许开发人员将字符串计算为模板内的模板，这对于将模板字符串作为值传递给 Chart 或者呈现外部配置文件很有用：`&#123;&#123; tpl TEMPLATE_STRING VALUES &#125;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用-tpl-函数"><a href="#使用-tpl-函数" class="headerlink" title="使用 tpl 函数"></a>使用 tpl 函数</h3><figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">tpl`函数运行允许开发人员将字符串计算为模板内的模板，这对于将模板字符串作为值传递给 Chart 或者呈现外部配置文件很有用：`</span><span class="template-variable">&#123;&#123; <span class="name">tpl</span> TEMPLATE_STRING VALUES &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>例子：</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># values</span></span><br><span class="line">template: <span class="string">"&#123;&#123; .Values.name &#125;&#125;"</span></span><br><span class="line">name: <span class="string">"Tom"</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># template</span></span><br><span class="line">&#123;&#123; tpl .Values.template . &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta"># output</span></span><br><span class="line">Tom</span><br></pre></td></tr></table></figure>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># values</span></span><br><span class="line"><span class="keyword">template</span>: <span class="string">&quot;&#123;&#123; .Values.name &#125;&#125;&quot;</span></span><br><span class="line">name: <span class="string">&quot;Tom&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># template</span></span><br><span class="line">&#123;&#123; tpl .Values.<span class="keyword">template</span> . &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta"># output</span></span><br><span class="line">Tom</span><br></pre></td></tr></table></figure>
+
 <p>渲染外部配置文件：</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># external configuration file conf/app.conf</span></span><br><span class="line">firstName=&#123;&#123; .Values.firstName &#125;&#125;</span><br><span class="line">lastName=&#123;&#123; .Values.lastName &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># values</span></span><br><span class="line"><span class="section">firstName: Peter</span></span><br><span class="line"><span class="section">lastName: Parker</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># template</span></span><br><span class="line">&#123;&#123; tpl (.Files.Get <span class="string">"conf/app.conf"</span>) . &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># output</span></span><br><span class="line">firstName=Peter</span><br><span class="line">lastName=Parker</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml"># external configuration file conf/app.conf</span></span><br><span class="line"><span class="language-xml">firstName=</span><span class="template-variable">&#123;&#123; <span class="name">.Values.firstName</span> &#125;&#125;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">lastName=</span><span class="template-variable">&#123;&#123; <span class="name">.Values.lastName</span> &#125;&#125;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"># values</span></span><br><span class="line"><span class="language-xml">firstName: Peter</span></span><br><span class="line"><span class="language-xml">lastName: Parker</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"># template</span></span><br><span class="line"><span class="language-xml"></span><span class="template-variable">&#123;&#123; <span class="name">tpl</span> (<span class="name">.Files.Get</span> <span class="string">&quot;conf/app.conf&quot;</span>) . &#125;&#125;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"># output</span></span><br><span class="line"><span class="language-xml">firstName=Peter</span></span><br><span class="line"><span class="language-xml">lastName=Parker</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="创建-imagePullSecret"><a href="#创建-imagePullSecret" class="headerlink" title="创建 imagePullSecret"></a>创建 imagePullSecret</h3><p><code>imagePullSecret</code>基本上是<code>registry、用户名和密码</code>的组合，我们在使用私有仓库的时候需要使用到，需要用<code>base64</code>对这些数据进行编码，我们可以编写一个模板来生成这个配置文件：</p>
 <p>首先，假设我们在<code>values.yaml</code>中定义如下：</p>
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">imageCredentials:</span></span><br><span class="line"><span class="symbol">  registry:</span> quay.io</span><br><span class="line"><span class="symbol">  username:</span> someone</span><br><span class="line"><span class="symbol">  password:</span> sillyness</span><br></pre></td></tr></table></figure>
+
 <p>然后我们可以这样来定义模板：</p>
-<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;- define <span class="string">"imagePullSecret"</span> &#125;&#125;</span><br><span class="line">&#123;&#123;- printf <span class="string">"&#123;\"auths\": &#123;\"%s\": &#123;\"auth\": \"%s\"&#125;&#125;&#125;"</span> .Values.imageCredentials.registry (<span class="name"><span class="builtin-name">printf</span></span> <span class="string">"%s:%s"</span> .Values.imageCredentials.username .Values.imageCredentials.password | b64enc) | b64enc &#125;&#125;</span><br><span class="line">&#123;&#123;- end &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="template-variable">&#123;&#123;<span class="name">-</span> define <span class="string">&quot;imagePullSecret&quot;</span> &#125;&#125;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"></span><span class="template-variable">&#123;&#123;<span class="name">-</span> printf <span class="string">&quot;&#123;\&quot;auths\&quot;: &#123;\&quot;%s\&quot;: &#123;\&quot;auth\&quot;: \&quot;%s\&quot;&#125;&#125;&#125;&quot;</span> .Values.imageCredentials.registry (<span class="name">printf</span> <span class="string">&quot;%s:%s&quot;</span> .Values.imageCredentials.username .Values.imageCredentials.password | b64enc) | b64enc &#125;&#125;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"></span><span class="template-variable">&#123;&#123;<span class="name">-</span> end &#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>最后，我们在 Secret 模板中使用上面定义的模板来创建对象：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  name: myregistrykey</span><br><span class="line">type: kubernetes.io/dockerconfigjson</span><br><span class="line">data:</span><br><span class="line">  .dockerconfigjson: &#123;&#123; template <span class="string">"imagePullSecret"</span> . &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">apiVersion:</span> v1</span><br><span class="line"><span class="params">kind:</span> Secret</span><br><span class="line"><span class="params">metadata:</span></span><br><span class="line">  <span class="params">name:</span> myregistrykey</span><br><span class="line"><span class="params">type:</span> kubernetes.io<span class="symbol">/dockerconfigjson</span></span><br><span class="line"><span class="params">data:</span></span><br><span class="line">  .<span class="params">dockerconfigjson:</span> &#123;&#123; template <span class="string">&quot;imagePullSecret&quot;</span> . &#125;&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="ConfigMap-或者-Secret-更改时自动更新"><a href="#ConfigMap-或者-Secret-更改时自动更新" class="headerlink" title="ConfigMap 或者 Secret 更改时自动更新"></a>ConfigMap 或者 Secret 更改时自动更新</h3><p>ConfigMap 或者 Secret 通常作为配置文件注入到容器中，如果后面使用<code>helm upgrade</code>来升级更新这些应用程序，则可能需要重新启动，但如果部署的资源清单数据没有改变则应用程序还会继续使用旧的配置，从而导致部署不一致。</p>
 <p><code>sha256sum</code>函数可用于确保在另一个文件更改时更新部署的 annotations 部分：</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">kind</span>: Deployment</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">template</span>:</span><br><span class="line">    <span class="attribute">metadata</span>:</span><br><span class="line">      <span class="attribute">annotations</span>:</span><br><span class="line">        checksum/<span class="attribute">config</span>: &#123;&#123; include (print $.Template.BasePath <span class="string">"/configmap.yaml"</span>) . | sha256sum &#125;&#125;</span><br><span class="line"><span class="selector-attr">[...]</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">kind: Deployment</span></span><br><span class="line"><span class="language-xml">spec:</span></span><br><span class="line"><span class="language-xml">  template:</span></span><br><span class="line"><span class="language-xml">    metadata:</span></span><br><span class="line"><span class="language-xml">      annotations:</span></span><br><span class="line"><span class="language-xml">        checksum/config: </span><span class="template-variable">&#123;&#123; <span class="name">include</span> (<span class="name">print</span> $.Template.BasePath <span class="string">&quot;/configmap.yaml&quot;</span>) . | sha256sum &#125;&#125;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">[...]</span></span><br></pre></td></tr></table></figure>
+
 <p>更多的信息我们可以查看<code>helm upgrade --recreate-pods</code>命令来了解这个问题的其他信息。</p>
 <h3 id="告诉-Tiller-不要删除资源"><a href="#告诉-Tiller-不要删除资源" class="headerlink" title="告诉 Tiller 不要删除资源"></a>告诉 Tiller 不要删除资源</h3><p>有的时候在运行<code>helm delete</code>命令后有些资源不应该被删除。Chart 开发者可以在资源对象中添加一个 annotation 来保护资源不被删除：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  annotations:</span><br><span class="line">    <span class="string">"helm.sh/resource-policy"</span>: keep</span><br><span class="line">[<span class="built_in">..</span>.]</span><br></pre></td></tr></table></figure>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">kind:</span> Secret</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  annotations:</span></span><br><span class="line">    <span class="string">&quot;helm.sh/resource-policy&quot;</span>: keep</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>注意引号是必须的</p>
 </blockquote>
@@ -259,18 +274,19 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
 <h3 id="有需要依赖的复杂-Chart"><a href="#有需要依赖的复杂-Chart" class="headerlink" title="有需要依赖的复杂 Chart"></a>有需要依赖的复杂 Chart</h3><p>官方的 Chart 仓库中有许多 Chart 都是用于创建更加高级的应用程序的“构建块”。但是 Chart 也可以用于创建大型应用程序。在这种情况下，单个 Chart 可能需要包含多个子 Chart，每个子 Chart 作为整体的一部分。</p>
 <p>对于复杂的应用程序当前最佳的实践方式是创建一个顶级的 Chart，然后使用<code>charts</code>子目录嵌入每个组件。</p>
 <p>下面是两个复杂的项目使用案例：</p>
-<p><strong>SAP的OpenStack Chart：</strong>这个 Chart 包用于在 Kubernetes 上安装一套完整的<code>OpenStack IaaS</code>系统，所有的 Charts 包都在这个 Github 仓库中：<a href="https://github.com/sapcc/helm-charts" target="_blank" rel="noopener">openstack-helm</a></p>
-<p><strong>Deis的Workflow：</strong>这个 Chart 包使用一个 Chart 安装整个 Deis PaaS 系统，但是它与<code>SAP Chart</code>的不同之处在于，每个子 Chart 都是独立的，都在不同的 Git 仓库中进行托管的，查看<code>requirements.yaml</code>文件，可以了解该 Chart 是如何通过他的 CI/CD pipeline 构建的。仓库地址：<a href="https://github.com/deis/workflow/tree/master/charts/workflow" target="_blank" rel="noopener">Workflow</a></p>
+<p>**SAP的OpenStack Chart：**这个 Chart 包用于在 Kubernetes 上安装一套完整的<code>OpenStack IaaS</code>系统，所有的 Charts 包都在这个 Github 仓库中：<a href="https://github.com/sapcc/helm-charts">openstack-helm</a></p>
+<p>**Deis的Workflow：**这个 Chart 包使用一个 Chart 安装整个 Deis PaaS 系统，但是它与<code>SAP Chart</code>的不同之处在于，每个子 Chart 都是独立的，都在不同的 Git 仓库中进行托管的，查看<code>requirements.yaml</code>文件，可以了解该 Chart 是如何通过他的 CI&#x2F;CD pipeline 构建的。仓库地址：<a href="https://github.com/deis/workflow/tree/master/charts/workflow">Workflow</a></p>
 <p>这两个 Chart 都说明了使用 Helm 构建复杂环境是很成熟的技术。</p>
 <h3 id="YAML-是-JSON-的超集"><a href="#YAML-是-JSON-的超集" class="headerlink" title="YAML 是 JSON 的超集"></a>YAML 是 JSON 的超集</h3><p>根据 YAML 的规范，YAML 是 JSON 的超集，这意味着任何有效的 JSON 结构在 YAML 中都是有效的。</p>
 <p>所以有时候可能我们去使用 JSON 的语法来表达数据结构更容易，而不是去处理 YAML 的空白。</p>
 <p>当然作为最佳实践，模板应该遵循 YAML 的语法，除非 JSON 语法大大降低了格式化问题的风险。</p>
 <h3 id="小心生成随机值"><a href="#小心生成随机值" class="headerlink" title="小心生成随机值"></a>小心生成随机值</h3><p>Helm 中有一些功能运行你生成随机数据，加密密钥等，但需要注意的是，在升级过程中，会重新执行模板渲染，当模板运行生成的数据与上次不一致时，会触发该资源的更新。</p>
 <h3 id="系统的升级版本"><a href="#系统的升级版本" class="headerlink" title="系统的升级版本"></a>系统的升级版本</h3><p>在安装和升级版本时使用相同的命令：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm<span class="built_in"> upgrade </span>--install &lt;release name&gt; --values &lt;values file&gt; &lt;chart directory&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm upgrade --install <span class="tag">&lt;<span class="name">release</span> <span class="attr">name</span>&gt;</span> --values <span class="tag">&lt;<span class="name">values</span> <span class="attr">file</span>&gt;</span> <span class="tag">&lt;<span class="name">chart</span> <span class="attr">directory</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <hr>
 <p><strong>参考资料</strong></p>
-<p><a href="https://github.com/technosophos/k8s-helm/blob/master/docs/charts_tips_and_tricks.md" target="_blank" rel="noopener">https://github.com/technosophos/k8s-helm/blob/master/docs/charts_tips_and_tricks.md</a><br><a href="https://github.com/sapcc/helm-charts" target="_blank" rel="noopener">https://github.com/sapcc/helm-charts</a><br><a href="https://github.com/deis/workflow/tree/master/charts/workflow" target="_blank" rel="noopener">https://github.com/deis/workflow/tree/master/charts/workflow</a><br><a href="https://godoc.org/text/template" target="_blank" rel="noopener">https://godoc.org/text/template</a><br><a href="https://godoc.org/github.com/Masterminds/sprig" target="_blank" rel="noopener">https://godoc.org/github.com/Masterminds/sprig</a></p>
+<p><a href="https://github.com/technosophos/k8s-helm/blob/master/docs/charts_tips_and_tricks.md">https://github.com/technosophos/k8s-helm/blob/master/docs/charts_tips_and_tricks.md</a><br><a href="https://github.com/sapcc/helm-charts">https://github.com/sapcc/helm-charts</a><br><a href="https://github.com/deis/workflow/tree/master/charts/workflow">https://github.com/deis/workflow/tree/master/charts/workflow</a><br><a href="https://godoc.org/text/template">https://godoc.org/text/template</a><br><a href="https://godoc.org/github.com/Masterminds/sprig">https://godoc.org/github.com/Masterminds/sprig</a></p>
 
     </div>
     
@@ -306,8 +322,10 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -339,7 +357,7 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#了解你的模板功能"><span class="toc-text">了解你的模板功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引用字符串，不要引用整数"><span class="toc-text">引用字符串，不要引用整数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用-include-功能"><span class="toc-text">使用 include 功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用-tpl-函数"><span class="toc-text">使用 tpl 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-imagePullSecret"><span class="toc-text">创建 imagePullSecret</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConfigMap-或者-Secret-更改时自动更新"><span class="toc-text">ConfigMap 或者 Secret 更改时自动更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#告诉-Tiller-不要删除资源"><span class="toc-text">告诉 Tiller 不要删除资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用Partials"><span class="toc-text">使用Partials</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有需要依赖的复杂-Chart"><span class="toc-text">有需要依赖的复杂 Chart</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YAML-是-JSON-的超集"><span class="toc-text">YAML 是 JSON 的超集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小心生成随机值"><span class="toc-text">小心生成随机值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#系统的升级版本"><span class="toc-text">系统的升级版本</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3%E4%BD%A0%E7%9A%84%E6%A8%A1%E6%9D%BF%E5%8A%9F%E8%83%BD"><span class="toc-text">了解你的模板功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%8C%E4%B8%8D%E8%A6%81%E5%BC%95%E7%94%A8%E6%95%B4%E6%95%B0"><span class="toc-text">引用字符串，不要引用整数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-include-%E5%8A%9F%E8%83%BD"><span class="toc-text">使用 include 功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-tpl-%E5%87%BD%E6%95%B0"><span class="toc-text">使用 tpl 函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-imagePullSecret"><span class="toc-text">创建 imagePullSecret</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConfigMap-%E6%88%96%E8%80%85-Secret-%E6%9B%B4%E6%94%B9%E6%97%B6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0"><span class="toc-text">ConfigMap 或者 Secret 更改时自动更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%8A%E8%AF%89-Tiller-%E4%B8%8D%E8%A6%81%E5%88%A0%E9%99%A4%E8%B5%84%E6%BA%90"><span class="toc-text">告诉 Tiller 不要删除资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Partials"><span class="toc-text">使用Partials</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E9%9C%80%E8%A6%81%E4%BE%9D%E8%B5%96%E7%9A%84%E5%A4%8D%E6%9D%82-Chart"><span class="toc-text">有需要依赖的复杂 Chart</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YAML-%E6%98%AF-JSON-%E7%9A%84%E8%B6%85%E9%9B%86"><span class="toc-text">YAML 是 JSON 的超集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E5%BF%83%E7%94%9F%E6%88%90%E9%9A%8F%E6%9C%BA%E5%80%BC"><span class="toc-text">小心生成随机值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8D%87%E7%BA%A7%E7%89%88%E6%9C%AC"><span class="toc-text">系统的升级版本</span></a></li></ol>
         
     </div>
 </aside>
@@ -372,7 +390,7 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -394,7 +412,9 @@ Helm Chart 在我们使用的时候非常方便的，但是对于开发人员来
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

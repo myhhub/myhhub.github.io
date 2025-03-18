@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,18 +18,18 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="c#,ildasm">
+    <meta name="keywords" content="c#,ildasm" />
 
 
     <meta name="description" content="用ILDasm打开的时候，出现了”受保护模块—无法进行反汇编”的错误提示
-看到这个错误提示后，便尝试用ILSpy打开，结果一切正常。网上搜了下，原来是SuppressIldasmAttribut...">
+看到这个错误提示后，便尝试用ILSpy打开，结果一切正常。网上搜了下，原来是SuppressIldasmAttribut..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -46,9 +46,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -65,7 +67,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -83,9 +85,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -190,7 +192,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/c/">c#</a> <a class="tag-link" href="/tags/ildasm/">ildasm</a>
+                    <a class="tag-none-link" href="/tags/c/" rel="tag">c#</a> <a class="tag-none-link" href="/tags/ildasm/" rel="tag">ildasm</a>
                 
             </span>
         </span>
@@ -208,7 +210,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2091</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2336</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -216,17 +218,17 @@
     <div class="post-body post-content">
         <p>用ILDasm打开的时候，出现了”受保护模块—无法进行反汇编”的错误提示</p>
 <p>看到这个错误提示后，便尝试用ILSpy打开，结果一切正常。网上搜了下，原来是SuppressIldasmAttribute这个属性弄的。</p>
-<p>关于SuppressIldasmAttribute这个属性，它可以在程序集中声明，声明这个属性后，ILDasm便不对这个程序集进行反汇编，从而起到一定程度的保护作用。其使用方法可以参看<a href="http://www.dotblogs.com.tw/larrynung/archive/2010/05/09/15105.aspx" target="_blank" rel="noopener">使用SuppressIldasmAttribute防止MSIL反組譯工具對組件進行反組譯</a>这篇文章。</p>
+<p>关于SuppressIldasmAttribute这个属性，它可以在程序集中声明，声明这个属性后，ILDasm便不对这个程序集进行反汇编，从而起到一定程度的保护作用。其使用方法可以参看<a href="http://www.dotblogs.com.tw/larrynung/archive/2010/05/09/15105.aspx">使用SuppressIldasmAttribute防止MSIL反組譯工具對組件進行反組譯</a>这篇文章。</p>
 <p>不过，这个SuppressIldasmAttribute是个君子协议，就算加上这个声明，编译器也没有什么额外的保护操作，只是ILDasm不对它反汇编罢了。像ILSpy、Reflector等第三方反编译工具都是无视这个属性的，基本上是一种掩耳盗铃罢了。</p>
 <p>那么，如果我们要用ILDasm越过SuppressIldasmAttribute的限制反汇编程序该怎么办呢？一种方法是写个程序修改该程序集的的IL码，去掉SuppressIldasmAttribute属性，代码如下（需要Mono.Cecil库支持）：</p>
-<p>​    public static void RemoveSuppressIldasmAttribute(string input, string output)<br>​    {<br>​        AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(input);<br>​        foreach (CustomAttribute attribute in assembly.CustomAttributes)<br>​        {<br>​            if (attribute.Constructor.DeclaringType.Name == “SuppressIldasmAttribute”)<br>​            {<br>​                assembly.CustomAttributes.Remove(attribute);<br>​                break;<br>​            }<br>​        }</p>
-<p>​        assembly.Name.PublicKey = null;<br>​        assembly.Name.PublicKeyToken = null;<br>​        assembly.Write(output);<br>​    }</p>
+<p>​    public static void RemoveSuppressIldasmAttribute(string input, string output)<br>​    {<br>​        AssemblyDefinition assembly &#x3D; AssemblyDefinition.ReadAssembly(input);<br>​        foreach (CustomAttribute attribute in assembly.CustomAttributes)<br>​        {<br>​            if (attribute.Constructor.DeclaringType.Name &#x3D;&#x3D; “SuppressIldasmAttribute”)<br>​            {<br>​                assembly.CustomAttributes.Remove(attribute);<br>​                break;<br>​            }<br>​        }</p>
+<p>​        assembly.Name.PublicKey &#x3D; null;<br>​        assembly.Name.PublicKeyToken &#x3D; null;<br>​        assembly.Write(output);<br>​    }</p>
 <p>用这个函数把程序集中的SuppressIldasmAttribute属性去掉后，就可以用ILDasm打开了。</p>
 <p>这个方法略显麻烦，这里给一个简单的方法。</p>
 <ol>
 <li>将ILDasm.exe改个扩展名（记得备份原文件），然后用VisualStudio打开。</li>
 </ol>
-<p><strong>PS：</strong>之所以要改扩展名，是因为我要以十六进制的方式编辑，如果不改扩展名的话，VS把它当个exe打开，只能修改资源文件，如果用Ultraedit或WinHex之类的程序以十六进制方式编辑则可以不用改扩展名。</p>
+<p>**PS：**之所以要改扩展名，是因为我要以十六进制的方式编辑，如果不改扩展名的话，VS把它当个exe打开，只能修改资源文件，如果用Ultraedit或WinHex之类的程序以十六进制方式编辑则可以不用改扩展名。</p>
 <ol start="2">
 <li>查找SuppressIldasmAttribute字符串</li>
 </ol>
@@ -273,8 +275,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -339,7 +343,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -361,7 +365,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

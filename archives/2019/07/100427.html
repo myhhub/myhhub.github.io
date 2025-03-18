@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,7 +18,7 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="hadoop,hbase">
+    <meta name="keywords" content="hadoop,hbase" />
 
 
     <meta name="description" content="一、基本概念一个典型的Hbase Table 表如下：
@@ -26,14 +26,14 @@
 
 1.1 Row Key (行键)Row Key是用来检索记录的主键。想要访问HBase Table中的数据，只有以下三种方式：
 
-...">
+..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -50,9 +50,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -69,7 +71,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -87,9 +89,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -194,7 +196,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/hadoop/">hadoop</a> <a class="tag-link" href="/tags/hbase/">hbase</a>
+                    <a class="tag-none-link" href="/tags/hadoop/" rel="tag">hadoop</a> <a class="tag-none-link" href="/tags/hbase/" rel="tag">hbase</a>
                 
             </span>
         </span>
@@ -212,14 +214,14 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>1829</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2073</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
     
     <div class="post-body post-content">
         <h2 id="一、基本概念"><a href="#一、基本概念" class="headerlink" title="一、基本概念"></a>一、基本概念</h2><p>一个典型的Hbase Table 表如下：</p>
-<div align="center"> <img src="/img/bigdata/hbase-webtable.png"> </div>
+<div align="center"> <img  src="/img/bigdata/hbase-webtable.png"/> </div>
 
 <h3 id="1-1-Row-Key-行键"><a href="#1-1-Row-Key-行键" class="headerlink" title="1.1 Row Key (行键)"></a>1.1 Row Key (行键)</h3><p><code>Row Key</code>是用来检索记录的主键。想要访问HBase Table中的数据，只有以下三种方式：</p>
 <ul>
@@ -243,13 +245,13 @@
 <h3 id="1-5-Cell"><a href="#1-5-Cell" class="headerlink" title="1.5 Cell"></a>1.5 Cell</h3><p><code>Cell</code>是行，列族和列限定符的组合，并包含值和时间戳。你可以等价理解为关系型数据库中由指定行和指定列确定的一个单元格，但不同的是HBase中的一个单元格是由多个版本的数据组成的，每个版本的数据用时间戳进行区分。</p>
 <h3 id="1-6-Timestamp-时间戳"><a href="#1-6-Timestamp-时间戳" class="headerlink" title="1.6 Timestamp(时间戳)"></a>1.6 Timestamp(时间戳)</h3><p>HBase 中通过<code>row key</code>和<code>column</code>确定的为一个存储单元称为<code>Cell</code>。每个<code>Cell</code>都保存着同一份数据的多个版本。版本通过时间戳来索引，时间戳的类型是 64位整型，时间戳可以由HBase在数据写入时自动赋值，也可以由客户显式指定。每个<code>Cell</code>中，不同版本的数据按照时间戳倒序排列，即最新的数据排在最前面。</p>
 <h2 id="二、存储结构"><a href="#二、存储结构" class="headerlink" title="二、存储结构"></a>二、存储结构</h2><h3 id="2-1-Regions"><a href="#2-1-Regions" class="headerlink" title="2.1 Regions"></a>2.1 Regions</h3><p>HBase Table中的所有行按照<code>Row Key</code>的字典序排列。HBase Tables 通过行键的范围(row key range)被水平切分成多个<code>Region</code>, 一个<code>Region</code>包含了在start key 和 end key之间的所有行。</p>
-<div align="center"> <img src="/img/bigdata/HBaseArchitecture-Blog-Fig2.png"> </div>
+<div align="center"> <img  src="/img/bigdata/HBaseArchitecture-Blog-Fig2.png"/> </div>
 
 <p>每个表一开始只有一个<code>Region</code>，随着数据不断增加，<code>Region</code>会不断增大，当增大到一个阀值的时候，<code>Region</code>就会等分为两个新的<code>Region</code>。当Table中的行不断增多，就会有越来越多的<code>Region</code>。</p>
-<div align="center"> <img width="600px" src="/img/bigdata/hbase-region-splite.png"> </div>
+<div align="center"> <img width="600px" src="/img/bigdata/hbase-region-splite.png"/> </div>
 
 <p><code>Region</code>是HBase中<strong>分布式存储和负载均衡的最小单元</strong>。这意味着不同的<code>Region</code>可以分布在不同的<code>Region Server</code>上。但一个<code>Region</code>是不会拆分到多个Server上的。</p>
-<div align="center"> <img width="600px" src="/img/bigdata/hbase-region-dis.png"> </div>
+<div align="center"> <img width="600px" src="/img/bigdata/hbase-region-dis.png"/> </div>
 
 <h3 id="2-2-Region-Server"><a href="#2-2-Region-Server" class="headerlink" title="2.2 Region Server"></a>2.2 Region Server</h3><p><code>Region Server</code>运行在HDFS的DataNode上。它具有以下组件：</p>
 <ul>
@@ -258,16 +260,16 @@
 <li><strong>MemStore</strong>：写缓存。它存储尚未写入磁盘的新数据，并会在数据写入磁盘之前对其进行排序。每个Region上的每个列族都有一个MemStore。</li>
 <li><strong>HFile</strong> ：将行数据按照Key\Values的形式存储在文件系统上。</li>
 </ul>
-<div align="center"> <img src="/img/bigdata/hbase-Region-Server.png"> </div>
+<div align="center"> <img  src="/img/bigdata/hbase-Region-Server.png"/> </div>
 
 
 
 <p>Region Server存取一个子表时，会创建一个Region对象，然后对表的每个列族创建一个<code>Store</code>实例，每个<code>Store</code>会有 0 个或多个<code>StoreFile</code>与之对应，每个<code>StoreFile</code>则对应一个<code>HFile</code>，HFile 就是实际存储在HDFS上的文件。</p>
-<div align="center"> <img src="/img/bigdata/hbase-hadoop.png"> </div>
+<div align="center"> <img  src="/img/bigdata/hbase-hadoop.png"/> </div>
 
 
 
-<h2 id="三、Hbase系统架构"><a href="#三、Hbase系统架构" class="headerlink" title="三、Hbase系统架构"></a>三、Hbase系统架构</h2><h3 id="3-1-系统架构"><a href="#3-1-系统架构" class="headerlink" title="3.1 系统架构"></a>3.1 系统架构</h3><p>HBase系统遵循Master/Salve架构，由三种不同类型的组件组成：</p>
+<h2 id="三、Hbase系统架构"><a href="#三、Hbase系统架构" class="headerlink" title="三、Hbase系统架构"></a>三、Hbase系统架构</h2><h3 id="3-1-系统架构"><a href="#3-1-系统架构" class="headerlink" title="3.1 系统架构"></a>3.1 系统架构</h3><p>HBase系统遵循Master&#x2F;Salve架构，由三种不同类型的组件组成：</p>
 <p><strong>Zookeeper</strong></p>
 <ol>
 <li><p>保证任何时候，集群中只有一个Master；</p>
@@ -299,7 +301,7 @@
 <li><p>Region Server负责切分在运行过程中变得过大的Region。</p>
 </li>
 </ol>
-<div align="center"> <img width="600px" src="/img/bigdata/HBaseArchitecture-Blog-Fig1.png"> </div>
+<div align="center"> <img width="600px" src="/img/bigdata/HBaseArchitecture-Blog-Fig1.png"/> </div>
 
 <h3 id="3-2-组件间的协作"><a href="#3-2-组件间的协作" class="headerlink" title="3.2 组件间的协作"></a>3.2 组件间的协作</h3><p> HBase使用ZooKeeper作为分布式协调服务来维护集群中的服务器状态。 Zookeeper负责维护可用服务列表，并提供服务故障通知等服务：</p>
 <ul>
@@ -310,7 +312,7 @@
 <li><p>如果主Master未能定时发送心跳，则其持有的Zookeeper会话会过期，相应的临时节点也会被删除，这会触发定义在该节点上的Watcher事件，使得备用的Master Servers得到通知。所有备用的Master Servers在接到通知后，会再次去竞争性地创建临时节点，完成主Master的选举。</p>
 </li>
 </ul>
-<div align="center"> <img src="/img/bigdata/HBaseArchitecture-Blog-Fig5.png"> </div>
+<div align="center"> <img  src="/img/bigdata/HBaseArchitecture-Blog-Fig5.png"/> </div>
 
 
 
@@ -331,7 +333,7 @@
 </li>
 </ol>
 <blockquote>
-<p>更为详细写入流程可以参考：<a href="http://hbasefly.com/2016/03/23/hbase_writer/" target="_blank" rel="noopener">HBase － 数据写入流程解析</a></p>
+<p>更为详细写入流程可以参考：<a href="http://hbasefly.com/2016/03/23/hbase_writer/">HBase － 数据写入流程解析</a></p>
 </blockquote>
 <h3 id="4-2-读取数据的流程"><a href="#4-2-读取数据的流程" class="headerlink" title="4.2 读取数据的流程"></a>4.2 读取数据的流程</h3><p>以下是客户端首次读写HBase上数据的流程：</p>
 <ol>
@@ -344,23 +346,23 @@
 </ol>
 <p>如果再次读取，客户端将从缓存中获取行键所在的Region Server。这样客户端就不需要再次查询<code>META</code>表，除非Region移动导致缓存失效，这样的话，则将会重新查询并更新缓存。</p>
 <p>注：<code>META</code>表是HBase中一张特殊的表，它保存了所有Region的位置信息，META表自己的位置信息则存储在ZooKeeper上。</p>
-<div align="center"> <img src="/img/bigdata/HBaseArchitecture-Blog-Fig7.png"> </div>
+<div align="center"> <img  src="/img/bigdata/HBaseArchitecture-Blog-Fig7.png"/> </div>
 
 <blockquote>
 <p>更为详细读取数据流程参考：</p>
-<p><a href="http://hbasefly.com/2016/12/21/hbase-getorscan/" target="_blank" rel="noopener">HBase原理－数据读取流程解析</a></p>
-<p><a href="http://hbasefly.com/2017/06/11/hbase-scan-2/" target="_blank" rel="noopener">HBase原理－迟到的‘数据读取流程部分细节</a></p>
+<p><a href="http://hbasefly.com/2016/12/21/hbase-getorscan/">HBase原理－数据读取流程解析</a></p>
+<p><a href="http://hbasefly.com/2017/06/11/hbase-scan-2/">HBase原理－迟到的‘数据读取流程部分细节</a></p>
 </blockquote>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>本篇文章内容主要参考自官方文档和以下两篇博客，图片也主要引用自以下两篇博客：</p>
 <ul>
-<li><p><a href="https://mapr.com/blog/in-depth-look-hbase-architecture/#.VdMxvWSqqko" target="_blank" rel="noopener">HBase Architectural Components</a></p>
+<li><p><a href="https://mapr.com/blog/in-depth-look-hbase-architecture/#.VdMxvWSqqko">HBase Architectural Components</a></p>
 </li>
-<li><p><a href="https://www.open-open.com/lib/view/open1346821084631.html" target="_blank" rel="noopener">Hbase系统架构及数据结构</a></p>
+<li><p><a href="https://www.open-open.com/lib/view/open1346821084631.html">Hbase系统架构及数据结构</a></p>
 </li>
 </ul>
 <p>官方文档：</p>
 <ul>
-<li><a href="https://hbase.apache.org/2.1/book.html" target="_blank" rel="noopener">Apache HBase ™ Reference Guide</a></li>
+<li><a href="https://hbase.apache.org/2.1/book.html">Apache HBase ™ Reference Guide</a></li>
 </ul>
 
     </div>
@@ -397,8 +399,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -430,7 +434,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、基本概念"><span class="toc-text">一、基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Row-Key-行键"><span class="toc-text">1.1 Row Key (行键)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Column-Family（列族）"><span class="toc-text">1.2 Column Family（列族）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-Column-Qualifier-列限定符"><span class="toc-text">1.3 Column Qualifier (列限定符)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-Column-列"><span class="toc-text">1.4 Column(列)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-Cell"><span class="toc-text">1.5 Cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-Timestamp-时间戳"><span class="toc-text">1.6 Timestamp(时间戳)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、存储结构"><span class="toc-text">二、存储结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Regions"><span class="toc-text">2.1 Regions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Region-Server"><span class="toc-text">2.2 Region Server</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Hbase系统架构"><span class="toc-text">三、Hbase系统架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-系统架构"><span class="toc-text">3.1 系统架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-组件间的协作"><span class="toc-text">3.2 组件间的协作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、数据的读写流程简述"><span class="toc-text">四、数据的读写流程简述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-写入数据的流程"><span class="toc-text">4.1 写入数据的流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-读取数据的流程"><span class="toc-text">4.2 读取数据的流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">一、基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Row-Key-%E8%A1%8C%E9%94%AE"><span class="toc-text">1.1 Row Key (行键)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Column-Family%EF%BC%88%E5%88%97%E6%97%8F%EF%BC%89"><span class="toc-text">1.2 Column Family（列族）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-Column-Qualifier-%E5%88%97%E9%99%90%E5%AE%9A%E7%AC%A6"><span class="toc-text">1.3 Column Qualifier (列限定符)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-Column-%E5%88%97"><span class="toc-text">1.4 Column(列)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-Cell"><span class="toc-text">1.5 Cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-Timestamp-%E6%97%B6%E9%97%B4%E6%88%B3"><span class="toc-text">1.6 Timestamp(时间戳)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="toc-text">二、存储结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Regions"><span class="toc-text">2.1 Regions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Region-Server"><span class="toc-text">2.2 Region Server</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Hbase%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="toc-text">三、Hbase系统架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="toc-text">3.1 系统架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%BB%84%E4%BB%B6%E9%97%B4%E7%9A%84%E5%8D%8F%E4%BD%9C"><span class="toc-text">3.2 组件间的协作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%95%B0%E6%8D%AE%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B%E7%AE%80%E8%BF%B0"><span class="toc-text">四、数据的读写流程简述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-text">4.1 写入数据的流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-text">4.2 读取数据的流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
         
     </div>
 </aside>
@@ -463,7 +467,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -485,7 +489,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

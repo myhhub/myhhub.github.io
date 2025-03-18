@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,19 +18,19 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="java,stackoverflow">
+    <meta name="keywords" content="java,stackoverflow" />
 
 
     <meta name="description" content="问题：在线程里 wait() 和 sleep() 的区别？
 我的理解是执行 wait() 语句后，该线程仍是运行态，并且会占用CPU，但是执行 sleep()后，该线程则不会占用CPU，对吗？
-...">
+..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -47,9 +47,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -66,7 +68,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -84,9 +86,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -191,7 +193,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/stackoverflow/">stackoverflow</a>
+                    <a class="tag-none-link" href="/tags/java/" rel="tag">java</a> <a class="tag-none-link" href="/tags/stackoverflow/" rel="tag">stackoverflow</a>
                 
             </span>
         </span>
@@ -209,7 +211,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>1888</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2133</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -218,31 +220,36 @@
         <h2 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h2><p>在线程里 <code>wait()</code> 和 <code>sleep()</code> 的区别？</p>
 <p>我的理解是执行 <code>wait()</code> 语句后，该线程仍是运行态，并且会占用CPU，但是执行 <code>sleep()</code>后，该线程则不会占用CPU，对吗？</p>
 <p>为什么需要 <code>sleep()</code> 和 <code>wait()</code> 两条语句：他们底层是如何实现的？</p>
-<h2 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h2><p>线程 在<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html#wait%28%29" target="_blank" rel="noopener"><code>wait</code></a> 后，可以被另一个拥有相同 <code>synchronized</code> 对象的线程，通过调用<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html#notify%28%29" target="_blank" rel="noopener"> <code>notify</code> </a>唤醒，而 <code>sleep</code> 不行。<code>wait</code> 和 <code>notify</code> 能正常执行的条件是（否则会抛异常）：多个线程的代码，都包在<code>synchronized</code>块中，并且 <code>synchronized</code> 锁的对象需要是同一个。如下所示：<br><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Object mon = ...<span class="comment">;</span></span><br><span class="line"><span class="keyword">synchronized </span>(mon) &#123;</span><br><span class="line">    mon.<span class="keyword">wait();</span></span><br><span class="line"><span class="keyword">&#125;</span></span><br></pre></td></tr></table></figure></p>
-<p>上面这个线程调用了 <code>wait</code>后，会进入等待状态。这时另外一个线程可以这样做：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">synchronized</span> (mon) &#123; <span class="selector-tag">mon</span><span class="selector-class">.notify</span>(); &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="回答："><a href="#回答：" class="headerlink" title="回答："></a>回答：</h2><p>线程 在<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html#wait%28%29"><code>wait</code></a> 后，可以被另一个拥有相同 <code>synchronized </code> 对象的线程，通过调用<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html#notify%28%29"> <code>notify</code> </a>唤醒，而 <code>sleep</code> 不行。<code>wait</code> 和 <code>notify</code> 能正常执行的条件是（否则会抛异常）：多个线程的代码，都包在<code>synchronized </code>块中，并且 <code>synchronized</code> 锁的对象需要是同一个。如下所示：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Object mon <span class="operator">=</span> ...<span class="comment">;</span></span><br><span class="line">synchronized (mon) &#123;</span><br><span class="line">    mon.wait()<span class="comment">;</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>上面这个线程调用了 <code>wait</code>后，会进入等待状态。这时另外一个线程可以这样做：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized </span>(mon) &#123; mon.notify()<span class="comment">; &#125;</span></span><br></pre></td></tr></table></figure>
 <p>可以看到，<code>synchronized</code>锁对象，都是mon。因此，当第二个线程调用了 <code>notify()</code> 方法，第一个线程就会唤醒（假设有且仅有一个线程是被包在 <code>synchronized (mon)</code> 中且处于等待状态)。</p>
-<p>如果有多个线程在等待（且<code>synchronized</code> 锁对象是同一个，如上例中的mon），则可以调用<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html#notifyAll%28%29" target="_blank" rel="noopener"> <code>notifyAll</code> </a>来唤醒。但是，只有其中一个线程能抢到锁并继续执行（因为  <code>wait</code> 的线程都是在 <code>synchronized</code> 块内，需要争夺 <code>synchronized</code> 锁）。其他的线程会被锁住，直到他们依次获得锁。</p>
+<p>如果有多个线程在等待（且<code>synchronized</code> 锁对象是同一个，如上例中的mon），则可以调用<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html#notifyAll%28%29"> <code>notifyAll</code> </a>来唤醒。但是，只有其中一个线程能抢到锁并继续执行（因为  <code>wait</code> 的线程都是在 <code>synchronized</code> 块内，需要争夺 <code>synchronized</code> 锁）。其他的线程会被锁住，直到他们依次获得锁。</p>
 <p>再补充几点：</p>
 <ul>
 <li><p><code>wait</code> 方法由 <code>Object</code> 对象调用（例如：你可以让 <code>synchronized</code> 锁对象调用 <code>wait</code> ,如上面例子的mon.wait()）,而 <code>sleep</code> 则由线程调用。</p>
 </li>
 <li><p><code>wait</code> 之后，可能会伪唤醒（<code>spurious wakeups</code>）（正在waiting的线程,无故就被唤醒了，如遇到interrupted, timing out等情况）。因此，你需要多设置一些检查，如果不满足实际的运行条件，则继续等待，如下：</p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span> &#123;</span><br><span class="line">    <span class="keyword">while</span> (!condition) &#123; mon.wait(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>当线程调用 <code>sleep</code> 时，并没有释放对象锁，而 <code>wait</code> 则释放了对象锁：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">synchronized(<span class="keyword">LOCK</span>) &#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>); // <span class="keyword">LOCK</span> <span class="keyword">is</span> held</span><br><span class="line">&#125;</span><br><span class="line">synchronized(<span class="keyword">LOCK</span>) &#123;</span><br><span class="line">    LOCK.wait(); // <span class="keyword">LOCK</span> <span class="keyword">is</span> <span class="keyword">not</span> held</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span> &#123;</span><br><span class="line">    <span class="keyword">while</span> (!condition) &#123; mon.wait(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当线程调用 <code>sleep</code> 时，并没有释放对象锁，而 <code>wait</code> 则释放了对象锁：</li>
+</ul>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">synchronized</span>(LOCK) &#123;</span><br><span class="line">    Thread<span class="selector-class">.sleep</span>(<span class="number">1000</span>); <span class="comment">// LOCK is held</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">synchronized</span>(LOCK) &#123;</span><br><span class="line">    LOCK<span class="selector-class">.wait</span>(); <span class="comment">// LOCK is not held</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>最后，再小结一下：</p>
 <ul>
 <li><code>sleep()</code>:“我已经完成了一个时间片，<strong>在n微秒</strong>前，请不要再给我一个时间片”。这时操作系统不会让这个线程做任何事情，直到sleep时间结束。</li>
-<li><code>wait()</code>:”我已经完成了一个时间片，<strong>在其他线程调用<code>notify()</code>前</strong>，请不要再给我一个时间片）。这时操作系统不会安排这个线程继续运行，直到有人调用了<code>notify()</code></li>
+<li><code>wait()</code>:”我已经完成了一个时间片，<strong>在其他线程调用<code> notify()</code>前</strong>，请不要再给我一个时间片）。这时操作系统不会安排这个线程继续运行，直到有人调用了<code>notify()</code></li>
 </ul>
-<p><strong>stackoverflow链接：</strong><br><a href="http://stackoverflow.com/questions/1036754/difference-between-wait-and-sleep" target="_blank" rel="noopener">http://stackoverflow.com/questions/1036754/difference-between-wait-and-sleep</a></p>
+<p><strong>stackoverflow链接：</strong><br><a href="http://stackoverflow.com/questions/1036754/difference-between-wait-and-sleep">http://stackoverflow.com/questions/1036754/difference-between-wait-and-sleep</a></p>
 <h2 id="相关问题及链接："><a href="#相关问题及链接：" class="headerlink" title="相关问题及链接："></a>相关问题及链接：</h2><ol>
-<li><a href="http://stackoverflow.com/questions/37026/java-notify-vs-notifyall-all-over-again" target="_blank" rel="noopener">Java: notify() vs. notifyAll() all over again</a></li>
-<li><a href="http://ifeve.com/thread-signaling/" target="_blank" rel="noopener">线程通信</a></li>
-<li><a href="http://longdick.iteye.com/blog/453615" target="_blank" rel="noopener">最简实例说明wait、notify、notifyAll的使用方法</a></li>
+<li><a href="http://stackoverflow.com/questions/37026/java-notify-vs-notifyall-all-over-again">Java: notify() vs. notifyAll() all over again</a></li>
+<li><a href="http://ifeve.com/thread-signaling/">线程通信</a></li>
+<li><a href="http://longdick.iteye.com/blog/453615">最简实例说明wait、notify、notifyAll的使用方法</a></li>
 </ol>
 
     </div>
@@ -279,8 +286,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -312,7 +321,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题："><span class="toc-text">问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#回答："><span class="toc-text">回答：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#相关问题及链接："><span class="toc-text">相关问题及链接：</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="toc-text">问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E7%AD%94%EF%BC%9A"><span class="toc-text">回答：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E5%8F%8A%E9%93%BE%E6%8E%A5%EF%BC%9A"><span class="toc-text">相关问题及链接：</span></a></li></ol>
         
     </div>
 </aside>
@@ -345,7 +354,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -367,7 +376,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

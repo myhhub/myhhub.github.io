@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,21 +18,21 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="hadoop,flink,api">
+    <meta name="keywords" content="hadoop,flink,api" />
 
 
     <meta name="description" content="一. 什么是Table API1.1 Flink API总览首先：flink根据使用的便捷性提供了三种API，自下而上是：
 
 Table API &amp; SQL
 
-声明行：用户只关心做什么，...">
+声明行：用户只关心做什么，..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -49,9 +49,11 @@ Table API &amp; SQL
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -68,7 +70,7 @@ Table API &amp; SQL
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -86,9 +88,9 @@ Table API &amp; SQL
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -193,7 +195,7 @@ Table API &amp; SQL
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/api/">api</a> <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                    <a class="tag-none-link" href="/tags/api/" rel="tag">api</a> <a class="tag-none-link" href="/tags/flink/" rel="tag">flink</a> <a class="tag-none-link" href="/tags/hadoop/" rel="tag">hadoop</a>
                 
             </span>
         </span>
@@ -211,7 +213,7 @@ Table API &amp; SQL
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>1819</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2064</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -240,19 +242,22 @@ Table API &amp; SQL
 <p>　　　　Table.filter(a&lt;10).insertInto(“yyy”)</p>
 <p>2、TableAPI使得扩展标准SQL更容易（当且仅当需要的时候）</p>
 <p><img src="/img/flink/660569-20190504143951458-2096341051.png" alt="img"></p>
-<h1 id="二-Table-API-编程"><a href="#二-Table-API-编程" class="headerlink" title="二. Table API 编程"></a>二. Table API 编程</h1><h2 id="2-1-WordCount示例"><a href="#2-1-WordCount示例" class="headerlink" title="2.1 WordCount示例"></a>2.1 WordCount示例</h2><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.Table;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.TableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.FileSystem;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.OldCsv;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.Schema;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.types.Row;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaStreamWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) throws Exception &#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);</span><br><span class="line"></span><br><span class="line">        String path = JavaStreamWordCount.class.getClassLoader().getResource(<span class="string">"words.txt"</span>).getPath();</span><br><span class="line">        tEnv.connect(<span class="keyword">new</span> FileSystem().path(path))</span><br><span class="line">            .withFormat(<span class="keyword">new</span> OldCsv().field(<span class="string">"word"</span>, Types.STRING).lineDelimiter(<span class="string">"\n"</span>))</span><br><span class="line">            .withSchema(<span class="keyword">new</span> Schema().field(<span class="string">"word"</span>, Types.STRING))</span><br><span class="line">            .inAppendMode()</span><br><span class="line">            .registerTableSource(<span class="string">"fileSource"</span>);</span><br><span class="line"></span><br><span class="line">        Table result = tEnv.scan(<span class="string">"fileSource"</span>)</span><br><span class="line">            .groupBy(<span class="string">"word"</span>)</span><br><span class="line">            .select(<span class="string">"word, count(1) as count"</span>);</span><br><span class="line"></span><br><span class="line">        tEnv.toRetractStream(result, Row.class).print();</span><br><span class="line">        env.execute();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.Table;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.TableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.java.StreamTableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.FileSystem;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.OldCsv;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.Schema;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.types.Row;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaStreamWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) throws Exception &#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);</span><br><span class="line"></span><br><span class="line">        String path = JavaStreamWordCount.class.getClassLoader().getResource(<span class="string">"words.txt"</span>).getPath();</span><br><span class="line">        tEnv.connect(<span class="keyword">new</span> FileSystem().path(path))</span><br><span class="line">            .withFormat(<span class="keyword">new</span> OldCsv().field(<span class="string">"word"</span>, Types.STRING).lineDelimiter(<span class="string">"\n"</span>))</span><br><span class="line">            .withSchema(<span class="keyword">new</span> Schema().field(<span class="string">"word"</span>, Types.STRING))</span><br><span class="line">            .inAppendMode()</span><br><span class="line">            .registerTableSource(<span class="string">"fileSource"</span>);</span><br><span class="line"></span><br><span class="line">        Table result = tEnv.scan(<span class="string">"fileSource"</span>)</span><br><span class="line">            .groupBy(<span class="string">"word"</span>)</span><br><span class="line">            .select(<span class="string">"word, count(1) as count"</span>);</span><br><span class="line"></span><br><span class="line">        tEnv.toRetractStream(result, Row.class).print();</span><br><span class="line">        env.execute();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.common.typeinfo.Types;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.api.java.ExecutionEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.Table;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.api.java.BatchTableEnvironment;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.FileSystem;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.OldCsv;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.table.descriptors.Schema;</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">import</span> org.apache.flink.types.Row;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaBatchWordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) throws Exception &#123;</span><br><span class="line">        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        BatchTableEnvironment tEnv = BatchTableEnvironment.create(env);</span><br><span class="line"></span><br><span class="line">        String path = JavaBatchWordCount.class.getClassLoader().getResource(<span class="string">"words.txt"</span>).getPath();</span><br><span class="line">        tEnv.connect(<span class="keyword">new</span> FileSystem().path(path))</span><br><span class="line">            .withFormat(<span class="keyword">new</span> OldCsv().field(<span class="string">"word"</span>, Types.STRING).lineDelimiter(<span class="string">"\n"</span>))</span><br><span class="line">            .withSchema(<span class="keyword">new</span> Schema().field(<span class="string">"word"</span>, Types.STRING))</span><br><span class="line">            .registerTableSource(<span class="string">"fileSource"</span>);</span><br><span class="line"></span><br><span class="line">        Table result = tEnv.scan(<span class="string">"fileSource"</span>)</span><br><span class="line">            .groupBy(<span class="string">"word"</span>)</span><br><span class="line">            .select(<span class="string">"word, count(1) as count"</span>);</span><br><span class="line"></span><br><span class="line">        tEnv.toDataSet(result, Row.class).print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>参考：<a href="https://github.com/hequn8128/TableApiDemo" target="_blank" rel="noopener">https://github.com/hequn8128/TableApiDemo</a></p>
+<h1 id="二-Table-API-编程"><a href="#二-Table-API-编程" class="headerlink" title="二. Table API 编程"></a>二. Table API 编程</h1><h2 id="2-1-WordCount示例"><a href="#2-1-WordCount示例" class="headerlink" title="2.1 WordCount示例"></a>2.1 WordCount示例</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.<span class="keyword">Types</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.<span class="keyword">Table</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.TableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.FileSystem;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.OldCsv;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.<span class="keyword">Schema</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">types</span>.<span class="keyword">Row</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">public</span> <span class="keyword">class</span> JavaStreamWordCount &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">public</span> static <span class="type">void</span> main(String[] args) throws <span class="keyword">Exception</span> &#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);</span><br><span class="line"></span><br><span class="line">        String <span class="type">path</span> = JavaStreamWordCount.<span class="keyword">class</span>.getClassLoader().getResource(&quot;words.txt&quot;).getPath();</span><br><span class="line">        tEnv.<span class="keyword">connect</span>(<span class="built_in">new</span> FileSystem().path(<span class="type">path</span>))</span><br><span class="line">            .withFormat(<span class="built_in">new</span> OldCsv().field(&quot;word&quot;, <span class="keyword">Types</span>.STRING).lineDelimiter(&quot;\n&quot;))</span><br><span class="line">            .withSchema(<span class="built_in">new</span> <span class="keyword">Schema</span>().field(&quot;word&quot;, <span class="keyword">Types</span>.STRING))</span><br><span class="line">            .inAppendMode()</span><br><span class="line">            .registerTableSource(&quot;fileSource&quot;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Table</span> result = tEnv.scan(&quot;fileSource&quot;)</span><br><span class="line">            .groupBy(&quot;word&quot;)</span><br><span class="line">            .<span class="keyword">select</span>(&quot;word, count(1) as count&quot;);</span><br><span class="line"></span><br><span class="line">        tEnv.toRetractStream(result, <span class="keyword">Row</span>.<span class="keyword">class</span>).print();</span><br><span class="line">        env.<span class="keyword">execute</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.<span class="keyword">Types</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.<span class="keyword">Table</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.TableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.java.StreamTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.FileSystem;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.OldCsv;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.<span class="keyword">Schema</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">types</span>.<span class="keyword">Row</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">public</span> <span class="keyword">class</span> JavaStreamWordCount &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">public</span> static <span class="type">void</span> main(String[] args) throws <span class="keyword">Exception</span> &#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);</span><br><span class="line"></span><br><span class="line">        String <span class="type">path</span> = JavaStreamWordCount.<span class="keyword">class</span>.getClassLoader().getResource(&quot;words.txt&quot;).getPath();</span><br><span class="line">        tEnv.<span class="keyword">connect</span>(<span class="built_in">new</span> FileSystem().path(<span class="type">path</span>))</span><br><span class="line">            .withFormat(<span class="built_in">new</span> OldCsv().field(&quot;word&quot;, <span class="keyword">Types</span>.STRING).lineDelimiter(&quot;\n&quot;))</span><br><span class="line">            .withSchema(<span class="built_in">new</span> <span class="keyword">Schema</span>().field(&quot;word&quot;, <span class="keyword">Types</span>.STRING))</span><br><span class="line">            .inAppendMode()</span><br><span class="line">            .registerTableSource(&quot;fileSource&quot;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Table</span> result = tEnv.scan(&quot;fileSource&quot;)</span><br><span class="line">            .groupBy(&quot;word&quot;)</span><br><span class="line">            .<span class="keyword">select</span>(&quot;word, count(1) as count&quot;);</span><br><span class="line"></span><br><span class="line">        tEnv.toRetractStream(result, <span class="keyword">Row</span>.<span class="keyword">class</span>).print();</span><br><span class="line">        env.<span class="keyword">execute</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.typeinfo.<span class="keyword">Types</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.ExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.<span class="keyword">Table</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.api.java.BatchTableEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.FileSystem;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.OldCsv;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">table</span>.descriptors.<span class="keyword">Schema</span>;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.<span class="keyword">types</span>.<span class="keyword">Row</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">public</span> <span class="keyword">class</span> JavaBatchWordCount &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">public</span> static <span class="type">void</span> main(String[] args) throws <span class="keyword">Exception</span> &#123;</span><br><span class="line">        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        BatchTableEnvironment tEnv = BatchTableEnvironment.<span class="keyword">create</span>(env);</span><br><span class="line"></span><br><span class="line">        String <span class="type">path</span> = JavaBatchWordCount.<span class="keyword">class</span>.getClassLoader().getResource(&quot;words.txt&quot;).getPath();</span><br><span class="line">        tEnv.<span class="keyword">connect</span>(<span class="built_in">new</span> FileSystem().path(<span class="type">path</span>))</span><br><span class="line">            .withFormat(<span class="built_in">new</span> OldCsv().field(&quot;word&quot;, <span class="keyword">Types</span>.STRING).lineDelimiter(&quot;\n&quot;))</span><br><span class="line">            .withSchema(<span class="built_in">new</span> <span class="keyword">Schema</span>().field(&quot;word&quot;, <span class="keyword">Types</span>.STRING))</span><br><span class="line">            .registerTableSource(&quot;fileSource&quot;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">Table</span> result = tEnv.scan(&quot;fileSource&quot;)</span><br><span class="line">            .groupBy(&quot;word&quot;)</span><br><span class="line">            .<span class="keyword">select</span>(&quot;word, count(1) as count&quot;);</span><br><span class="line"></span><br><span class="line">        tEnv.toDataSet(result, <span class="keyword">Row</span>.<span class="keyword">class</span>).print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考：<a href="https://github.com/hequn8128/TableApiDemo">https://github.com/hequn8128/TableApiDemo</a></p>
 <p><strong>Environment</strong></p>
 <p><img src="/img/flink/660569-20190504164057226-1639460581.png" alt="img"></p>
-<p>Table Environment使用优化<br><a href="https://mail.google.com/mail/u/0/?tab=wm#search/label%3Aflink-dev+table+environment/FMfcgxvzMBlhTWVjxlzCnVZsLvvDkmph" target="_blank" rel="noopener">https://mail.google.com/mail/u/0/?tab=wm#search/label%3Aflink-dev+table+environment/FMfcgxvzMBlhTWVjxlzCnVZsLvvDkmph</a><br><a href="https://cwiki.apache.org/confluence/display/FLINK/FLIP-32%3A+Restructure+flink-table+for+future+contributions" target="_blank" rel="noopener">https://cwiki.apache.org/confluence/display/FLINK/FLIP-32%3A+Restructure+flink-table+for+future+contributions</a></p>
-<h2 id="2-2-TableAPI操作"><a href="#2-2-TableAPI操作" class="headerlink" title="2.2 TableAPI操作"></a>2.2 TableAPI操作</h2><h3 id="（1）how-to-get-a-Table"><a href="#（1）how-to-get-a-Table" class="headerlink" title="（1）how to get a Table"></a>（1）how to get a Table</h3><p>　　　　Table myTable = tableExnvironment.scan(“MyTable”); //Table 是从tableExnvironment中scan出来的，那么MyTable是如果注册呢，即：How to register a table?大致又三种：</p>
+<p>Table Environment使用优化<br><a href="https://mail.google.com/mail/u/0/?tab=wm#search/label%3Aflink-dev+table+environment/FMfcgxvzMBlhTWVjxlzCnVZsLvvDkmph">https://mail.google.com/mail/u/0/?tab=wm#search/label%3Aflink-dev+table+environment/FMfcgxvzMBlhTWVjxlzCnVZsLvvDkmph</a><br><a href="https://cwiki.apache.org/confluence/display/FLINK/FLIP-32%3A+Restructure+flink-table+for+future+contributions">https://cwiki.apache.org/confluence/display/FLINK/FLIP-32%3A+Restructure+flink-table+for+future+contributions</a></p>
+<h2 id="2-2-TableAPI操作"><a href="#2-2-TableAPI操作" class="headerlink" title="2.2 TableAPI操作"></a>2.2 TableAPI操作</h2><h3 id="（1）how-to-get-a-Table"><a href="#（1）how-to-get-a-Table" class="headerlink" title="（1）how to get a Table"></a>（1）how to get a Table</h3><p>　　　　Table myTable &#x3D; tableExnvironment.scan(“MyTable”); &#x2F;&#x2F;Table 是从tableExnvironment中scan出来的，那么MyTable是如果注册呢，即：How to register a table?大致又三种：</p>
 <p><img src="/img/flink/660569-20190504150828284-1764507401.png" alt="img"></p>
-<h3 id="（2）how-to-emit-a-Table"><a href="#（2）how-to-emit-a-Table" class="headerlink" title="（2）how to emit a Table　　"></a>（2）how to emit a Table　　</h3><p><img src="/img/flink/660569-20190504151357553-39325798.png" alt="img"></p>
+<h3 id="（2）how-to-emit-a-Table"><a href="#（2）how-to-emit-a-Table" class="headerlink" title="（2）how to emit a Table"></a>（2）how to emit a Table</h3><p><img src="/img/flink/660569-20190504151357553-39325798.png" alt="img"></p>
 <h3 id="（3）how-to-query-a-Table"><a href="#（3）how-to-query-a-Table" class="headerlink" title="（3）how to query a Table"></a>（3）how to query a Table</h3><p><img src="/img/flink/660569-20190504151654699-1447494924.png" alt="img"></p>
 <p><img src="/img/flink/afawrwqrw24242424.png" alt="img"></p>
-<h3 id="Columns-Operation-amp-Function"><a href="#Columns-Operation-amp-Function" class="headerlink" title="Columns Operation &amp; Function"></a>Columns Operation &amp; Function</h3><h4 id="Columns-Operation-易用性"><a href="#Columns-Operation-易用性" class="headerlink" title="Columns Operation - 易用性"></a><strong>Columns Operation - 易用性</strong></h4><p>假设有一张100列的表，我们需要去掉一列，需要怎么操作?</p>
+<h3 id="Columns-Operation-Function"><a href="#Columns-Operation-Function" class="headerlink" title="Columns Operation &amp; Function"></a>Columns Operation &amp; Function</h3><h4 id="Columns-Operation-易用性"><a href="#Columns-Operation-易用性" class="headerlink" title="Columns Operation - 易用性"></a><strong>Columns Operation - 易用性</strong></h4><p>假设有一张100列的表，我们需要去掉一列，需要怎么操作?</p>
 <table>
 <thead>
 <tr>
@@ -260,31 +265,29 @@ Table API &amp; SQL
 <th><strong>Examples</strong></th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td><strong>AddColumns</strong></td>
-<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>addColumns<strong>(</strong>“concat(c, ‘sunny‘)as desc”<strong>);</strong></td>
+<td>Table orders <strong>&#x3D;</strong> tableEnv**.<strong>scan</strong>(<strong>“Orders”</strong>);** Table result <strong>&#x3D;</strong> orders**.<strong>addColumns</strong>(<strong>“concat(c, ‘sunny‘)as desc”</strong>);**</td>
 </tr>
 <tr>
 <td><strong>AddOrReplaceColumns</strong></td>
-<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>addOrReplaceColumns<strong>(</strong>“concat(c, ‘sunny’) as desc”<strong>);</strong></td>
+<td>Table orders <strong>&#x3D;</strong> tableEnv**.<strong>scan</strong>(<strong>“Orders”</strong>);** Table result <strong>&#x3D;</strong> orders**.<strong>addOrReplaceColumns</strong>(<strong>“concat(c, ‘sunny’) as desc”</strong>);**</td>
 </tr>
 <tr>
 <td><strong>DropColumns</strong></td>
-<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>dropColumns<strong>(</strong>“b, c”<strong>);</strong></td>
+<td>Table orders <strong>&#x3D;</strong> tableEnv**.<strong>scan</strong>(<strong>“Orders”</strong>);** Table result <strong>&#x3D;</strong> orders**.<strong>dropColumns</strong>(<strong>“b, c”</strong>);**</td>
 </tr>
 <tr>
 <td><strong>RenameColumns</strong></td>
-<td>Table orders <strong>=</strong> tableEnv<strong>.</strong>scan<strong>(</strong>“Orders”<strong>);</strong> Table result <strong>=</strong> orders<strong>.</strong>renameColumns<strong>(</strong>“b as b2, c as c2”<strong>);</strong></td>
+<td>Table orders <strong>&#x3D;</strong> tableEnv**.<strong>scan</strong>(<strong>“Orders”</strong>);** Table result <strong>&#x3D;</strong> orders**.<strong>renameColumns</strong>(<strong>“b as b2, c as c2”</strong>);**</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>假设有一张100列的表，我们需要选择第20-第80列，需要怎么操作?</p>
 <h4 id="Columns-Function-易用性"><a href="#Columns-Function-易用性" class="headerlink" title="Columns Function - 易用性"></a><strong>Columns Function - 易用性</strong></h4><p><img src="/img/flink/660569-20190504155440103-823425306.png" alt="img"></p>
 <p><strong>Syntax</strong></p>
 <p>The proposed colu mn operati on syn tax is as follows:</p>
 <p><strong>columnOperation</strong>:</p>
-<p>withColu mn s(colu mn Exprs) / withoutColu mn s(colu mn Exprs)</p>
+<p>withColu mn s(colu mn Exprs) &#x2F; withoutColu mn s(colu mn Exprs)</p>
 <p><strong>columnExprs</strong>:</p>
 <p>columnExpr [, columnExpr]*</p>
 <p><strong>columnExpr</strong>:</p>
@@ -300,8 +303,7 @@ Table API &amp; SQL
 <th><strong>Example</strong></th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>Columns Operation</td>
 <td>table.dropColumns(‘a, ‘b)</td>
 </tr>
@@ -309,22 +311,21 @@ Table API &amp; SQL
 <td>Columns Function</td>
 <td>table.select(withColum ns(‘a, 1 to 10))</td>
 </tr>
-</tbody>
-</table>
-<h3 id="Row-based-Operation"><a href="#Row-based-Operation" class="headerlink" title="Row-based Operation"></a>Row-based Operation</h3><h4 id="Map-operation-易用性"><a href="#Map-operation-易用性" class="headerlink" title=" Map operation - 易用性"></a><strong> Map operation - 易用性</strong></h4><p><img src="/img/flink/660569-20190504160425737-931477258.png" alt="img"></p>
+</tbody></table>
+<h3 id="Row-based-Operation"><a href="#Row-based-Operation" class="headerlink" title="Row-based Operation"></a>Row-based Operation</h3><h4 id="Map-operation-易用性"><a href="#Map-operation-易用性" class="headerlink" title="** Map operation - 易用性**"></a>** Map operation - 易用性**</h4><p><img src="/img/flink/660569-20190504160425737-931477258.png" alt="img"></p>
 <h4 id="FlatMap-operation-易用性"><a href="#FlatMap-operation-易用性" class="headerlink" title="FlatMap operation - 易用性"></a><strong>FlatMap operation - 易用性</strong></h4><p><img src="/img/flink/660569-20190504160949812-1931389347.png" alt="img"></p>
 <h4 id="Aggregate-operation-一-易用性"><a href="#Aggregate-operation-一-易用性" class="headerlink" title="Aggregate operation 一 易用性"></a><strong>Aggregate operation 一 易用性</strong></h4><p><img src="/img/flink/660569-20190504161900234-583158334.png" alt="img"> </p>
 <h4 id="FlatAggregate-operation-—功能性"><a href="#FlatAggregate-operation-—功能性" class="headerlink" title="FlatAggregate operation —功能性"></a><strong>FlatAggregate operation —功能性</strong></h4><p><img src="/img/flink/660569-20190504162347287-1370749481.png" alt="img"></p>
 <h4 id="Aggregate-VS-TableAggregate"><a href="#Aggregate-VS-TableAggregate" class="headerlink" title="Aggregate VS TableAggregate"></a><strong>Aggregate VS TableAggregate</strong></h4><p><img src="/img/flink/660569-20190504163017523-1610092332.png" alt="img"></p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h4><p><img src="/img/flink/660569-20190504163148572-1592072621.png" alt="img"></p>
-<h1 id="三-Table-API-动态"><a href="#三-Table-API-动态" class="headerlink" title="三. Table API 动态"></a>三. Table API 动态</h1><p>3.1    Flip29</p>
-<p><a href="https://issues.apache.org/jira/browse/FLINK-10972" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-10972</a></p>
-<p>3.2    Python Table API</p>
-<p><a href="https://issues.apache.org/jira/browse/FLINK-12308" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-12308</a></p>
-<p>3.3    Interactive Programming（交互式编程）</p>
-<p><a href="https://issues.apache.org/jira/browse/FLINK-11199" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-11199</a></p>
-<p>3.4    Iterative processing（迭代计算）</p>
-<p><a href="https://issues.apache.org/jira/browse/FLINK-11199" target="_blank" rel="noopener">https://issues.apache.org/jira/browse/FLINK-11199</a></p>
+<h1 id="三-Table-API-动态"><a href="#三-Table-API-动态" class="headerlink" title="三. Table API 动态"></a>三. Table API 动态</h1><p>3.1	Flip29</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-10972">https://issues.apache.org/jira/browse/FLINK-10972</a></p>
+<p>3.2	Python Table API</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-12308">https://issues.apache.org/jira/browse/FLINK-12308</a></p>
+<p>3.3	Interactive Programming（交互式编程）</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-11199">https://issues.apache.org/jira/browse/FLINK-11199</a></p>
+<p>3.4	Iterative processing（迭代计算）</p>
+<p><a href="https://issues.apache.org/jira/browse/FLINK-11199">https://issues.apache.org/jira/browse/FLINK-11199</a></p>
 
     </div>
     
@@ -360,8 +361,10 @@ Table API &amp; SQL
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -393,7 +396,7 @@ Table API &amp; SQL
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-什么是Table-API"><span class="toc-text">一. 什么是Table API</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Flink-API总览"><span class="toc-text">1.1 Flink API总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-Table-API-特点"><span class="toc-text">1.2 Table API 特点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-Table-API-编程"><span class="toc-text">二. Table API 编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-WordCount示例"><span class="toc-text">2.1 WordCount示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-TableAPI操作"><span class="toc-text">2.2 TableAPI操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#（1）how-to-get-a-Table"><span class="toc-text">（1）how to get a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#（2）how-to-emit-a-Table"><span class="toc-text">（2）how to emit a Table　　</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#（3）how-to-query-a-Table"><span class="toc-text">（3）how to query a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Columns-Operation-amp-Function"><span class="toc-text">Columns Operation &amp; Function</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Columns-Operation-易用性"><span class="toc-text">Columns Operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Columns-Function-易用性"><span class="toc-text">Columns Function - 易用性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Row-based-Operation"><span class="toc-text">Row-based Operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Map-operation-易用性"><span class="toc-text"> Map operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FlatMap-operation-易用性"><span class="toc-text">FlatMap operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregate-operation-一-易用性"><span class="toc-text">Aggregate operation 一 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FlatAggregate-operation-—功能性"><span class="toc-text">FlatAggregate operation —功能性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregate-VS-TableAggregate"><span class="toc-text">Aggregate VS TableAggregate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-Table-API-动态"><span class="toc-text">三. Table API 动态</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AFTable-API"><span class="toc-text">一. 什么是Table API</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Flink-API%E6%80%BB%E8%A7%88"><span class="toc-text">1.1 Flink API总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-Table-API-%E7%89%B9%E7%82%B9"><span class="toc-text">1.2 Table API 特点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-Table-API-%E7%BC%96%E7%A8%8B"><span class="toc-text">二. Table API 编程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-WordCount%E7%A4%BA%E4%BE%8B"><span class="toc-text">2.1 WordCount示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-TableAPI%E6%93%8D%E4%BD%9C"><span class="toc-text">2.2 TableAPI操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89how-to-get-a-Table"><span class="toc-text">（1）how to get a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%882%EF%BC%89how-to-emit-a-Table"><span class="toc-text">（2）how to emit a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%883%EF%BC%89how-to-query-a-Table"><span class="toc-text">（3）how to query a Table</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Columns-Operation-Function"><span class="toc-text">Columns Operation &amp; Function</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Columns-Operation-%E6%98%93%E7%94%A8%E6%80%A7"><span class="toc-text">Columns Operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Columns-Function-%E6%98%93%E7%94%A8%E6%80%A7"><span class="toc-text">Columns Function - 易用性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Row-based-Operation"><span class="toc-text">Row-based Operation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Map-operation-%E6%98%93%E7%94%A8%E6%80%A7"><span class="toc-text">** Map operation - 易用性**</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FlatMap-operation-%E6%98%93%E7%94%A8%E6%80%A7"><span class="toc-text">FlatMap operation - 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregate-operation-%E4%B8%80-%E6%98%93%E7%94%A8%E6%80%A7"><span class="toc-text">Aggregate operation 一 易用性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FlatAggregate-operation-%E2%80%94%E5%8A%9F%E8%83%BD%E6%80%A7"><span class="toc-text">FlatAggregate operation —功能性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aggregate-VS-TableAggregate"><span class="toc-text">Aggregate VS TableAggregate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89-Table-API-%E5%8A%A8%E6%80%81"><span class="toc-text">三. Table API 动态</span></a></li></ol>
         
     </div>
 </aside>
@@ -426,7 +429,7 @@ Table API &amp; SQL
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -448,7 +451,9 @@ Table API &amp; SQL
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

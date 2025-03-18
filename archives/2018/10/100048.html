@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,18 +18,18 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="hash,攻击">
+    <meta name="keywords" content="hash,攻击" />
 
 
     <meta name="description" content="貌似大多数渗透师都很少测试密码学方面的漏洞。我一直都对密码学颇有兴趣，于是决定研究web应用开发者误用加密算法的情况，以及如何利用这些漏洞。
-一月份的时候，我研究了下对于一些比较弱的Messag...">
+一月份的时候，我研究了下对于一些比较弱的Messag..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -46,9 +46,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -65,7 +67,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -83,9 +85,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -190,7 +192,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/hash/">hash</a> <a class="tag-link" href="/tags/attacks/">攻击</a>
+                    <a class="tag-none-link" href="/tags/hash/" rel="tag">hash</a> <a class="tag-none-link" href="/tags/attacks/" rel="tag">攻击</a>
                 
             </span>
         </span>
@@ -208,41 +210,49 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2108</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2353</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
     
     <div class="post-body post-content">
         <p>貌似大多数渗透师都很少测试密码学方面的漏洞。我一直都对密码学颇有兴趣，于是决定研究web应用开发者误用加密算法的情况，以及如何利用这些漏洞。</p>
-<p>一月份的时候，我研究了下对于一些比较弱的Message Authentication codes（MACs）[<strong>译者注：关于MAC与hash的区别参见</strong><a href="http://stackoverflow.com/questions/2836100/what-is-the-difference-between-a-hash-and-mac-message-authentication-code" target="_blank" rel="noopener"><strong>此链接</strong></a>]，如何进行哈希长度扩展（hash length extension）攻击。我发现一些很不错的<a href="http://netifera.com/research/flickr_api_signature_forgery.pdf" target="_blank" rel="noopener">论文</a>和博文，谈到了这种攻击方式。然而，针对哈希长度扩展攻击的具体细节，却鲜有资料。在这篇文章中，我将会对此进行详细解释。</p>
+<p>一月份的时候，我研究了下对于一些比较弱的Message Authentication codes（MACs）[<strong>译者注：关于MAC与hash的区别参见</strong><a href="http://stackoverflow.com/questions/2836100/what-is-the-difference-between-a-hash-and-mac-message-authentication-code"><strong>此链接</strong></a>]，如何进行哈希长度扩展（hash length extension）攻击。我发现一些很不错的<a href="http://netifera.com/research/flickr_api_signature_forgery.pdf">论文</a>和博文，谈到了这种攻击方式。然而，针对哈希长度扩展攻击的具体细节，却鲜有资料。在这篇文章中，我将会对此进行详细解释。</p>
 <h2 id="Message-Authentication-Codes-101"><a href="#Message-Authentication-Codes-101" class="headerlink" title="Message Authentication Codes 101"></a><strong>Message Authentication Codes 101</strong></h2><p>Message authentication codes (MACs)是用于验证信息真实性的。最简单的MAC算法是这样的：服务器把key和message连接到一起，然后用摘要算法如MD5或SHA1取摘要。例如，假设有一个网站，在用户下载文件之前需验证下载权限。这个网站会用如下的算法产生一个关于文件名的MAC：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def create_mac(key, fileName)</span><br><span class="line">   return Digest::SHA1.hexdigest(key + fileName)</span><br><span class="line">End</span><br></pre></td></tr></table></figure>
+
 <p>最终产生的URL会是这样：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://example.com/download?file=report.pdf&amp;mac=563162c9c71a17367d44c165b84b85ab59d036f9</span><br></pre></td></tr></table></figure>
+
 <p>当用户发起请求要下载一个文件时，将会执行下面这个函数：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def verify_mac(key, fileName, userMac)</span><br><span class="line">    validMac = create_mac(key, filename)</span><br><span class="line">    if (validMac == userMac) do</span><br><span class="line">        initiateDownload()</span><br><span class="line">    else</span><br><span class="line">        displayError()</span><br><span class="line">    end</span><br><span class="line">End</span><br></pre></td></tr></table></figure>
+
 <p>这样，只有当用户没有擅自更改文件名时服务器才会执行initiateDownload()开始下载。实际上，这种生成MAC的方式，给攻击者在文件名后添加自定义字串留下可乘之机。</p>
 <h2 id="Length-Extension-Attacks-The-SimpleExplanation"><a href="#Length-Extension-Attacks-The-SimpleExplanation" class="headerlink" title="Length Extension Attacks, The SimpleExplanation"></a><strong>Length Extension Attacks, The SimpleExplanation</strong></h2><p>哈希摘要算法，如MD5,SHA1, SHA2等，都是基于Merkle–Damgård结构。这类算法有一个很有意思的问题：如果你知道message和MAC，只需再知道key的长度，尽管不知道key的值，也能在message后面添加信息并计算出相应MAC。</p>
 <p>Example: message + padding +extension</p>
 <p>继续用上面的例子，对文件下载的功能进行长度扩展攻击：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://example.com/download?file=report.pdf%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%A8/../../../../../../../etc/passwd&amp;amp;mac=ee40aa8ec0cfafb7e2ec4de20943b673968857a5</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://example.com/download?file=report.pdf%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%A8/../../../../../../../etc/passwd<span class="symbol">&amp;amp;</span>mac=ee40aa8ec0cfafb7e2ec4de20943b673968857a5</span><br></pre></td></tr></table></figure>
+
 <h2 id="Length-Extensions-In-Depth"><a href="#Length-Extensions-In-Depth" class="headerlink" title="Length Extensions In Depth"></a><strong>Length Extensions In Depth</strong></h2><p>为了理解这种攻击方式，你必须先了解hash函数的内部原理。</p>
 <h2 id="How-Hash-Algorithms-Work"><a href="#How-Hash-Algorithms-Work" class="headerlink" title="How Hash Algorithms Work"></a><strong>How Hash Algorithms Work</strong></h2><p>哈希函数以区块为单位操作数据。比如说，MD5, SHA1, SHA256的区块长度是512 bits 。大多数message的长度不会刚好可以被哈希函数的区块长度整除。这样一来，message就必须被填充(padding)至区块长度的整数倍。用前面文件下载的MAC的例子来说，填充后的message是这样的（‘x&#039;表示key）：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xxxxxxxxxxxreport.pdf\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</span><br><span class="line">\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xA8</span><br></pre></td></tr></table></figure>
+
 <p>在本例所用的SHA1算法中，哈希值由五组整数构成。一般我们看到的形式是把这五个整数转换为16进制然后连接到一起。运行算法时，初始值（又叫registers）被设置为这组数：67452301, EFCDAB89,<br>98BADCFE, 10325476, C3D2E1F0. 紧接着，填充message，再将其分割为512bits的区块。算法轮流操作每个区块，进行一系列的计算并更新registers的值。一旦完成了这些运算，registers里的值就是最终的哈希值。</p>
-<h2 id="Calculating-An-Extension"><a href="#Calculating-An-Extension" class="headerlink" title="Calculating An Extension"></a><strong>Calculating An Extension</strong></h2><p>计算扩展值得第一步是创建一个新的MAC。我们首先对待扩展的值：上例中的‘/../../../../../../../etc/passwd’进行哈希摘要。但是，在进行摘要之前，我们要把registers里的初始值设置为原始message的MAC。你可以将其想象为让SHA1函数从服务器上的函数运行结束的地方继续进行。</p>
-<p>攻击者的 MAC = SHA1(extension + padding) &lt;- 覆盖registers初始值</p>
-<p>这个攻击有个前提，在传入服务器的哈希函数时，扩展值必须存在于单独的区块中。所以我们的第二步，就是计算出一个填充值使得 key + message + padding == 512 bits 的整数倍。在此例中，key是11个字符的长度。因此填充之后的message是这样的：</p>
+<h2 id="Calculating-An-Extension"><a href="#Calculating-An-Extension" class="headerlink" title="Calculating An Extension"></a><strong>Calculating An Extension</strong></h2><p>计算扩展值得第一步是创建一个新的MAC。我们首先对待扩展的值：上例中的‘&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd’进行哈希摘要。但是，在进行摘要之前，我们要把registers里的初始值设置为原始message的MAC。你可以将其想象为让SHA1函数从服务器上的函数运行结束的地方继续进行。</p>
+<p>攻击者的 MAC &#x3D; SHA1(extension + padding) &lt;- 覆盖registers初始值</p>
+<p>这个攻击有个前提，在传入服务器的哈希函数时，扩展值必须存在于单独的区块中。所以我们的第二步，就是计算出一个填充值使得 key + message + padding &#x3D;&#x3D; 512 bits 的整数倍。在此例中，key是11个字符的长度。因此填充之后的message是这样的：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">report.pdf\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xA8</span><br></pre></td></tr></table></figure>
+
 <p>传送到服务器的填充及扩展之后的message以及新的MAC：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://example.com/download?file=report.pdf%80%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%A8/../../../../../../../etc/passwd&amp;mac=ee40aa8ec0cfafb7e2ec4de20943b673968857a5</span><br></pre></td></tr></table></figure>
+
 <p>服务器要进行摘要运算的被攻击者篡改过的message如下：</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">secret + message + padding to the next block +</span><br><span class="line">extension + padding to the end of that block.</span><br></pre></td></tr></table></figure>
+
 <p>服务器算出的哈希值将是ee40aa8ec0cfafb7e2ec4de20943b673968857a5，正好与我们添加扩展字串并覆盖registers初始值所计算出来的一样。这是因为攻击者的哈希计算过程，相当于从服务器计算过程的一半紧接着进行下去。</p>
 <h2 id="How-To-Run-The-Attack"><a href="#How-To-Run-The-Attack" class="headerlink" title="How To Run The Attack"></a><strong>How To Run The Attack</strong></h2><p>为了简单，在这个例子中我透露了密钥长度是11位。在现实攻击环境中，攻击者无法获知密钥长度，需要对其长度进行猜测。</p>
 <p>继续之前的例子，假设当MAC验证失败时，这个存在漏洞的网站会返回一个错误信息（HTTP response code 或者response body中的错误消息之类）。当验证成功，但是文件不存在时，也会返回一个错误信息。如果这两个错误信息是不一样的，攻击者就可以计算不同的扩展值，每个对应着不同的密钥长度，然后分别发送给服务器。当服务器返回表明文件不存在的错误信息时，即说明存在长度扩展攻击，攻击者可以随意计算新的扩展值以下载服务器上未经许可的敏感文件。</p>
-<h2 id="How-To-Defend-Against-This-Attack"><a href="#How-To-Defend-Against-This-Attack" class="headerlink" title="How To Defend Against This Attack"></a><strong>How To Defend Against This Attack</strong></h2><p>解决这个漏洞的办法是使用<a href="https://en.wikipedia.org/wiki/HMAC" target="_blank" rel="noopener">HMAC</a>算法。该算法大概来说是这样 ：<strong>MAC =hash(key + hash(key + message))</strong>，而不是简单的对密钥连接message之后的值进行哈希摘要。</p>
+<h2 id="How-To-Defend-Against-This-Attack"><a href="#How-To-Defend-Against-This-Attack" class="headerlink" title="How To Defend Against This Attack"></a><strong>How To Defend Against This Attack</strong></h2><p>解决这个漏洞的办法是使用<a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a>算法。该算法大概来说是这样 ：<strong>MAC &#x3D;hash(key + hash(key + message))</strong>，而不是简单的对密钥连接message之后的值进行哈希摘要。</p>
 <p>具体HMAC的工作原理有些复杂，但你可以有个大概的了解。重点是，由于这种算法进行了双重摘要，密钥不再受本文中的长度扩展攻击影响。HMAC最先是在1996年被发表，之后几乎被添加到每一种编程语言的标准函数库中。</p>
 <h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a><strong>Summary</strong></h2><p>尽管仍有一些疯狂的人类在写自己的加密算法，绝大多数人已经渐渐发现自己写加密算法不是什么好主意。然而，不单纯的套用公开的加密算法也是有其意义的，前提是你能够正确的使用这些加密算法。除非你彻底吃透你使用的加密算法的原理，并懂得如何正确使用，否则还是直接用那些经过了专业级审查的高级算法库要安全些。</p>
 
@@ -280,8 +290,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -346,7 +358,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -368,7 +380,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

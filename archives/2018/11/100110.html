@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,17 +18,17 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="kubernetes,调度器">
+    <meta name="keywords" content="kubernetes,调度器" />
 
 
-    <meta name="description" content="kube-scheduler是 kubernetes 系统的核心组件之一，主要负责整个集群资源的调度功能，根据特定的调度算法和策略，将 Pod 调度到最优的工作节点上面去，从而更加合理、更加充分...">
+    <meta name="description" content="kube-scheduler是 kubernetes 系统的核心组件之一，主要负责整个集群资源的调度功能，根据特定的调度算法和策略，将 Pod 调度到最优的工作节点上面去，从而更加合理、更加充分..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -45,9 +45,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -64,7 +66,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -82,9 +84,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -189,7 +191,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/scheduler/">调度器</a>
+                    <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a> <a class="tag-none-link" href="/tags/scheduler/" rel="tag">调度器</a>
                 
             </span>
         </span>
@@ -207,7 +209,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2060</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2304</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -216,7 +218,8 @@
         <p><code>kube-scheduler</code>是 kubernetes 系统的核心组件之一，主要负责整个集群资源的调度功能，根据特定的调度算法和策略，将 Pod 调度到最优的工作节点上面去，从而更加合理、更加充分的利用集群的资源，这也是我们选择使用 kubernetes 一个非常重要的理由。如果一门新的技术不能帮助企业节约成本、提供效率，我相信是很难推进的。</p>
 <h2 id="调度流程"><a href="#调度流程" class="headerlink" title="调度流程"></a>调度流程</h2><p>默认情况下，kube-scheduler 提供的默认调度器能够满足我们绝大多数的要求，我们前面和大家接触的示例也基本上用的默认的策略，都可以保证我们的 Pod 可以被分配到资源充足的节点上运行。但是在实际的线上项目中，可能我们自己会比 kubernetes 更加了解我们自己的应用，比如我们希望一个 Pod 只能运行在特定的几个节点上，或者这几个节点只能用来运行特定类型的应用，这就需要我们的调度器能够可控。</p>
 <p><code>kube-scheduler</code> 是 kubernetes 的调度器，它的主要作用就是根据特定的调度算法和调度策略将 Pod 调度到合适的 Node 节点上去，是一个独立的二进制程序，启动之后会一直监听 API Server，获取到 PodSpec.NodeName 为空的 Pod，对每个 Pod 都会创�一个 binding。</p>
-<div align="center"><img src="/img/posts/kube-scheduler-structrue.jpg" alt="kube-scheduler structrue"><br>kube-scheduler structrue</div>
+<div align="center">![kube-scheduler structrue](/img/posts/kube-scheduler-structrue.jpg)
+kube-scheduler structrue</div>
 
 <p>这个过程在我们看来好像比较简单，但在实际的生产环境中，需要考虑的问题就有很多了：</p>
 <ul>
@@ -228,9 +231,10 @@
 <li>用户是否可以根据自己的实际需求定制自己的调度策略？</li>
 </ul>
 <p>考虑到实际环境中的各种复杂情况，kubernetes 的调度器采用插件化的形式实现，可以方便用户进行定制或者二次开发，我们可以自定义一个调度器并以插件形式和 kubernetes 进行集成。</p>
-<p>kubernetes 调度器的源码位于 kubernetes/pkg/scheduler 中，大体的代码目录结构如下所示：(不同的版本目录结构可能不太一样)</p>
+<p>kubernetes 调度器的源码位于 kubernetes&#x2F;pkg&#x2F;scheduler 中，大体的代码目录结构如下所示：(不同的版本目录结构可能不太一样)</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kubernetes/pkg/scheduler</span><br><span class="line">-- scheduler.go         //调度相关的具体实现</span><br><span class="line">|-- algorithm</span><br><span class="line">|   |-- predicates      //节点筛选策略</span><br><span class="line">|   |-- priorities      //节点打分策略</span><br><span class="line">|-- algorithmprovider</span><br><span class="line">|   |-- defaults         //定义默认的调度器</span><br></pre></td></tr></table></figure>
-<p>其中 Scheduler 创建和运行的核心程序，对应的代码在 pkg/scheduler/scheduler.go，如果要查看<code>kube-scheduler</code>的入口程序，对应的代码在 cmd/kube-scheduler/scheduler.go。</p>
+
+<p>其中 Scheduler 创建和运行的核心程序，对应的代码在 pkg&#x2F;scheduler&#x2F;scheduler.go，如果要查看<code>kube-scheduler</code>的入口程序，对应的代码在 cmd&#x2F;kube-scheduler&#x2F;scheduler.go。</p>
 <p>调度主要分为以下几个部分：</p>
 <ul>
 <li>首先是<strong>预选过程</strong>，过滤掉不满足条件的节点，这个过程称为<code>Predicates</code></li>
@@ -243,7 +247,7 @@
 </blockquote>
 <p><code>Priorities</code>阶段即再次对节点进行筛选，如果有多个节点都满足条件的话，那么系统会按照节点的优先级(priorites)大小对节点进行排序，最后选择优先级最高的节点来部署 Pod 应用。</p>
 <p>下面是调度过程的简单示意图：</p>
-<div align="center"><img src="/img/posts/kube-scheduler-filter.jpg" alt="kube-scheduler filter"></div>
+<div align="center">![kube-scheduler filter](/img/posts/kube-scheduler-filter.jpg)</div>
 
 <p>更详细的流程是这样的：</p>
 <ul>
@@ -267,7 +271,7 @@
 <li>CheckNodeDiskPressure：检查节点磁盘空间是否符合要求</li>
 <li>CheckNodeMemoryPressure：检查节点内存是否够用</li>
 </ul>
-<p>除了这些过滤算法之外，还有一些其他的算法，更多更详细的我们可以查看源码文件：k8s.io/kubernetes/pkg/scheduler/algorithm/predicates/predicates.go。</p>
+<p>除了这些过滤算法之外，还有一些其他的算法，更多更详细的我们可以查看源码文件：k8s.io&#x2F;kubernetes&#x2F;pkg&#x2F;scheduler&#x2F;algorithm&#x2F;predicates&#x2F;predicates.go。</p>
 <p>而<code>Priorities</code>优先级是由一系列键值对组成的，键是该优先级的名称，值是它的权重值，同样，我们这里给大家列举几个具有代表性的选项：</p>
 <ul>
 <li>LeastRequestedPriority：通过计算 CPU 和内存的使用率来决定权重，使用率越低权重越高，当然正常肯定也是资源是使用率越低权重越高，能给别的 Pod 运行的可能性就越大</li>
@@ -275,14 +279,17 @@
 <li>ImageLocalityPriority：就是如果在某个节点上已经有要使用的镜像节点了，镜像总大小值越大，权重就越高</li>
 <li>NodeAffinityPriority：这个就是根据节点的亲和性来计算一个权重值，后面我们会详细讲解亲和性的使用方法</li>
 </ul>
-<p>除了这些策略之外，还有很多其他的策略，同样我们可以查看源码文件：k8s.io/kubernetes/pkg/scheduler/algorithm/priorities/ 了解更多信息。每一个优先级函数会返回一个0-10的分数，分数越高表示节点越优，同时每一个函数也会对应一个表示权重的值。最终主机的得分用以下公式计算得出：</p>
+<p>除了这些策略之外，还有很多其他的策略，同样我们可以查看源码文件：k8s.io&#x2F;kubernetes&#x2F;pkg&#x2F;scheduler&#x2F;algorithm&#x2F;priorities&#x2F; 了解更多信息。每一个优先级函数会返回一个0-10的分数，分数越高表示节点越优，同时每一个函数也会对应一个表示权重的值。最终主机的得分用以下公式计算得出：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">finalScoreNode = (weight1 * priorityFunc1) + (weight2 * priorityFunc2) + … + (weightn * priorityFuncn)</span><br></pre></td></tr></table></figure>
+
 <h2 id="自定义调度"><a href="#自定义调度" class="headerlink" title="自定义调度"></a>自定义调度</h2><p>上面就是 kube-scheduler 默认调度的基本流程，除了使用默认的调度器之外，我们也可以自定义调度策略。</p>
 <h3 id="调度器扩展"><a href="#调度器扩展" class="headerlink" title="调度器扩展"></a>调度器扩展</h3><p><code>kube-scheduler</code>在启动的时候可以通过 <code>--policy-config-file</code>参数来指定调度策略文件，我们可以根据我们自己的需要来组装<code>Predicates</code>和<code>Priority</code>函数。选择不同的过滤函数和优先级函数、控制优先级函数的权重、调整过滤函数的顺序都会影响调度过程。</p>
 <p>下面是官方的 Policy 文件示例：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"kind"</span> : <span class="string">"Policy"</span>,</span><br><span class="line">    <span class="attr">"apiVersion"</span> : <span class="string">"v1"</span>,</span><br><span class="line">    <span class="attr">"predicates"</span> : [</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"PodFitsHostPorts"</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"PodFitsResources"</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"NoDiskConflict"</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"NoVolumeZoneConflict"</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"MatchNodeSelector"</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"HostName"</span>&#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"priorities"</span> : [</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"LeastRequestedPriority"</span>, <span class="attr">"weight"</span> : <span class="number">1</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"BalancedResourceAllocation"</span>, <span class="attr">"weight"</span> : <span class="number">1</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"ServiceSpreadingPriority"</span>, <span class="attr">"weight"</span> : <span class="number">1</span>&#125;,</span><br><span class="line">        &#123;<span class="attr">"name"</span> : <span class="string">"EqualPriority"</span>, <span class="attr">"weight"</span> : <span class="number">1</span>&#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;kind&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;Policy&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;apiVersion&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;v1&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;predicates&quot;</span> <span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;PodFitsHostPorts&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;PodFitsResources&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;NoDiskConflict&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;NoVolumeZoneConflict&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;MatchNodeSelector&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;HostName&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;priorities&quot;</span> <span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;LeastRequestedPriority&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;weight&quot;</span> <span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;BalancedResourceAllocation&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;weight&quot;</span> <span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;ServiceSpreadingPriority&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;weight&quot;</span> <span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;EqualPriority&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;weight&quot;</span> <span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="多调度器"><a href="#多调度器" class="headerlink" title="多调度器"></a>多调度器</h3><p>如果默认的调度器不满足要求，还可以部署自定义的调度器。并且，在整个集群中还可以同时运行多个调度器实例，通过<code>podSpec.schedulerName</code> 来选择使用哪一个调度器（默认使用内置的调度器）。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  schedulerName:</span> <span class="string">my-scheduler</span>  <span class="comment"># 选择使用自定义调度器 my-scheduler</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">nginx:1.10</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">schedulerName:</span> <span class="string">my-scheduler</span>  <span class="comment"># 选择使用自定义调度器 my-scheduler</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nginx:1.10</span></span><br></pre></td></tr></table></figure>
+
 <p>要开发我们自己的调度器也是比较容易的，比如我们这里的 my-scheduler:</p>
 <ul>
 <li>首先需要通过指定的 API 获取节点和 Pod</li>
@@ -292,17 +299,19 @@
 </ul>
 <h3 id="优先级调度"><a href="#优先级调度" class="headerlink" title="优先级调度"></a>优先级调度</h3><p>与前面所讲的调度优选策略中的优先级（Priorities）不同，前面所讲的优先级指的是节点优先级，而我们这里所说的优先级 pod priority 指的是 Pod 的优先级，高优先级的 Pod 会优先被调度，或者在资源不足低情况牺牲低优先级的 Pod，以便于重要的 Pod 能够得到资源部署。</p>
 <p>要定义 Pod 优先级，就需要先定义<code>PriorityClass</code>对象，该对象没有 Namespace 的限制：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PriorityClass</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">high-priority</span></span><br><span class="line"><span class="attr">value:</span> <span class="number">1000000</span></span><br><span class="line"><span class="attr">globalDefault:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">description:</span> <span class="string">"This priority class should be used for XYZ service pods only."</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PriorityClass</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">high-priority</span></span><br><span class="line"><span class="attr">value:</span> <span class="number">1000000</span></span><br><span class="line"><span class="attr">globalDefault:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">description:</span> <span class="string">&quot;This priority class should be used for XYZ service pods only.&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>其中：</p>
 <ul>
 <li><code>value</code>为 32 位整数的优先级，该值越大，优先级越高</li>
 <li><code>globalDefault</code>用于未配置 PriorityClassName 的 Pod，整个集群中应该只有一个<code>PriorityClass</code>将其设置为 true</li>
 </ul>
 <p>然后通过在 Pod 的<code>spec.priorityClassName</code>中指定已定义的<code>PriorityClass</code>名称即可：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">  priorityClassName:</span> <span class="string">high-priority</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">  <span class="attr">priorityClassName:</span> <span class="string">high-priority</span></span><br></pre></td></tr></table></figure>
+
 <p>另外一个值得注意的是当节点没有足够的资源供调度器调度 Pod，导致 Pod 处于 pending 时，抢占（preemption）逻辑就会被触发。<code>Preemption</code>会尝试从一个节点删除低优先级的 Pod，从而释放资源使高优先级的 Pod 得到节点资源进行部署。</p>
 <p>现在我们通过下面的图再去回顾下 kubernetes 的调度过程是不是就清晰很多了：</p>
-<div align="center"><img src="/img/posts/kube-scheduler-detail.png" alt="kube-scheduler"></div>
+<div align="center">![kube-scheduler](/img/posts/kube-scheduler-detail.png)</div>
 
 <hr>
 <p>接下文: <a href="100095.html">Kubernetes调度器之 二.亲和性调度</a></p>
@@ -341,8 +350,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -374,7 +385,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#调度流程"><span class="toc-text">调度流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义调度"><span class="toc-text">自定义调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#调度器扩展"><span class="toc-text">调度器扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多调度器"><span class="toc-text">多调度器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优先级调度"><span class="toc-text">优先级调度</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E6%B5%81%E7%A8%8B"><span class="toc-text">调度流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B0%83%E5%BA%A6"><span class="toc-text">自定义调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E5%99%A8%E6%89%A9%E5%B1%95"><span class="toc-text">调度器扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="toc-text">多调度器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%85%88%E7%BA%A7%E8%B0%83%E5%BA%A6"><span class="toc-text">优先级调度</span></a></li></ol></li></ol>
         
     </div>
 </aside>
@@ -407,7 +418,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -429,7 +440,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

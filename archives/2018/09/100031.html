@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,19 +18,19 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="逆向,java,调试">
+    <meta name="keywords" content="逆向,java,调试" />
 
 
     <meta name="description" content="JDB在有源代码的时候可以实现调试远程机器上的java程序，但是在逆向中源码很难分析出来，不过还是能够调试得到一部分信息的
 本文主要获取两个信息
-1.动态调用混淆类中的方法，因为实践过程中我们去...">
+1.动态调用混淆类中的方法，因为实践过程中我们去..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -47,9 +47,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -66,7 +68,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -84,9 +86,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -191,7 +193,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/java/">java</a> <a class="tag-link" href="/tags/debug/">调试</a> <a class="tag-link" href="/tags/reverse/">逆向</a>
+                    <a class="tag-none-link" href="/tags/java/" rel="tag">java</a> <a class="tag-none-link" href="/tags/debug/" rel="tag">调试</a> <a class="tag-none-link" href="/tags/reverse/" rel="tag">逆向</a>
                 
             </span>
         </span>
@@ -209,7 +211,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2128</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2372</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -223,38 +225,47 @@
 <p>JDB无源代码调试调用方法</p>
 <p>启动Xdebug调试</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,<span class="built_in">suspend</span>=y,address=8000 -jar ZKM.jar</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642057142189.png" alt="QQ截图20180425074042.png"></p>
 <p>JDB无源代码连接（如果是同一台电脑，需要新开一个cmd）</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8000</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642162326663.png" alt="QQ截图20180425074233.png"></p>
 <p>在com.zelix.lh类的a方法设置断点</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stop <span class="keyword">in</span> com.zelix.lh.a</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642317776954.png" alt="QQ截图20180425074503.png"></p>
 <p>run命令，运行到断点会停下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642345928123.png" alt="QQ截图20180425074536.png"></p>
 <p>输入next单步执行</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">next</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642648606488.png" alt="QQ截图20180425074955.png"></p>
 <p>使用clear命令清除刚才的断点</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clear com.zelix.lh.a</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642797212869.png" alt="QQ截图20180425075306.png"></p>
 <p>使用print命令调用a方法</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> com.zelix.lh.a(<span class="string">"BZLJ70ifAHJAW"</span>,1881109385)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> com.zelix.lh.a(<span class="string">&quot;BZLJ70ifAHJAW&quot;</span>,1881109385)</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524642924637343.png" alt="QQ截图20180425075514.png"></p>
 <p>上面演示了静态类方法的调用，动态类也可以</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> new java.lang.String(<span class="string">"Hello"</span>).length()</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> new java.lang.String(<span class="string">&quot;Hello&quot;</span>).length()</span><br></pre></td></tr></table></figure>
+
 <p><img src="/img/posts/1524643271629858.png" alt="QQ截图20180425075955.png"></p>
 <p>打印调用栈where(wherei也可以，多打印PC寄存器值)</p>
 <p><img src="/img/posts/1524643449219308.png" alt="QQ截图20180425080401.png"></p>
 <p><img src="/img/posts/1524643496896168.png" alt="QQ截图20180425080436.png"></p>
 <p>使用quit退出调试</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">quit</span><br></pre></td></tr></table></figure>
+
 <p>注意调用方法时，相关的类必须已经加载，方法中打的断点必须清除，否则会抛出异常。</p>
 <p>混淆的代码一般都去除了调试信息locals查看本地变量，stop at 行断点这些基本上无法输出有效信息</p>
 <hr>
 <p><strong>参考资料</strong></p>
-<p><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/jdb.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/8/docs/technotes/tools/windows/jdb.html</a></p>
+<p><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/jdb.html">https://docs.oracle.com/javase/8/docs/technotes/tools/windows/jdb.html</a></p>
 
     </div>
     
@@ -290,8 +301,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -356,7 +369,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -378,7 +391,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

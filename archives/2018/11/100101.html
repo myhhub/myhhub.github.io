@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,19 +18,19 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="kubernetes,对象,service">
+    <meta name="keywords" content="kubernetes,对象,service" />
 
 
     <meta name="description" content="接上文: kubernetes常用对象操作之 四.Job、CronJob
 
-前面学习了Pod的基本用法，了解到Pod的生命是有限的Pod的生命是有限的，死亡过后不会复活了。RC和Deployme...">
+前面学习了Pod的基本用法，了解到Pod的生命是有限的Pod的生命是有限的，死亡过后不会复活了。RC和Deployme..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -47,9 +47,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -66,7 +68,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -84,9 +86,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -191,7 +193,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/kubernetes/">kubernetes</a> <a class="tag-link" href="/tags/service/">service</a> <a class="tag-link" href="/tags/object/">对象</a>
+                    <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a> <a class="tag-none-link" href="/tags/service/" rel="tag">service</a> <a class="tag-none-link" href="/tags/object/" rel="tag">对象</a>
                 
             </span>
         </span>
@@ -209,7 +211,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2054</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2299</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -219,7 +221,7 @@
 <hr>
 <p>前面学习了<code>Pod</code>的基本用法，了解到<code>Pod</code>的生命是有限的<code>Pod</code>的生命是有限的，死亡过后不会复活了。<code>RC</code>和<code>Deployment</code>可以用来动态的创建和销毁<code>Pod</code>。尽管每个<code>Pod</code>都有自己的<code>IP</code>地址，但是如果<code>Pod</code>重新启动了的话那么他的<code>IP</code>很有可能也就变化了。这就会带来一个问题：比如我们有一些后端的<code>Pod</code>的集合为集群中的其他前端的<code>Pod</code>集合提供<code>API</code>服务，如果我们在前端的<code>Pod</code>中把所有的这些后端的<code>Pod</code>的地址都写死，然后去某种方式去访问其中一个<code>Pod</code>的服务，这样看上去是可以工作的，对吧？但是如果这个<code>Pod</code>挂掉了，然后重新启动起来了，是不是<code>IP</code>地址非常有可能就变了，这个时候前端就极大可能访问不到后端的服务了。</p>
 <p>遇到这样的问题该怎么解决呢？在没有使用<code>Kubernetes</code>之前，我相信可能很多同学都遇到过这样的问题，不一定是<code>IP</code>变化的问题，比如我们在部署一个<code>WEB</code>服务的时候，前端一般部署一个<code>Nginx</code>作为服务的入口，然后<code>Nginx</code>后面肯定就是挂载的这个服务的大量后端，很早以前我们可能是去手动更改<code>Nginx</code>配置中的<code>upstream</code>选项，来动态改变提供服务的数量，到后面出现了一些<code>服务发现</code>的工具，比如<code>Consul</code>、<code>ZooKeeper</code>还有我们熟悉的<code>etcd</code>等工具，有了这些工具过后我们就可以只需要把我们的服务注册到这些服务发现中心去就可以，然后让这些工具动态的去更新<code>Nginx</code>的配置就可以了，我们完全不用去手工的操作了，是不是非常方便。</p>
-<div align="center"><img src="/img/posts/nginx-consul.png" alt="nginx"></div>
+<div align="center">![nginx](/img/posts/nginx-consul.png)</div>
 
 <p>同样的，要解决我们上面遇到的问题是不是实现一个服务发现的工具也可以解决啊？没错的，当我们<code>Pod</code>被销毁或者新建过后，我们可以把这个<code>Pod</code>的地址注册到这个服务发现中心去就可以，但是这样的话我们的前端的<code>Pod</code>结合就不能直接去连接后台的<code>Pod</code>集合了是吧，应该连接到一个能够做服务发现的中间件上面，对吧？</p>
 <p>没错，<code>Kubernetes</code>集群就为我们提供了这样的一个对象 - <code>Service</code>，<code>Service</code>是一种抽象的对象，它定义了一组<code>Pod</code>的逻辑集合和一个用于访问它们的策略，其实这个概念和微服务非常类似。一个<code>Serivce</code>下面包含的<code>Pod</code>集合一般是由<code>Label Selector</code>来决定的。</p>
@@ -234,14 +236,16 @@
 <p>然后<code>Pod IP</code>是每个<code>Pod</code>的<code>IP</code>地址，它是<code>Docker Engine</code>根据<code>docker0</code>网桥的<code>IP</code>地址段进行分配的（我们这里使用的是<code>flannel</code>这种网络插件保证所有节点的<code>Pod IP</code>不会冲突）</p>
 <p>最后<code>Cluster IP</code>是一个虚拟的<code>IP</code>，仅仅作用于<code>Kubernetes Service</code>这个对象，由<code>Kubernetes</code>自己来进行管理和分配地址，当然我们也无法<code>ping</code>这个地址，他没有一个真正的实体对象来响应，他只能结合<code>Service Port</code>来组成一个可以通信的服务。</p>
 <h3 id="定义Service"><a href="#定义Service" class="headerlink" title="定义Service"></a>定义Service</h3><p>定义<code>Service</code>的方式和我们前面定义的各种资源对象的方式类型，例如，假定我们有一组<code>Pod</code>服务，它们对外暴露了 8080 端口，同时都被打上了<code>app=myapp</code>这样的标签，那么我们就可以像下面这样来定义一个<code>Service</code>对象：</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: v1</span><br><span class="line"><span class="attribute">kind</span>: Service</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">name</span>: myservice</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">selector</span>:</span><br><span class="line">    <span class="attribute">app</span>: myapp</span><br><span class="line">  <span class="attribute">ports</span>:</span><br><span class="line">  - <span class="attribute">protocol</span>: TCP</span><br><span class="line">    <span class="attribute">port</span>: <span class="number">80</span></span><br><span class="line">    <span class="attribute">targetPort</span>: <span class="number">8080</span></span><br><span class="line">    <span class="attribute">name</span>: myapp-http</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">myservice</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">myapp</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">protocol:</span> <span class="string">TCP</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">80</span></span><br><span class="line">    <span class="attr">targetPort:</span> <span class="number">8080</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">myapp-http</span></span><br></pre></td></tr></table></figure>
+
 <p>然后通过的使用<code>kubectl create -f myservice.yaml</code>就可以创建一个名为<code>myservice</code>的<code>Service</code>对象，它会将请求代理到使用 TCP 端口为 8080，具有标签<code>app=myapp</code>的<code>Pod</code>上，这个<code>Service</code>会被系统分配一个我们上面说的<code>Cluster IP</code>，该<code>Service</code>还会持续的监听<code>selector</code>下面的<code>Pod</code>，会把这些<code>Pod</code>信息更新到一个名为<code>myservice</code>的<code>Endpoints</code>对象上去，这个对象就类似于我们上面说的<code>Pod</code>集合了。</p>
 <p>需要注意的是，<code>Service</code>能够将一个接收端口映射到任意的<code>targetPort</code>。 默认情况下，<code>targetPort</code>将被设置为与<code>port</code>字段相同的值。 可能更有趣的是，targetPort 可以是一个字符串，引用了 backend Pod 的一个端口的名称。 因实际指派给该端口名称的端口号，在每个 backend Pod 中可能并不相同，所以对于部署和设计 Service ，这种方式会提供更大的灵活性。</p>
 <p>另外<code>Service</code>能够支持 TCP 和 UDP 协议，默认是 TCP 协议。</p>
 <h3 id="kube-proxy"><a href="#kube-proxy" class="headerlink" title="kube-proxy"></a>kube-proxy</h3><p>前面我们讲到过，在<code>Kubernetes</code>集群中，每个<code>Node</code>会运行一个<code>kube-proxy</code>进程, 负责为<code>Service</code>实现一种 VIP（虚拟 IP，就是我们上面说的<code>clusterIP</code>）的代理形式，现在的<code>Kubernetes</code>中默认是使用的<code>iptables</code>这种模式来代理。这种模式，<code>kube-proxy</code>会监视<code>Kubernetes master</code>对 Service 对象和 Endpoints 对象的添加和移除。 对每个 Service，它会添加上 iptables 规则，从而捕获到达该 Service 的 clusterIP（虚拟 IP）和端口的请求，进而将请求重定向到 Service 的一组 backend 中的某一个个上面。 对于每个 Endpoints 对象，它也会安装 iptables 规则，这个规则会选择一个 backend Pod。</p>
 <p>默认的策略是，随机选择一个 backend。 我们也可以实现基于客户端 IP 的会话亲和性，可以将 <code>service.spec.sessionAffinity</code>的值设置为 “ClientIP” （默认值为 “None”）。</p>
 <p>另外需要了解的是如果最开始选择的 Pod 没有响应，iptables 代理能够自动地重试另一个 Pod，所以它需要依赖 readiness probes。</p>
-<div align="center"><img src="/img/posts/services-iptables-overview.svg" alt="service iptables overview"><br>service iptables overview</div>
+<div align="center">![service iptables overview](/img/posts/services-iptables-overview.svg)
+service iptables overview</div>
 
 <h3 id="Service-类型"><a href="#Service-类型" class="headerlink" title="Service 类型"></a>Service 类型</h3><p>我们在定义<code>Service</code>的时候可以指定一个自己需要的类型的<code>Service</code>，如果不指定的话默认是<code>ClusterIP</code>类型。</p>
 <p>我们可以使用的服务类型如下：</p>
@@ -254,16 +258,21 @@
 <h4 id="NodePort-类型"><a href="#NodePort-类型" class="headerlink" title="NodePort 类型"></a>NodePort 类型</h4><p>如果设置 type 的值为 <code>NodePort</code>，Kubernetes master 将从给定的配置范围内（默认：30000-32767）分配端口，每个 Node 将从该端口（每个 Node 上的同一端口）代理到<code>Service</code>。该端口将通过 Service 的 <code>spec.ports[*].nodePort</code> 字段被指定，如果不指定的话会自动生成一个端口。</p>
 <p>需要注意的是，Service 将能够通过 :spec.ports[<em>].nodePort 和 spec.clusterIp:spec.ports[</em>].port 而对外可见。</p>
 <p>接下来我们来给大家创建一个<code>NodePort</code>的服务来访问我们前面的<code>Nginx</code>服务：(保存为 service-demo.yaml)</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span>: v1</span><br><span class="line"><span class="attribute">kind</span>: Service</span><br><span class="line"><span class="attribute">metadata</span>:</span><br><span class="line">  <span class="attribute">name</span>: myservice</span><br><span class="line"><span class="attribute">spec</span>:</span><br><span class="line">  <span class="attribute">selector</span>:</span><br><span class="line">    <span class="attribute">app</span>: myapp</span><br><span class="line">  <span class="attribute">type</span>: NodePort</span><br><span class="line">  <span class="attribute">ports</span>:</span><br><span class="line">  - <span class="attribute">protocol</span>: TCP</span><br><span class="line">    <span class="attribute">port</span>: <span class="number">80</span></span><br><span class="line">    <span class="attribute">targetPort</span>: <span class="number">80</span></span><br><span class="line">    <span class="attribute">name</span>: myapp-http</span><br></pre></td></tr></table></figure>
+<figure class="highlight nestedtext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">apiVersion</span><span class="punctuation">:</span> <span class="string">v1</span></span><br><span class="line"><span class="attribute">kind</span><span class="punctuation">:</span> <span class="string">Service</span></span><br><span class="line"><span class="attribute">metadata</span><span class="punctuation">:</span></span><br><span class="line">  <span class="attribute">name</span><span class="punctuation">:</span> <span class="string">myservice</span></span><br><span class="line"><span class="attribute">spec</span><span class="punctuation">:</span></span><br><span class="line">  <span class="attribute">selector</span><span class="punctuation">:</span></span><br><span class="line">    <span class="attribute">app</span><span class="punctuation">:</span> <span class="string">myapp</span></span><br><span class="line">  <span class="attribute">type</span><span class="punctuation">:</span> <span class="string">NodePort</span></span><br><span class="line">  <span class="attribute">ports</span><span class="punctuation">:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">protocol: TCP</span></span><br><span class="line">    <span class="attribute">port</span><span class="punctuation">:</span> <span class="string">80</span></span><br><span class="line">    <span class="attribute">targetPort</span><span class="punctuation">:</span> <span class="string">80</span></span><br><span class="line">    <span class="attribute">name</span><span class="punctuation">:</span> <span class="string">myapp-http</span></span><br></pre></td></tr></table></figure>
+
 <p>创建该<code>Service</code>:</p>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>kubectl create -f service-demo.yaml</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> kubectl create <span class="operator">-f</span> service<span class="literal">-demo</span>.yaml</span><br></pre></td></tr></table></figure>
+
 <p>然后我们可以查看<code>Service</code>对象信息：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="builtin-name">get</span> svc</span><br><span class="line">NAME        <span class="built_in"> TYPE </span>       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP        27d</span><br><span class="line">myservice    NodePort    10.104.57.198   &lt;none&gt;        80:32560/TCP   14h</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl <span class="keyword">get</span> svc</span><br><span class="line"><span class="type">NAME</span>         <span class="keyword">TYPE</span>        <span class="keyword">CLUSTER</span>-IP      <span class="keyword">EXTERNAL</span>-IP   PORT(S)        AGE</span><br><span class="line">kubernetes   ClusterIP   <span class="number">10.96</span><span class="number">.0</span><span class="number">.1</span>       &lt;<span class="keyword">none</span>&gt;        <span class="number">443</span>/TCP        <span class="number">27</span>d</span><br><span class="line">myservice    NodePort    <span class="number">10.104</span><span class="number">.57</span><span class="number">.198</span>   &lt;<span class="keyword">none</span>&gt;        <span class="number">80</span>:<span class="number">32560</span>/TCP   <span class="number">14</span>h</span><br></pre></td></tr></table></figure>
+
 <p>我们可以看到<code>myservice</code>的 TYPE 类型已经变成了<code>NodePort</code>，后面的<code>PORT(S)</code>部分也多了一个 32560 的映射端口。</p>
 <p>同样的我们可以使用<code>describe</code>命令查看 Service 的详细信息：</p>
-<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe svc myservice</span><br><span class="line"><span class="symbol">Name:</span>                     myservice</span><br><span class="line"><span class="symbol">Namespace:</span>                default</span><br><span class="line"><span class="symbol">Labels:</span>                   <span class="params">&lt;none&gt;</span></span><br><span class="line"><span class="symbol">Annotations:</span>              <span class="params">&lt;none&gt;</span></span><br><span class="line"><span class="symbol">Selector:</span>                 app=nginx</span><br><span class="line"><span class="symbol">Type:</span>                     NodePort</span><br><span class="line"><span class="symbol">IP:</span>                       <span class="number">10.104</span><span class="number">.57</span><span class="number">.198</span></span><br><span class="line"><span class="symbol">Port:</span>                     mynginx-http  <span class="number">80</span>/TCP</span><br><span class="line"><span class="symbol">TargetPort:</span>               <span class="number">80</span>/TCP</span><br><span class="line"><span class="symbol">NodePort:</span>                 mynginx-http  <span class="number">32560</span>/TCP</span><br><span class="line"><span class="symbol">Endpoints:</span>                <span class="number">10.244</span><span class="number">.1</span><span class="number">.55</span>:<span class="number">80</span>,<span class="number">10.244</span><span class="number">.2</span><span class="number">.189</span>:<span class="number">80</span>,<span class="number">10.244</span><span class="number">.2</span><span class="number">.190</span>:<span class="number">80</span> + <span class="number">1</span> more...</span><br><span class="line">Session Affinity:         None</span><br><span class="line">External Traffic Policy:  Cluster</span><br><span class="line"><span class="symbol">Events:</span>                   <span class="params">&lt;none&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl describe svc myservice</span><br><span class="line"><span class="params">Name:</span>                     myservice</span><br><span class="line"><span class="params">Namespace:</span>                default</span><br><span class="line"><span class="params">Labels:</span>                   <span class="symbol">&lt;none&gt;</span></span><br><span class="line"><span class="params">Annotations:</span>              <span class="symbol">&lt;none&gt;</span></span><br><span class="line"><span class="params">Selector:</span>                 app<span class="operator">=</span>nginx</span><br><span class="line"><span class="params">Type:</span>                     NodePort</span><br><span class="line"><span class="params">IP:</span>                       <span class="number">10.104</span>.<span class="number">57.198</span></span><br><span class="line"><span class="params">Port:</span>                     mynginx-http  <span class="number">80</span><span class="symbol">/TCP</span></span><br><span class="line"><span class="params">TargetPort:</span>               <span class="number">80</span><span class="symbol">/TCP</span></span><br><span class="line"><span class="params">NodePort:</span>                 mynginx-http  <span class="number">32560</span><span class="symbol">/TCP</span></span><br><span class="line"><span class="params">Endpoints:</span>                <span class="number">10.244</span>.<span class="number">1.55</span>:<span class="number">80</span>,<span class="number">10.244</span>.<span class="number">2.189</span>:<span class="number">80</span>,<span class="number">10.244</span>.<span class="number">2.190</span>:<span class="number">80</span> <span class="operator">+</span> <span class="number">1</span> more...</span><br><span class="line">Session <span class="params">Affinity:</span>         None</span><br><span class="line">External Traffic <span class="params">Policy:</span>  Cluster</span><br><span class="line"><span class="params">Events:</span>                   <span class="symbol">&lt;none&gt;</span></span><br></pre></td></tr></table></figure>
+
 <h4 id="ExternalName"><a href="#ExternalName" class="headerlink" title="ExternalName"></a>ExternalName</h4><p><code>ExternalName</code> 是 Service 的特例，它没有<code>selector</code>，也没有定义任何的端口和 Endpoint。 对于运行在集群外部的服务，它通过返回该外部服务的别名这种方式来提供服务。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kind: Service</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: my-service</span><br><span class="line">  namespace: prod</span><br><span class="line">spec:</span><br><span class="line">  type: ExternalName</span><br><span class="line">  externalName: my.database.example.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">kind:</span> Service</span><br><span class="line"><span class="symbol">apiVersion:</span> v1</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> my-service</span><br><span class="line"><span class="symbol">  namespace:</span> prod</span><br><span class="line"><span class="symbol">spec:</span></span><br><span class="line"><span class="symbol">  type:</span> ExternalName</span><br><span class="line"><span class="symbol">  externalName:</span> my.database.example.com</span><br></pre></td></tr></table></figure>
+
 <p>当查询主机 my-service.prod.svc.cluster.local （后面服务发现的时候我们会再深入讲解）时，集群的 <code>DNS</code> 服务将返回一个值为 my.database.example.com 的 <code>CNAME</code> 记录。 访问这个服务的工作方式与其它的相同，唯一不同的是重定向发生在 <code>DNS</code> 层，而且不会进行代理或转发。</p>
 <p>如果后续决定要将数据库迁移到 <code>Kubernetes</code> 集群中，可以启动对应的 <code>Pod</code>，增加合适的 Selector 或 Endpoint，修改 <code>Service</code>的 type，完全不需要修改调用的代码，这样就完全解耦了。</p>
 <hr>
@@ -303,8 +312,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -336,7 +347,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#三种IP"><span class="toc-text">三种IP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#定义Service"><span class="toc-text">定义Service</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kube-proxy"><span class="toc-text">kube-proxy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Service-类型"><span class="toc-text">Service 类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NodePort-类型"><span class="toc-text">NodePort 类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ExternalName"><span class="toc-text">ExternalName</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8DIP"><span class="toc-text">三种IP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89Service"><span class="toc-text">定义Service</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kube-proxy"><span class="toc-text">kube-proxy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Service-%E7%B1%BB%E5%9E%8B"><span class="toc-text">Service 类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NodePort-%E7%B1%BB%E5%9E%8B"><span class="toc-text">NodePort 类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ExternalName"><span class="toc-text">ExternalName</span></a></li></ol></li></ol>
         
     </div>
 </aside>
@@ -369,7 +380,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -391,7 +402,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

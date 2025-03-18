@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,20 +18,20 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="docker,jenkins,selenium">
+    <meta name="keywords" content="docker,jenkins,selenium" />
 
 
     <meta name="description" content="背景目标：使用docker做UI自动化测试并在Jenkins运行
 调试环境：MocOS
 运行环境：Linux ubuntu + docker
-涉及工具：docker，selenium，unitt...">
+涉及工具：docker，selenium，unitt..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -48,9 +48,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -67,7 +69,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -85,9 +87,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -192,7 +194,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/docker/">docker</a> <a class="tag-link" href="/tags/jenkins/">jenkins</a> <a class="tag-link" href="/tags/selenium/">selenium</a>
+                    <a class="tag-none-link" href="/tags/docker/" rel="tag">docker</a> <a class="tag-none-link" href="/tags/jenkins/" rel="tag">jenkins</a> <a class="tag-none-link" href="/tags/selenium/" rel="tag">selenium</a>
                 
             </span>
         </span>
@@ -210,7 +212,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2120</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2365</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -220,41 +222,45 @@
 <p>调试环境：MocOS</p>
 <p>运行环境：Linux ubuntu + docker</p>
 <p>涉及工具：docker，selenium，unittest, jenkins</p>
-<h2 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h2><p>找一个适合做自动化的docker镜像，使用selenium-grid 远程执行selenium。镜像采用 <strong>elgalu/selenium，</strong>已经集成了UI，chrome/firefox 等浏览器，包括webdriver驱动，十分方便。</p>
+<h2 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h2><p>找一个适合做自动化的docker镜像，使用selenium-grid 远程执行selenium。镜像采用 **elgalu&#x2F;selenium，**已经集成了UI，chrome&#x2F;firefox 等浏览器，包括webdriver驱动，十分方便。</p>
 <p>镜像仓库地址：</p>
-<p><a href="https://github.com/elgalu/docker-selenium" target="_blank" rel="noopener">https://github.com/elgalu/docker-selenium</a></p>
+<p><a href="https://github.com/elgalu/docker-selenium">https://github.com/elgalu/docker-selenium</a></p>
 <p>接下来开工：</p>
-<h2 id="1-在elgalu-selenium基础上简单编译"><a href="#1-在elgalu-selenium基础上简单编译" class="headerlink" title="1. 在elgalu/selenium基础上简单编译"></a>1. 在elgalu/selenium基础上简单编译</h2><p>为了方便，脚本代码运行也设置在镜像里面。因此定制了我们自己的镜像文件：</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> elgalu/selenium</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sudo apt-get update -y \</span></span><br><span class="line"><span class="bash">&amp;&amp; sudo pip install selenium \</span></span><br><span class="line"><span class="bash">&amp;&amp; mkdir /home/seluser/automation/myScript</span></span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> . /home/seluser/automation/myScript </span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /home/seluser/automation/myScript  <span class="comment">#定义工作目录</span></span></span><br></pre></td></tr></table></figure>
-<h2 id="2-用Python-selenium编写测试用例"><a href="#2-用Python-selenium编写测试用例" class="headerlink" title="2. 用Python+selenium编写测试用例"></a>2. 用Python+selenium编写测试用例</h2><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> REMOTE:  <span class="comment"># 定义一个开关变量方便本地和远程调试切换</span></span><br><span class="line">    <span class="attr">selenium_grid_url</span> = <span class="string">"http://guest.docker:24444/wd/hub"</span></span><br><span class="line">    <span class="attr">capabilities</span> = webdriver.DesiredCapabilities.CHROME.copy()</span><br><span class="line">    <span class="attr">d</span> = webdriver.Remote(<span class="attr">command_executor=selenium_grid_url,</span> <span class="attr">desired_capabilities=capabilities)</span> <span class="comment">#通过selenium启动docker里面chrome </span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="attr">d</span> = webdriver.Chrome()  <span class="comment">#通过selenium启动本地chrome</span></span><br><span class="line">    <span class="comment">##具体的UI测试代码</span></span><br></pre></td></tr></table></figure>
-<p>此处是启动selenium或者或者selenium -grid 部分主要代码，不能直接运行。如果需要调用远程的selenium_grid需要URL加端口号的形势<a href="http://link.zhihu.com/?target=http%3A//guest.docker%3A24444/wd/hub" target="_blank" rel="noopener">http://guest.docker:24444/wd/hub</a>，guest.docker是docker内网分配的IP，因为在docker里面的host文件没有发现容器名和IP的映射，因此从docker里面hosts文件选用guest.docker这个名字，等发现更好解决方案后再更新。</p>
+<h2 id="1-在elgalu-selenium基础上简单编译"><a href="#1-在elgalu-selenium基础上简单编译" class="headerlink" title="1. 在elgalu&#x2F;selenium基础上简单编译"></a>1. 在elgalu&#x2F;selenium基础上简单编译</h2><p>为了方便，脚本代码运行也设置在镜像里面。因此定制了我们自己的镜像文件：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> elgalu/selenium</span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">sudo</span> apt-get update -y \</span></span><br><span class="line"><span class="language-bash">&amp;&amp; <span class="built_in">sudo</span> pip install selenium \</span></span><br><span class="line"><span class="language-bash">&amp;&amp; <span class="built_in">mkdir</span> /home/seluser/automation/myScript</span></span><br><span class="line"><span class="keyword">ADD</span><span class="language-bash"> . /home/seluser/automation/myScript </span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /home/seluser/automation/myScript  <span class="comment">#定义工作目录</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-用Python-selenium编写测试用例"><a href="#2-用Python-selenium编写测试用例" class="headerlink" title="2. 用Python+selenium编写测试用例"></a>2. 用Python+selenium编写测试用例</h2><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="params">REMOTE:</span>  <span class="comment"># 定义一个开关变量方便本地和远程调试切换</span></span><br><span class="line">    <span class="attr">selenium_grid_url</span> <span class="operator">=</span> <span class="string">&quot;http://guest.docker:24444/wd/hub&quot;</span></span><br><span class="line">    <span class="attr">capabilities</span> <span class="operator">=</span> webdriver.DesiredCapabilities.CHROME.copy()</span><br><span class="line">    <span class="attr">d</span> <span class="operator">=</span> webdriver.Remote(command_executor<span class="operator">=</span>selenium_grid_url, desired_capabilities<span class="operator">=</span>capabilities) <span class="comment">#通过selenium启动docker里面chrome </span></span><br><span class="line"><span class="params">else:</span></span><br><span class="line">    <span class="attr">d</span> <span class="operator">=</span> webdriver.Chrome()  <span class="comment">#通过selenium启动本地chrome</span></span><br><span class="line">    <span class="comment">##具体的UI测试代码</span></span><br></pre></td></tr></table></figure>
+
+<p>此处是启动selenium或者或者selenium -grid 部分主要代码，不能直接运行。如果需要调用远程的selenium_grid需要URL加端口号的形势<a href="http://link.zhihu.com/?target=http://guest.docker:24444/wd/hub">http://guest.docker:24444/wd/hub</a>，guest.docker是docker内网分配的IP，因为在docker里面的host文件没有发现容器名和IP的映射，因此从docker里面hosts文件选用guest.docker这个名字，等发现更好解决方案后再更新。</p>
 <h2 id="3-执行和调试"><a href="#3-执行和调试" class="headerlink" title="3. 执行和调试"></a>3. 执行和调试</h2><p>本地调试不再多说，主要说一下怎么在docker调试和运行。先启动容器：</p>
-<div align="center"><img src="/img/posts/8ec8fb1e-95d0-4ba0-b891-72f773a15abd.png" alt="image"></div>
+<div align="center">![image](/img/posts/8ec8fb1e-95d0-4ba0-b891-72f773a15abd.png)</div>
 
 <p><strong>执行命令</strong> :</p>
-<p>docker* run –rm -p 5904:25900 -p 4444:24444 -v “$(pwd)”:/home/seluser/automation/myScript –name automation-container automation-test:latest</p>
+<p>docker* run –rm -p 5904:25900 -p 4444:24444 -v “$(pwd)”:&#x2F;home&#x2F;seluser&#x2F;automation&#x2F;myScript –name automation-container automation-test:latest</p>
 <p>启动成功之后可以通过vnc工具查看容器的UI界面</p>
-<div align="center"><img src="/img/posts/c51b5759-660a-4f72-a1c5-0726333799fc.png" alt="image"></div>
+<div align="center">![image](/img/posts/c51b5759-660a-4f72-a1c5-0726333799fc.png)</div>
 
 <p>简单说明一下参数，5904是VNC需要用到的端口，可以通过本地VNC（127.0.0.1:5904）工具查看case运行效果。4444是selenium grid的映射端口。-v是把本地磁盘挂载到容器，方便代码调试, 因为采用$(pwd)，表示当前路径，所以执行docker启动命令时候应该在自动化脚本所在位置。</p>
-<p>现在本地调试case，注意这个时候selenium_grid_url值应该是<strong><a href="http://localhost:4444/wd/hub" target="_blank" rel="noopener">http://localhost:4444/wd/hub</a></strong></p>
-<p>最后在容器里面执行case，可以通过docker exec名执行, 比如<em>docker</em> exec -it container_name python /home/seluser/automation/myScript/example.py 确认没有没有问题后可以上Jenkins测试</p>
+<p>现在本地调试case，注意这个时候selenium_grid_url值应该是<strong><a href="http://localhost:4444/wd/hub">http://localhost:4444/wd/hub</a></strong></p>
+<p>最后在容器里面执行case，可以通过docker exec名执行, 比如<em>docker</em> exec -it container_name python &#x2F;home&#x2F;seluser&#x2F;automation&#x2F;myScript&#x2F;example.py 确认没有没有问题后可以上Jenkins测试</p>
 <p>需要注意的是如果case运行失败selenium grid是不会自动退出的，此处借助Python unit test的teardown方法结束selenium进程，比如：</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tearDown</span><span class="params">(<span class="keyword">self</span>)</span></span><span class="symbol">:</span></span><br><span class="line">       print(<span class="string">"start to teardown"</span>)</span><br><span class="line">       time.sleep(<span class="number">10</span>)</span><br><span class="line">       <span class="keyword">self</span>.d.close()</span><br><span class="line">       <span class="keyword">self</span>.d.quit()</span><br></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def tearDown(<span class="built_in">self</span>):</span><br><span class="line">       <span class="built_in">print</span>(<span class="string">&quot;start to teardown&quot;</span>)</span><br><span class="line">       <span class="built_in">time</span>.sleep(<span class="number">10</span>)</span><br><span class="line">       <span class="built_in">self</span>.d.<span class="built_in">close</span>()</span><br><span class="line">       <span class="built_in">self</span>.d.quit()</span><br></pre></td></tr></table></figure>
+
 <p>运行脚本，可以再VNC看到运行效果：</p>
-<div align="center"><img src="/img/posts/a2a7d096-8026-4275-a7a5-d13d6b65bf40.png" alt="image"></div>
+<div align="center">![image](/img/posts/a2a7d096-8026-4275-a7a5-d13d6b65bf40.png)</div>
 
 <h2 id="4-在Jenkins-运行"><a href="#4-在Jenkins-运行" class="headerlink" title="4. 在Jenkins 运行"></a>4. 在Jenkins 运行</h2><p>跟本地容器执行步骤一直，同样的可以通过VNC监测执行过程。此处启动容器和关闭容器单独做成了两个job，方便处理环境问题。</p>
-<p>Jenkins上面执行docker exec -it时候碰到一个”<em>The input device is not a TTY”</em>错误。减少一个T参数可以解决。问题参考：</p>
-<p><a href="https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty" target="_blank" rel="noopener">https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty</a></p>
+<p>Jenkins上面执行docker exec -it时候碰到一个”*The input device is not a TTY”*错误。减少一个T参数可以解决。问题参考：</p>
+<p><a href="https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty">https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty</a></p>
 <h3 id="jenkins-并行运行多个容器"><a href="#jenkins-并行运行多个容器" class="headerlink" title="jenkins 并行运行多个容器"></a>jenkins 并行运行多个容器</h3><p>因为我们是通过容器化的方式启动的UI测试环境，同一个宿主机是可以启动多个容器的。假设我们的UI测试用例比较多的时候，我们可以同时运行多个容器来减少UI case的运行时间，配置方式比jenkins的分布式运行又更方便，怎么实现呢？启动多个容器我们只需要改变容器名字和映射的端口号即可，比如把前面启动容器命令简单更新一下</p>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -p <span class="number">5906</span><span class="symbol">:</span><span class="number">25900</span> -p <span class="number">4466</span><span class="symbol">:</span><span class="number">24444</span> -v <span class="string">"$(pwd)"</span><span class="symbol">:/home/seluser/automation/myScript</span> --name automation-container-robot -d automation-test-robot</span><br></pre></td></tr></table></figure>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -p <span class="number">5906</span><span class="symbol">:</span><span class="number">25900</span> -p <span class="number">4466</span><span class="symbol">:</span><span class="number">24444</span> -v <span class="string">&quot;$(pwd)&quot;</span><span class="symbol">:/home/seluser/automation/myScript</span> --name automation-container-robot -d automation-test-robot</span><br></pre></td></tr></table></figure>
+
 <p>此处我们只更新了端口（5906，4466）和容器名字，就能启动多个UI环境并行运行case，是不是很爽哦？</p>
 <p>执行完之后需要强制关闭容器，防止异常退出情况。启动容器和关闭容器单独做成了两个job，方便处理环境问题。</p>
-<div align="center"><img src="/img/posts/92cc43e1-e2ac-4313-bae2-f8aa88fc004d.jpg" alt="image"></div>
+<div align="center">![image](/img/posts/92cc43e1-e2ac-4313-bae2-f8aa88fc004d.jpg)</div>
 
 <p>到此处基本大功告成。此项目还有很多不足地方，欢迎大家讨论。</p>
-<p>demo相关完整例子：<br><a href="https://github.com/Danielyan86/Python-Study/tree/master/DockerDemo/automation_test/unittest_demo" target="_blank" rel="noopener">https://github.com/Danielyan86/Python-Study/tree/master/DockerDemo/automation_test/unittest_demo</a></p>
+<p>demo相关完整例子：<br><a href="https://github.com/Danielyan86/Python-Study/tree/master/DockerDemo/automation_test/unittest_demo">https://github.com/Danielyan86/Python-Study/tree/master/DockerDemo/automation_test/unittest_demo</a></p>
 
     </div>
     
@@ -290,8 +296,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -323,7 +331,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本思路"><span class="toc-text">基本思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-在elgalu-selenium基础上简单编译"><span class="toc-text">1. 在elgalu/selenium基础上简单编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-用Python-selenium编写测试用例"><span class="toc-text">2. 用Python+selenium编写测试用例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-执行和调试"><span class="toc-text">3. 执行和调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-在Jenkins-运行"><span class="toc-text">4. 在Jenkins 运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jenkins-并行运行多个容器"><span class="toc-text">jenkins 并行运行多个容器</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF"><span class="toc-text">基本思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9C%A8elgalu-selenium%E5%9F%BA%E7%A1%80%E4%B8%8A%E7%AE%80%E5%8D%95%E7%BC%96%E8%AF%91"><span class="toc-text">1. 在elgalu&#x2F;selenium基础上简单编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%94%A8Python-selenium%E7%BC%96%E5%86%99%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"><span class="toc-text">2. 用Python+selenium编写测试用例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%89%A7%E8%A1%8C%E5%92%8C%E8%B0%83%E8%AF%95"><span class="toc-text">3. 执行和调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%9C%A8Jenkins-%E8%BF%90%E8%A1%8C"><span class="toc-text">4. 在Jenkins 运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jenkins-%E5%B9%B6%E8%A1%8C%E8%BF%90%E8%A1%8C%E5%A4%9A%E4%B8%AA%E5%AE%B9%E5%99%A8"><span class="toc-text">jenkins 并行运行多个容器</span></a></li></ol></li></ol>
         
     </div>
 </aside>
@@ -356,7 +364,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -378,7 +386,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,17 +18,17 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="hadoop,flink">
+    <meta name="keywords" content="hadoop,flink" />
 
 
-    <meta name="description" content="一、Apache Flink 的定义、架构及原理Apache Flink 是一个分布式大数据处理引擎，可对有限数据流和无限数据流进行有状态或无状态的计算，能够部署在各种集群环境，对各种规模大小的...">
+    <meta name="description" content="一、Apache Flink 的定义、架构及原理Apache Flink 是一个分布式大数据处理引擎，可对有限数据流和无限数据流进行有状态或无状态的计算，能够部署在各种集群环境，对各种规模大小的..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -45,9 +45,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -64,7 +66,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -82,9 +84,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -189,7 +191,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/flink/">flink</a> <a class="tag-link" href="/tags/hadoop/">hadoop</a>
+                    <a class="tag-none-link" href="/tags/flink/" rel="tag">flink</a> <a class="tag-none-link" href="/tags/hadoop/" rel="tag">hadoop</a>
                 
             </span>
         </span>
@@ -207,7 +209,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>1821</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2066</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -216,16 +218,16 @@
         <h2 id="一、Apache-Flink-的定义、架构及原理"><a href="#一、Apache-Flink-的定义、架构及原理" class="headerlink" title="一、Apache Flink 的定义、架构及原理"></a>一、Apache Flink 的定义、架构及原理</h2><p>Apache Flink 是一个分布式大数据处理引擎，可对有限数据流和无限数据流进行有状态或无状态的计算，能够部署在各种集群环境，对各种规模大小的数据进行快速计算。</p>
 <h3 id="1-Flink-Application"><a href="#1-Flink-Application" class="headerlink" title="1. Flink Application"></a>1. Flink Application</h3><p>了解 Flink 应用开发需要先理解 Flink 的 Streams、State、Time 等基础处理语义以及 Flink 兼顾灵活性和方便性的多层次 API。</p>
 <ul>
-<li><strong>Streams：</strong>流，分为有限数据流与无限数据流，unbounded stream 是有始无终的数据流，即无限数据流；而 bounded stream 是限定大小的有始有终的数据集合，即有限数据流，二者的区别在于无限数据流的数据会随时间的推演而持续增加，计算持续进行且不存在结束的状态，相对的有限数据流数据大小固定，计算最终会完成并处于结束的状态。</li>
+<li>**Streams：**流，分为有限数据流与无限数据流，unbounded stream 是有始无终的数据流，即无限数据流；而 bounded stream 是限定大小的有始有终的数据集合，即有限数据流，二者的区别在于无限数据流的数据会随时间的推演而持续增加，计算持续进行且不存在结束的状态，相对的有限数据流数据大小固定，计算最终会完成并处于结束的状态。</li>
 <li><strong>State</strong>，状态是计算过程中的数据信息，在容错恢复和 Checkpoint 中有重要的作用，流计算在本质上是 Incremental Processing，因此需要不断查询保持状态；另外，为了确保 Exactly- once 语义，需要数据能够写入到状态中；而持久化存储，能够保证在整个分布式系统运行失败或者挂掉的情况下做到 Exactly- once，这是状态的另外一个价值。</li>
 <li><strong>Time</strong>，分为 Event time、Ingestion time、Processing time，Flink 的无限数据流是一个持续的过程，时间是我们判断业务状态是否滞后，数据处理是否及时的重要依据。</li>
-<li><strong>API</strong>，API 通常分为三层，由上而下可分为 SQL / Table API、DataStream API、ProcessFunction 三层，API 的表达能力及业务抽象能力都非常强大，但越接近 SQL 层，表达能力会逐步减弱，抽象能力会增强，反之，ProcessFunction 层 API 的表达能力非常强，可以进行多种灵活方便的操作，但抽象能力也相对越小。</li>
+<li><strong>API</strong>，API 通常分为三层，由上而下可分为 SQL &#x2F; Table API、DataStream API、ProcessFunction 三层，API 的表达能力及业务抽象能力都非常强大，但越接近 SQL 层，表达能力会逐步减弱，抽象能力会增强，反之，ProcessFunction 层 API 的表达能力非常强，可以进行多种灵活方便的操作，但抽象能力也相对越小。</li>
 </ul>
 <h3 id="2-Flink-Architecture"><a href="#2-Flink-Architecture" class="headerlink" title="2.Flink Architecture"></a>2.Flink Architecture</h3><p>在架构部分，主要分为以下四点：</p>
 <p><img src="/img/flink/401e8b1708e1ebc84dec04bf2633b6fb.jpeg" alt="img"></p>
 <p><strong>第一</strong>， Flink 具备统一的框架处理有界和无界两种数据流的能力</p>
 <p><strong>第二</strong>， 部署灵活，Flink 底层支持多种资源调度器，包括 Yarn、Kubernetes 等。Flink 自身带的 Standalone 的调度器，在部署上也十分灵活。</p>
-<p><strong>第三</strong>， 极高的可伸缩性，可伸缩性对于分布式系统十分重要，阿里巴巴双 11 大屏采用 Flink 处理海量数据，使用过程中测得 Flink 峰值可达 17 亿 / 秒。</p>
+<p><strong>第三</strong>， 极高的可伸缩性，可伸缩性对于分布式系统十分重要，阿里巴巴双 11 大屏采用 Flink 处理海量数据，使用过程中测得 Flink 峰值可达 17 亿 &#x2F; 秒。</p>
 <p><strong>第四</strong>， 极致的流式处理性能。Flink 相对于 Storm 最大的特点是将状态语义完全抽象到框架中，支持本地状态读取，避免了大量网络 IO，可以极大提升状态存取的性能。</p>
 <h3 id="3-Flink-Operation"><a href="#3-Flink-Operation" class="headerlink" title="3.Flink Operation"></a>3.Flink Operation</h3><p>后面会有专门课程讲解，此处简单分享 Flink 关于运维及业务监控的内容：</p>
 <ul>
@@ -292,7 +294,7 @@
 <p>如图，在 Flink 程序中，可以采用 getRuntimeContext().getState(desc); 这组 API 去注册状态。Flink 有多种状态后端，采用 API 注册状态后，读取状态时都是通过状态后端来读取的。Flink 有两种不同的状态值，也有两种不同的状态后端：</p>
 <p><img src="/img/flink/a7bc5269f4959918bb09205ce7b15fc6.png" alt="img"></p>
 <ul>
-<li><strong>JVM Heap 状态后端</strong>，适合数量较小的状态，当状态量不大时就可以采用 JVM Heap 的状态后端。JVM Heap 状态后端会在每一次运算值需要读取状态时，用 Java object read / writes 进行读或写，不会产生较大代价，但当 Checkpoint 需要将每一个运算值的本地状态放入 Distributed Snapshots 的时候，就需要进行序列化了。</li>
+<li><strong>JVM Heap 状态后端</strong>，适合数量较小的状态，当状态量不大时就可以采用 JVM Heap 的状态后端。JVM Heap 状态后端会在每一次运算值需要读取状态时，用 Java object read &#x2F; writes 进行读或写，不会产生较大代价，但当 Checkpoint 需要将每一个运算值的本地状态放入 Distributed Snapshots 的时候，就需要进行序列化了。</li>
 </ul>
 <p><img src="/img/flink/f08216fccc661af713a1a8a12e9d8ba3.png" alt="img"></p>
 <ul>
@@ -310,7 +312,7 @@
 <p>Flink 实际上是用 watermarks 来实现 Event - Time 的功能。Watermarks 在 Flink 中也属于特殊事件，其精髓在于当某个运算值收到带有时间戳“ T ”的 watermarks 时就意味着它不会接收到新的数据了。使用 watermarks 的好处在于可以准确预估收到数据的截止时间。举例，假设预期收到数据时间与输出结果时间的时间差延迟 5 分钟，那么 Flink 中所有的 windows Operator 搜索 3 点至 4 点的数据，但因为存在延迟需要再多等 5 分钟直至收集完 4：05 分的数据，此时方能判定 4 点钟的资料收集完成了，然后才会产出 3 点至 4 点的数据结果。这个时间段的结果对应的就是 watermarks 的部分。</p>
 <h3 id="4-状态保存与迁移"><a href="#4-状态保存与迁移" class="headerlink" title="4. 状态保存与迁移"></a>4. 状态保存与迁移</h3><p>流式处理应用无时无刻不在运行，运维上有几个重要考量：</p>
 <ul>
-<li>更改应用逻辑 / 修 bug 等，如何将前一执行的状态迁移到新的执行？</li>
+<li>更改应用逻辑 &#x2F; 修 bug 等，如何将前一执行的状态迁移到新的执行？</li>
 <li>如何重新定义运行的平行化程度？</li>
 <li>如何升级运算丛集的版本号？</li>
 </ul>
@@ -356,8 +358,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -389,7 +393,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、Apache-Flink-的定义、架构及原理"><span class="toc-text">一、Apache Flink 的定义、架构及原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Flink-Application"><span class="toc-text">1. Flink Application</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Flink-Architecture"><span class="toc-text">2.Flink Architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Flink-Operation"><span class="toc-text">3.Flink Operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Flink-的应用场景"><span class="toc-text">4.Flink 的应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-Flink-的应用场景：Data-Pipeline"><span class="toc-text">4.1 Flink 的应用场景：Data Pipeline</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-Flink-应用场景：Data-Analytics"><span class="toc-text">4.2 Flink 应用场景：Data Analytics</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-Flink-应用场景：Data-Driven"><span class="toc-text">4.3 Flink 应用场景：Data Driven</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、「有状态的流式处理」概念解析"><span class="toc-text">二、「有状态的流式处理」概念解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-传统批处理"><span class="toc-text">1. 传统批处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-理想方法"><span class="toc-text">2. 理想方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-流式处理"><span class="toc-text">3. 流式处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-分布式流式处理"><span class="toc-text">4. 分布式流式处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-有状态分布式流式处理"><span class="toc-text">5. 有状态分布式流式处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、Apache-Flink-的优势"><span class="toc-text">三、Apache Flink 的优势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-状态容错"><span class="toc-text">1. 状态容错</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-简单场景的精确一次容错方法"><span class="toc-text">1.1 简单场景的精确一次容错方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-分布式状态容错"><span class="toc-text">1.2 分布式状态容错</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-分散式快照（Distributed-Snapshots）方法"><span class="toc-text">1.3 分散式快照（Distributed Snapshots）方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-状态维护"><span class="toc-text">2. 状态维护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Event-Time"><span class="toc-text">3.Event - Time</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-不同时间种类"><span class="toc-text">3.1 不同时间种类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-Event-Time-处理"><span class="toc-text">3.2 Event-Time 处理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Watermarks"><span class="toc-text">3.3 Watermarks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-状态保存与迁移"><span class="toc-text">4. 状态保存与迁移</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、总结"><span class="toc-text">四、总结</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Apache-Flink-%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%81%E6%9E%B6%E6%9E%84%E5%8F%8A%E5%8E%9F%E7%90%86"><span class="toc-text">一、Apache Flink 的定义、架构及原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Flink-Application"><span class="toc-text">1. Flink Application</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Flink-Architecture"><span class="toc-text">2.Flink Architecture</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Flink-Operation"><span class="toc-text">3.Flink Operation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Flink-%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">4.Flink 的应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-1-Flink-%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9AData-Pipeline"><span class="toc-text">4.1 Flink 的应用场景：Data Pipeline</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-Flink-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9AData-Analytics"><span class="toc-text">4.2 Flink 应用场景：Data Analytics</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-Flink-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9AData-Driven"><span class="toc-text">4.3 Flink 应用场景：Data Driven</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E3%80%8C%E6%9C%89%E7%8A%B6%E6%80%81%E7%9A%84%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%E3%80%8D%E6%A6%82%E5%BF%B5%E8%A7%A3%E6%9E%90"><span class="toc-text">二、「有状态的流式处理」概念解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BC%A0%E7%BB%9F%E6%89%B9%E5%A4%84%E7%90%86"><span class="toc-text">1. 传统批处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%90%86%E6%83%B3%E6%96%B9%E6%B3%95"><span class="toc-text">2. 理想方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86"><span class="toc-text">3. 流式处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%88%86%E5%B8%83%E5%BC%8F%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86"><span class="toc-text">4. 分布式流式处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%9C%89%E7%8A%B6%E6%80%81%E5%88%86%E5%B8%83%E5%BC%8F%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86"><span class="toc-text">5. 有状态分布式流式处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Apache-Flink-%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-text">三、Apache Flink 的优势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%8A%B6%E6%80%81%E5%AE%B9%E9%94%99"><span class="toc-text">1. 状态容错</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-%E7%AE%80%E5%8D%95%E5%9C%BA%E6%99%AF%E7%9A%84%E7%B2%BE%E7%A1%AE%E4%B8%80%E6%AC%A1%E5%AE%B9%E9%94%99%E6%96%B9%E6%B3%95"><span class="toc-text">1.1 简单场景的精确一次容错方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-%E5%88%86%E5%B8%83%E5%BC%8F%E7%8A%B6%E6%80%81%E5%AE%B9%E9%94%99"><span class="toc-text">1.2 分布式状态容错</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-%E5%88%86%E6%95%A3%E5%BC%8F%E5%BF%AB%E7%85%A7%EF%BC%88Distributed-Snapshots%EF%BC%89%E6%96%B9%E6%B3%95"><span class="toc-text">1.3 分散式快照（Distributed Snapshots）方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%8A%B6%E6%80%81%E7%BB%B4%E6%8A%A4"><span class="toc-text">2. 状态维护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Event-Time"><span class="toc-text">3.Event - Time</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-%E4%B8%8D%E5%90%8C%E6%97%B6%E9%97%B4%E7%A7%8D%E7%B1%BB"><span class="toc-text">3.1 不同时间种类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-Event-Time-%E5%A4%84%E7%90%86"><span class="toc-text">3.2 Event-Time 处理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Watermarks"><span class="toc-text">3.3 Watermarks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%8A%B6%E6%80%81%E4%BF%9D%E5%AD%98%E4%B8%8E%E8%BF%81%E7%A7%BB"><span class="toc-text">4. 状态保存与迁移</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">四、总结</span></a></li></ol>
         
     </div>
 </aside>
@@ -422,7 +426,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -444,7 +448,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>

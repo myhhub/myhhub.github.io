@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
     <!--Setting-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -18,17 +18,17 @@
     <link rel="dns-prefetch" href="https://www.ljjyy.com">
     <!--SEO-->
 
-    <meta name="keywords" content="javascript">
+    <meta name="keywords" content="javascript" />
 
 
-    <meta name="description" content="JavaScript的事件驱动范式增添了丰富的语言，也是让使用JavaScript编程变得更加多样化。如果将浏览器设想为JavaScript的事件驱动工具，那么当错误发生时，某个事件就会被抛出。...">
+    <meta name="description" content="JavaScript的事件驱动范式增添了丰富的语言，也是让使用JavaScript编程变得更加多样化。如果将浏览器设想为JavaScript的事件驱动工具，那么当错误发生时，某个事件就会被抛出。..." />
 
 
 
-<meta name="robots" content="all">
-<meta name="google" content="all">
-<meta name="googlebot" content="all">
-<meta name="verify" content="all">
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
 
     <!--Title-->
 
@@ -45,9 +45,11 @@
 
 
 
-<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
-<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0">
-<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.5.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
 
 
 
@@ -64,7 +66,7 @@
 
 
     
-    <meta name="baidu-site-verification" content="dTHILoORpx">
+    <meta name="baidu-site-verification" content="dTHILoORpx" />
 
 
     <script>
@@ -82,9 +84,9 @@
         })();
     </script>
 
-</head>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-</html>
+
 <!--[if lte IE 8]>
 <style>
     html{ font-size: 1em }
@@ -189,7 +191,7 @@
             <i class="fa fa-tags"></i>
             <span class="tags-meta">
                 
-                    <a class="tag-link" href="/tags/javascript/">javascript</a>
+                    <a class="tag-none-link" href="/tags/javascript/" rel="tag">javascript</a>
                 
             </span>
         </span>
@@ -207,7 +209,7 @@
             
             
             <p class="fa fa-exclamation-triangle warning">
-                本文于<strong>2029</strong>天之前发表，文中内容可能已经过时。
+                本文于<strong>2274</strong>天之前发表，文中内容可能已经过时。
             </p>
         
     </div>
@@ -216,67 +218,148 @@
         <p>JavaScript的事件驱动范式增添了丰富的语言，也是让使用JavaScript编程变得更加多样化。如果将浏览器设想为JavaScript的事件驱动工具，那么当错误发生时，某个事件就会被抛出。理论上可以认为这些发生的错误只是JavaScript中的简单事件。</p>
 <p>本文将会讨论客户端JavaScript中的错误处理。主要介绍JavaScript中的易犯错误、错误处理、异步代码编写等内容。</p>
 <p>下面就让我们一起看看如何正确处理JavaScript中的错误。</p>
-<h1 id="Demo演示"><a href="#Demo演示" class="headerlink" title="Demo演示"></a>Demo演示</h1><p>本文中使用的demo可以在<a href="https://github.com/sitepoint-editors/ProperErrorHandlingJavaScript" target="_blank" rel="noopener">GitHub</a>上找到，运行之后会是这样的页面：</p>
-<div align="center"><img src="/img/posts/139239-20171010094636605-863402937.png" alt="img"></div>
+<h1 id="Demo演示"><a href="#Demo演示" class="headerlink" title="Demo演示"></a>Demo演示</h1><p>本文中使用的demo可以在<a href="https://github.com/sitepoint-editors/ProperErrorHandlingJavaScript">GitHub</a>上找到，运行之后会是这样的页面：</p>
+<div align="center">![img](/img/posts/139239-20171010094636605-863402937.png)</div>
 
 <p>每个按钮都会引发一个“错误（Exception）”，同时这个错误会模拟出一个被抛出的异常TypeError。下面是模块的定义：</p>
 <figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// scripts/<span class="built_in">error</span>.jsfunction <span class="built_in">error</span>() &#123;  <span class="built_in">var</span> foo = &#123;&#125;;  <span class="built_in">return</span> foo.bar();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>首先，这个函数声明了一个空对象foo。需要注意的是，bar( )未在任何地方定义。接下来验证这个单元测试是否会引发“错误”：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/errorTest.jsit(<span class="string">'throws a TypeError'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;</span><br><span class="line">  should.throws(<span class="built_in">error</span>, TypeError);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>这个单元测试在<a href="http://mochajs.org/" target="_blank" rel="noopener">Mocha</a>中，同时在 <a href="http://shouldjs.github.io/" target="_blank" rel="noopener">Should.js</a>中有测试声明。Mocha是测试运行工具，而Should.js是断言库。这个单元测试运行在Node上，不需要使用浏览器。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/errorTest.jsit(<span class="symbol">&#x27;throws</span> a TypeError&#x27;, <span class="keyword">function</span> <span class="title"></span>() &#123;</span><br><span class="line">  should.throws(error, TypeError);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>这个单元测试在<a href="http://mochajs.org/">Mocha</a>中，同时在 <a href="http://shouldjs.github.io/">Should.js</a>中有测试声明。Mocha是测试运行工具，而Should.js是断言库。这个单元测试运行在Node上，不需要使用浏览器。</p>
 <p>error( )定义一个空对象，然后尝试访问一个方法。因为bar( )在对象内不存在，所以就会引发异常。这种发生在像JavaScript这样的动态语言上的错误，每个人可能都会遇到！</p>
 <h1 id="错误处理（一）"><a href="#错误处理（一）" class="headerlink" title="错误处理（一）"></a>错误处理（一）</h1><p>通过以下代码，对上述错误进行处理：</p>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span> scripts/badHandler.jsfunction badHandler(fn) &#123;  <span class="keyword">try</span> &#123;    <span class="keyword">return</span> fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123; &#125;  <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight monkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// scripts/badHandler.js<span class="keyword">function</span> <span class="title function_">badHandler</span>(fn) &#123;  <span class="keyword">try</span> &#123;    <span class="keyword">return</span> fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123; &#125;  <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>该处理程序将 fn 作为输入参数，然后 fn 在处理函数内部会被调用。单元测试会体现出以上错误处理程序的作用：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tests/scripts/badHandlerTest.jsit('returns a value without errors', function() &#123;  var fn = function() &#123;    return 1;</span></span><br><span class="line">  &#125;;  <span class="keyword">var</span> result = badHandler(fn);</span><br><span class="line">  result.should.equal(<span class="number">1</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">it(<span class="string">'returns a null with errors'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;  <span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'random error'</span>);</span><br><span class="line">  &#125;;  <span class="keyword">var</span> result = badHandler(fn);</span><br><span class="line">  should(result).equal(<span class="literal">null</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tests/scripts/badHandlerTest.jsit(&#x27;returns a value without errors&#x27;, function() &#123;  var fn = function() &#123;    return 1;</span></span><br><span class="line">  &#125;;  <span class="keyword">var</span> result = badHandler(<span class="function"><span class="keyword">fn</span>)</span>;</span><br><span class="line">  result.should.equal(<span class="number">1</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">it(<span class="string">&#x27;returns a null with errors&#x27;</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;  <span class="keyword">var</span> <span class="function"><span class="keyword">fn</span> = <span class="title">function</span><span class="params">()</span> </span>&#123;    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">&#x27;random error&#x27;</span>);</span><br><span class="line">  &#125;;  <span class="keyword">var</span> result = badHandler(<span class="function"><span class="keyword">fn</span>)</span>;</span><br><span class="line">  should(result).equal(<span class="keyword">null</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>如果出现问题，错误处理程序就会返回 null。fn( ) 回调函数可以指向一个合法的方法或错误。</p>
 <p>以下的点击事件会继续进行事件处理：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// scripts/badHandlerDom.js(<span class="function"><span class="keyword">function</span> <span class="params">(handler, bomb)</span></span> &#123;  var badButton = document.getElementById(<span class="string">'bad'</span>);  <span class="keyword">if</span> (badButton) &#123;</span><br><span class="line">    badButton.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;</span><br><span class="line">      handler(bomb);</span><br><span class="line">      console.<span class="built_in">log</span>(<span class="string">'Imagine, getting promoted for hiding mistakes'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;(badHandler, <span class="built_in">error</span>));</span><br></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// scripts/badHandlerDom.js(<span class="function"><span class="keyword">function</span> <span class="params">(handler, bomb)</span></span> &#123;  var badButton = document.getElementById(<span class="string">&#x27;bad&#x27;</span>);  <span class="keyword">if</span> (badButton) &#123;</span><br><span class="line">    badButton.addEventListener(<span class="string">&#x27;click&#x27;</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;</span><br><span class="line">      handler(bomb);</span><br><span class="line">      console.<span class="built_in">log</span>(<span class="string">&#x27;Imagine, getting promoted for hiding mistakes&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;(badHandler, <span class="built_in">error</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>这种处理方式在代码中隐藏了一个错误，并且很难发现。隐藏的错误可能会花费好几个小时的调试时间。尤其是在具有深度调用堆栈的多层解决方案中，这个错误会更难发现。所以这是一种很差的错误处理方式。</p>
 <h1 id="错误处理（二）"><a href="#错误处理（二）" class="headerlink" title="错误处理（二）"></a>错误处理（二）</h1><p>下面是另一个错误处理方式。</p>
-<figure class="highlight monkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// scripts/uglyHandler.jsfunction uglyHandler(fn) &#123;  <span class="keyword">try</span> &#123;    <span class="keyword">return</span> fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="comment">'a new error');</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span> scripts/uglyHandler.jsfunction uglyHandler(fn) &#123;  <span class="keyword">try</span> &#123;    <span class="keyword">return</span> fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&#x27;a new error&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>处理异常的方式如下所示：</p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/uglyHandlerTest.jsit(<span class="symbol">'returns</span> a <span class="keyword">new</span> error <span class="keyword">with</span> errors', <span class="keyword">function</span> <span class="title"></span>() &#123;  var fn = <span class="keyword">function</span> <span class="title"></span>() &#123;    throw new TypeError('type error');</span><br><span class="line">  &#125;;</span><br><span class="line">  should.throws(<span class="keyword">function</span> <span class="title"></span>() &#123;</span><br><span class="line">    uglyHandler(fn);</span><br><span class="line">  &#125;, Error);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/uglyHandlerTest.jsit(<span class="symbol">&#x27;returns</span> a <span class="keyword">new</span> error <span class="keyword">with</span> errors&#x27;, <span class="keyword">function</span> <span class="title"></span>() &#123;  var fn = <span class="keyword">function</span> <span class="title"></span>() &#123;    throw new TypeError(&#x27;type error&#x27;);</span><br><span class="line">  &#125;;</span><br><span class="line">  should.throws(<span class="keyword">function</span> <span class="title"></span>() &#123;</span><br><span class="line">    uglyHandler(fn);</span><br><span class="line">  &#125;, Error);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>以上对错误的处理程序有明显的改进。在这里异常会调用堆栈进行冒泡。同时错误会展开堆栈，这对调试非常有帮助。除了抛出异常，解释器还会沿着栈寻找另外的处理。这也带来了可以从堆栈顶部处理错误的可能。但这还是一种较差的错误处理，需要我们从堆栈中一步步追溯原始的异常。</p>
 <p>可以采用一种替代方案，用自定义的错误方式来结束这种较差的错误处理。当你向错误中添加更多详细信息时，会让这种方法变得很有帮助。</p>
 <p>例如：</p>
-<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">// scripts/specifiedError.js//</span> Create a custom errorvar SpecifiedError = <span class="keyword">function</span> SpecifiedError(message) &#123;  <span class="keyword">this</span>.name = <span class="string">'SpecifiedError'</span>;  <span class="keyword">this</span>.message = message || <span class="string">''</span>;  <span class="keyword">this</span>.stack = (<span class="keyword">new</span> Error()).stack;</span><br><span class="line">&#125;;</span><br><span class="line">SpecifiedError.prototype = <span class="keyword">new</span> Error();</span><br><span class="line">SpecifiedError.prototype.constructor = SpecifiedError;</span><br></pre></td></tr></table></figure>
-<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span> scripts/uglyHandlerImproved.jsfunction uglyHandlerImproved(fn) &#123;  <span class="keyword">try</span> &#123;    <span class="keyword">return</span> fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="keyword">throw</span> <span class="keyword">new</span> SpecifiedError(e.message);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/uglyHandlerImprovedTest.jsit(<span class="string">'returns a specified error with errors'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;  var fn = <span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;    throw new TypeError(<span class="string">'type error'</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  should.throws(<span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;</span><br><span class="line">    uglyHandlerImproved(fn);</span><br><span class="line">  &#125;, SpecifiedError);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">// scripts/specifiedError.js//</span> Create a custom errorvar SpecifiedError = <span class="keyword">function</span> SpecifiedError(message) &#123;  this.name = <span class="string">&#x27;SpecifiedError&#x27;</span>;  this.message = message || <span class="string">&#x27;&#x27;</span>;  this.stack = (<span class="keyword">new</span> <span class="built_in">Error</span>()).stack;</span><br><span class="line">&#125;;</span><br><span class="line">SpecifiedError.prototype = <span class="keyword">new</span> <span class="built_in">Error</span>();</span><br><span class="line">SpecifiedError.prototype.constructor = SpecifiedError;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight monkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// scripts/uglyHandlerImproved.js<span class="keyword">function</span> <span class="title function_">uglyHandlerImproved</span>(fn) &#123;  <span class="keyword">try</span> &#123;    <span class="keyword">return</span> fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="keyword">throw</span> <span class="keyword">new</span> SpecifiedError(e.message);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/uglyHandlerImprovedTest.jsit(<span class="symbol">&#x27;returns</span> a specified error <span class="keyword">with</span> errors&#x27;, <span class="keyword">function</span> <span class="title"></span>() &#123;  var fn = <span class="keyword">function</span> <span class="title"></span>() &#123;    throw new TypeError(&#x27;type error&#x27;);</span><br><span class="line">  &#125;;</span><br><span class="line">  should.throws(<span class="keyword">function</span> <span class="title"></span>() &#123;</span><br><span class="line">    uglyHandlerImproved(fn);</span><br><span class="line">  &#125;, SpecifiedError);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>指定的错误会添加更多详细信息并保留原始的错误消息。有了这个改进，以上的处理不再是较差的处理方式了，而是一个清晰有用的方式。</p>
 <p>经过了上面的处理，我们还收到了一个未处理的异常。接下来让我们看看浏览器在处理错误时，有什么帮助。</p>
 <h1 id="展开堆栈"><a href="#展开堆栈" class="headerlink" title="展开堆栈"></a>展开堆栈</h1><p>处理异常的一种方式是在调用堆栈的顶部加入 try…catch。</p>
 <p>比如说：</p>
-<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span><span class="params">(bomb)</span> </span>&#123;  <span class="keyword">try</span> &#123;</span><br><span class="line">    bomb();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="comment">// Handle all the error things  &#125;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight wren"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">function</span> <span class="title function_">main</span>(<span class="params">bomb</span>) &#123;  <span class="title function_">try</span> &#123;</span><br><span class="line">    <span class="title function_">bomb</span>();</span><br><span class="line">  &#125; <span class="title function_">catch</span> (<span class="variable">e</span>) &#123;    <span class="comment">// Handle all the error things  &#125;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>但是，浏览器是事件驱动的， JavaScript 中的异常也是一个事件。发生异常时，解释器会暂停执行并展开：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// scripts/errorHandlerDom.jswindow.addEventListener(<span class="string">'error'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(e)</span></span> &#123;  var <span class="built_in">error</span> = e.<span class="built_in">error</span>;</span><br><span class="line">  console.<span class="built_in">log</span>(<span class="built_in">error</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// scripts/errorHandlerDom.jswindow.addEventListener(<span class="string">&#x27;error&#x27;</span>, <span class="function"><span class="keyword">function</span> <span class="params">(e)</span></span> &#123;  var <span class="built_in">error</span> = e.<span class="built_in">error</span>;</span><br><span class="line">  console.<span class="built_in">log</span>(<span class="built_in">error</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>此事件处理程序会捕获任何执行上下文中发生的错误。各个目标发生的错误事件会触发各种类型的错误。这种集中在代码中的错误处理是非常激进的。你可以使用菊花链处理方式来处理特定的错误。如果你遵循 SOLID 原则，就可以采用具有单一目的错误处理方式。这些处理程序可以随时进行注册，解释器会循环执行需要执行的处理程序。代码库可以从 try…catch 块中释放出来，这也使得调试变得容易。在 JavaScript 中，把错误处理当作事件处理很重要。</p>
 <h1 id="捕获堆栈"><a href="#捕获堆栈" class="headerlink" title="捕获堆栈"></a>捕获堆栈</h1><p>在解决问题时，调用堆栈会非常有用，同时浏览器正好可以提供这些信息。虽然堆栈属性不是标准的一部分，但是最新的浏览器已经可以查看这些信息了。</p>
 <p>下面是在服务器上记录错误的示例：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// scripts/errorAjaxHandlerDom.jswindow.addEventListener(<span class="string">'error'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(e)</span></span> &#123;  var stack = e.<span class="built_in">error</span>.stack;  var message = e.<span class="built_in">error</span>.toString();  <span class="keyword">if</span> (stack) &#123;</span><br><span class="line">    message += <span class="string">'\n'</span> + stack;</span><br><span class="line">  &#125;  var xhr = new XMLHttpRequest();</span><br><span class="line">  xhr.<span class="built_in">open</span>(<span class="string">'POST'</span>, <span class="string">'/log'</span>, <span class="literal">true</span>);  // Fire an Ajax request with <span class="built_in">error</span> details  xhr.send(message);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>每个错误处理都具有单个目的，这样可以保持代码的<a href="https://en.wikipedia.org/wiki/Don&#39;t_repeat_yourself" target="_blank" rel="noopener">DRY</a>原则（目的单一，不要重复自己原则）。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// scripts/errorAjaxHandlerDom.jswindow.addEventListener(<span class="string">&#x27;error&#x27;</span>, <span class="function"><span class="keyword">function</span> <span class="params">(e)</span></span> &#123;  var stack = e.<span class="built_in">error</span>.stack;  var message = e.<span class="built_in">error</span>.toString();  <span class="keyword">if</span> (stack) &#123;</span><br><span class="line">    message += <span class="string">&#x27;\n&#x27;</span> + stack;</span><br><span class="line">  &#125;  var xhr = new XMLHttpRequest();</span><br><span class="line">  xhr.<span class="built_in">open</span>(<span class="string">&#x27;POST&#x27;</span>, <span class="string">&#x27;/log&#x27;</span>, <span class="literal">true</span>);  // Fire an Ajax request with <span class="built_in">error</span> details  xhr.send(message);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>每个错误处理都具有单个目的，这样可以保持代码的<a href="https://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>原则（目的单一，不要重复自己原则）。</p>
 <p>在浏览器中，需要将事件处理添加到DOM。这意味着如果你正在构建第三方库，那么你的事件会与客户端代码共存。window.addEventListener( )会帮你进行处理，同时也不会抹去现有的事件。</p>
 <p>这是服务器上日志的截图：</p>
-<div align="center"><img src="/img/posts/139239-20171010095323168-1817564046.png" alt="img"></div>
+<div align="center">![img](/img/posts/139239-20171010095323168-1817564046.png)</div>
 
 <p>可以通过命令提示符查看日志，但是Windows上，日志是非动态的。</p>
 <p>通过日志可以清楚的看到，具体什么情况触发了什么错误。在调试时调用堆栈也会非常有用，所以不要低估调用堆栈的作用。</p>
 <p>在JavaScript中，错误信息仅适用于单个域。因为在使用来自不用域的脚本时，将会看不到任何错误详细信息。</p>
 <p>一种解决方案是重新抛出错误，同时保留错误消息：</p>
-<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;  <span class="function"><span class="keyword">return</span> <span class="title">fn</span><span class="params">()</span></span>;</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;  <span class="keyword">throw</span> <span class="keyword">new</span> Error(e.message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;  <span class="keyword">return</span> <span class="function"><span class="keyword">fn</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(e.message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>一旦重新启动了错误备份，全局错误处理程序就会完成其余的工作。确保你的错误处理处在相同域中，这样会保留原始消息，堆栈和自定义错误对象。</p>
 <h1 id="异步处理"><a href="#异步处理" class="headerlink" title="异步处理"></a>异步处理</h1><p>JavaScript在运行异步代码时，进行下面的异常处理，会产生一个问题：</p>
-<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scripts/asyncHandler.jsfunction asyncHandler(fn) &#123;  try &#123;    // This rips the potential bomb from the current context</span></span><br><span class="line">    setTimeout(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">      fn();</span><br><span class="line">    &#125;, <span class="number">1</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scripts/asyncHandler.jsfunction asyncHandler(fn) &#123;  try &#123;    // This rips the potential bomb from the current context</span></span><br><span class="line">    <span class="built_in">setTimeout</span>(function () &#123;</span><br><span class="line">      <span class="built_in">fn</span>();</span><br><span class="line">    &#125;, <span class="number">1</span>);</span><br><span class="line">  &#125; catch (e) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>通过单元测试来查看问题：</p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// tests/scripts/asyncHandlerTest.jsit(<span class="symbol">'does</span> <span class="keyword">not</span> catch exceptions <span class="keyword">with</span> errors', <span class="keyword">function</span> <span class="title"></span>() &#123;  // The bomb</span><br><span class="line">  var fn = <span class="keyword">function</span> <span class="title"></span>() &#123;    throw new TypeError('type error');</span><br><span class="line">  &#125;;  // Check that the <span class="keyword">exception</span> <span class="keyword">is</span> <span class="keyword">not</span> caught</span><br><span class="line">  should.doesNotThrow(<span class="keyword">function</span> <span class="title"></span>() &#123;</span><br><span class="line">    asyncHandler(fn);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tests/scripts/asyncHandlerTest.jsit(&#x27;does not catch exceptions with errors&#x27;, function () &#123;  // The bomb</span></span><br><span class="line">  <span class="keyword">var</span> fn = <span class="keyword">function</span> (<span class="params"></span>) &#123;    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">&#x27;type error&#x27;</span>);</span><br><span class="line">  &#125;;  <span class="comment">// Check that the exception is not caught</span></span><br><span class="line">  should.<span class="title function_">doesNotThrow</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">asyncHandler</span>(fn);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>这个异常没有被捕获，我们通过单元测试来验证。尽管代码包含了try…catch，但是try…catch语句只能在单个执行上下文中工作。当异常被抛出时，解释器已经脱离了try…catch，所以异常未被处理。Ajax调用也会发生同样的情况。</p>
 <p>所以，一种解决方案是在异步回调中捕获异常：</p>
-<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;  <span class="keyword">try</span> &#123;</span><br><span class="line">    fn();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="comment">// Handle this async error  &#125;</span></span><br><span class="line">&#125;, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span><span class="params">()</span></span>;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;    <span class="comment">// Handle this async error  &#125;</span></span><br><span class="line">&#125;, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <p>这种做法会比较奏效，但仍有很大的改进空间。</p>
 <p>首先，这些try…catch block在整个区域纠缠不清。事实上，V8浏览器引擎不鼓励在函数内使用try … catch block。V8是Chrome浏览器和Node中使用的JavaScript引擎。一种做法是将try…catch block移动到调用堆栈的顶部，但这却不适用于异步代码编程。</p>
 <p>由于全局错误处理可以在任何上下文中执行，所以如果为错误处理添加一个窗口对象，那么就能保证代码的DRY和SOLID原则。同时全局错误处理也能保证你的异步代码很干净。</p>
 <p>以下是该异常处理在服务器上的报告内容。请注意，输出内容会根据浏览器的不同而不同。</p>
-<div align="center"><img src="/img/posts/139239-20171010095450934-1295757474.png" alt="img"></div>
+<div align="center">![img](/img/posts/139239-20171010095450934-1295757474.png)</div>
 
 <p>从错误处理中可以看到，错误来自于异步代码的setTimeout( )功能。</p>
 <h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>在进行错误处理时，不要隐藏问题，而应该及时发现问题，并采用各种方法追溯问题的根源以便解决问题。虽然编写代码时，时常难免会埋下错误，但是我们也无须为错误的发生过于感到羞愧，及时解决发现问题从而避免更大的问题发生，正是我们现在需要做的。</p>
@@ -315,8 +398,10 @@
         
 	
     <div id="vcomments" class="valine"></div>
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
 <script src="/assets/valine.min.js"></script>
+
 
     <script>
         new Valine({
@@ -348,7 +433,7 @@
     <div class="widget">
         <h3 class="title">文章目录</h3>
         
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Demo演示"><span class="toc-text">Demo演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#错误处理（一）"><span class="toc-text">错误处理（一）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#错误处理（二）"><span class="toc-text">错误处理（二）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#展开堆栈"><span class="toc-text">展开堆栈</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#捕获堆栈"><span class="toc-text">捕获堆栈</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#异步处理"><span class="toc-text">异步处理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结论"><span class="toc-text">结论</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Demo%E6%BC%94%E7%A4%BA"><span class="toc-text">Demo演示</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%EF%BC%88%E4%B8%80%EF%BC%89"><span class="toc-text">错误处理（一）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%EF%BC%88%E4%BA%8C%EF%BC%89"><span class="toc-text">错误处理（二）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B1%95%E5%BC%80%E5%A0%86%E6%A0%88"><span class="toc-text">展开堆栈</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8D%95%E8%8E%B7%E5%A0%86%E6%A0%88"><span class="toc-text">捕获堆栈</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86"><span class="toc-text">异步处理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li></ol>
         
     </div>
 </aside>
@@ -381,7 +466,7 @@
 
             </div>
             <div class="col-sm-12">
-                <span>Copyright &copy; 2019-2024&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
+                <span>Copyright &copy; 2019-2025&emsp;<a href="/" class="copyright-links" target="_blank" rel="nofollow">Ljjyy.com</a>
                 </span> |
                 <span>
                     <a href="/about/" class="copyright-links" target="_blank" rel="nofollow">关于我们</a>
@@ -403,7 +488,9 @@
 
 
 
-<script src="/js/app.js?rev=@@hash"></script>
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
 
 </body>
 </html>
